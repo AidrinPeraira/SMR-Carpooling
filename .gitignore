@@ -1,0 +1,42 @@
+.vscode/*
+!.vscode/settings.json
+.vscode
+.pnpm-store
+
+
+/node_modules
+**/node_modules
+node_modules
+.pnpm-store
+
+# build files in next
+/.next/
+/frontend-share-my-ride/.next/
+/dist
+*/dist
+**/dist
+**/dist/
+**/dist/*
+
+#env files
+**/.env
+.env
+.env.*
+!.env.example
+
+# logs from logger
+**/combined.log
+**/error.log
+
+
+
+**/combined.log
+**/error.log
+
+# Custom Files
+**/NextFolderTemplate.txt
+**/pendings.todo
+LintReports.todo
+export-code.sh
+ExportedCode
+ecosystem.config.js
