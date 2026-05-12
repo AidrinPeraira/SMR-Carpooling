@@ -1,0 +1,33 @@
+# syntax=docker/dockerfile:1
+FROM node:24-alpine
+
+RUN corepack enable
+
+WORKDIR /app
+
+# Set pnpm home and path
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+# Copy root monorepo files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+
+# To optimize caching, we copy all package.json files first.
+COPY smr-backend/api-gateway/package.json ./smr-backend/api-gateway/
+COPY smr-backend/notification-service/package.json ./smr-backend/notification-service/
+COPY smr-backend/payment-service/package.json ./smr-backend/payment-service/
+COPY smr-backend/trip-service/package.json ./smr-backend/trip-service/
+COPY smr-backend/user-service/package.json ./smr-backend/user-service/
+COPY smr-shared/package.json ./smr-shared/
+COPY smr-ui/package.json ./smr-ui/
+COPY smr-frontend/package.json ./smr-frontend/
+
+# Install dependencies (using cache mount for speed)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+
+# In development, we usually volume mount the source code, 
+# but we copy it here so the image is functional standalone.
+COPY . .
+
+# This image is generic. docker-compose will override the CMD and EXPOSE.
+CMD ["sh"]

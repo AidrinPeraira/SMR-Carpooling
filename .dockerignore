@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+dist
+.next
+.git
+.env
+.env.*
+!.env.example
+*.log
+docker-compose.yml
+Dockerfile*
+**/node_modules
+**/dist
+**/.next
