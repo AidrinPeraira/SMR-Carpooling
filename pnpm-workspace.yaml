@@ -4,6 +4,7 @@ packages:
   - smr-shared
   - smr-ui
 allowBuilds:
+  esbuild: true
   sharp: true
   unrs-resolver: true
 ignoredBuiltDependencies:

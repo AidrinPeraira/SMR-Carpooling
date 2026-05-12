@@ -5,6 +5,7 @@
 This document outlines the organization of the **ShareMyRide** codebase. The platform is architectured using **Microservices** (Backend) and **Feature-Based Architecture** (Frontend) to ensure scalability and maintainability.
 
 ### Key Principles:
+
 - **Service Isolation**: Each microservice manages its own domain and database.
 - **Feature Encapsulation**: Frontend logic is grouped by business domain (e.g., Trips, Auth).
 - **Asynchronous Communication**: Inter-service events are handled via RabbitMQ.

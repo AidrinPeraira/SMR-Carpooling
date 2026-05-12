@@ -1,44 +1,30 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    // main settings
+    "target": "ES2022", //commonly used node version
+    "module": "ESNext", //latest
+    "moduleResolution": "bundler", //latest
 
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
+    //optional features
+    "esModuleInterop": true, //allow import in commonjs require
+    "skipLibCheck": true, //skip type check for node_modules
+    "resolveJsonModule": true, //allow importing json to ts file
+    "strict": true, //striict type checking
+    "moduleDetection": "force", //added module import surity
 
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
+    "allowJs": true, //allow importing .js files and not just .ts files
+    "isolatedModules": true, //for fast compiling. setting for ensuring each file can compile in its own.
 
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true, //inhernetly adds undefined type for elements thathave the potential to be undefined. (Eg: 5th index of an array of size 3 having type string will be undefined right?)
+    "noImplicitAny": true, //more strict settings. reduce automatic any type
 
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
+    "noEmitOnError": true,
+    "noEmit": true, //since this is a config file at parent level. don't do anyhinng with this file just allow it to be inherited by the tsconfig files in the services
 
-    // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    "lib": ["es2022"], //broeser js version. what methods of what js is available?
+    "forceConsistentCasingInFileNames": true, //recomended by ide
+
+    "ignoreDeprecations": "5.0" //to ginore baseurl deprecation
+  },
+  "include": ["src", "vitest.config.ts"]
 }
