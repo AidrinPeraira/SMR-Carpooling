@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "imports" : {
+    "#/*" : "./src/*"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",

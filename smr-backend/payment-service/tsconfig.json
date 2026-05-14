@@ -1,12 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json", //get all setings form patent ts config
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@/*": ["./src/*"]
+      "#/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts"], //compile these files
-  "exclude": ["node_modules"] //don't compile these files
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

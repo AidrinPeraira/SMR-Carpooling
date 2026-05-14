@@ -22,9 +22,7 @@
     "noEmit": true, //since this is a config file at parent level. don't do anyhinng with this file just allow it to be inherited by the tsconfig files in the services
 
     "lib": ["es2022"], //broeser js version. what methods of what js is available?
-    "forceConsistentCasingInFileNames": true, //recomended by ide
-
-    "ignoreDeprecations": "5.0" //to ginore baseurl deprecation
+    "forceConsistentCasingInFileNames": true //recomended by ide
   },
   "include": ["src", "vitest.config.ts"]
 }

@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { createApp } from "@/app";
-import { AppConfig } from "@/application.config";
+import { createApp } from "#/app";
+import { AppConfig } from "#/application.config";
 
 async function startServer(): Promise<void> {
   const app = createApp();
