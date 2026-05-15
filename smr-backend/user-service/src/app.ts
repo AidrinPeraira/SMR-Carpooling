@@ -2,12 +2,13 @@ import "dotenv/config";
 import express, {
   type Request,
   type Response,
-  type NextFunction,
 } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { HttpStatusCodes, type ILogger } from "@smr/shared";
+import { mapError } from "./utils/error-mapper";
 
-export function createApp() {
+export function createApp(logger: ILogger) {
   const app = express();
 
   app.use(express.json());
@@ -15,17 +16,31 @@ export function createApp() {
   app.use(cors());
   app.use(helmet());
 
-  app.get("/health", (req, res) => {
-    res.status(200).json({ status: "OK" });
+  app.get("/health", (_req, res) => {
+    res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
 
   //global error handler
-  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-    console.log("err");
+  app.use((err: unknown, req: Request, res: Response) => {
+    const mappedError = mapError(err, "user-service");
 
-    res.status(500).json({ success: false });
+    logger.error(mappedError.message, {
+      origin: mappedError.origin,
+      errorCode: mappedError.errorCode,
+      details: mappedError.details,
+      statusCode: mappedError.statusCode,
+      stack: mappedError.stack,
+      internalError: mappedError.err,
+      url: req.url,
+      method: req.method,
+    });
 
-    next();
+    return res.status(mappedError.statusCode).json({
+      success: false,
+      message: mappedError.message,
+      errorCode: mappedError.errorCode,
+      details: mappedError.details,
+    });
   });
 
   return app;

@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       target: shared-backend-build
+    tty: true
     volumes: 
       - .:/app
       - /app/node_modules
@@ -21,6 +22,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       target: user-service
+    tty: true
     ports:
       - "4001:4001"
     env_file:
@@ -51,6 +53,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       target: api-gateway
+    tty: true
     ports:
       - "4000:4000"
     env_file:
@@ -81,6 +84,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       target: notification-service
+    tty: true
     ports:
       - "4002:4002"
     env_file:
@@ -111,6 +115,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       target: trip-service
+    tty: true
     ports:
       - "4003:4003"
     env_file:
@@ -141,6 +146,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       target: payment-service
+    tty: true
     ports:
       - "4004:4004"
     env_file:

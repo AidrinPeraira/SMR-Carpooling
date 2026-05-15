@@ -6,8 +6,9 @@ import express, {
 } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { ApplicationError, HttpStatusCodes, type ILogger } from "@smr/shared";
 
-export function createApp() {
+export function createApp(logger: ILogger) {
   const app = express();
 
   app.use(express.json());
@@ -16,16 +17,44 @@ export function createApp() {
   app.use(helmet());
 
   app.get("/health", (req, res) => {
-    res.status(200).json({ status: "OK" });
+    res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
 
   //global error handler
-  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-    console.log("err");
+  app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
+    if (err instanceof ApplicationError) {
+      logger.error(err.message, {
+        origin: err.origin,
+        errorCode: err.errorCode,
+        details: err.details,
+        statusCode: err.statusCode,
+        stack: err.stack,
+        internalError: err.err,
+      });
 
-    res.status(500).json({ success: false });
+      return res.status(err.statusCode).json({
+        success: false,
+        message: err.message,
+        errorCode: err.errorCode,
+        details: err.details,
+      });
+    }
 
-    next();
+    // Unhandled errors
+    const errorMessage =
+      err instanceof Error ? err.message : "Internal Server Error";
+    const errorStack = err instanceof Error ? err.stack : undefined;
+
+    logger.error(errorMessage, {
+      stack: errorStack,
+      url: req.url,
+      method: req.method,
+    });
+
+    res.status(HttpStatusCodes.InternalServerError).json({
+      success: false,
+      message: "An unexpected error occurred",
+    });
   });
 
   return app;

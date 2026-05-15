@@ -1,16 +1,23 @@
 import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
+import { ConsolaLogger } from "@smr/shared";
 
 async function startServer(): Promise<void> {
-  const app = createApp();
+  const logger = new ConsolaLogger();
+  const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`The user service is running at port: ${PORT}.`);
+    logger.info(`The user-service is running at port: ${PORT}.`, {
+      port: PORT,
+    });
   });
 }
 
 startServer().catch((error: unknown) => {
-  console.log("Error: Failed to start the user-service server: ", error);
+  const logger = new ConsolaLogger();
+  logger.error("Failed to start the user-service server", {
+    error: error instanceof Error ? error.message : String(error),
+  });
 });
