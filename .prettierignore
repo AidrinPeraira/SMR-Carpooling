@@ -1,3 +1,4 @@
+storybook-static
 node_modules
 dist
 build
@@ -5,3 +6,9 @@ build
 out
 pnpm-lock.yaml
 coverage
+
+.env*
+.vercel
+*.tsbuildinfo
+*.log
+.DS_Store

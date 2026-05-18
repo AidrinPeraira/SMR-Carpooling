@@ -1,8 +1,5 @@
 import "dotenv/config";
-import express, {
-  type Request,
-  type Response,
-} from "express";
+import express, { type Request, type Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { HttpStatusCodes, type ILogger } from "@smr/shared";

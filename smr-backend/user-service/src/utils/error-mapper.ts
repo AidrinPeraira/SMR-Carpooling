@@ -1,6 +1,11 @@
 import { ZodError } from "zod";
 import mongoose from "mongoose";
-import { ApplicationError, HttpStatusCodes, ErrorCode, ErrorDetails } from "@smr/shared";
+import {
+  ApplicationError,
+  HttpStatusCodes,
+  ErrorCode,
+  ErrorDetails,
+} from "@smr/shared";
 
 export const mapError = (err: unknown, origin: string): ApplicationError => {
   // 1. If it's already an ApplicationError, return it
@@ -16,7 +21,7 @@ export const mapError = (err: unknown, origin: string): ApplicationError => {
       HttpStatusCodes.UnprocessableEntity,
       ErrorCode.VALIDATION_ERROR,
       ErrorDetails.VALIDATION_ERROR,
-      err.errors
+      err.errors,
     );
   }
 
@@ -28,7 +33,7 @@ export const mapError = (err: unknown, origin: string): ApplicationError => {
       HttpStatusCodes.BadRequest,
       ErrorCode.DB_ERROR,
       ErrorDetails.DB_ERROR,
-      err.errors
+      err.errors,
     );
   }
 
@@ -40,7 +45,7 @@ export const mapError = (err: unknown, origin: string): ApplicationError => {
       HttpStatusCodes.Conflict,
       ErrorCode.DB_ERROR,
       ErrorDetails.DB_ERROR,
-      (err as any).keyValue
+      (err as any).keyValue,
     );
   }
 
@@ -52,7 +57,7 @@ export const mapError = (err: unknown, origin: string): ApplicationError => {
       HttpStatusCodes.InternalServerError,
       ErrorCode.INTERNAL_SERVER_ERROR,
       ErrorDetails.INTERNAL_SERVER_ERROR,
-      err
+      err,
     );
   }
 
@@ -63,6 +68,6 @@ export const mapError = (err: unknown, origin: string): ApplicationError => {
     HttpStatusCodes.InternalServerError,
     ErrorCode.INTERNAL_SERVER_ERROR,
     ErrorDetails.INTERNAL_SERVER_ERROR,
-    err
+    err,
   );
 };

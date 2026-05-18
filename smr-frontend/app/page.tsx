@@ -1,5 +1,4 @@
-import {Button} from "@smr/ui"
-
+import { Button } from "@smr/ui";
 
 export default function Home() {
   return (

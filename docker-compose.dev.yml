@@ -1,18 +1,17 @@
 services:
-
-  shared-builder: 
+  shared-builder:
     build:
       context: .
       dockerfile: Dockerfile.dev
       target: shared-backend-build
     tty: true
-    volumes: 
+    volumes:
       - .:/app
       - /app/node_modules
       - /app/smr-shared/node_modules
     command: pnpm --filter @smr/shared run dev
-    develop: 
-      watch: 
+    develop:
+      watch:
         - action: sync
           path: ./smr-shared/src
           target: /app/smr-shared/src
@@ -47,7 +46,7 @@ services:
         - action: sync
           path: ./smr-shared/dist
           target: /app/smr-shared/dist
- 
+
   api-gateway:
     build:
       context: .
@@ -109,7 +108,7 @@ services:
         - action: sync
           path: ./smr-shared/dist
           target: /app/smr-shared/dist
-  
+
   trip-service:
     build:
       context: .

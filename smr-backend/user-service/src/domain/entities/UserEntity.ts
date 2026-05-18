@@ -1,5 +1,4 @@
-import { AccountStatus, UserRole } from "@smr/shared"
-
+import { AccountStatus, UserRole } from "@smr/shared";
 
 export interface UserEntity {
   userId: string;
@@ -7,11 +6,12 @@ export interface UserEntity {
   lastName: string;
   emailId: string;
   phoneNumber: string;
-  profileImage: string | null; role: UserRole
-  userRole: UserRole,
-  emailVerified: boolean,
-  isDriver: boolean,
-  accountStatus: AccountStatus,
-  createdAt: Date,
-  updatedAt: Date,
+  profileImage: string | null;
+  role: UserRole;
+  userRole: UserRole;
+  emailVerified: boolean;
+  isDriver: boolean;
+  accountStatus: AccountStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }

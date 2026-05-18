@@ -41,7 +41,8 @@ export function createApp(logger: ILogger) {
     }
 
     // Unhandled errors
-    const errorMessage = err instanceof Error ? err.message : "Internal Server Error";
+    const errorMessage =
+      err instanceof Error ? err.message : "Internal Server Error";
     const errorStack = err instanceof Error ? err.stack : undefined;
 
     logger.error(errorMessage, {

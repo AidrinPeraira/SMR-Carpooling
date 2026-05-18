@@ -1,42 +1,43 @@
-.vscode/*
-!.vscode/settings.json
-.vscode
-.pnpm-store
+# Dependencies
+node_modules/
+.pnpm-store/
 
+# Build Outputs & Frameworks
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.vercel/
+storybook-static/
+*.tsbuildinfo
+next-env.d.ts
 
-/node_modules
-**/node_modules
-node_modules
-.pnpm-store
+# Testing
+coverage/
 
-# build files in next
-/.next/
-/frontend-share-my-ride/.next/
-/dist
-*/dist
-**/dist
-**/dist/
-**/dist/*
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
 
-#env files
-**/.env
+# Environment & Secrets
 .env
 .env.*
 !.env.example
+*.local
+*.pem
 
-# logs from logger
-**/combined.log
-**/error.log
-
-
-
-**/combined.log
-**/error.log
-
-# Custom Files
-**/NextFolderTemplate.txt
-**/pendings.todo
-LintReports.todo
-export-code.sh
-ExportedCode
-ecosystem.config.js
+# Editor & OS Files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.swp
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

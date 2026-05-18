@@ -1,6 +1,3 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
-
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
@@ -12,7 +9,16 @@ export default defineConfig(
   {
     rules: {
       "@typescript-eslint/restrict-template-expressions": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
       "@typescript-eslint/require-await": "off",
+
       "@typescript-eslint/no-misused-promises": [
         "error",
         { checksVoidReturn: false },
@@ -38,6 +44,7 @@ export default defineConfig(
       "**/dist/**",
       "**/build/**",
       "smr-frontend/**",
+      "smr-ui/**",
       "**/tests/**",
       "**/*.config.*",
       "dev-runner.js",

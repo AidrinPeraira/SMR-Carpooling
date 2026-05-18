@@ -1,33 +1,30 @@
 import { ILogger } from "./logger-interface";
-import { createConsola } from "consola"
-
+import { createConsola } from "consola";
 
 export class ConsolaLogger implements ILogger {
-
-  private readonly logger
+  private readonly logger;
 
   constructor() {
-    this.logger = createConsola()
+    this.logger = createConsola();
   }
 
   warn(message: string, data: Record<string, unknown>): void {
-    this.logger.warn(message, data)
+    this.logger.warn(message, data);
   }
 
   info(message: string, data: Record<string, unknown>): void {
-    this.logger.info(message, data)
+    this.logger.info(message, data);
   }
 
   error(message: string, data: Record<string, unknown>): void {
-    this.logger.error(message, data)
+    this.logger.error(message, data);
   }
 
   debug(message: string, data: Record<string, unknown>): void {
-    this.logger.debug(message, data)
+    this.logger.debug(message, data);
   }
 
   http(message: string, data: Record<string, unknown>): void {
-    this.logger.withTag("http").log(message, data)
+    this.logger.withTag("http").log(message, data);
   }
-
 }
