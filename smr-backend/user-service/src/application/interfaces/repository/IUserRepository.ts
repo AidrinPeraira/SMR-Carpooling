@@ -1,6 +1,9 @@
+import { IBaseRepository } from "#/application/interfaces/repository/IBaseRepository";
 import { UserEntity } from "#/domain/entities/UserEntity";
-import { IBaseRepository } from "./IBaseRepository";
 
+/**
+ * This is the repository interface for users.
+ */
 export interface IUserRepository extends IBaseRepository<UserEntity> {
   findByEmail(email: string): Promise<UserEntity | null>;
 }

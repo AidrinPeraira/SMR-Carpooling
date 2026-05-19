@@ -27,7 +27,7 @@ export function createApp(logger: ILogger) {
       details: mappedError.details,
       statusCode: mappedError.statusCode,
       stack: mappedError.stack,
-      internalError: mappedError.err,
+      internalError: mappedError.cause,
       url: req.url,
       method: req.method,
     });

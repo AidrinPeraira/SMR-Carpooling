@@ -58,31 +58,23 @@ Each service (within `smr-backend/`) follows **Clean Architecture**:
 
 ---
 
-## 4. Manual Dependency Injection (The Glue)
-
-Instead of using a heavy DI container, we use a **Factory Pattern** in `presentation/factories/` as the **Composition Root**.
-
-```typescript
-// Example: smr-backend/user-service/src/presentation/factories/AuthControllerFactory.ts
-const userRepository = new MongoUserRepository();
-const registerUseCase = new RegisterUseCase(userRepository);
-const authController = new AuthController(registerUseCase);
-export { authController };
-```
+### a. Manual Dependency Injection (The Glue)
 
 ---
 
-## 5. Backend Development Workflow
+### b. Backend Development Workflow
 
-1.  **Domain First**: Define core `entities` and persistence `interfaces`.
-2.  **Application Logic**: Implement functionality as `use-cases`.
-3.  **Infrastructure**: Implement the `repository` using MongoDB.
-4.  **Presentation**: Create `controllers` and define `routes`.
-5.  **Composition**: Wire everything together in a `factory`.
+- Create `Entity.ts` file and describe the shape of the entity in the `Domain` Directory
+- Create interface for the repository, that handles updating the persistance layer (The DB) with the entity details, in `application/interface/reposiory/`. Use the filename `IRepository.ts`
+- Ensure that `IRepository.ts` extends `IBaseRepostiorty.ts` (If base repository doesn't exist, make one)
+- Create interfaces for the business actions to be done with the entity using use-cases. Create the corresponding file `IUseCase.ts` in the directory `application/interface/use-cases/`
+- For the use case create `RequestDTO` and `ResultDTO` in `application/dto/`
+- Add any necessary services' interfaces' to `application/interface/services`
+- Ensure only pure TS exists in `domain` and `applicatoin`
 
 ---
 
-## 6. Frontend Architecture (Next.js)
+## 4. Frontend Architecture (Next.js)
 
 The frontend follows a **Feature-Based Architecture** to keep domain logic separate from routing and UI primitives.
 

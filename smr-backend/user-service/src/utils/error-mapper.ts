@@ -5,69 +5,82 @@ import {
   HttpStatusCodes,
   ErrorCode,
   ErrorDetails,
+  GenericErrorMessage,
 } from "@smr/shared";
 
-export const mapError = (err: unknown, origin: string): ApplicationError => {
-  // 1. If it's already an ApplicationError, return it
+export const mapError = (err: unknown): ApplicationError => {
+  // If it's already an ApplicationError, return it
   if (err instanceof ApplicationError) {
     return err;
   }
 
-  // 2. Handle Zod Validation Errors
+  // Zod Validation Errors
   if (err instanceof ZodError) {
     return new ApplicationError(
-      origin,
-      "Validation failed",
+      GenericErrorMessage.VALIDATION_ERROR,
       HttpStatusCodes.UnprocessableEntity,
-      ErrorCode.VALIDATION_ERROR,
-      ErrorDetails.VALIDATION_ERROR,
-      err.errors,
+      ErrorCode.INPUT_VALIDATION_ERROR,
+      ErrorDetails.INPUT_VALIDATION_ERROR,
+      err.issues,
     );
   }
 
-  // 3. Handle Mongoose Validation Errors
-  if (err instanceof mongoose.Error.ValidationError) {
-    return new ApplicationError(
-      origin,
-      "Database validation failed",
-      HttpStatusCodes.BadRequest,
-      ErrorCode.DB_ERROR,
-      ErrorDetails.DB_ERROR,
-      err.errors,
-    );
+  // Mongoose Validation Errors
+  if (err instanceof mongoose.Error) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      return new ApplicationError(
+        err.message,
+        HttpStatusCodes.UnprocessableEntity,
+        ErrorCode.SYSTEM_DB_ERROR,
+        ErrorDetails.INPUT_VALIDATION_ERROR,
+        err.errors,
+      );
+    }
+
+    if (err instanceof mongoose.Error.CastError) {
+      return new ApplicationError(
+        err.message,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.SYSTEM_DB_ERROR,
+        ErrorDetails.SYSTEM_DB_ERROR,
+        {
+          path: err.path,
+          value: err.value,
+        },
+      );
+    }
   }
 
-  // 4. Handle MongoDB Duplicate Key Error (code 11000)
+  // MongoDB Driver Errors (Duplicate Key 11000)
+  // eslint-disabel-next-line
   if ((err as any)?.code === 11000) {
     return new ApplicationError(
-      origin,
-      "Conflict: Resource already exists",
+      GenericErrorMessage.CONFLICT,
       HttpStatusCodes.Conflict,
-      ErrorCode.DB_ERROR,
-      ErrorDetails.DB_ERROR,
-      (err as any).keyValue,
+      ErrorCode.DOMAIN_ALREADY_EXISTS,
+      ErrorDetails.DOMAIN_ALREADY_EXISTS,
+      // eslint-disabel-next-line
+      (err as any).keyValue, // Pass the actual duplicate data
     );
   }
 
-  // 5. Handle standard Errors
+  // Normal Errors
   if (err instanceof Error) {
     return new ApplicationError(
-      origin,
       err.message,
       HttpStatusCodes.InternalServerError,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-      ErrorDetails.INTERNAL_SERVER_ERROR,
+      ErrorCode.SYSTEM_INTERNAL_ERROR,
+      ErrorDetails.SYSTEM_INTERNAL_ERROR,
       err,
     );
   }
 
-  // 6. Final fallback for unknown types
+  // Unknown Errors
   return new ApplicationError(
-    origin,
-    "An unexpected error occurred",
+    GenericErrorMessage.INTERNAL_SERVER_ERROR,
     HttpStatusCodes.InternalServerError,
-    ErrorCode.INTERNAL_SERVER_ERROR,
-    ErrorDetails.INTERNAL_SERVER_ERROR,
+    ErrorCode.SYSTEM_INTERNAL_ERROR,
+    ErrorDetails.SYSTEM_INTERNAL_ERROR,
     err,
   );
 };

@@ -1,17 +1,20 @@
+import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import { AccountStatus, UserRole } from "@smr/shared";
 
 export interface UserEntity {
+  id: string;
   userId: string;
   firstName: string;
   lastName: string;
   emailId: string;
   phoneNumber: string;
-  profileImage: string | null;
-  role: UserRole;
+  passwordHash: string;
+  profileImage?: string;
   userRole: UserRole;
   emailVerified: boolean;
   isDriver: boolean;
   accountStatus: AccountStatus;
+  verificationToken: VerificationToken;
   createdAt: Date;
   updatedAt: Date;
 }
