@@ -71,6 +71,8 @@ Each service (within `smr-backend/`) follows **Clean Architecture**:
 - For the use case create `RequestDTO` and `ResultDTO` in `application/dto/`
 - Add any necessary services' interfaces' to `application/interface/services`
 - Ensure only pure TS exists in `domain` and `applicatoin`
+- Any types that may be requred by multiple services goes into `smr-shared` shared library.
+- Ensure all dependcies are injected using interfacs and not imported.
 
 ---
 
