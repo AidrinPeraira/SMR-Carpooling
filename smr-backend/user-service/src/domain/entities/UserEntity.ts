@@ -14,7 +14,7 @@ export interface UserEntity {
   emailVerified: boolean;
   isDriver: boolean;
   accountStatus: AccountStatus;
-  verificationToken: VerificationToken;
+  verificationToken?: VerificationToken;
   createdAt: Date;
   updatedAt: Date;
 }

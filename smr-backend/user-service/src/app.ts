@@ -3,7 +3,7 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { HttpStatusCodes, type ILogger } from "@smr/shared";
-import { mapError } from "./utils/error-mapper";
+import { mapError } from "./presentation/utils/error-mapper";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -19,10 +19,9 @@ export function createApp(logger: ILogger) {
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response) => {
-    const mappedError = mapError(err, "user-service");
+    const mappedError = mapError(err);
 
     logger.error(mappedError.message, {
-      origin: mappedError.origin,
       errorCode: mappedError.errorCode,
       details: mappedError.details,
       statusCode: mappedError.statusCode,

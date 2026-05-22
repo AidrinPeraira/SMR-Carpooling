@@ -8,23 +8,23 @@ export class ConsolaLogger implements ILogger {
     this.logger = createConsola();
   }
 
-  warn(message: string, data: Record<string, unknown>): void {
+  warn(message: string, data: unknown): void {
     this.logger.warn(message, data);
   }
 
-  info(message: string, data: Record<string, unknown>): void {
+  info(message: string, data: unknown): void {
     this.logger.info(message, data);
   }
 
-  error(message: string, data: Record<string, unknown>): void {
+  error(message: string, data: unknown): void {
     this.logger.error(message, data);
   }
 
-  debug(message: string, data: Record<string, unknown>): void {
+  debug(message: string, data: unknown): void {
     this.logger.debug(message, data);
   }
 
-  http(message: string, data: Record<string, unknown>): void {
+  http(message: string, data: unknown): void {
     this.logger.withTag("http").log(message, data);
   }
 }

@@ -4,6 +4,8 @@
  * base reposiroy should handle common database operations.
  */
 export interface IBaseRepository<EntityType> {
+  find(query: Record<string, unknown>): Promise<EntityType[]>;
+
   findById(id: string): Promise<EntityType | null>;
 
   findByCustomId(id: string): Promise<EntityType | null>;

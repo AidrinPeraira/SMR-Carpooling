@@ -1,7 +1,7 @@
 export interface ILogger {
-  error(message: string, data: Record<string, unknown>): void;
-  warn(message: string, data: Record<string, unknown>): void;
-  info(message: string, data: Record<string, unknown>): void;
-  http(message: string, data: Record<string, unknown>): void;
-  debug(message: string, data: Record<string, unknown>): void;
+  error(message: string, data: unknown): void;
+  warn(message: string, data: unknown): void;
+  info(message: string, data: unknown): void;
+  http(message: string, data: unknown): void;
+  debug(message: string, data: unknown): void;
 }
