@@ -177,7 +177,7 @@ export abstract class MongoBaseRepository<
    */
   async deleteByCustomId(customId: string): Promise<boolean> {
     const deleted = await this.model
-      .deleteOne({ _id: customId } as QueryFilter<DocType>)
+      .deleteOne({ [this._customIdName]: customId } as QueryFilter<DocType>)
       .exec();
 
     if (!deleted.acknowledged) {

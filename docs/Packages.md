@@ -35,3 +35,15 @@
   11. Spinner
   12. Sidebar
   13. Tabs
+
+## vitest: Testing
+
+- Vitest is the testing library used since it is inherentlt compatible with TS.
+- Also the same package can be used to test both frontend and backend.
+
+## testcontainers: Temp Containers for testing
+
+- The recommended package from internet serches for spinning up temporoy containers for testing.
+- An in memory MongoDB instnace was an option but it wss incompatiblw with the system. (Arch Linux) therefore the cutrrent choice.
+- The library provides prebuilt classes for commonly used docker images like, redis, postgress etc.
+- we can also manually spin up any container available as a docker image.

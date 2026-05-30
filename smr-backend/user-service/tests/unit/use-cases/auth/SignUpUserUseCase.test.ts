@@ -33,7 +33,7 @@ describe("SignUpUserUseCase", () => {
     const UserRepository = vi.fn(
       class implements IUserRepository {
         constructor() {}
-
+        find = vi.fn();
         findById = vi.fn();
         findByCustomId = vi.fn();
         findByEmail = vi.fn();
@@ -134,6 +134,7 @@ describe("SignUpUserUseCase", () => {
     // We repeat the mock setup here to keep this "Master Example" file simple and self-contained
     const mockUserRepository = new (vi.fn(
       class implements IUserRepository {
+        find = vi.fn();
         findById = vi.fn();
         findByCustomId = vi.fn();
         findByEmail = vi.fn();
@@ -206,6 +207,7 @@ describe("SignUpUserUseCase", () => {
   it("Should update existing unverified user instead of creating a new one", async () => {
     const mockUserRepository = new (vi.fn(
       class implements IUserRepository {
+        find = vi.fn();
         findById = vi.fn();
         findByCustomId = vi.fn();
         findByEmail = vi.fn();

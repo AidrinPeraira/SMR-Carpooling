@@ -1,6 +1,5 @@
-import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import { AccountStatus, UserRole } from "@smr/shared";
-import mongoose, { HydratedDocument, InferSchemaType, Schema } from "mongoose";
+import mongoose, { HydratedDocument, InferSchemaType } from "mongoose";
 
 const tokenSchema = new mongoose.Schema({
   value: {
@@ -89,4 +88,4 @@ export const userSchema = new mongoose.Schema({
 
 export type UserDoc = HydratedDocument<InferSchemaType<typeof userSchema>>;
 
-export const UserModel = mongoose.model("User", userSchema);
+export const UserModel = mongoose.model<UserDoc>("User", userSchema);
