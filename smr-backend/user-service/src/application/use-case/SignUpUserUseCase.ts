@@ -83,7 +83,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
 
     if (existingUser && !existingUser.emailVerified) {
       //trying to register an email unverified existing user
-      let updatedUser: UserEntity = {
+      const updatedUser: UserEntity = {
         ...existingUser,
         passwordHash,
         verificationToken: token,

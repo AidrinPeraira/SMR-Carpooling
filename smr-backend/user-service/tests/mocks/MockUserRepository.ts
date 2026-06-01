@@ -4,7 +4,7 @@ import { vi } from "vitest";
 const UserRepository = vi.fn(
   class implements IUserRepository {
     constructor() {}
-
+    find = vi.fn();
     findById = vi.fn();
     findByCustomId = vi.fn();
     findByEmail = vi.fn();

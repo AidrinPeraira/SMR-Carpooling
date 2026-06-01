@@ -73,6 +73,22 @@ Each service (within `smr-backend/`) follows **Clean Architecture**:
 - Ensure only pure TS exists in `domain` and `applicatoin`
 - Any types that may be requred by multiple services goes into `smr-shared` shared library.
 - Ensure all dependcies are injected using interfacs and not imported.
+- After use case create implementations for the necessarty `sercvices` and `repositories`
+- All repository implementations should extend a `BaseRepository`, which handles the common reposiory methods.
+- The repositories will have there corresponding `schema` and `models` defined in `infrastructure/database/models`
+- The repository implementations are done in `infrastructure/reposiory/`
+- After repoositories are implemented cretae implementations for the necessary services in `infrastructure/sercvices`
+- repositories and services implement the corresponding interfaces defined in `application/interfaces/`
+- after repositories we create the controllers.
+- write the interfacce for the controllers in `presentation/v1/interfaces`
+- the presentation layer is versioned. ensure everything related to a version stays within that directory.
+- create coreesponding implementations for `IController` in `presentation/v1/controllers`
+- Common shapes for communincation between sercvices and client is defined in `shared/dto`
+- `shared/schema` has the implementations for zod validations. for each of the input shapes defined in the shared dto folder.
+- the controller handles mapping the dtos form and to the domain shape using mappers in `presentation/v1/mappers`
+- Any failure throws an error which is handled by the global error handler.
+- Routers also live in the presentation layer.
+-
 
 ---
 

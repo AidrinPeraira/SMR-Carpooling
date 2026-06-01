@@ -2,7 +2,7 @@ import "dotenv/config";
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { HttpStatusCodes, type ILogger } from "@smr/shared";
+import { HttpStatusCodes, makeFailedResponse, type ILogger } from "@smr/shared";
 import { mapError } from "./presentation/utils/error-mapper";
 
 export function createApp(logger: ILogger) {
@@ -30,13 +30,15 @@ export function createApp(logger: ILogger) {
       url: req.url,
       method: req.method,
     });
-
-    return res.status(mappedError.statusCode).json({
-      success: false,
-      message: mappedError.message,
-      errorCode: mappedError.errorCode,
-      details: mappedError.details,
-    });
+    return res
+      .status(mappedError.statusCode)
+      .json(
+        makeFailedResponse(
+          mappedError.message,
+          mappedError.errorCode,
+          mappedError.details,
+        ),
+      );
   });
 
   return app;

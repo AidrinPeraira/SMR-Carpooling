@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "pnpm -r run build",
     "lint": "pnpm -r run lint",
     "format": "prettier --write .",
     "test": "pnpm -r test",

@@ -55,7 +55,7 @@ export abstract class MongoBaseRepository<
    * @return Domain Entity or null.
    */
   async findById(id: string): Promise<EntityType | null> {
-    let data = await this.model.findById(id).lean();
+    const data = await this.model.findById(id).lean();
     return data ? this.toDomainEntityMapper(data) : null;
   }
 
