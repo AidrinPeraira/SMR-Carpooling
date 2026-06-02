@@ -5,6 +5,10 @@ import amqp from "amqplib";
 type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
 type AmqpChannel = Awaited<ReturnType<AmqpConnection["createChannel"]>>;
 
+/**
+ * Implementation of IEventBus using RabbitMQ.
+ * Manages connections, topology (Exchanges, DLX, DLQ), and event publishing.
+ */
 export class RabbitMQEventBus implements IEventBus {
   private _connection: AmqpConnection | null;
   private _channel: AmqpChannel | null;

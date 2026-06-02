@@ -1,7 +1,11 @@
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
-export class HashingService implements IHashingService {
+/**
+ * Implementation of IHashingService using Node's native crypto module.
+ * Employs scrypt for secure, memory-hard password hashing.
+ */
+export class CryptoHashingService implements IHashingService {
   private readonly _keyLength = 64;
 
   /**

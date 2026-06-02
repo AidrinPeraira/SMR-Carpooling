@@ -1,6 +1,10 @@
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import jwt from "jsonwebtoken";
 
+/**
+ * Implementation of ITokenService using the jsonwebtoken library.
+ * Handles the generation and verification of JWTs.
+ */
 export class JWTTokenService implements ITokenService {
   /**
    * Signs a payload and returns a JWT token.

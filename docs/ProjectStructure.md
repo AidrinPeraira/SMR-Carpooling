@@ -2,13 +2,14 @@
 
 ## 1. Overview
 
-This document outlines the organization of the **ShareMyRide** codebase. The platform is architectured using **Microservices** (Backend) and **Feature-Based Architecture** (Frontend) to ensure scalability and maintainability.
+This document outlines the organization of the **ShareMyRide** codebase. The platform is architectured using a **Microservices Monorepo** (Backend) and **Feature-Based Architecture** (Frontend) to ensure scalability and maintainability.
 
 ### Key Principles:
 
+- **Clean Architecture**: Backend services decouple business logic from external frameworks.
 - **Service Isolation**: Each microservice manages its own domain and database.
-- **Feature Encapsulation**: Frontend logic is grouped by business domain (e.g., Trips, Auth).
-- **Asynchronous Communication**: Inter-service events are handled via RabbitMQ.
+- **Shared Contracts**: Common types, DTOs, and schemas are centralized in `@smr/shared`.
+- **Interface-Driven Design**: Dependencies are injected via interfaces to ensure testability.
 
 ---
 
@@ -17,16 +18,16 @@ This document outlines the organization of the **ShareMyRide** codebase. The pla
 ```text
 ShareMyRide/
 ├── smr-backend/            # Core microservices (Clean Architecture)
-│   ├── api-gateway/        # Entry point for the platform
+│   ├── api-gateway/        # Platform entry point & Orchestrator
 │   ├── user-service/       # Identity, Auth, and Profile management
 │   ├── trip-service/       # Carpooling and Trip logic
-│   └── notification-service/# Email and Push notifications
+│   ├── payment-service/    # Financial transactions & Stripe integration
+│   └── notification-service/# Multi-channel alerts (Email/Push)
 ├── smr-frontend/           # Next.js web application
-│   └── src/                # Follows Feature-Based Architecture
-├── smr-shared/             # Shared packages (types, common logic)
-├── smr-infra/              # Infrastructure (Docker, K8s, etc.)
-├── docs/                   # System and API documentation
-├── package.json            # Workspace configuration (pnpm)
+├── smr-ui/                 # Shared UI Component Library (Storybook + Vite)
+├── smr-shared/             # Internal library (DTOs, Enums, Errors, Schemas)
+├── docs/                   # System, API, and workflow documentation
+├── package.json            # Root workspace configuration (pnpm)
 └── pnpm-workspace.yaml     # Workspace definitions
 ```
 
@@ -34,65 +35,71 @@ ShareMyRide/
 
 ## 3. Backend Service Architecture
 
-Each service (within `smr-backend/`) follows **Clean Architecture**:
+Each service (within `smr-backend/`) implements **Clean Architecture**:
 
 ```text
 [service-name]/src/
-├── domain/                 # Identity of the business (Pure TS)
-│   └── entities/           # Core business entities
-├── application/            # Business Logic (Use Cases)
-│   ├── use-cases/          # Application-specific logic
-│   ├── interfaces/         # Port definitions (Repos, Services)
-│   └── dto/                # Data Transfer Objects
-├── infrastructure/         # External Adapters (The "How")
-│   ├── database/           # DB connections and schemas
-│   ├── repository/         # Implementation of domain interfaces
-│   └── services/           # External service implementations
-└── presentation/           # External entry points (The "Where")
-    ├── controllers/        # Request handlers
-    ├── routes/             # API routing definitions
-    ├── mapper/             # Entity ↔ DTO conversion
-    ├── factories/          # Composition Root (Manual DI)
-    └── middlewares/        # Express middlewares
+├── domain/                 # Layer 1: Pure Business Logic
+│   ├── entities/           # Domain objects with identity
+│   └── ValueObjects/       # Immutable objects with no identity
+├── application/            # Layer 2: Application Logic (Orchestration)
+│   ├── use-case/           # Implementations of business actions
+│   ├── interfaces/         # Ports (IRepository, IService, IUseCase)
+│   └── dto/                # Data Transfer Objects (Internal use)
+├── infrastructure/         # Layer 3: External Adapters (The "How")
+│   ├── database/           # Models and Schemas (e.g., Mongoose)
+│   ├── repository/         # DB persistence implementations
+│   └── services/           # External API/System implementations (JWT, Hashing, etc.)
+└── presentation/           # Layer 4: Entry Points (The "Where")
+    ├── v1/                 # Versioned API logic
+    │   ├── controllers/    # Request/Response handlers
+    │   ├── mapper/         # Conversion (Entity ↔ DTO)
+    │   ├── routes/         # Express route definitions
+    │   └── interfaces/     # Controller interface definitions
+    ├── utils/              # Presentation-specific helpers (Error Mapper)
+    └── [service].module.ts # Composition Root (Manual Dependency Injection)
 ```
 
 ---
 
-### a. Manual Dependency Injection (The Glue)
+## 4. Backend Development Lifecycle
+
+Follow these steps when implementing a new feature to maintain architectural integrity:
+
+### Step 1: Define the Domain
+- Create `Entity.ts` in `domain/entities/`.
+- Ensure it contains only pure TypeScript and business logic (no DB knowledge).
+
+### Step 2: Define the Contracts (Interfaces)
+- Create `IRepository.ts` in `application/interfaces/repository/`. (Must extend `IBaseRepository` if applicable).
+- Create `IUseCase.ts` in `application/interfaces/use-case/`.
+- Create `RequestDTO` and `ResultDTO` in `application/dto/` for use-case inputs/outputs.
+- If multiple services need the data shape, place the DTO/Schema in `smr-shared`.
+
+### Step 3: Implement Infrastructure
+- Create the DB schema and model in `infrastructure/database/models/`.
+- Implement the repository in `infrastructure/repository/` (extending a `BaseRepository` helper).
+- Implement any required external services (e.g., Email, Hashing) in `infrastructure/services/`.
+
+### Step 4: Implement Application Logic
+- Implement the `UseCase.ts` in `application/use-case/`.
+- **Constraint**: Only interact with other layers via interfaces injected in the constructor.
+
+### Step 5: Implement Presentation
+- Define the `IController.ts` in `presentation/v[x]/interfaces/`.
+- Create the `Controller.ts` in `presentation/v[x]/controllers/`.
+- Use a `Mapper.ts` in `presentation/v[x]/mapper/` to transform domain objects to API responses.
+- Define the routes in `presentation/v[x]/routes/`.
+
+### Step 6: Wiring & Verification (Composition Root)
+- Wire all dependencies (DI) in the `[service].module.ts` file.
+- Export versioned routers (e.g., `v1Router`) and mount them in `app.ts`.
+- **Documentation**: Add JSDoc to all new classes and exported methods.
+- **Testing**: Add a corresponding unit test in `tests/unit/` or integration test in `tests/integration/`.
 
 ---
 
-### b. Backend Development Workflow
-
-- Create `Entity.ts` file and describe the shape of the entity in the `Domain` Directory
-- Create interface for the repository, that handles updating the persistance layer (The DB) with the entity details, in `application/interface/reposiory/`. Use the filename `IRepository.ts`
-- Ensure that `IRepository.ts` extends `IBaseRepostiorty.ts` (If base repository doesn't exist, make one)
-- Create interfaces for the business actions to be done with the entity using use-cases. Create the corresponding file `IUseCase.ts` in the directory `application/interface/use-cases/`
-- For the use case create `RequestDTO` and `ResultDTO` in `application/dto/`
-- Add any necessary services' interfaces' to `application/interface/services`
-- Ensure only pure TS exists in `domain` and `applicatoin`
-- Any types that may be requred by multiple services goes into `smr-shared` shared library.
-- Ensure all dependcies are injected using interfacs and not imported.
-- After use case create implementations for the necessarty `sercvices` and `repositories`
-- All repository implementations should extend a `BaseRepository`, which handles the common reposiory methods.
-- The repositories will have there corresponding `schema` and `models` defined in `infrastructure/database/models`
-- The repository implementations are done in `infrastructure/reposiory/`
-- After repoositories are implemented cretae implementations for the necessary services in `infrastructure/sercvices`
-- repositories and services implement the corresponding interfaces defined in `application/interfaces/`
-- after repositories we create the controllers.
-- write the interfacce for the controllers in `presentation/v1/interfaces`
-- the presentation layer is versioned. ensure everything related to a version stays within that directory.
-- create coreesponding implementations for `IController` in `presentation/v1/controllers`
-- Common shapes for communincation between sercvices and client is defined in `shared/dto`
-- `shared/schema` has the implementations for zod validations. for each of the input shapes defined in the shared dto folder.
-- the controller handles mapping the dtos form and to the domain shape using mappers in `presentation/v1/mappers`
-- Any failure throws an error which is handled by the global error handler.
-- Routers also live in the presentation layer.
--
-
----
-
-## 4. Frontend Architecture (Next.js)
+## 5. Frontend Architecture (Next.js)
 
 The frontend follows a **Feature-Based Architecture** to keep domain logic separate from routing and UI primitives.
 
@@ -114,7 +121,7 @@ smr-frontend/src/
 
 ---
 
-## 7. Frontend Feature Composition
+## 6. Frontend Feature Composition
 
 To maintain modularity, features should only be accessed through their `index.ts` file.
 

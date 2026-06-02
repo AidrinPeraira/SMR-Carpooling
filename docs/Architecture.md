@@ -124,3 +124,6 @@ To ensure long-term scalability and maintainability, the following technical man
   - User Service uses MongoDB for profiles and Redis for session management.
   - Trip Service uses MongoDB for trip data.
 - **Observability**: The system uses **Loki** for log scraping and **Grafana** for metrics visualization, ensuring full visibility into the health of all services.
+
+- docker for devlopment and deployment
+- api versioning.
