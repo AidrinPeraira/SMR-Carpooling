@@ -6,4 +6,5 @@ export const AppConfig = {
   CUSTOM_ID_LENGTH: Number(process.env.CUSTOM_ID_LENGTH) || 6,
   TOKEN_LIFE_MINUTES: Number(process.env.TOKEN_LIFE_MINUTES) || 10,
   MONGO_DB_URL: String(process.env.MONGO_DB_URL),
+  GENERIC_SECRET: String(process.env.GENERIC_SECRET) || "random-secret-key",
 };

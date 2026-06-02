@@ -77,7 +77,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
       expiresAt: tokenExpiresAt,
     };
     const token = new VerificationToken(
-      this._tokenService.generateToken(tokenPayload),
+      this._tokenService.generateToken(tokenPayload, AppConfig.GENERIC_SECRET),
       tokenExpiresAt,
     );
 
@@ -130,7 +130,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
       timestamp: now,
     };
 
-    this._eventBus.publish(event);
+    await this._eventBus.publish(event);
 
     return {
       userId: newUser.userId,

@@ -11,4 +11,6 @@ export enum GenericErrorMessage {
   NOT_FOUND = "The requested resource could not be found.",
   CONFLICT = "The request could not be completed due to a conflict with the current state of the resource",
   TOO_MANY_REQUESTS = "Rate limit exceeded. Please slow down.",
+  BROKER_ERROR = "Communication with the internal messaging system failed.",
+  SERVICE_UNAVAILABLE = "The service is temporarily unavailable. Please try again later.",
 }

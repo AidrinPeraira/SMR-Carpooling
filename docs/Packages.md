@@ -47,3 +47,25 @@
 - An in memory MongoDB instnace was an option but it wss incompatiblw with the system. (Arch Linux) therefore the cutrrent choice.
 - The library provides prebuilt classes for commonly used docker images like, redis, postgress etc.
 - we can also manually spin up any container available as a docker image.
+
+## message broker : RabbitMQ
+
+- rabbiit mq acts like a smart queue
+- this allows us to keep our serrvices dumb.
+- services only have to pub and sub.
+- all event management within the broker is done internally.
+- The pub sub pattern implemented using a topic exchnage is implemented.
+- this allows mutliple service to register their own respective queues that consume a copies of the same event.
+- Dead Lettering is implemented using deadl letter exchange and deadl letter queue. The republish workflow is mannual using the rabbit mq web ui. No script right now.
+
+## Hashing Service: crypto module form node
+
+- Hadhing service uses the internal crypto module within node
+- Using internal module reduces exposure to vulnerability in package
+- almost similar secruity
+- internal package also allows us to reduce the package size (minor)
+
+## Token Service: jsonwebtoken
+
+- Tokens are used to manage sessions
+- jwt enables to keep the server stateless

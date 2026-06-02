@@ -1,3 +1,7 @@
 export interface ITokenService {
-  generateToken(payload: unknown): string;
+  generateToken<PayloadType extends object>(
+    payload: PayloadType,
+    secret: string,
+  ): string;
+  verifyToken<PayloadType>(token: string, secret: string): PayloadType;
 }

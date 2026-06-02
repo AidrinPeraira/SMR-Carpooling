@@ -2,6 +2,7 @@ export enum ErrorCode {
   // --- System/Infrastructure Errors (Technical) ---
   SYSTEM_INTERNAL_ERROR = "ERR_SYSTEM_INTERNAL_ERROR",
   SYSTEM_DB_ERROR = "ERR_SYSTEM_DB_FAILURE",
+  SYSTEM_BROKER_ERROR = "ERR_SYSTEM_BROKER_FAILURE",
   SYSTEM_UNAVAILABLE = "ERR_SYSTEM_SERVICE_UNAVAILABLE",
 
   // --- Domain/Business Errors (Logic) ---
@@ -21,6 +22,7 @@ export enum ErrorDetails {
   // --- System/Infrastructure Errors ---
   SYSTEM_INTERNAL_ERROR = "Internal Server Error: An unexpected technical failure occurred.",
   SYSTEM_DB_ERROR = "Database Failure: Unable to perform the requested data operation.",
+  SYSTEM_BROKER_ERROR = "Message Broker Failure: Communication with the event bus failed.",
   SYSTEM_UNAVAILABLE = "Service Unavailable: The system or a dependent service is currently down.",
 
   // --- Domain/Business Errors ---

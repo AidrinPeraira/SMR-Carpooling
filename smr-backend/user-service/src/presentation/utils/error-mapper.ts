@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import {
   ApplicationError,
   HttpStatusCodes,
@@ -20,8 +21,8 @@ export const mapError = (err: unknown): ApplicationError => {
       GenericErrorMessage.VALIDATION_ERROR,
       HttpStatusCodes.UnprocessableEntity,
       ErrorCode.INPUT_VALIDATION_ERROR,
-      ErrorDetails.INPUT_VALIDATION_ERROR,
       err.issues,
+      err,
     );
   }
 
@@ -32,8 +33,8 @@ export const mapError = (err: unknown): ApplicationError => {
         err.message,
         HttpStatusCodes.UnprocessableEntity,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.INPUT_VALIDATION_ERROR,
         err.errors,
+        err,
       );
     }
 
@@ -42,25 +43,69 @@ export const mapError = (err: unknown): ApplicationError => {
         err.message,
         HttpStatusCodes.BadRequest,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
         {
           path: err.path,
           value: err.value,
         },
+        err,
       );
     }
   }
 
   // MongoDB Driver Errors (Duplicate Key 11000)
-  // eslint-disabel-next-line
   if ((err as any)?.code === 11000) {
     return new ApplicationError(
       GenericErrorMessage.CONFLICT,
       HttpStatusCodes.Conflict,
       ErrorCode.DOMAIN_ALREADY_EXISTS,
-      ErrorDetails.DOMAIN_ALREADY_EXISTS,
-      // eslint-disabel-next-line
       (err as any).keyValue, // Pass the actual duplicate data
+      err,
+    );
+  }
+
+  // RabbitMQ / amqplib Errors
+  if (
+    (err as any)?.name === "AmqpLibError" ||
+    // eslint-disable-next-line
+    (err as any)?.stack?.includes("amqplib")
+  ) {
+    if ((err as any).code === "ECONNREFUSED") {
+      return new ApplicationError(
+        GenericErrorMessage.SERVICE_UNAVAILABLE,
+        HttpStatusCodes.ServiceUnavailable,
+        ErrorCode.SYSTEM_UNAVAILABLE,
+        ErrorDetails.SYSTEM_UNAVAILABLE,
+        err,
+      );
+    }
+
+    return new ApplicationError(
+      GenericErrorMessage.BROKER_ERROR,
+      HttpStatusCodes.InternalServerError,
+      ErrorCode.SYSTEM_BROKER_ERROR,
+      ErrorDetails.SYSTEM_BROKER_ERROR,
+      err,
+    );
+  }
+
+  // JWT Errors
+  if (err instanceof jwt.JsonWebTokenError) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return new ApplicationError(
+        GenericErrorMessage.UNAUTHORIZED,
+        HttpStatusCodes.Unauthorized,
+        ErrorCode.INPUT_TOKEN_EXPIRED,
+        ErrorDetails.INPUT_TOKEN_EXPIRED,
+        err,
+      );
+    }
+
+    return new ApplicationError(
+      GenericErrorMessage.UNAUTHORIZED,
+      HttpStatusCodes.Unauthorized,
+      ErrorCode.INPUT_UNAUTHORIZED,
+      ErrorDetails.INPUT_UNAUTHORIZED,
+      err,
     );
   }
 
