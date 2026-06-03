@@ -50,3 +50,5 @@ v1Router.use("/auth", authRouterV1);
 export const userServiceRouters = {
   v1: v1Router,
 };
+
+export const eventBus = rabbitMQEventBus;

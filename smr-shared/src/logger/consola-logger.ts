@@ -9,22 +9,43 @@ export class ConsolaLogger implements ILogger {
   }
 
   warn(message: string, data?: unknown): void {
-    this.logger.warn(message, data);
+    if (data !== undefined) {
+      this.logger.warn(message, data);
+    } else {
+      this.logger.warn(message);
+    }
   }
 
   info(message: string, data?: unknown): void {
-    this.logger.info(message, data);
+    if (data !== undefined) {
+      this.logger.info(message, data);
+    } else {
+      this.logger.info(message);
+    }
   }
 
   error(message: string, data?: unknown): void {
-    this.logger.error(message, data);
+    if (data !== undefined) {
+      this.logger.error(message, data);
+    } else {
+      this.logger.error(message);
+    }
   }
 
   debug(message: string, data?: unknown): void {
-    this.logger.debug(message, data);
+    if (data !== undefined) {
+      this.logger.debug(message, data);
+    } else {
+      this.logger.debug(message);
+    }
   }
 
   http(message: string, data?: unknown): void {
-    this.logger.withTag("http").log(message, data);
+    const logger = this.logger.withTag("http");
+    if (data !== undefined) {
+      logger.log(message, data);
+    } else {
+      logger.log(message);
+    }
   }
 }
