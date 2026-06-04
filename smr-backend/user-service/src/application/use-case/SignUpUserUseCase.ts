@@ -7,16 +7,17 @@ import { IHashingService } from "#/application/interfaces/services/IHashingServi
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
-import { EmailVerificationTokenPayload } from "#/application/types/TokenPayload";
 import { UserEntity } from "#/domain/entities/UserEntity";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import {
   AccountStatus,
   ApplicationError,
+  EmailVerificationTokenPayload,
   ErrorCode,
   ErrorDetails,
   EventName,
   HttpStatusCodes,
+  TokenType,
   UserErrorMessage,
   UserRole,
   UserSignUpEvent,
@@ -65,6 +66,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
     const passwordHash = this._hashingService.createHash(data.password);
 
     const now = new Date();
+
     const tokenExpiresAt = new Date(
       now.getTime() + AppConfig.TOKEN_LIFE_MINUTES * 60 * 1000,
     );
@@ -73,11 +75,12 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
     const tokenPayload: EmailVerificationTokenPayload = {
       userId,
       emailId: data.emailId,
-      createdAt: now,
-      expiresAt: tokenExpiresAt,
+      tokenType: TokenType.EMAIL_VERIFICATION_TOKEN,
+      iat: now.getTime(),
+      exp: tokenExpiresAt.getTime(),
     };
     const token = new VerificationToken(
-      this._tokenService.generateToken(tokenPayload, AppConfig.GENERIC_SECRET),
+      this._tokenService.generateToken(tokenPayload),
       tokenExpiresAt,
     );
 

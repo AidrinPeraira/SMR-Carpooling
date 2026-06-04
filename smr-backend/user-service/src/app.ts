@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express, { type Request, type Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { HttpStatusCodes, makeFailedResponse, type ILogger } from "@smr/shared";
@@ -29,7 +29,7 @@ export function createApp(logger: ILogger) {
   app.use("/v1", userServiceRouters.v1);
 
   //global error handler
-  app.use((err: unknown, req: Request, res: Response) => {
+  app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
     const mappedError = mapError(err);
 
     logger.error(mappedError.message, {
@@ -41,7 +41,7 @@ export function createApp(logger: ILogger) {
       url: req.url,
       method: req.method,
     });
-    return res
+    res
       .status(mappedError.statusCode)
       .json(
         makeFailedResponse(

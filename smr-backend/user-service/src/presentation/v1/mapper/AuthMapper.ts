@@ -1,9 +1,17 @@
+import { LoginUserRequestDTO } from "#/application/dto/auth/LoginUserRequestDTO";
+import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
 import { SignUpRequestDTO } from "#/application/dto/auth/SignUpRequestDTO";
 import { SignUpResultDTO } from "#/application/dto/auth/SignUpResultDTO";
+import { VerifySignupEmailRequestDTO } from "#/application/dto/auth/VerifySignupEmailRequestDTO";
 import {
+  LoginRequest,
+  LoginResult,
+  LoginUserSchema,
   SignUpRequest,
   SignUpResult,
   SignUpUserSchema,
+  VerifyEmailRequest,
+  VerifyEmailSchema,
   zodParser,
 } from "@smr/shared";
 
@@ -40,5 +48,44 @@ export function toSignUpResult(data: SignUpResultDTO): SignUpResult {
     last_name: data.lastName,
     email_id: data.emailId,
     user_id: data.userId,
+  };
+}
+
+/**
+ * Maps login request data to LoginUserRequestDTO.
+ */
+export function toLoginDTO(data: unknown): LoginUserRequestDTO {
+  const validated = zodParser<LoginRequest>(LoginUserSchema, data);
+  return {
+    emailId: validated.email_id,
+    password: validated.password,
+  };
+}
+
+/**
+ * Maps LoginUserResultDTO to LoginResult for client response.
+ */
+export function toLoginResult(data: LoginUserResultDTO): LoginResult {
+  return {
+    user: {
+      first_name: data.user.firstName,
+      last_name: data.user.lastName,
+      email_id: data.user.emailId,
+      user_role: data.user.userRole,
+      user_id: data.user.userId,
+      profile_image: data.user.profileImage,
+    },
+    access_token: data.accessToken,
+    refresh_token: data.refreshToken,
+  };
+}
+
+/**
+ * Maps verification request data to VerifySignupEmailRequestDTO.
+ */
+export function toVerifyEmailDTO(data: unknown): VerifySignupEmailRequestDTO {
+  const validated = zodParser<VerifyEmailRequest>(VerifyEmailSchema, data);
+  return {
+    verificationToken: validated.verification_token,
   };
 }

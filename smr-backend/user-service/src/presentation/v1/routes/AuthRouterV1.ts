@@ -14,5 +14,12 @@ export function createAuthRouterV1(
 
   router.post("/signup", authControllerV1.signup.bind(authControllerV1));
 
+  router.post(
+    "/verify-email",
+    authControllerV1.verifySignupEmail.bind(authControllerV1),
+  );
+
+  router.post("/login", authControllerV1.login.bind(authControllerV1));
+
   return router;
 }

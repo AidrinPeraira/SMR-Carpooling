@@ -65,6 +65,10 @@ describe("SignUpUserUseCase", () => {
       class implements ITokenService {
         generateToken = vi.fn();
         verifyToken = vi.fn();
+        generateAccessToken = vi.fn();
+        verifyAccessToken = vi.fn();
+        generateRefreshToken = vi.fn();
+        verifyRefreshToken = vi.fn();
       },
     );
     const mockTokenService = new TokenService();
@@ -164,6 +168,10 @@ describe("SignUpUserUseCase", () => {
       class implements ITokenService {
         generateToken = vi.fn();
         verifyToken = vi.fn();
+        generateAccessToken = vi.fn();
+        verifyAccessToken = vi.fn();
+        generateRefreshToken = vi.fn();
+        verifyRefreshToken = vi.fn();
       },
     ))();
 
@@ -238,6 +246,10 @@ describe("SignUpUserUseCase", () => {
       class implements ITokenService {
         generateToken = vi.fn();
         verifyToken = vi.fn();
+        generateAccessToken = vi.fn();
+        verifyAccessToken = vi.fn();
+        generateRefreshToken = vi.fn();
+        verifyRefreshToken = vi.fn();
       },
     ))();
 

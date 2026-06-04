@@ -69,3 +69,13 @@
 
 - Tokens are used to manage sessions
 - jwt enables to keep the server stateless
+
+## Session Store: Redis
+
+- simple and fast
+
+## API Testing: bruno
+
+- api files live alongside project.
+- offline
+- can work from cli

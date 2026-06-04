@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { HashingService } from "#/infrastructure/services/CryptoHashingService";
+import { CryptoHashingService } from "#/infrastructure/services/CryptoHashingService";
 
 describe("HashingService (scrypt)", () => {
-  const hashingService = new HashingService();
+  const hashingService = new CryptoHashingService();
   const plainText = "MySecurePassword@123";
 
   it("should create a hash in the 'salt:hash' format", () => {

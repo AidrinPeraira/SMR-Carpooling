@@ -88,6 +88,32 @@ export const mapError = (err: unknown): ApplicationError => {
     );
   }
 
+  // Redis Errors
+  if (
+    // eslint-disable-next-line
+    (err as any)?.name?.includes("Redis") ||
+    // eslint-disable-next-line
+    (err as any)?.stack?.includes("redis")
+  ) {
+    if ((err as any).code === "ECONNREFUSED") {
+      return new ApplicationError(
+        GenericErrorMessage.SERVICE_UNAVAILABLE,
+        HttpStatusCodes.ServiceUnavailable,
+        ErrorCode.SYSTEM_UNAVAILABLE,
+        ErrorDetails.SYSTEM_UNAVAILABLE,
+        err,
+      );
+    }
+
+    return new ApplicationError(
+      "The session store is currently unavailable.",
+      HttpStatusCodes.InternalServerError,
+      ErrorCode.SYSTEM_UNAVAILABLE,
+      ErrorDetails.SYSTEM_UNAVAILABLE,
+      err,
+    );
+  }
+
   // JWT Errors
   if (err instanceof jwt.JsonWebTokenError) {
     if (err instanceof jwt.TokenExpiredError) {
