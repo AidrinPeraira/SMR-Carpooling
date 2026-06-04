@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build Dependencies
+        run: pnpm --filter @smr/shared --filter @smr/ui run build
+
       - name: Workspace Lint
         run: pnpm run lint
 
@@ -50,6 +53,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build Dependencies
+        run: pnpm --filter @smr/shared --filter @smr/ui run build
 
       - name: Run Tests
         run: pnpm run test
