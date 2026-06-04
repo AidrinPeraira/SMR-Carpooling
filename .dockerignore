@@ -17,3 +17,8 @@ dist
 docker-compose.yml
 Dockerfile*
 .DS_Store
+
+# Testing
+**/tests
+**/vitest.config.ts
+coverage

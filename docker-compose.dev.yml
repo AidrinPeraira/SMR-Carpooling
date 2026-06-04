@@ -24,6 +24,9 @@ services:
     tty: true
     ports:
       - "4001:4001"
+    depends_on:
+      - redis
+      - rabbitmq
     env_file:
       - ./smr-backend/user-service/.env
     environment:
@@ -172,6 +175,14 @@ services:
           target: /app/smr-shared/dist
 
   # --- Infrastructure Services ---
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./smr-infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
   rabbitmq:
     image: rabbitmq:3-management
