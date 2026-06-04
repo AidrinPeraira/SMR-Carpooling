@@ -42,6 +42,22 @@ describe("User Repository Integration", () => {
     expect(existingUser).toBeDefined();
     expect(existingUser).toMatchObject(userData);
   });
+
+  it("should correctly map verificationToken to VerificationToken class instance.", async () => {
+    const userData = createMockUserData({
+      verificationToken: {
+        value: "test-token",
+        expiresAt: new Date(Date.now() + 3600000),
+      },
+    });
+    await userRepository.save(userData);
+
+    const existingUser = await userRepository.findByEmail(userData.emailId);
+    expect(existingUser?.verificationToken).toBeDefined();
+    expect(existingUser?.verificationToken?.value).toBe("test-token");
+    expect(typeof existingUser?.verificationToken?.isExpired).toBe("function");
+    expect(existingUser?.verificationToken?.isExpired()).toBe(false);
+  });
 });
 
 /*
