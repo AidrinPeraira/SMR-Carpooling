@@ -49,8 +49,12 @@ export class MongoUserRespository
     };
 
     if (data.profileImage) user.profileImage = data.profileImage;
-    if (data.verificationToken)
-      user.verificationToken = data.verificationToken as VerificationToken;
+    if (data.verificationToken) {
+      user.verificationToken = new VerificationToken(
+        data.verificationToken.value,
+        data.verificationToken.expiresAt,
+      );
+    }
 
     return user;
   }

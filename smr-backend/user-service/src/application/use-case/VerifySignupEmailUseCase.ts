@@ -5,7 +5,6 @@ import { ISessionRepository } from "#/application/interfaces/repository/ISession
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
-import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import {
   AccountStatus,
   ApplicationError,
@@ -48,8 +47,8 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
 
     if (
       !existingUser.verificationToken ||
-      existingUser.verificationToken.value !== data.verificationToken
-      // (existingUser.verificationToken as VerificationToken).isExpired()
+      existingUser.verificationToken.value !== data.verificationToken ||
+      existingUser.verificationToken.isExpired()
     ) {
       throw new ApplicationError(
         UserErrorMessage.INVALID_CREDENTIALS,
