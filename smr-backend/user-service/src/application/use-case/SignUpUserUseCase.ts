@@ -99,7 +99,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
       );
     } else {
       //registering a completly new user
-      const newUserData = await this._userRespository.save({
+      const newUserData = {
         userId: userId,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -113,7 +113,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
         verificationToken: token,
         createdAt: now,
         updatedAt: now,
-      });
+      };
 
       newUser = await this._userRespository.save(newUserData);
     }

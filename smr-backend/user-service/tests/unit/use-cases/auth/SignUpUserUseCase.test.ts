@@ -133,6 +133,8 @@ describe("SignUpUserUseCase", () => {
       lastName: "User",
       emailId: "sample@mail.com",
     });
+
+    expect(mockUserRepository.save).toHaveBeenCalledTimes(1);
   });
 
   it("Should throw Conflict error if user is already verified", async () => {
