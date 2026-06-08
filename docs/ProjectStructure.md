@@ -67,31 +67,37 @@ Each service (within `smr-backend/`) implements **Clean Architecture**:
 Follow these steps when implementing a new feature to maintain architectural integrity:
 
 ### Step 1: Define the Domain
+
 - Create `Entity.ts` in `domain/entities/`.
 - Ensure it contains only pure TypeScript and business logic (no DB knowledge).
 
 ### Step 2: Define the Contracts (Interfaces)
+
 - Create `IRepository.ts` in `application/interfaces/repository/`. (Must extend `IBaseRepository` if applicable).
 - Create `IUseCase.ts` in `application/interfaces/use-case/`.
 - Create `RequestDTO` and `ResultDTO` in `application/dto/` for use-case inputs/outputs.
 - If multiple services need the data shape, place the DTO/Schema in `smr-shared`.
 
 ### Step 3: Implement Infrastructure
+
 - Create the DB schema and model in `infrastructure/database/models/`.
 - Implement the repository in `infrastructure/repository/` (extending a `BaseRepository` helper).
 - Implement any required external services (e.g., Email, Hashing) in `infrastructure/services/`.
 
 ### Step 4: Implement Application Logic
+
 - Implement the `UseCase.ts` in `application/use-case/`.
 - **Constraint**: Only interact with other layers via interfaces injected in the constructor.
 
 ### Step 5: Implement Presentation
+
 - Define the `IController.ts` in `presentation/v[x]/interfaces/`.
 - Create the `Controller.ts` in `presentation/v[x]/controllers/`.
 - Use a `Mapper.ts` in `presentation/v[x]/mapper/` to transform domain objects to API responses.
 - Define the routes in `presentation/v[x]/routes/`.
 
 ### Step 6: Wiring & Verification (Composition Root)
+
 - Wire all dependencies (DI) in the `[service].module.ts` file.
 - Export versioned routers (e.g., `v1Router`) and mount them in `app.ts`.
 - **Documentation**: Add JSDoc to all new classes and exported methods.

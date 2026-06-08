@@ -13,10 +13,12 @@ const dirname =
     : path.dirname(fileURLToPath(import.meta.url));
 
 import dts from "vite-plugin-dts";
+import tailwindcss from "@tailwindcss/vite";
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     react(),
     dts({
       tsconfigPath: "./tsconfig.app.json",
