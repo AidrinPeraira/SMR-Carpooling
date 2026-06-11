@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
-:root {
-  --mint-500: oklch(0 0 0);
+@theme {
+  --color-primary: oklch(0.7429 0.1511 165.21); /* Green */
+  --color-primary-foreground: oklch(0.1994 0.0076 196.55);
 }
 
-@theme {
-  --color-mint-500: var(--mint-500);
+.dark {
+  --color-primary: oklch(0.65 0.199 253.41); /* Blue! */
+  --color-primary-foreground: oklch(0.27 0.07 166);
 }

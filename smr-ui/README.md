@@ -36,6 +36,17 @@ smr-ui/src/components/
 └── Pagination/
 ```
 
+# How to use?
+
+- install tha package and import the components to use. The list of components are:
+  - Button
+
+- Also add the following line to `globals.css`
+
+```
+@import "@smr/ui/css";
+```
+
 # Custom Themes
 
 This package uses tailwind v4 for css styles for the ui components. the default theme can be overidden by add the follwing css to you `globals.css` file and changes the values to match your requirement.
