@@ -27,6 +27,7 @@ smr-ui/src/components/
 │ ├── DatePicker/
 │ ├── Dropdown/
 │ ├── Input/
+│ ├── Label/
 │ ├── Search/
 │ └── TimePicker/
 ├── layout/ # Components that structure the page visually
@@ -40,6 +41,7 @@ smr-ui/src/components/
 
 - install tha package and import the components to use. The list of components are:
   - Button
+  - Label
 
 - Also add the following line to `globals.css`
 
@@ -54,3 +56,8 @@ This package uses tailwind v4 for css styles for the ui components. the default 
 ```
 Sample css
 ```
+
+# Sample Componets Showcase
+
+[View the Component Blueprint Matrix](./src/sample.html)
+

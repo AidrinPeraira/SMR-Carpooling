@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ShareMyRide: Carpooling",
   description: "Portflio Project: Aidrin Peraira",
+  icons: "/SMRIcon.png",
 };
 
 export default function RootLayout({
@@ -27,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full w-full bg-surface-primary">{children}</body>
     </html>
   );
 }

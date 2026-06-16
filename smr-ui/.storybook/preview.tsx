@@ -41,8 +41,9 @@ const preview: Preview = {
       return (
         <div
           className={`
-             p-4 w-full flex min-h-screen justify-center items-center 
-             ${currentTheme == "dark" ? "dark" : ""}
+            bg-surface-base
+            p-4 w-full flex min-h-screen justify-center items-center 
+            ${currentTheme == "dark" ? "dark" : ""}
            `}
         >
           <Story />
