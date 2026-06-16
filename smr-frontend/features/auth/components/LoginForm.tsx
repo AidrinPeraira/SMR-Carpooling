@@ -31,9 +31,7 @@ export function LoginForm({ className }: Props) {
           <Input type="password" placeholder="••••••••" />
         </div>
 
-        <Button className="mt-2 w-full">
-          Login
-        </Button>
+        <Button className="mt-2 w-full">Login</Button>
       </form>
       <div className="relative my-5">
         <div className="relative flex justify-center text-xs ">
@@ -46,7 +44,7 @@ export function LoginForm({ className }: Props) {
       <GoogleLogin className="w-full" />
 
       <p className="mt-5 text-center text-sm text-fg-secondary">
-        Don't have an account?{" "}
+        Don&apos;t have an account?
         <Link
           href="/auth/signup"
           className="text-primary font-semibold hover:underline"
