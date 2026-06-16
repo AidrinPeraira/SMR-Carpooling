@@ -4,19 +4,10 @@
     "outDir": "./dist",
     "rootDir": ".",
     "paths": {
-      "#/*": [
-        "./src/*"
-      ],
-      "&#/*": [
-        "./tests/*"
-      ]
+      "#/*": ["./src/*"],
+      "&#/*": ["./tests/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "tests/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -54,7 +54,10 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
         UserErrorMessage.INVALID_CREDENTIALS,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { userId: tokenPayload.userId, emailId: tokenPayload.emailId },
+        {
+          userId: tokenPayload.userId,
+          emailId: tokenPayload.emailId,
+        },
       );
     }
 
