@@ -1,7 +1,9 @@
 import type { InputHTMLAttributes } from "react";
 import { cn } from "../../../utils";
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {}
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
+  className?: string;
+}
 
 export function Input({ className, ...rest }: Props) {
   const baseStyles =
