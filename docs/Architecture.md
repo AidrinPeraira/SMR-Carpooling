@@ -10,7 +10,7 @@ Users can become passengers or drivers and switch between roles to hitch a ride 
 
 ## 2. Core Services (Business Logic)
 
-The ecosystem is partitioned into seven specialized services, coordinated through an API Gateway.
+The ecosystem is partitioned into several specialized services, coordinated through an API Gateway. Currently, there are five core services implemented, with more planned.
 
 | Service                   | Purpose            | Key Responsibilities                                                                                   |
 | :------------------------ | :----------------- | :----------------------------------------------------------------------------------------------------- |
@@ -20,7 +20,7 @@ The ecosystem is partitioned into seven specialized services, coordinated throug
 | **Trip Service**          | Core Logic         | Handles the creation, discovery, and management of carpooling trips and routes.                        |
 | **Payment Service**       | Financials         | Processes transactions via Stripe and maintains financial records of shared expenses.                  |
 | **Notification Service**  | Engagement         | Dispatches email and push notifications triggered by system events.                                    |
-| **Communication Service** | Real-time          | Facilitates the chat system and Voice calling signaling via WebSockets and webRTC.                     |
+| **Communication Service** | Real-time          | *(Planned)* Will facilitate the chat system and Voice calling signaling via WebSockets and webRTC.     |
 
 ---
 
