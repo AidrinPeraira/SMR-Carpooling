@@ -36,7 +36,7 @@ export function VerifySignupEmailCard() {
         </CardBody>
         <CardFooter className="flex flex-col items-center justify-center gap-2">
           <p className="text-sm text-fg-secondary">
-            You'll be redirected shortly
+            You&apos;ll be redirected shortly
           </p>
         </CardFooter>
       </Card>
