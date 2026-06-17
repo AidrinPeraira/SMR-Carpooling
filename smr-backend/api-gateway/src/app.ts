@@ -6,19 +6,63 @@ import express, {
 } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { ApplicationError, HttpStatusCodes, type ILogger } from "@smr/shared";
+import {
+  ApplicationError,
+  HttpStatusCodes,
+  makeFailedResponse,
+  type ILogger,
+} from "@smr/shared";
+import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
+import { AppConfig } from "#/application.config";
+import morgan from "morgan";
 
 export function createApp(logger: ILogger) {
   const app = express();
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
 
-  app.get("/health", (req, res) => {
+  app.use(
+    morgan("dev", {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+    }),
+  );
+
+  app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
+
+  //Http Proxy Implementaion
+  //we will create and use more instances like this to forward requests to the other services
+  const userServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.USER_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: ["/api/*/auth/**", "/api/*/profile/**"],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("User service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("User service is unavailable"));
+        }
+      },
+    },
+  });
+
+  app.use(userServiceProxy);
+
+  //moved these lines down so that it doesn't interfere with proxy
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

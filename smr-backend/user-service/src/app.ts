@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { HttpStatusCodes, makeFailedResponse, type ILogger } from "@smr/shared";
 import { mapError } from "./presentation/utils/error-mapper";
 import { userServiceRouters } from "#/presentation/user-service.module";
+import morgan from "morgan";
 
 /**
  * Express Application Factory.
@@ -20,6 +21,13 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
+  app.use(
+    morgan("dev", {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+    }),
+  );
 
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });

@@ -79,3 +79,9 @@
 - api files live alongside project.
 - offline
 - can work from cli
+
+## http-proxy-middleware : Proxy requests from API Gateway
+
+- this is the industry standard
+- it is supposedly more efficient to handle heavy traffic. (some low level advantage of being a wrapper around "http-proxy")
+- this supports websocket requests ("express-http-proxy" does not. althogh that is simpler)
