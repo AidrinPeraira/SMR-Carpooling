@@ -19,9 +19,11 @@
   "type": "module",
   "dependencies": {
     "@smr/shared": "workspace:*",
+    "amqplib": "^2.0.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "helmet": "^8.1.0"
+    "helmet": "^8.1.0",
+    "resend": "^6.12.4"
   }
 }

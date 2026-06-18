@@ -85,3 +85,10 @@
 - this is the industry standard
 - it is supposedly more efficient to handle heavy traffic. (some low level advantage of being a wrapper around "http-proxy")
 - this supports websocket requests ("express-http-proxy" does not. althogh that is simpler)
+
+## Resend : email notification service
+
+- simple set up
+- widely used now. better alternative to node mailer
+- comes with a dashboard.
+- custom domain integration

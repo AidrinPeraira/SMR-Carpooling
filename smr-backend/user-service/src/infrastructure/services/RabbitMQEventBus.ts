@@ -96,7 +96,7 @@ export class RabbitMQEventBus implements IEventBus {
     try {
       //check for active connection
       if (!this._channel) {
-        this._logger.info(
+        this._logger.warn(
           "Rabbit MQ channel not ready. Droping event: ",
           event,
         );

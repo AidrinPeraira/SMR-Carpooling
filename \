@@ -1,0 +1,17 @@
+import { IMessageConsumer } from "#/application/interfaces/messaging/IMessageConsumer";
+import { ILogger } from "@smr/shared";
+import amqp from "amqplib";
+
+type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
+type AmqpChannel = Awaited<ReturnType<AmqpConnection["createChannel"]>>;
+
+export class RabbitMQConsumer implements IMessageConsumer {
+  constructor(
+    private readonly _logger: ILogger,
+    private readonly _url: string,
+  ) {}
+
+  async connect(): Promise<void> {}
+
+  async consume(): Promise<void> {}
+}
