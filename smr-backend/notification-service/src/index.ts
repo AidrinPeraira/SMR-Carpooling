@@ -11,7 +11,6 @@ async function startServer(): Promise<void> {
 
   //connet and consume messages
   await messageConsumer.connect();
-  await messageConsumer.consume();
 
   app.listen(PORT, "0.0.0.0", () => {
     logger.info(`The notification-service is running at port: ${PORT}.`, {

@@ -10,6 +10,8 @@ export class RabbitMQConsumer implements IMessageConsumer {
   private _connection: AmqpConnection | null = null;
   private _channel: AmqpChannel | null = null;
 
+  private _isConsuming: boolean = false;
+
   private readonly _eventDispatcher: IEventDispatcher;
 
   private readonly _logger: ILogger;
@@ -105,6 +107,8 @@ export class RabbitMQConsumer implements IMessageConsumer {
       }
 
       this._logger.info("RabbitMQ initialised successfuly");
+
+      await this.consume();
     } catch (error: unknown) {
       this._logger.error("Error in initialising RabbitMQ connection: ", error);
       setTimeout(async () => {
@@ -122,10 +126,16 @@ export class RabbitMQConsumer implements IMessageConsumer {
       return;
     }
 
+    if (this._isConsuming) {
+      this._logger.info("Consumer already running. Skipping duplicate attempt");
+      return;
+    }
+
     try {
       await this._channel.prefetch(1); //setinggs to consume 1 event at a time
 
       this._logger.info("Subscribing consumer to queue: ", this._queueName);
+      this._isConsuming = true;
 
       await this._channel.consume(this._queueName, async (message) => {
         //this method is called when a message is recieved
@@ -133,6 +143,15 @@ export class RabbitMQConsumer implements IMessageConsumer {
         if (!message) {
           this._logger.warn("Consumer was cancelled by RabbitMQ server.");
           return;
+        }
+
+        if (message == null) {
+          //if the rabbit mq server closes the connection it will not throw error
+          //so we need a retry mechanism
+
+          this._logger.warn("Consumer cancelled by server. Forcing reconnect.");
+          await this._connection?.close();
+          //we force close the connection. This will triger the on close listener and try again
         }
 
         try {
@@ -148,7 +167,7 @@ export class RabbitMQConsumer implements IMessageConsumer {
           this._channel?.ack(message);
         } catch (error) {
           this._logger.error("Error processing message. Moving to DLQ", error);
-
+          this._isConsuming = false;
           this._channel?.nack(message, false, false);
           //the not acknowledged reponse to rabbit mq will requeue the even into the deadletter
         }
