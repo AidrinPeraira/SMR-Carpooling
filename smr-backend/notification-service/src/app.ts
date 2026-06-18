@@ -16,7 +16,7 @@ export function createApp(logger: ILogger) {
   app.use(cors());
   app.use(helmet());
 
-  app.get("/health", (req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
 

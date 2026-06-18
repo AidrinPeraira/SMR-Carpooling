@@ -30,7 +30,11 @@ export class AuthControllerV1 implements IAuthControllerV1 {
   async signup(req: Request, res: Response): Promise<void> {
     const userData = toSignUpDTO(req.body);
 
-    this._logger.info("Signing up new user: ", userData);
+    this._logger.info("Signing up new user: ", {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      emailId: userData.emailId,
+    });
 
     const newUser = await this._signUpUserUseCase.execute(userData);
 

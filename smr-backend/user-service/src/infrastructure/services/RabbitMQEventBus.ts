@@ -96,7 +96,7 @@ export class RabbitMQEventBus implements IEventBus {
     try {
       //check for active connection
       if (!this._channel) {
-        this._logger.info(
+        this._logger.warn(
           "Rabbit MQ channel not ready. Droping event: ",
           event,
         );
@@ -115,12 +115,18 @@ export class RabbitMQEventBus implements IEventBus {
       );
 
       if (wasPublished) {
-        this._logger.info("Event published: ", event);
+        this._logger.info("Event published: ", {
+          eventName: event.eventName,
+        });
       } else {
-        this._logger.info("Failed to publish event: ", event);
+        this._logger.warn("Failed to publish event: ", {
+          eventName: event.eventName,
+        });
       }
     } catch (error: unknown) {
-      this._logger.error("Error publishing event: ", event);
+      this._logger.error("Error publishing event: ", {
+        eventName: event.eventName,
+      });
       throw error;
     }
   }
