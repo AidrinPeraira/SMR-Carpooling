@@ -160,7 +160,7 @@ export class RabbitMQConsumer implements IMessageConsumer {
           const content = message.content.toString();
           const event = JSON.parse(content) as DomainEvent<unknown>;
 
-          this._logger.info("Event received: ", event);
+          this._logger.info("Event received: ", event.eventName);
 
           await this._eventDispatcher.dispatch(event);
 
