@@ -41,7 +41,7 @@ tests/
 ## Master Example
 
 For a complete, "all-in-one" example of how to write a test, refer to:
-`smr-backend/user-service/tests/unit/application/use-case/SignUpUserUseCase.test.ts`
+`smr-backend/user-service/tests/unit/use-cases/auth/SignUpUserUseCase.test.ts`
 _(Note: This file is a great reference for seeing the core concepts in one place before you start splitting them into folders.)_
 
 ```typescript
