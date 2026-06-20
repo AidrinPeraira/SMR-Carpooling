@@ -20,7 +20,7 @@ The ecosystem is partitioned into several specialized services, coordinated thro
 | **Trip Service**          | Core Logic         | Handles the creation, discovery, and management of carpooling trips and routes.                        |
 | **Payment Service**       | Financials         | Processes transactions via Stripe and maintains financial records of shared expenses.                  |
 | **Notification Service**  | Engagement         | Dispatches email and push notifications triggered by system events.                                    |
-| **Communication Service** | Real-time          | *(Planned)* Will facilitate the chat system and Voice calling signaling via WebSockets and webRTC.     |
+| **Communication Service** | Real-time          | _(Planned)_ Will facilitate the chat system and Voice calling signaling via WebSockets and webRTC.     |
 
 ---
 

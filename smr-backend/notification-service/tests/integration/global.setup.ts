@@ -10,7 +10,9 @@ export default async function () {
   rabbitMqTestContainer = rabbitmq;
 
   process.env.RABBITMQ_TEST_URI = `amqp://${rabbitMqTestContainer.getHost()}:${rabbitMqTestContainer.getMappedPort(5672)}`;
-  console.log(`RabbitMQ test container running: ${process.env.RABBITMQ_TEST_URI}`);
+  console.log(
+    `RabbitMQ test container running: ${process.env.RABBITMQ_TEST_URI}`,
+  );
 
   return async function () {
     console.log("Stopping test containers");

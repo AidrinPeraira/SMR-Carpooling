@@ -11,18 +11,22 @@
       /* Absolute raw token injection binding native CSS variables to UI wrappers */
       :root {
         /* --- Surfaces (Backgrounds) --- */
-        --color-surface-base: oklch(0.99 0.003 153.26);      /* Main app bg */
-        --color-surface-sidebar: oklch(0.9687 0.0041 153.26); 
+        --color-surface-base: oklch(0.99 0.003 153.26); /* Main app bg */
+        --color-surface-sidebar: oklch(0.9687 0.0041 153.26);
         --color-surface-card: oklch(1 0 0);
-        --color-surface-muted: oklch(0.9687 0.006 153.26);    /* Was action-muted */
+        --color-surface-muted: oklch(
+          0.9687 0.006 153.26
+        ); /* Was action-muted */
 
         /* --- Borders --- */
         --color-border-subtle: oklch(0.9334 0.005 256.34);
         --color-border-strong: oklch(0.9189 0.008 142.1);
 
         /* --- Brand / Accents --- */
-        --color-accent: oklch(0.7468 0.1785 153);            /* Your primary brand color */
-        --color-accent-fg: oklch(0.2001 0.012 126.61);       /* Text/Icons on top of accent */
+        --color-accent: oklch(0.7468 0.1785 153); /* Your primary brand color */
+        --color-accent-fg: oklch(
+          0.2001 0.012 126.61
+        ); /* Text/Icons on top of accent */
 
         /* --- Content (Typography & Icons) --- */
         --color-content-primary: oklch(0.2001 0.012 126.61);
@@ -103,18 +107,27 @@
     <main class="grid grid-cols-1 xl:grid-cols-2 gap-8">
       <section
         class="rounded-xl p-8 border border-gray-200 shadow-xl"
-        style="background-color: var(--color-surface-base); color: var(--color-content-primary);"
+        style="
+          background-color: var(--color-surface-base);
+          color: var(--color-content-primary);
+        "
       >
         <div
           class="flex items-center justify-between mb-8 pb-4 border-b"
-          style="border-color: var(--color-border-strong);"
+          style="border-color: var(--color-border-strong)"
         >
-          <h2 class="text-xl font-bold" style="color: var(--color-content-primary);">
+          <h2
+            class="text-xl font-bold"
+            style="color: var(--color-content-primary)"
+          >
             Light Architecture Mode
           </h2>
           <span
             class="px-2.5 py-1 text-xs font-semibold rounded-full"
-            style="background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+            style="
+              background-color: var(--color-surface-muted);
+              color: var(--color-content-secondary);
+            "
             >Default Standard</span
           >
         </div>
@@ -123,18 +136,27 @@
 
       <section
         class="dark-workspace rounded-xl p-8 border border-gray-800 shadow-xl"
-        style="background-color: var(--color-surface-base); color: var(--color-content-primary);"
+        style="
+          background-color: var(--color-surface-base);
+          color: var(--color-content-primary);
+        "
       >
         <div
           class="flex items-center justify-between mb-8 pb-4 border-b"
-          style="border-color: var(--color-border-strong);"
+          style="border-color: var(--color-border-strong)"
         >
-          <h2 class="text-xl font-bold" style="color: var(--color-content-primary);">
+          <h2
+            class="text-xl font-bold"
+            style="color: var(--color-content-primary)"
+          >
             Dark Architecture Mode
           </h2>
           <span
             class="px-2.5 py-1 text-xs font-semibold rounded-full"
-            style="background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+            style="
+              background-color: var(--color-surface-muted);
+              color: var(--color-content-secondary);
+            "
             >Double Distance Contrast</span
           >
         </div>
@@ -146,53 +168,87 @@
       <section class="mb-10">
         <h3
           class="text-xs font-bold border-b pb-2 mb-6 uppercase tracking-widest"
-          style="border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+          style="
+            border-color: var(--color-border-strong);
+            color: var(--color-content-secondary);
+          "
         >
           1. Actions
         </h3>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Button.tsx
           </h4>
           <div class="flex flex-wrap gap-4">
             <button
               class="px-4 py-2 text-sm font-semibold rounded shadow-sm hover:opacity-90 transition-all cursor-pointer"
-              style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+              style="
+                background-color: var(--color-accent);
+                color: var(--color-accent-fg);
+              "
             >
               Primary Action
             </button>
             <button
               class="px-4 py-2 text-sm font-medium rounded border hover:opacity-80 transition-all cursor-pointer"
-              style="border-color: var(--color-border-strong); background-color: var(--color-surface-muted); color: var(--color-content-primary);"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-muted);
+                color: var(--color-content-primary);
+              "
             >
               Secondary Action
             </button>
             <button
               class="px-4 py-2 text-sm font-medium rounded hover:opacity-80 transition-all cursor-pointer"
-              style="color: var(--color-content-secondary); --tw-bg-opacity: 0.1;"
-              onmouseover="this.style.backgroundColor='var(--color-surface-muted)'"
-              onmouseout="this.style.backgroundColor='transparent'"
+              style="
+                color: var(--color-content-secondary);
+                --tw-bg-opacity: 0.1;
+              "
+              onmouseover="
+                this.style.backgroundColor = 'var(--color-surface-muted)'
+              "
+              onmouseout="this.style.backgroundColor = 'transparent'"
             >
               Ghost Link
             </button>
             <button
               class="px-4 py-2 text-sm font-semibold rounded shadow-sm border hover:opacity-90 transition-all cursor-pointer"
-              style="background-color: var(--color-error-surface); border-color: var(--color-error-border); color: var(--color-error-content);"
+              style="
+                background-color: var(--color-error-surface);
+                border-color: var(--color-error-border);
+                color: var(--color-error-content);
+              "
             >
               Danger Action
             </button>
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             IconButton.tsx
           </h4>
           <div class="flex gap-4">
             <button
               class="p-2.5 rounded-full flex items-center justify-center cursor-pointer shadow-sm"
-              style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+              style="
+                background-color: var(--color-accent);
+                color: var(--color-accent-fg);
+              "
             >
               <svg
                 class="w-4 h-4"
@@ -206,7 +262,11 @@
             </button>
             <button
               class="p-2.5 rounded-lg border flex items-center justify-center cursor-pointer"
-              style="border-color: var(--color-border-subtle); background-color: var(--color-surface-muted); color: var(--color-content-primary);"
+              style="
+                border-color: var(--color-border-subtle);
+                background-color: var(--color-surface-muted);
+                color: var(--color-content-primary);
+              "
             >
               <svg
                 class="w-4 h-4"
@@ -228,71 +288,121 @@
       <section class="mb-10">
         <h3
           class="text-xs font-bold border-b pb-2 mb-6 uppercase tracking-widest"
-          style="border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+          style="
+            border-color: var(--color-border-strong);
+            color: var(--color-content-secondary);
+          "
         >
           2. Data Display
         </h3>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Avatar.tsx & Badge.tsx
           </h4>
           <div class="flex gap-6 items-center">
             <div class="relative inline-block">
               <div
                 class="w-11 h-11 rounded-full border flex items-center justify-center font-bold text-sm"
-                style="border-color: var(--color-border-strong); background-color: var(--color-surface-muted);"
+                style="
+                  border-color: var(--color-border-strong);
+                  background-color: var(--color-surface-muted);
+                "
               >
                 AP
               </div>
               <span
                 class="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-offset-0"
-                style="background-color: var(--color-accent);"
+                style="background-color: var(--color-accent)"
               ></span>
             </div>
             <span
               class="px-2.5 py-0.5 text-xs font-bold rounded-full"
-              style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+              style="
+                background-color: var(--color-accent);
+                color: var(--color-accent-fg);
+              "
               >12 Unresolved Nodes</span
             >
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">Card.tsx</h4>
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
+            Card.tsx
+          </h4>
           <div
             class="max-w-xs rounded-lg border p-5 shadow-sm"
-            style="border-color: var(--color-border-strong); background-color: var(--color-surface-card);"
+            style="
+              border-color: var(--color-border-strong);
+              background-color: var(--color-surface-card);
+            "
           >
             <span
               class="text-[10px] uppercase font-bold tracking-wider"
-              style="color: var(--color-content-secondary);"
+              style="color: var(--color-content-secondary)"
               >Domain Layout Layer</span
             >
-            <h5 class="text-sm font-bold mt-1 mb-1.5" style="color: var(--color-content-primary);">
+            <h5
+              class="text-sm font-bold mt-1 mb-1.5"
+              style="color: var(--color-content-primary)"
+            >
               Modular Monolith Matrix
             </h5>
-            <p class="text-xs mb-4 leading-relaxed" style="color: var(--color-content-secondary);">
+            <p
+              class="text-xs mb-4 leading-relaxed"
+              style="color: var(--color-content-secondary)"
+            >
               Encapsulates bounded data context elements smoothly without
               architectural leaking thresholds.
             </p>
             <div
               class="w-full h-1.5 rounded-full overflow-hidden"
-              style="background-color: var(--color-surface-muted);"
+              style="background-color: var(--color-surface-muted)"
             >
-              <div class="h-full w-2/3" style="background-color: var(--color-accent);"></div>
+              <div
+                class="h-full w-2/3"
+                style="background-color: var(--color-accent)"
+              ></div>
             </div>
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">Table.tsx</h4>
-          <div class="overflow-hidden rounded-lg border" style="border-color: var(--color-border-subtle);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
+            Table.tsx
+          </h4>
+          <div
+            class="overflow-hidden rounded-lg border"
+            style="border-color: var(--color-border-subtle)"
+          >
             <table class="w-full text-left text-xs border-collapse">
               <thead>
                 <tr
                   class="border-b font-semibold"
-                  style="background-color: var(--color-surface-sidebar); border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+                  style="
+                    background-color: var(--color-surface-sidebar);
+                    border-color: var(--color-border-strong);
+                    color: var(--color-content-secondary);
+                  "
                 >
                   <th class="p-2.5">Domain Context</th>
                   <th class="p-2.5 text-right">Compilation</th>
@@ -301,27 +411,31 @@
               <tbody>
                 <tr
                   class="border-b transition-colors"
-                  style="border-color: var(--color-border-subtle);"
-                  onmouseover="this.style.backgroundColor='var(--color-surface-muted)'"
-                  onmouseout="this.style.backgroundColor='transparent'"
+                  style="border-color: var(--color-border-subtle)"
+                  onmouseover="
+                    this.style.backgroundColor = 'var(--color-surface-muted)'
+                  "
+                  onmouseout="this.style.backgroundColor = 'transparent'"
                 >
                   <td class="p-2.5 font-medium">Nexus Application Pipeline</td>
                   <td
                     class="p-2.5 text-right font-semibold"
-                    style="color: var(--color-content-secondary);"
+                    style="color: var(--color-content-secondary)"
                   >
                     Bound
                   </td>
                 </tr>
-                <tr 
+                <tr
                   class="transition-colors"
-                  onmouseover="this.style.backgroundColor='var(--color-surface-muted)'"
-                  onmouseout="this.style.backgroundColor='transparent'"
+                  onmouseover="
+                    this.style.backgroundColor = 'var(--color-surface-muted)'
+                  "
+                  onmouseout="this.style.backgroundColor = 'transparent'"
                 >
                   <td class="p-2.5 font-medium">CoReader Sandbox Asset</td>
                   <td
                     class="p-2.5 text-right font-semibold"
-                    style="color: var(--color-content-secondary);"
+                    style="color: var(--color-content-secondary)"
                   >
                     Staged
                   </td>
@@ -331,17 +445,32 @@
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">Tag.tsx</h4>
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
+            Tag.tsx
+          </h4>
           <div class="flex gap-2">
             <span
               class="px-2 py-0.5 rounded text-[11px] font-medium border"
-              style="border-color: var(--color-border-strong); background-color: var(--color-surface-muted); color: var(--color-content-primary);"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-muted);
+                color: var(--color-content-primary);
+              "
               >TypeScript Node</span
             >
             <span
               class="px-2 py-0.5 rounded text-[11px] font-medium"
-              style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+              style="
+                background-color: var(--color-accent);
+                color: var(--color-accent-fg);
+              "
               >Clean Architecture</span
             >
           </div>
@@ -351,62 +480,106 @@
       <section class="mb-10">
         <h3
           class="text-xs font-bold border-b pb-2 mb-6 uppercase tracking-widest"
-          style="border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+          style="
+            border-color: var(--color-border-strong);
+            color: var(--color-content-secondary);
+          "
         >
           3. System Feedback
         </h3>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">Alert.tsx</h4>
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
+            Alert.tsx
+          </h4>
           <div
             class="p-3.5 rounded-md border flex gap-3 items-start"
-            style="border-color: var(--color-border-strong); background-color: var(--color-surface-sidebar);"
+            style="
+              border-color: var(--color-border-strong);
+              background-color: var(--color-surface-sidebar);
+            "
           >
             <div
               class="w-2 h-2 mt-1.5 rounded-full shrink-0"
-              style="background-color: var(--color-accent);"
+              style="background-color: var(--color-accent)"
             ></div>
             <div>
-              <h5 class="text-xs font-bold" style="color: var(--color-content-primary);">
+              <h5
+                class="text-xs font-bold"
+                style="color: var(--color-content-primary)"
+              >
                 Domain Context Re-indexed
               </h5>
-              <p class="text-[11px] mt-0.5" style="color: var(--color-content-secondary);">
+              <p
+                class="text-[11px] mt-0.5"
+                style="color: var(--color-content-secondary)"
+              >
                 Parameters processed cleanly inside local thread instances.
               </p>
             </div>
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Dialog.tsx (Inline Preview)
           </h4>
           <div
             class="rounded-lg border shadow-md overflow-hidden max-w-sm"
-            style="border-color: var(--color-border-strong); background-color: var(--color-surface-card);"
+            style="
+              border-color: var(--color-border-strong);
+              background-color: var(--color-surface-card);
+            "
           >
             <div class="p-4">
-              <h5 class="text-xs font-bold mb-1" style="color: var(--color-content-primary);">
+              <h5
+                class="text-xs font-bold mb-1"
+                style="color: var(--color-content-primary)"
+              >
                 Confirm Database Schema Update?
               </h5>
-              <p class="text-[11px] leading-relaxed" style="color: var(--color-content-secondary);">
+              <p
+                class="text-[11px] leading-relaxed"
+                style="color: var(--color-content-secondary)"
+              >
                 This setup pushes local schema mapping matrices cleanly onto the
                 central database instances cluster.
               </p>
             </div>
             <div
               class="px-4 py-2.5 border-t flex justify-end gap-2"
-              style="background-color: var(--color-surface-sidebar); border-color: var(--color-border-subtle);"
+              style="
+                background-color: var(--color-surface-sidebar);
+                border-color: var(--color-border-subtle);
+              "
             >
               <button
                 class="px-2.5 py-1 text-[11px] font-medium rounded cursor-pointer"
-                style="background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+                style="
+                  background-color: var(--color-surface-muted);
+                  color: var(--color-content-secondary);
+                "
               >
                 Abort
               </button>
               <button
                 class="px-2.5 py-1 text-[11px] font-medium rounded cursor-pointer"
-                style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                style="
+                  background-color: var(--color-accent);
+                  color: var(--color-accent-fg);
+                "
               >
                 Execute Core
               </button>
@@ -414,21 +587,39 @@
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Spinner.tsx
           </h4>
-          <div class="flex items-center gap-2.5 text-xs" style="color: var(--color-content-secondary);">
+          <div
+            class="flex items-center gap-2.5 text-xs"
+            style="color: var(--color-content-secondary)"
+          >
             <div
               class="w-4 h-4 border-2 rounded-full animate-spin"
-              style="border-color: var(--color-border-strong); border-top-color: var(--color-accent);"
+              style="
+                border-color: var(--color-border-strong);
+                border-top-color: var(--color-accent);
+              "
             ></div>
             <span>Compiling container cluster dependencies...</span>
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Toast.tsx (Saturated Intent Variants)
           </h4>
           <div class="space-y-3 max-w-sm">
@@ -513,13 +704,22 @@
       <section class="mb-10">
         <h3
           class="text-xs font-bold border-b pb-2 mb-6 uppercase tracking-widest"
-          style="border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+          style="
+            border-color: var(--color-border-strong);
+            color: var(--color-content-secondary);
+          "
         >
           4. Forms & Inputs
         </h3>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Label.tsx
           </h4>
           <div class="space-y-4 max-w-xs">
@@ -527,7 +727,7 @@
               <label
                 for="blueprint-email"
                 class="block text-[10px] uppercase font-bold tracking-wider mb-1"
-                style="color: var(--color-content-secondary);"
+                style="color: var(--color-content-secondary)"
               >
                 Account Email
               </label>
@@ -536,21 +736,31 @@
                 type="email"
                 placeholder="name@example.com"
                 class="w-full px-3 py-1.5 text-xs rounded border focus:outline-none"
-                style="border-color: var(--color-border-strong); background-color: var(--color-surface-card); color: var(--color-content-primary);"
+                style="
+                  border-color: var(--color-border-strong);
+                  background-color: var(--color-surface-card);
+                  color: var(--color-content-primary);
+                "
               />
             </div>
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Input.tsx & Checkbox.tsx
           </h4>
           <div class="space-y-4 max-w-xs">
             <div>
               <label
                 class="block text-[10px] uppercase font-bold tracking-wider mb-1"
-                style="color: var(--color-content-secondary);"
+                style="color: var(--color-content-secondary)"
                 >Prisma Schema Working Root</label
               >
               <input
@@ -558,12 +768,16 @@
                 value="~/dev/nexus/prisma"
                 readonly
                 class="w-full px-3 py-1.5 text-xs rounded border focus:outline-none"
-                style="border-color: var(--color-border-strong); background-color: var(--color-surface-card); color: var(--color-content-primary);"
+                style="
+                  border-color: var(--color-border-strong);
+                  background-color: var(--color-surface-card);
+                  color: var(--color-content-primary);
+                "
               />
             </div>
             <label
               class="flex items-center gap-2 text-xs font-medium cursor-pointer"
-              style="color: var(--color-content-primary);"
+              style="color: var(--color-content-primary)"
             >
               <input
                 type="checkbox"
@@ -575,8 +789,14 @@
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Search.tsx
           </h4>
           <div class="relative max-w-xs">
@@ -584,9 +804,16 @@
               type="text"
               placeholder="Search parameters..."
               class="w-full pl-3 pr-8 py-1.5 text-xs rounded border focus:outline-none"
-              style="border-color: var(--color-border-strong); background-color: var(--color-surface-card); color: var(--color-content-primary);"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-primary);
+              "
             />
-            <span class="absolute right-2.5 top-2" style="color: var(--color-content-tertiary);">
+            <span
+              class="absolute right-2.5 top-2"
+              style="color: var(--color-content-tertiary)"
+            >
               <svg
                 class="w-3.5 h-3.5"
                 fill="none"
@@ -600,8 +827,14 @@
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             DatePicker.tsx & TimePicker.tsx
           </h4>
           <div class="flex gap-4 max-w-xs">
@@ -609,13 +842,21 @@
               type="date"
               value="2026-06-11"
               class="flex-1 px-2.5 py-1 text-xs rounded border"
-              style="border-color: var(--color-border-strong); background-color: var(--color-surface-card); color: var(--color-content-secondary);"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-secondary);
+              "
             />
             <input
               type="time"
               value="21:40"
               class="flex-1 px-2.5 py-1 text-xs rounded border"
-              style="border-color: var(--color-border-strong); background-color: var(--color-surface-card); color: var(--color-content-secondary);"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-secondary);
+              "
             />
           </div>
         </div>
@@ -624,56 +865,90 @@
       <section class="mb-10">
         <h3
           class="text-xs font-bold border-b pb-2 mb-6 uppercase tracking-widest"
-          style="border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+          style="
+            border-color: var(--color-border-strong);
+            color: var(--color-content-secondary);
+          "
         >
           5. Layout
         </h3>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-2" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-2"
+            style="color: var(--color-content-secondary)"
+          >
             Divider.tsx
           </h4>
           <div class="space-y-4">
-            <hr class="border-b border-t-0" style="border-color: var(--color-border-subtle);" />
-            <hr class="border-b border-t-0" style="border-color: var(--color-border-strong);" />
+            <hr
+              class="border-b border-t-0"
+              style="border-color: var(--color-border-subtle)"
+            />
+            <hr
+              class="border-b border-t-0"
+              style="border-color: var(--color-border-strong)"
+            />
           </div>
         </div>
 
-        <div class="border-b pb-6 mb-6" style="border-color: var(--color-border-subtle);">
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Sidebar.tsx Container
           </h4>
           <div
             class="w-56 border rounded-md p-3.5 flex flex-col gap-4"
-            style="border-color: var(--color-border-strong); background-color: var(--color-surface-sidebar);"
+            style="
+              border-color: var(--color-border-strong);
+              background-color: var(--color-surface-sidebar);
+            "
           >
             <div
               class="flex items-center gap-2 text-xs font-bold"
-              style="color: var(--color-content-primary);"
+              style="color: var(--color-content-primary)"
             >
-              <div class="w-2.5 h-2.5 rounded-full" style="background-color: var(--color-accent);"></div>
+              <div
+                class="w-2.5 h-2.5 rounded-full"
+                style="background-color: var(--color-accent)"
+              ></div>
               <span>smr-ui Pipeline</span>
             </div>
             <div class="space-y-1">
               <div
                 class="px-2.5 py-1.5 text-xs font-semibold rounded shadow-sm"
-                style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                style="
+                  background-color: var(--color-accent);
+                  color: var(--color-accent-fg);
+                "
               >
                 Domain Models
               </div>
               <div
                 class="px-2.5 py-1.5 text-xs font-medium rounded transition-colors"
-                style="color: var(--color-content-secondary);"
-                onmouseover="this.style.backgroundColor='var(--color-surface-muted)'"
-                onmouseout="this.style.backgroundColor='transparent'"
+                style="color: var(--color-content-secondary)"
+                onmouseover="
+                  this.style.backgroundColor = 'var(--color-surface-muted)'
+                "
+                onmouseout="this.style.backgroundColor = 'transparent'"
               >
                 Infrastructure Provider
               </div>
               <div
                 class="px-2.5 py-1.5 text-xs font-medium rounded transition-colors"
-                style="color: var(--color-content-secondary);"
-                onmouseover="this.style.backgroundColor='var(--color-surface-muted)'"
-                onmouseout="this.style.backgroundColor='transparent'"
+                style="color: var(--color-content-secondary)"
+                onmouseover="
+                  this.style.backgroundColor = 'var(--color-surface-muted)'
+                "
+                onmouseout="this.style.backgroundColor = 'transparent'"
               >
                 Presentation Engine
               </div>
@@ -685,40 +960,66 @@
       <section>
         <h3
           class="text-xs font-bold border-b pb-2 mb-6 uppercase tracking-widest"
-          style="border-color: var(--color-border-strong); color: var(--color-content-secondary);"
+          style="
+            border-color: var(--color-border-strong);
+            color: var(--color-content-secondary);
+          "
         >
           6. Navigation
         </h3>
 
         <div>
-          <h4 class="text-xs font-mono mb-3" style="color: var(--color-content-secondary);">
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Pagination.tsx
           </h4>
           <div class="flex items-center gap-1">
             <button
               class="px-2 py-1 text-xs border rounded cursor-pointer"
-              style="border-color: var(--color-border-subtle); background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+              style="
+                border-color: var(--color-border-subtle);
+                background-color: var(--color-surface-muted);
+                color: var(--color-content-secondary);
+              "
             >
               Prev
             </button>
             <button
               class="px-2.5 py-1 text-xs font-bold rounded cursor-pointer"
-              style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+              style="
+                background-color: var(--color-accent);
+                color: var(--color-accent-fg);
+              "
             >
               1
             </button>
             <button
               class="px-2.5 py-1 text-xs rounded border cursor-pointer"
-              style="border-color: var(--color-border-subtle); color: var(--color-content-primary);"
-              onmouseover="this.style.backgroundColor='var(--color-surface-muted)'"
-              onmouseout="this.style.backgroundColor='transparent'"
+              style="
+                border-color: var(--color-border-subtle);
+                color: var(--color-content-primary);
+              "
+              onmouseover="
+                this.style.backgroundColor = 'var(--color-surface-muted)'
+              "
+              onmouseout="this.style.backgroundColor = 'transparent'"
             >
               2
             </button>
-            <span class="px-1.5 text-xs" style="color: var(--color-content-tertiary);">...</span>
+            <span
+              class="px-1.5 text-xs"
+              style="color: var(--color-content-tertiary)"
+              >...</span
+            >
             <button
               class="px-2 py-1 text-xs border rounded cursor-pointer"
-              style="border-color: var(--color-border-subtle); background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+              style="
+                border-color: var(--color-border-subtle);
+                background-color: var(--color-surface-muted);
+                color: var(--color-content-secondary);
+              "
             >
               Next
             </button>

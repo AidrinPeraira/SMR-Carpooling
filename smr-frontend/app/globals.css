@@ -11,7 +11,11 @@
 
   --color-fg-primary: oklch(0.2187 0.0118 156.11);
   --color-fg-secondary: oklch(0.6708 0.0225 161.17);
+  --color-fg-danger: oklch(0.55 0.18 15);
   --color-accent: oklch(0.7468 0.1785 153);
+
+  --color-border-subtle: oklch(0.9334 0.005 256.34);
+  --color-border-strong: oklch(0.9189 0.008 142.1);
 }
 
 .dark {
@@ -21,7 +25,11 @@
 
   --color-fg-primary: oklch(0.9806 0.0128 141.81);
   --color-fg-secondary: oklch(0.822 0.0215 152.11);
+  --color-fg-danger: oklch(0.55 0.18 15);
   --color-accent: oklch(0.7 0.165 153);
+
+  --color-border-subtle: oklch(0.9334 0.005 256.34);
+  --color-border-strong: oklch(0.9189 0.008 142.1);
 }
 
 /* Variables for theme from ui  library. Ovveride as necessary */

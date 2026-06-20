@@ -68,3 +68,14 @@
   --color-success-border: oklch(0.29 0.06 145);
   --color-success-content: oklch(0.81 0.08 145);
 }
+
+/* --- Inactive Button States --- */
+button:disabled,
+button.btn-inactive {
+  background-color: var(--color-surface-muted) !important;
+  color: var(--color-content-tertiary) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
