@@ -52,7 +52,7 @@ export class AuthControllerV1 implements IAuthControllerV1 {
   }
 
   async verifySignupEmail(req: Request, res: Response): Promise<void> {
-    const data = toVerifyEmailDTO(req.query);
+    const data = toVerifyEmailDTO(req.body);
 
     this._logger.info(
       "Verifying signup email with token: ",

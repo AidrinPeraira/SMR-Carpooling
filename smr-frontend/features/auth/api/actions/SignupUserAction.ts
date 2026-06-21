@@ -3,11 +3,16 @@
 import { apiServerFetch } from "@/lib/api-server";
 import { logger } from "@/lib/logger";
 import { ActionResponse } from "@/types/ResponseType";
-import { ApiResponse, SignUpResult, SignUpUserSchemaType } from "@smr/shared";
+import {
+  ApiResponse,
+  LoginResult,
+  SignUpResult,
+  SignUpUserSchemaType,
+} from "@smr/shared";
 
 export async function signupUserAction(
   data: SignUpUserSchemaType,
-): Promise<ActionResponse> {
+): Promise<ActionResponse<LoginResult>> {
   logger.info("Signing up user: ", {
     email_id: data.email_id,
     first_name: data.first_name,
@@ -26,7 +31,6 @@ export async function signupUserAction(
       const failureDetails = !result.success
         ? result.message
         : "Internal error";
-
       logger.error("Signup action failed: ", result);
       return {
         success: false,

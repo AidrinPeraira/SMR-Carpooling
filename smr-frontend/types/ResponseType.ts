@@ -1,7 +1,8 @@
-type ActionSuccess = {
+type ActionSuccess<T = unknown> = {
   success: true;
   message: string;
   description?: string;
+  payload?: T;
 };
 
 type ActionFailure = {
@@ -10,4 +11,4 @@ type ActionFailure = {
   description?: string;
 };
 
-export type ActionResponse = ActionFailure | ActionSuccess;
+export type ActionResponse<T = unknown> = ActionFailure | ActionSuccess<T>;
