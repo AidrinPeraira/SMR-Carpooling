@@ -4,6 +4,7 @@ import { apiServerFetch } from "@/lib/api-server";
 import { logger } from "@/lib/logger";
 import { ActionResponse } from "@/types/ResponseType";
 import { ApiResponse, LoginResult, VerifyEmailRequest } from "@smr/shared";
+import { setAuthCookies } from "@/lib/auth-cookies";
 
 export async function VerifySignupEmailAction(
   data: VerifyEmailRequest,
@@ -47,15 +48,14 @@ export async function VerifySignupEmailAction(
       };
     }
 
-    // const { user, access_token, refresh_token } = result.payload;
+    const { access_token, refresh_token } = result.payload;
+    await setAuthCookies(access_token, refresh_token);
 
     return {
       success: true,
       message: result.message,
       payload: result.payload,
     };
-
-    //set this in cookies and redirect to "/{user.role}"
   } catch (error: unknown) {
     logger.error("Verify signup email action error: ", error);
     return {
