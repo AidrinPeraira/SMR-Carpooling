@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Toast, ToastProvider, useToast } from "./index";
 
-
 const meta = {
   component: Toast,
   argTypes: {
@@ -17,7 +16,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-// Interactive demo harness wrapping ToastProvider & useToast
+//component to test working trigger
 function ToastDemo() {
   const toast = useToast();
 

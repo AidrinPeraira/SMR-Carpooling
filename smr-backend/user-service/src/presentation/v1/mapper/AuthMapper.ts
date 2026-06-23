@@ -12,6 +12,8 @@ import {
   SignUpUserSchema,
   VerifyEmailRequest,
   VerifyEmailSchema,
+  GoogleLoginRequest,
+  GoogleLoginSchema,
   zodParser,
 } from "@smr/shared";
 
@@ -88,4 +90,12 @@ export function toVerifyEmailDTO(data: unknown): VerifySignupEmailRequestDTO {
   return {
     verificationToken: validated.verification_token,
   };
+}
+
+/**
+ * Maps Google login request data to a token string.
+ */
+export function toGoogleLoginDTO(data: unknown): string {
+  const validated = zodParser<GoogleLoginRequest>(GoogleLoginSchema, data);
+  return validated.auth_token;
 }

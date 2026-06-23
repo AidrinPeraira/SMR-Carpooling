@@ -21,5 +21,7 @@ export function createAuthRouterV1(
 
   router.post("/login", authControllerV1.login.bind(authControllerV1));
 
+  router.post("/google", authControllerV1.googleAuth.bind(authControllerV1));
+
   return router;
 }

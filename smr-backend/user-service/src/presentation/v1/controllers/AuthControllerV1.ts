@@ -1,3 +1,4 @@
+import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/IGoogleAuthUseCase";
 import { ILoginUserUseCase } from "#/application/interfaces/use-case/ILoginUserUseCase";
 import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
 import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
@@ -8,6 +9,7 @@ import {
   toSignUpDTO,
   toSignUpResult,
   toVerifyEmailDTO,
+  toGoogleLoginDTO,
 } from "#/presentation/v1/mapper/AuthMapper";
 import {
   HttpStatusCodes,
@@ -25,6 +27,7 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     private readonly _signUpUserUseCase: ISignupUserUseCase,
     private readonly _loginUserUseCase: ILoginUserUseCase,
     private readonly _verifySignupEmailUseCase: IVerifySignupEmailUseCase,
+    private readonly _googleAuthUseCase: IGoogleAuthUseCase,
   ) {}
 
   async signup(req: Request, res: Response): Promise<void> {
@@ -84,6 +87,29 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     const result = await this._loginUserUseCase.execute(loginData);
 
     this._logger.info("User logged in successfully: ", result.user.userId);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<LoginResult>(
+          UserSuccessMessage.LOGGED_IN,
+          toLoginResult(result),
+        ),
+      );
+  }
+
+  async googleAuth(req: Request, res: Response): Promise<void> {
+    const token = toGoogleLoginDTO(req.body);
+
+    this._logger.info("Google login attempt.");
+
+    const result = await this._googleAuthUseCase.execute(token);
+
+    this._logger.info("Google auth atempt success: ", {
+      firstName: result.user.firstName,
+      lastName: result.user.lastName,
+      emailId: result.user.emailId,
+    });
 
     res
       .status(HttpStatusCodes.Ok)

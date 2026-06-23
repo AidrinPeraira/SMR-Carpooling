@@ -131,7 +131,7 @@ export function LoginForm({ className }: Props) {
         </div>
       </div>
 
-      <GoogleLogin className="w-full" disabled={isPending} />
+      <GoogleLogin className="w-full" />
 
       <p className="mt-5 text-center text-sm text-fg-secondary">
         Don&apos;t have an account?{" "}

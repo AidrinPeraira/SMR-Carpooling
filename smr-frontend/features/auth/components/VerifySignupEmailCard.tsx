@@ -27,7 +27,6 @@ export function VerifySignupEmailCard() {
 
   useEffect(() => {
     if (!token) return;
-    setFailed(true);
 
     startTransition(async () => {
       try {
@@ -46,7 +45,7 @@ export function VerifySignupEmailCard() {
             variant: "error",
             description: result.description,
           });
-          setFailed(false);
+          setFailed(true);
         }
       } catch (error: unknown) {
         logger.error("Error verifying signup email", error);
@@ -55,10 +54,10 @@ export function VerifySignupEmailCard() {
           variant: "error",
           description: "Please try again later.",
         });
-        setFailed(false);
+        setFailed(true);
       }
     });
-  }, [token]);
+  }, [token, toast, router]);
 
   if (!token || failed) {
     return (

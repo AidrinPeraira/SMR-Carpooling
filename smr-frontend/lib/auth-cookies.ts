@@ -3,11 +3,20 @@ import { cookies } from "next/headers";
 const ACCESS_TOKEN_NAME = "access_token";
 const REFRESH_TOKEN_NAME = "refresh_token";
 
-export async function setAuthCookies(accessToken: string, refreshToken: string) {
+export async function setAuthCookies(
+  accessToken: string,
+  refreshToken: string,
+) {
   const cookieStore = await cookies();
 
-  const accessTokenMaxAge = parseInt(process.env.ACCESS_TOKEN_LIFE_SECONDS || "900", 10);
-  const refreshTokenMaxAge = parseInt(process.env.REFRESH_TOKEN_LIFE_SECONDS || "172800", 10);
+  const accessTokenMaxAge = parseInt(
+    process.env.ACCESS_TOKEN_LIFE_SECONDS || "900",
+    10,
+  );
+  const refreshTokenMaxAge = parseInt(
+    process.env.REFRESH_TOKEN_LIFE_SECONDS || "172800",
+    10,
+  );
 
   cookieStore.set(ACCESS_TOKEN_NAME, accessToken, {
     httpOnly: true,

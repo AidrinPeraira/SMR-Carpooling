@@ -1,14 +1,81 @@
-import { Button } from "@smr/ui";
+"use client";
+
+import { cn } from "@/lib/utils";
+import {
+  CredentialResponse,
+  GoogleLogin as GoogleLoginButton,
+  GoogleOAuthProvider,
+} from "@react-oauth/google";
+import { googleLoginAction } from "@/features/auth/api/actions/GoogleLoginAction";
+import { useToast } from "@smr/ui";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { logger } from "@/lib/logger";
 
 interface Props {
   className?: string;
-  disabled?: boolean;
 }
 
-export function GoogleLogin({ className, disabled = false }: Props) {
+export function GoogleLogin({ className }: Props) {
+  const [, startTransition] = useTransition();
+  const googleClientId = String(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "");
+  const toast = useToast();
+  const router = useRouter();
+
+  function handleGoogleLogin(credentialResponse: CredentialResponse) {
+    const token = credentialResponse.credential;
+    if (!token) {
+      toast("Google login failed.", {
+        variant: "error",
+        description: "No credential returned from Google.",
+      });
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const result = await googleLoginAction(token);
+        logger.info("Handle Google login result: ", result);
+        if (result.success) {
+          toast(result.message || "Google login success!", {
+            variant: "success",
+            description: result.description,
+          });
+          router.push("/");
+        } else {
+          toast(result.errorMessage || "Google login failed!", {
+            variant: "error",
+            description: result.description,
+          });
+        }
+      } catch (error: unknown) {
+        logger.error("Error handling Google login: ", error);
+        toast("Something went wrong.", {
+          variant: "error",
+          description: "Please try again later",
+        });
+      }
+    });
+  }
+
   return (
-    <Button className={className} variant="secondary" disabled={disabled}>
-      Google Login
-    </Button>
+    <div
+      className={cn(
+        "mx-auto w-full flex flex-row items-center justify-center",
+        className,
+      )}
+    >
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <GoogleLoginButton
+          onSuccess={handleGoogleLogin}
+          width="100%"
+          theme="outline"
+          logo_alignment="center"
+          ux_mode="popup"
+          cancel_on_tap_outside
+          useOneTap
+        />
+      </GoogleOAuthProvider>
+    </div>
   );
 }
