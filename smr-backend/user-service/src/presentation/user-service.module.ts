@@ -14,6 +14,8 @@ import { RabbitMQEventBus } from "#/infrastructure/services/RabbitMQEventBus";
 import { AuthControllerV1 } from "#/presentation/v1/controllers/AuthControllerV1";
 import { createAuthRouterV1 } from "#/presentation/v1/routes/AuthRouterV1";
 import { ConsolaLogger } from "@smr/shared";
+import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
+import { GoogleAuthUseCase } from "#/application/use-case/GoggleAuthUseCase";
 
 /**
  * Composition Root for the User Service.
@@ -61,11 +63,22 @@ const verifySignupEmailUseCase = new VerifySignupEmailUseCase(
   jwtTokenService,
 );
 
+const googleAuthService = new GoogleAuthService();
+
+const googleAuthUseCase = new GoogleAuthUseCase(
+  googleAuthService,
+  mongoUserRepository,
+  cryptoUIDService,
+  jwtTokenService,
+  sessionRepository,
+);
+
 const authControllerV1 = new AuthControllerV1(
   consolaLogger,
   signUpUseUseCase,
   loginUserUseCase,
   verifySignupEmailUseCase,
+  googleAuthUseCase,
 );
 
 // v1 router setup

@@ -21,7 +21,9 @@ describe("SendSignupVerificationMailUseCase", () => {
       expect.objectContaining({
         recipient: "jane@example.com",
         subject: "Welcome to ShareMyRide, Jane Smith",
-        body: expect.stringContaining(`${AppConfig.FRONTEND_URL}/auth/signup/verify?token=token456`),
+        body: expect.stringContaining(
+          `${AppConfig.FRONTEND_URL}/auth/signup/verify?token=token456`,
+        ),
       }),
     );
   });

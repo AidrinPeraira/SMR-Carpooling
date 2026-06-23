@@ -37,3 +37,7 @@ export interface LoginResult {
 export interface VerifyEmailRequest {
   verification_token: string;
 }
+
+export interface GoogleLoginRequest {
+  auth_token: string;
+}

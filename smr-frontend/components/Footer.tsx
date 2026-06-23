@@ -1,4 +1,4 @@
-import { cn } from "@smr/ui";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 interface FooterProps {
@@ -10,7 +10,7 @@ export function Footer({ className }: FooterProps) {
     <footer
       className={cn(
         "py-12 bg-surface-secondary flex flex-col items-center justify-center text-center gap-2",
-        className
+        className,
       )}
     >
       <h2 className="text-lg font-bold text-fg-primary">Share My Ride</h2>

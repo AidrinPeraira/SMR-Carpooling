@@ -60,4 +60,3 @@ Sample css
 # Sample Componets Showcase
 
 [View the Component Blueprint Matrix](./src/sample.html)
-

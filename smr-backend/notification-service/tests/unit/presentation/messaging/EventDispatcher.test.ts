@@ -11,7 +11,10 @@ describe("EventDispatcher", () => {
     const dispatcher = new EventDispatcher(logger);
     const handler = new MockEventHandler();
 
-    const testEvent = { ...mockGenericEvent, eventName: EventName.AUTH_USER_SIGNUP };
+    const testEvent = {
+      ...mockGenericEvent,
+      eventName: EventName.AUTH_USER_SIGNUP,
+    };
 
     await dispatcher.register(EventName.AUTH_USER_SIGNUP, handler);
     await dispatcher.dispatch(testEvent);

@@ -21,6 +21,8 @@ export function createApp(logger: ILogger) {
 
   app.use(cors());
   app.use(helmet());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   app.use(
     morgan("dev", {
@@ -59,10 +61,6 @@ export function createApp(logger: ILogger) {
   });
 
   app.use(userServiceProxy);
-
-  //moved these lines down so that it doesn't interfere with proxy
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
