@@ -1,5 +1,7 @@
 import { LoginUserRequestDTO } from "#/application/dto/auth/LoginUserRequestDTO";
 import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
+import { RefreshTokenRequestDTO } from "#/application/dto/auth/RefreshTokenRequestDTO";
+import { RefreshTokenResultDTO } from "#/application/dto/auth/RefreshTokenResultDTO";
 import { SignUpRequestDTO } from "#/application/dto/auth/SignUpRequestDTO";
 import { SignUpResultDTO } from "#/application/dto/auth/SignUpResultDTO";
 import { VerifySignupEmailRequestDTO } from "#/application/dto/auth/VerifySignupEmailRequestDTO";
@@ -14,6 +16,9 @@ import {
   VerifyEmailSchema,
   GoogleLoginRequest,
   GoogleLoginSchema,
+  RefreshTokenRequest,
+  RefreshTokenResult,
+  RefreshTokenSchema,
   zodParser,
 } from "@smr/shared";
 
@@ -98,4 +103,24 @@ export function toVerifyEmailDTO(data: unknown): VerifySignupEmailRequestDTO {
 export function toGoogleLoginDTO(data: unknown): string {
   const validated = zodParser<GoogleLoginRequest>(GoogleLoginSchema, data);
   return validated.auth_token;
+}
+
+/**
+ * Maps refresh token request data to RefreshTokenRequestDTO.
+ */
+export function toRefreshTokenDTO(data: unknown): RefreshTokenRequestDTO {
+  const validated = zodParser<RefreshTokenRequest>(RefreshTokenSchema, data);
+  return {
+    refreshToken: validated.refresh_token,
+  };
+}
+
+/**
+ * Maps RefreshTokenResultDTO to RefreshTokenResult for client response.
+ */
+export function toRefreshTokenResult(data: RefreshTokenResultDTO): RefreshTokenResult {
+  return {
+    access_token: data.accessToken,
+    refresh_token: data.refreshToken,
+  };
 }

@@ -39,7 +39,7 @@ function QueryToastHandler() {
 
       window.history.replaceState(null, "", cleanUrl);
     }
-  }, [queryParams]);
+  }, [queryParams, toast]);
 
   return null;
 }

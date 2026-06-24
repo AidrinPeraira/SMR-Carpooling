@@ -10,7 +10,6 @@ import { TokenType } from "@smr/shared";
 describe("VerifySignupEmailUseCase", () => {
   const useCase = new VerifySignupEmailUseCase(
     mockUserRepository,
-    mockSessionRepository,
     mockTokenService,
   );
 
@@ -48,7 +47,7 @@ describe("VerifySignupEmailUseCase", () => {
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
       "refresh-token",
     );
-    vi.mocked(mockSessionRepository.getSession).mockResolvedValue(null);
+
 
     const result = await useCase.execute({ verificationToken: mockToken });
 
@@ -59,7 +58,6 @@ describe("VerifySignupEmailUseCase", () => {
         emailVerified: true,
       }),
     );
-    expect(mockSessionRepository.updateSession).toHaveBeenCalled();
   });
 
   it("should throw error if token does not match user record", async () => {

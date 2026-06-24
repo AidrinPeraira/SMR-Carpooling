@@ -1,5 +1,6 @@
 import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/IGoogleAuthUseCase";
 import { ILoginUserUseCase } from "#/application/interfaces/use-case/ILoginUserUseCase";
+import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/IRefreshTokenUseCase";
 import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
 import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
 import { IAuthControllerV1 } from "#/presentation/v1/interfaces/IAuthControllerV1";
@@ -10,12 +11,15 @@ import {
   toSignUpResult,
   toVerifyEmailDTO,
   toGoogleLoginDTO,
+  toRefreshTokenDTO,
+  toRefreshTokenResult,
 } from "#/presentation/v1/mapper/AuthMapper";
 import {
   HttpStatusCodes,
   ILogger,
   LoginResult,
   makeSuccessResponse,
+  RefreshTokenResult,
   SignUpResult,
   UserSuccessMessage,
 } from "@smr/shared";
@@ -28,6 +32,7 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     private readonly _loginUserUseCase: ILoginUserUseCase,
     private readonly _verifySignupEmailUseCase: IVerifySignupEmailUseCase,
     private readonly _googleAuthUseCase: IGoogleAuthUseCase,
+    private readonly _refreshTokensUseCase: IRefreshTokenUseCase,
   ) {}
 
   async signup(req: Request, res: Response): Promise<void> {
@@ -117,6 +122,26 @@ export class AuthControllerV1 implements IAuthControllerV1 {
         makeSuccessResponse<LoginResult>(
           UserSuccessMessage.LOGGED_IN,
           toLoginResult(result),
+        ),
+      );
+  }
+
+  async refreshTokens(req: Request, res: Response): Promise<void> {
+    console.log("Refreesh tooken....: ", req.body);
+    const refreshTokenData = toRefreshTokenDTO(req.body);
+
+    this._logger.info("Token refresh request: ");
+
+    const result = await this._refreshTokensUseCase.execute(refreshTokenData);
+
+    this._logger.info("Tokens refreshed successfully.");
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<RefreshTokenResult>(
+          UserSuccessMessage.TOKEN_REFRESHED,
+          toRefreshTokenResult(result),
         ),
       );
   }

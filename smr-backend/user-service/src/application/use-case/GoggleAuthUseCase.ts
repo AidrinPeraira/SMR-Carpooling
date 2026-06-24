@@ -2,14 +2,12 @@ import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
 import { IGoogleAuthService } from "#/application/interfaces/services/IGoogleAuthService";
 import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/IGoogleAuthUseCase";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { ISessionRepository } from "#/application/interfaces/repository/ISessionRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { AppConfig } from "#/application.config";
 import {
   AccountStatus,
   ApplicationError,
-  AuthSession,
   AuthTokenPayload,
   ErrorCode,
   HttpStatusCodes,
@@ -24,11 +22,9 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
     private readonly userRepository: IUserRepository,
     private readonly uniqueIdGenerator: IUniqueIdGenerator,
     private readonly tokenService: ITokenService,
-    private readonly sessionRepository: ISessionRepository,
   ) {}
 
   async execute(authToken: string): Promise<LoginUserResultDTO> {
-    // 1. Verify Google Token
     const result = await this.googleAuthService.verifyToken(authToken);
 
     if (!result.emailId) {
@@ -40,7 +36,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
       );
     }
 
-    // 2. Look up or register the user
     let user = await this.userRepository.findByEmail(result.emailId);
 
     if (!user) {
@@ -56,16 +51,18 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         passwordHash: result.passwordHash || "google-oauth",
         profileImage: result.profileImage,
         userRole: UserRole.PASSENGER,
-        emailVerified: true, // Google accounts are pre-verified
+        emailVerified: true,
         isDriver: false,
-        accountStatus: AccountStatus.VERIFIIED, // Pre-verified
+        accountStatus: AccountStatus.VERIFIIED,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    // 3. Check account status
-    if (user.accountStatus !== AccountStatus.VERIFIIED) {
+    if (
+      user.accountStatus === AccountStatus.BLOCKED ||
+      user.accountStatus === AccountStatus.SUSPENDED
+    ) {
       throw new ApplicationError(
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Unauthorized,
@@ -73,11 +70,10 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         { emailId: user.emailId },
       );
     }
-
-    // 4. Generate access and refresh tokens
-    const nowUnix = Math.floor(Date.now() / 1000);
-    const accessTokenExpiry = nowUnix + AppConfig.ACCESS_TOKEN_LIFE_SECONDS;
-    const refreshTokenExpiry = nowUnix + AppConfig.REFRESH_TOKEN_LIFE_SECONDS;
+    //generate token
+    const now = Math.floor(Date.now() / 1000);
+    const aceessTokenExpiry = now + AppConfig.ACCESS_TOKEN_LIFE_SECONDS;
+    const refreshTokenExpiry = now + AppConfig.REFRESH_TOKEN_LIFE_SECONDS;
 
     const accessTokenPayload: AuthTokenPayload = {
       user: {
@@ -88,8 +84,8 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         emailId: user.emailId,
       },
       tokenType: TokenType.ACCESS_TOKEN,
-      iat: nowUnix,
-      exp: accessTokenExpiry,
+      iat: now,
+      exp: aceessTokenExpiry,
     };
 
     const refreshTokenPayload: AuthTokenPayload = {
@@ -101,30 +97,15 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         emailId: user.emailId,
       },
       tokenType: TokenType.REFRESH_TOKEN,
-      iat: nowUnix,
+      iat: now,
       exp: refreshTokenExpiry,
     };
 
     const accessToken =
       this.tokenService.generateAccessToken(accessTokenPayload);
+
     const refreshToken =
       this.tokenService.generateRefreshToken(refreshTokenPayload);
-
-    // 5. Create or update session in Redis
-    const sessionName = `auth:session:${user.userId}`;
-    const existingSession =
-      await this.sessionRepository.getSession(sessionName);
-
-    const activeRefreshTokens = existingSession
-      ? [...existingSession.activeRefreshTokens, refreshToken]
-      : [refreshToken];
-
-    const session: AuthSession = {
-      userId: user.userId,
-      activeRefreshTokens,
-    };
-
-    await this.sessionRepository.updateSession(sessionName, session);
 
     return {
       user: {

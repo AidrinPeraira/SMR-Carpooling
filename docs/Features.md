@@ -16,13 +16,13 @@
 ### Auth
 
 - [x] Email and password signup
-- [x] Email Verification (OTP-based)
-- [ ] Resend verification OTP
+- [x] Email Verification (link-based)
+- [ ] Resend verification email - ?
 - [x] Email and password login
-- [ ] Token Management (Access & Refresh tokens)
+- [x] Token Management (Access & Refresh tokens)
 - [ ] Session Management (Redis-backed)
 - [ ] Logout
-- [ ] Google OAuth Integration
+- [x] Google OAuth Integration
 - [ ] Password Reset flow (Forgot/Verify/Reset)
 - [ ] Role Switching (Passenger ↔ Driver)
 
@@ -43,7 +43,7 @@
 
 - [ ] View all registered users
 - [ ] Toggle user status (Activate/Deactivate/Block)
-- [ ] Force log-out / Clear sessions
+- [ ] Force log-out / Clear sessions (use redis blacklist)
 - [ ] Review and process Driver applications (Approve/Reject)
 - [ ] Review and process Vehicle applications (Approve/Reject)
 - [ ] View all driver applications
