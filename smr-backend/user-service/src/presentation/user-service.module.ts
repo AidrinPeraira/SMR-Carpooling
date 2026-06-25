@@ -3,10 +3,9 @@ import { AppConfig } from "#/application.config";
 import { LoginUserUseCase } from "#/application/use-case/LoginUserUseCase";
 import { SignUpUserUseCase } from "#/application/use-case/SignUpUserUseCase";
 import { VerifySignupEmailUseCase } from "#/application/use-case/VerifySignupEmailUseCase";
-import { redisClient } from "#/infrastructure/database/connect-redis";
+import { RefreshTokenUseCase } from "#/application/use-case/RefreshTokenUseCase";
 import { UserModel } from "#/infrastructure/database/models/MongoUserModel";
 import { MongoUserRespository } from "#/infrastructure/repository/MongoUserRepository";
-import { RedisSessionRepository } from "#/infrastructure/repository/RedisSessionRepository";
 import { CryptoHashingService } from "#/infrastructure/services/CryptoHashingService";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
@@ -40,7 +39,6 @@ const rabbitMQEventBus = new RabbitMQEventBus(
 );
 
 const mongoUserRepository = new MongoUserRespository(UserModel);
-const sessionRepository = new RedisSessionRepository(redisClient);
 
 const signUpUseUseCase = new SignUpUserUseCase(
   mongoUserRepository,
@@ -54,12 +52,15 @@ const loginUserUseCase = new LoginUserUseCase(
   mongoUserRepository,
   cryptoHashingService,
   jwtTokenService,
-  sessionRepository,
 );
 
 const verifySignupEmailUseCase = new VerifySignupEmailUseCase(
   mongoUserRepository,
-  sessionRepository,
+  jwtTokenService,
+);
+
+const refreshTokenUseCase = new RefreshTokenUseCase(
+  mongoUserRepository,
   jwtTokenService,
 );
 
@@ -70,7 +71,6 @@ const googleAuthUseCase = new GoogleAuthUseCase(
   mongoUserRepository,
   cryptoUIDService,
   jwtTokenService,
-  sessionRepository,
 );
 
 const authControllerV1 = new AuthControllerV1(
@@ -79,6 +79,7 @@ const authControllerV1 = new AuthControllerV1(
   loginUserUseCase,
   verifySignupEmailUseCase,
   googleAuthUseCase,
+  refreshTokenUseCase,
 );
 
 // v1 router setup

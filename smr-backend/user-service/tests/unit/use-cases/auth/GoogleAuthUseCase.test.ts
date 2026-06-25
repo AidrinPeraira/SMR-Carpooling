@@ -21,7 +21,6 @@ describe("GoogleAuthUseCase", () => {
     mockUserRepository,
     mockUidGenerator,
     mockTokenService,
-    mockSessionRepository,
   );
 
   const mockGoogleProfile = {
@@ -56,7 +55,6 @@ describe("GoogleAuthUseCase", () => {
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
       "refresh-token",
     );
-    vi.mocked(mockSessionRepository.getSession).mockResolvedValue(null);
 
     // Act
     const result = await googleAuthUseCase.execute("valid-google-token");
@@ -66,13 +64,6 @@ describe("GoogleAuthUseCase", () => {
     expect(result.accessToken).toBe("access-token");
     expect(result.refreshToken).toBe("refresh-token");
     expect(mockUserRepository.save).not.toHaveBeenCalled();
-    expect(mockSessionRepository.updateSession).toHaveBeenCalledWith(
-      `auth:session:${mockUser.userId}`,
-      {
-        userId: mockUser.userId,
-        activeRefreshTokens: ["refresh-token"],
-      },
-    );
   });
 
   it("should register a new user and login successfully", async () => {
@@ -92,7 +83,7 @@ describe("GoogleAuthUseCase", () => {
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
       "refresh-token",
     );
-    vi.mocked(mockSessionRepository.getSession).mockResolvedValue(null);
+
 
     // Act
     const result = await googleAuthUseCase.execute("valid-google-token");

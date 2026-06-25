@@ -19,7 +19,6 @@ describe("LoginUserUseCase", () => {
     mockUserRepository,
     mockHashingService,
     mockTokenService,
-    mockSessionRepository,
   );
 
   const loginRequest: LoginUserRequestDTO = {
@@ -55,43 +54,9 @@ describe("LoginUserUseCase", () => {
     // Assert
     expect(result.accessToken).toBe("access-token");
     expect(result.refreshToken).toBe("refresh-token");
-
-    expect(mockSessionRepository.updateSession).toHaveBeenCalledWith(
-      `auth:session:${mockUser.userId}`,
-      {
-        userId: mockUser.userId,
-        activeRefreshTokens: ["refresh-token"],
-      },
-    );
   });
 
-  it("should append new refresh token to existing session", async () => {
-    // Arrange
-    const existingSession = {
-      userId: mockUser.userId,
-      activeRefreshTokens: ["old-refresh-token"],
-    };
-    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(mockUser);
-    vi.mocked(mockHashingService.compareHash).mockReturnValue(true);
-    vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
-      "new-refresh-token",
-    );
-    vi.mocked(mockSessionRepository.getSession).mockResolvedValue(
-      existingSession,
-    );
 
-    // Act
-    await loginUserUseCase.execute(loginRequest);
-
-    // Assert
-    expect(mockSessionRepository.updateSession).toHaveBeenCalledWith(
-      `auth:session:${mockUser.userId}`,
-      {
-        userId: mockUser.userId,
-        activeRefreshTokens: ["old-refresh-token", "new-refresh-token"],
-      },
-    );
-  });
 
   it("should throw NotFound error if user does not exist", async () => {
     // Arrange

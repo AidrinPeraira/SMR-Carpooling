@@ -5,4 +5,5 @@ export interface IAuthControllerV1 {
   verifySignupEmail(req: Request, res: Response): Promise<void>;
   login(req: Request, res: Response): Promise<void>;
   googleAuth(req: Request, res: Response): Promise<void>;
+  refreshTokens(req: Request, res: Response): Promise<void>;
 }

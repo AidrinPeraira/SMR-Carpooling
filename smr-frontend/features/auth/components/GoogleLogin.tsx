@@ -41,7 +41,8 @@ export function GoogleLogin({ className }: Props) {
             variant: "success",
             description: result.description,
           });
-          router.push("/");
+          const role = result.payload?.user.user_role.toLowerCase();
+          router.push(`/${role ? role : ""}`);
         } else {
           toast(result.errorMessage || "Google login failed!", {
             variant: "error",

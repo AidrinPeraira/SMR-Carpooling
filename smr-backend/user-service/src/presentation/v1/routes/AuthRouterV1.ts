@@ -23,5 +23,10 @@ export function createAuthRouterV1(
 
   router.post("/google", authControllerV1.googleAuth.bind(authControllerV1));
 
+  router.post(
+    "/refresh-token",
+    authControllerV1.refreshTokens.bind(authControllerV1),
+  );
+
   return router;
 }

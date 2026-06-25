@@ -1,7 +1,6 @@
 import { AppConfig } from "#/application.config";
 import { LoginUserRequestDTO } from "#/application/dto/auth/LoginUserRequestDTO";
 import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
-import { ISessionRepository } from "#/application/interfaces/repository/ISessionRepository";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
@@ -9,7 +8,6 @@ import { ILoginUserUseCase } from "#/application/interfaces/use-case/ILoginUserU
 import {
   AccountStatus,
   ApplicationError,
-  AuthSession,
   AuthTokenPayload,
   ErrorCode,
   HttpStatusCodes,
@@ -22,7 +20,6 @@ export class LoginUserUseCase implements ILoginUserUseCase {
     private readonly _userRepository: IUserRepository,
     private readonly _hashingService: IHashingService,
     private readonly _tokenService: ITokenService,
-    private readonly _sessionRepository: ISessionRepository,
   ) {}
 
   async execute(data: LoginUserRequestDTO): Promise<LoginUserResultDTO> {
@@ -70,7 +67,6 @@ export class LoginUserUseCase implements ILoginUserUseCase {
     }
 
     //generate token and session
-
     const now = Math.floor(Date.now() / 1000);
     const aceessTokenExpiry = now + AppConfig.ACCESS_TOKEN_LIFE_SECONDS;
     const refreshTokenExpiry = now + AppConfig.REFRESH_TOKEN_LIFE_SECONDS;
@@ -106,22 +102,6 @@ export class LoginUserUseCase implements ILoginUserUseCase {
 
     const refreshToken =
       this._tokenService.generateRefreshToken(refreshTokenPayload);
-
-    //add session to redis
-    const sessionName = `auth:session:${existingUser.userId}`;
-    const existingSession =
-      await this._sessionRepository.getSession(sessionName);
-
-    const activeRefreshTokens = existingSession
-      ? [...existingSession.activeRefreshTokens, refreshToken]
-      : [refreshToken];
-
-    const session: AuthSession = {
-      userId: existingUser.userId,
-      activeRefreshTokens,
-    };
-
-    await this._sessionRepository.updateSession(sessionName, session);
 
     return {
       user: {

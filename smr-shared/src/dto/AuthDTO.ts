@@ -41,3 +41,13 @@ export interface VerifyEmailRequest {
 export interface GoogleLoginRequest {
   auth_token: string;
 }
+
+export interface RefreshTokenRequest {
+  refresh_token: string;
+}
+
+export interface RefreshTokenResult {
+  access_token: string;
+  refresh_token: string;
+}
+

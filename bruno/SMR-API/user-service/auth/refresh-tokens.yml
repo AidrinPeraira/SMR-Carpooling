@@ -1,0 +1,86 @@
+info:
+  name: refresh-tokens
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:4001/v1/auth/refresh-token
+  body:
+    type: json
+    data: |-
+      {
+        "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaWF0IjoxNzgyMjg1MjI1LCJleHAiOjE3ODI0NTgwMjV9.bKLgpbVoxo4F4aKa5vVOkYfH2eQmjvdwDVMhdC02nCI"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: success
+    request:
+      url: http://localhost:4001/v1/auth/refresh-token
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaWF0IjoxNzgyMjg1MjI1LCJleHAiOjE3ODI0NTgwMjV9.bKLgpbVoxo4F4aKa5vVOkYfH2eQmjvdwDVMhdC02nCI"
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "861"
+        - name: etag
+          value: W/"35d-TQBMGtNa15x4QhA8vu/+Z1iwZ8U"
+        - name: date
+          value: Wed, 24 Jun 2026 12:10:41 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Tokens refreshed successfully.",
+            "payload": {
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODIzMDMwNDEsImV4cCI6MTc4MjMwMzk0MX0.IUGGBRhqmHpbrGvh0DLjVFhZDiewYgT43HM6yXx_D04",
+              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaWF0IjoxNzgyMzAzMDQxLCJleHAiOjE3ODI0NzU4NDF9.ZKsS6lPh5txwSofYS9QuKbkfoZr9E0u3i3HpJHGbXsY"
+            }
+          }

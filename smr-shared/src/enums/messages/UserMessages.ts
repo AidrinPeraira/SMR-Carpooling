@@ -4,6 +4,7 @@ export enum UserSuccessMessage {
   PROFILE_UPDATED = "Your profile information has been saved.",
   PASSWORD_CHANGED = "Your password has been updated successfully.",
   VERIFICATION_EMAIL_SENT = "A verification link has been sent to your email.",
+  TOKEN_REFRESHED = "Tokens refreshed successfully.",
 }
 
 export enum UserErrorMessage {
