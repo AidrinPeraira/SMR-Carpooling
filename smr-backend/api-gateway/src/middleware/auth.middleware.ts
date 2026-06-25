@@ -53,7 +53,8 @@ export function authMiddleware(
     req.headers["x-user-last-name"] = payload.user.lastName;
 
     next();
-  } catch (error) {
+  } catch (error: unknown) {
+    console.log("Auth middleware error: ", error);
     return res
       .status(HttpStatusCodes.Unauthorized)
       .json(makeFailedResponse("Invalid or expired authorization token"));

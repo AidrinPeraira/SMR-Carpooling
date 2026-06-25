@@ -45,7 +45,7 @@ describe("RefreshTokenUseCase", () => {
 
   it("should successfully refresh tokens", async () => {
     vi.mocked(mockTokenService.verifyRefreshToken).mockReturnValue(tokenPayload);
-    vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser);
+    vi.mocked(mockUserRepository.findByCustomId).mockResolvedValue(mockUser);
     vi.mocked(mockTokenService.generateAccessToken).mockReturnValue("new-access-token");
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue("new-refresh-token");
 
@@ -53,12 +53,12 @@ describe("RefreshTokenUseCase", () => {
 
     expect(result.accessToken).toBe("new-access-token");
     expect(result.refreshToken).toBe("new-refresh-token");
-    expect(mockUserRepository.findById).toHaveBeenCalledWith(mockEmail);
+    expect(mockUserRepository.findByCustomId).toHaveBeenCalledWith(mockUserId);
   });
 
   it("should throw NotFound error if user does not exist", async () => {
     vi.mocked(mockTokenService.verifyRefreshToken).mockReturnValue(tokenPayload);
-    vi.mocked(mockUserRepository.findById).mockResolvedValue(null);
+    vi.mocked(mockUserRepository.findByCustomId).mockResolvedValue(null);
 
     await expect(
       useCase.execute({ refreshToken: mockRefreshToken }),
@@ -80,7 +80,7 @@ describe("RefreshTokenUseCase", () => {
     });
 
     vi.mocked(mockTokenService.verifyRefreshToken).mockReturnValue(tokenPayload);
-    vi.mocked(mockUserRepository.findById).mockResolvedValue(blockedUser);
+    vi.mocked(mockUserRepository.findByCustomId).mockResolvedValue(blockedUser);
 
     await expect(
       useCase.execute({ refreshToken: mockRefreshToken }),
