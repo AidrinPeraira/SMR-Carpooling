@@ -15,6 +15,8 @@ import {
 import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import { AppConfig } from "#/application.config";
 import morgan from "morgan";
+import { authMiddleware } from "#/middleware/auth.middleware";
+// import { keyMiddleware } from "#/middleware/key.middleware";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -35,6 +37,10 @@ export function createApp(logger: ILogger) {
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
+
+  //middlewares
+  // app.use(keyMiddleware);
+  app.use(authMiddleware);
 
   //Http Proxy Implementaion
   //we will create and use more instances like this to forward requests to the other services
