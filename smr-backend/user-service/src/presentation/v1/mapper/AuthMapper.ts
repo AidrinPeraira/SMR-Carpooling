@@ -20,7 +20,15 @@ import {
   RefreshTokenResult,
   RefreshTokenSchema,
   zodParser,
+  ForgotPasswordRequest,
+  ForgotPasswordSchema,
+  ChangePasswordRequest,
+  ChangePasswordSchema,
 } from "@smr/shared";
+import {
+  GeneratePasswordChangeTokenRequestDTO,
+  PasswordChangeRequestDTO,
+} from "#/application/dto/auth/PasswordChangeDTO";
 
 /**
  * This fuction takes data from req,
@@ -122,5 +130,24 @@ export function toRefreshTokenResult(data: RefreshTokenResultDTO): RefreshTokenR
   return {
     access_token: data.accessToken,
     refresh_token: data.refreshToken,
+  };
+}
+
+export function toForgotPasswordDTO(
+  data: unknown,
+): GeneratePasswordChangeTokenRequestDTO {
+  const validated = zodParser<ForgotPasswordRequest>(ForgotPasswordSchema, data);
+  return {
+    emailId: validated.email_id,
+  };
+}
+
+export function toChangePasswordDTO(data: unknown): PasswordChangeRequestDTO {
+  const validated = zodParser<ChangePasswordRequest>(ChangePasswordSchema, data);
+  return {
+    emailId: validated.email_id,
+    password: validated.password,
+    confimPassword: validated.confirm_password,
+    token: validated.token,
   };
 }

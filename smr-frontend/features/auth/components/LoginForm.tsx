@@ -1,13 +1,13 @@
 "use client";
 
 import { GoogleLogin } from "@/features/auth/components/GoogleLogin";
-import { Button, cn, Input, Label, Loader, useToast } from "@smr/ui";
+import { Button, cn, Dialog, Input, Label, Loader, useToast } from "@smr/ui";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { LoginRequest, LoginUserSchema } from "@smr/shared";
 import { loginUserAction } from "@/features/auth/api/actions/LoginUserAction";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { logger } from "@/lib/logger";
 import { useRouter } from "next/navigation";
 
@@ -19,11 +19,14 @@ export function LoginForm({ className }: Props) {
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
   const router = useRouter();
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
+    useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<LoginRequest>({
     resolver: zodResolver(LoginUserSchema),
   });
@@ -39,7 +42,7 @@ export function LoginForm({ className }: Props) {
             description: result.description,
           });
           const role = result.payload?.user.user_role.toLowerCase();
-          router.push(`/${role ? role : ""}`);
+          router.replace(`/${role ? role : ""}`);
         } else {
           toast(result.errorMessage || "User login failed!", {
             variant: "error",
@@ -54,6 +57,57 @@ export function LoginForm({ className }: Props) {
         });
       }
     });
+  }
+
+  /*
+   * This function runs before to prompt user
+   * to add the email address
+   */
+  function confirmPasswordReset() {
+    const email = getValues("email_id");
+    if (email && email.trim() !== "") {
+      setChangePasswordDialogOpen(true);
+    } else {
+      toast("Email Address Required", {
+        variant: "warn",
+        description:
+          "Please enter your registered email address first so we know where to send the reset instructions.",
+      });
+    }
+  }
+
+  /**
+   * Function to make a request to send password reset token
+   */
+  async function handleForgotPassword() {
+    const email = getValues("email_id");
+    console.log("Sending password reset mail request for email:", email);
+    try {
+      const response = await fetch("/api/v1/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email_id: email }),
+      });
+      if (!response.ok) {
+        throw Error("Failed to send password reset request");
+      }
+      const result = await response.json();
+      if (result.success) {
+        toast("Password change request received!", {
+          variant: "success",
+          description:
+            "Please check the registered mail for instructions regarding changing / resetting your password",
+        });
+      }
+    } catch (error: unknown) {
+      logger.error("Error requesting for password change: ", error);
+      toast("Error requesting for password change.", {
+        variant: "error",
+        description: "Please try again later.",
+      });
+    }
   }
 
   return (
@@ -91,7 +145,14 @@ export function LoginForm({ className }: Props) {
           )}
         </div>
         <div className="flex flex-col gap-1 relative group">
-          <Label>Password</Label>
+          <div className="flex flex-row justify-between">
+            <Label>Password</Label>
+            <Label className="normal-case hover:opacity-70 cursor-pointer">
+              <button type="button" onClick={confirmPasswordReset}>
+                Forgot your password?
+              </button>
+            </Label>
+          </div>
           <Input
             type="password"
             placeholder="••••••••"
@@ -143,6 +204,20 @@ export function LoginForm({ className }: Props) {
           Sign Up
         </Link>
       </p>
+
+      {/*Dialog box for confirm password reset*/}
+      <Dialog
+        isOpen={changePasswordDialogOpen}
+        onClose={() => {
+          setChangePasswordDialogOpen(false);
+        }}
+        header="Submit Password Reset Request?"
+        description={`You will be sent an email to ${getValues("email_id") || "your registered address"} with instructions to change / reset your password.`}
+        confirmAction={async () => {
+          await handleForgotPassword();
+          setChangePasswordDialogOpen(false);
+        }}
+      />
     </div>
   );
 }

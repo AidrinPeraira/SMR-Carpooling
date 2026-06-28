@@ -3,7 +3,7 @@ import { TokenType, UserRole } from "../enums";
 export interface EmailVerificationTokenPayload {
   userId: string;
   emailId: string;
-  tokenType: TokenType.EMAIL_VERIFICATION_TOKEN;
+  tokenType: TokenType;
   iat: number;
   exp: number;
 }

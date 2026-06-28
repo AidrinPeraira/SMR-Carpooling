@@ -1,10 +1,11 @@
 import { SinupVerifcationMailRequestDTO } from "#/application/dto/email/SignupVerificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/ISendSignupVerificationMailUseCase";
-import { UserSignUpEvent } from "@smr/shared";
+import { ILogger, UserSignUpEvent } from "@smr/shared";
 
 export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
   constructor(
+    private readonly _logger: ILogger,
     private readonly _sendSignupVerificationMailUseCase: ISendSignupVerificationMailUseCase,
   ) {}
 
@@ -20,6 +21,9 @@ export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
       verificationToken: event.payload.token,
     };
 
+    this._logger.info("Sending signup verification mail: ", {
+      emailId: event.payload.emailId,
+    });
     await this._sendSignupVerificationMailUseCase.execute(
       signupVerificationMailDTO,
     );

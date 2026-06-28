@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { toastContext, type ToastVariant } from "./ToastContext";
 import { Toast } from "./Toast";
 
@@ -18,30 +18,33 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const count = useRef(0);
 
-  function onClose(id: string) {
+  const onClose = useCallback((id: string) => {
     setToasts((toasts) => toasts.filter((toast) => toast.id !== id));
-  }
+  }, []);
 
-  function toast(
-    message: string,
-    options?: {
-      variant?: ToastVariant;
-      description?: string;
-      duration?: number;
+  const toast = useCallback(
+    (
+      message: string,
+      options?: {
+        variant?: ToastVariant;
+        description?: string;
+        duration?: number;
+      },
+    ) => {
+      count.current += 1;
+      const id = String(count.current);
+      const newMessage: ToastMessage = {
+        id,
+        message,
+        description: options?.description,
+        variant: options?.variant || "success",
+        duration: options?.duration,
+      };
+
+      setToasts((p) => [...p, newMessage]);
     },
-  ) {
-    count.current += 1;
-    const id = String(count.current);
-    const newMessage: ToastMessage = {
-      id,
-      message,
-      description: options?.description,
-      variant: options?.variant || "success",
-      duration: options?.duration,
-    };
-
-    setToasts((p) => [...p, newMessage]);
-  }
+    [],
+  );
 
   return (
     <toastContext.Provider value={toast}>

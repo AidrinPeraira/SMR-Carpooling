@@ -7,6 +7,7 @@ import {
   ErrorCode,
   ErrorDetails,
   GenericErrorMessage,
+  UserErrorMessage,
 } from "@smr/shared";
 
 export const mapError = (err: unknown): ApplicationError => {
@@ -118,19 +119,19 @@ export const mapError = (err: unknown): ApplicationError => {
   if (err instanceof jwt.JsonWebTokenError) {
     if (err instanceof jwt.TokenExpiredError) {
       return new ApplicationError(
-        GenericErrorMessage.UNAUTHORIZED,
-        HttpStatusCodes.Unauthorized,
+        UserErrorMessage.INVALID_TOKEN,
+        HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_TOKEN_EXPIRED,
-        ErrorDetails.INPUT_TOKEN_EXPIRED,
+        "The verification token has expired.",
         err,
       );
     }
 
     return new ApplicationError(
-      GenericErrorMessage.UNAUTHORIZED,
-      HttpStatusCodes.Unauthorized,
-      ErrorCode.INPUT_UNAUTHORIZED,
-      ErrorDetails.INPUT_UNAUTHORIZED,
+      UserErrorMessage.INVALID_TOKEN,
+      HttpStatusCodes.BadRequest,
+      ErrorCode.INPUT_VALIDATION_ERROR,
+      "The verification token is invalid or malformed.",
       err,
     );
   }

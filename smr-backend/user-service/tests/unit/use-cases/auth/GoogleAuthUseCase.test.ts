@@ -6,13 +6,11 @@ import {
   HttpStatusCodes,
   UserErrorMessage,
   ErrorCode,
-  UserRole,
 } from "@smr/shared";
 import { mockGoogleAuthService } from "&#/mocks/MockGoogleAuthService";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockUidGenerator } from "&#/mocks/MockUidGenerator";
 import { mockTokenService } from "&#/mocks/MockTokenService";
-import { mockSessionRepository } from "&#/mocks/MockSessionRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 
 describe("GoogleAuthUseCase", () => {
@@ -83,7 +81,6 @@ describe("GoogleAuthUseCase", () => {
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
       "refresh-token",
     );
-
 
     // Act
     const result = await googleAuthUseCase.execute("valid-google-token");
