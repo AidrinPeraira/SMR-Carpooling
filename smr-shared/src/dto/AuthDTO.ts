@@ -51,3 +51,14 @@ export interface RefreshTokenResult {
   refresh_token: string;
 }
 
+export interface ForgotPasswordRequest {
+  email_id: string;
+}
+
+export interface ChangePasswordRequest {
+  email_id: string;
+  password: string;
+  confirm_password: string;
+  token: string;
+}
+

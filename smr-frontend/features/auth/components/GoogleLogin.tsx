@@ -42,7 +42,7 @@ export function GoogleLogin({ className }: Props) {
             description: result.description,
           });
           const role = result.payload?.user.user_role.toLowerCase();
-          router.push(`/${role ? role : ""}`);
+          router.replace(`/${role ? role : ""}`);
         } else {
           toast(result.errorMessage || "Google login failed!", {
             variant: "error",
@@ -69,7 +69,6 @@ export function GoogleLogin({ className }: Props) {
       <GoogleOAuthProvider clientId={googleClientId}>
         <GoogleLoginButton
           onSuccess={handleGoogleLogin}
-          width="100%"
           theme="outline"
           logo_alignment="center"
           ux_mode="popup"

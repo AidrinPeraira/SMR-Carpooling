@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { VerifySignupEmailUseCase } from "#/application/use-case/VerifySignupEmailUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockTokenService } from "&#/mocks/MockTokenService";
-import { mockSessionRepository } from "&#/mocks/MockSessionRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import { TokenType } from "@smr/shared";
@@ -47,7 +46,6 @@ describe("VerifySignupEmailUseCase", () => {
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
       "refresh-token",
     );
-
 
     const result = await useCase.execute({ verificationToken: mockToken });
 

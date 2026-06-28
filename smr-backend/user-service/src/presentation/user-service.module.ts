@@ -4,6 +4,8 @@ import { LoginUserUseCase } from "#/application/use-case/LoginUserUseCase";
 import { SignUpUserUseCase } from "#/application/use-case/SignUpUserUseCase";
 import { VerifySignupEmailUseCase } from "#/application/use-case/VerifySignupEmailUseCase";
 import { RefreshTokenUseCase } from "#/application/use-case/RefreshTokenUseCase";
+import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/GeneratePasswordChangeTokenUseCase";
+import { ChangePasswordUseCase } from "#/application/use-case/ChangePasswordUseCase";
 import { UserModel } from "#/infrastructure/database/models/MongoUserModel";
 import { MongoUserRespository } from "#/infrastructure/repository/MongoUserRepository";
 import { CryptoHashingService } from "#/infrastructure/services/CryptoHashingService";
@@ -73,6 +75,19 @@ const googleAuthUseCase = new GoogleAuthUseCase(
   jwtTokenService,
 );
 
+const generatePasswordChangeTokenUseCase = new GeneratePasswordChangeTokenUseCase(
+  mongoUserRepository,
+  jwtTokenService,
+  rabbitMQEventBus,
+);
+
+const changePasswordUseCase = new ChangePasswordUseCase(
+  mongoUserRepository,
+  jwtTokenService,
+  cryptoHashingService,
+  rabbitMQEventBus,
+);
+
 const authControllerV1 = new AuthControllerV1(
   consolaLogger,
   signUpUseUseCase,
@@ -80,6 +95,8 @@ const authControllerV1 = new AuthControllerV1(
   verifySignupEmailUseCase,
   googleAuthUseCase,
   refreshTokenUseCase,
+  generatePasswordChangeTokenUseCase,
+  changePasswordUseCase,
 );
 
 // v1 router setup

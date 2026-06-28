@@ -28,5 +28,15 @@ export function createAuthRouterV1(
     authControllerV1.refreshTokens.bind(authControllerV1),
   );
 
+  router.post(
+    "/forgot-password",
+    authControllerV1.generatePasswordChangeToken.bind(authControllerV1),
+  );
+
+  router.post(
+    "/change-password",
+    authControllerV1.changePassword.bind(authControllerV1),
+  );
+
   return router;
 }

@@ -49,7 +49,7 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
     ) {
       throw new ApplicationError(
         UserErrorMessage.INVALID_CREDENTIALS,
-        HttpStatusCodes.Unauthorized,
+        HttpStatusCodes.BadRequest,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         {
           userId: tokenPayload.userId,

@@ -3,6 +3,8 @@ import { ILoginUserUseCase } from "#/application/interfaces/use-case/ILoginUserU
 import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/IRefreshTokenUseCase";
 import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
 import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
+import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/IGeneratePasswordChangeToken";
+import { IChangePasswordUseCase } from "#/application/interfaces/use-case/IChangePasswordUseCase";
 import { IAuthControllerV1 } from "#/presentation/v1/interfaces/IAuthControllerV1";
 import {
   toLoginDTO,
@@ -13,6 +15,8 @@ import {
   toGoogleLoginDTO,
   toRefreshTokenDTO,
   toRefreshTokenResult,
+  toForgotPasswordDTO,
+  toChangePasswordDTO,
 } from "#/presentation/v1/mapper/AuthMapper";
 import {
   HttpStatusCodes,
@@ -33,6 +37,8 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     private readonly _verifySignupEmailUseCase: IVerifySignupEmailUseCase,
     private readonly _googleAuthUseCase: IGoogleAuthUseCase,
     private readonly _refreshTokensUseCase: IRefreshTokenUseCase,
+    private readonly _generatePasswordChangeTokenUseCase: IGeneratePasswordChangeTokenUseCase,
+    private readonly _changePasswordUseCase: IChangePasswordUseCase,
   ) {}
 
   async signup(req: Request, res: Response): Promise<void> {
@@ -144,5 +150,33 @@ export class AuthControllerV1 implements IAuthControllerV1 {
           toRefreshTokenResult(result),
         ),
       );
+  }
+
+  async generatePasswordChangeToken(
+    req: Request,
+    res: Response,
+  ): Promise<void> {
+    const dto = toForgotPasswordDTO(req.body);
+    this._logger.info(
+      "Requesting password change token for user: ",
+      dto.emailId,
+    );
+    try {
+      await this._generatePasswordChangeTokenUseCase.execute(dto);
+    } catch (error) {
+      this._logger.warn("Password change token generation failed: ", error);
+    }
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(makeSuccessResponse(UserSuccessMessage.PASSWORD_RESET_LINK_SENT));
+  }
+
+  async changePassword(req: Request, res: Response): Promise<void> {
+    const dto = toChangePasswordDTO(req.body);
+    this._logger.info("Changing password for user: ", dto.emailId);
+    await this._changePasswordUseCase.execute(dto);
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(makeSuccessResponse(UserSuccessMessage.PASSWORD_CHANGED));
   }
 }

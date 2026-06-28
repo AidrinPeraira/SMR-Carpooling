@@ -93,7 +93,11 @@ export class RabbitMQConsumer implements IMessageConsumer {
       });
 
       //Binding the routing keys for notificartion service
-      const evnetsToListenTo = [EventName.AUTH_USER_SIGNUP];
+      const evnetsToListenTo = [
+        EventName.AUTH_USER_SIGNUP,
+        EventName.AUTH_USER_CHANGE_PASSWORD_REQUEST,
+        EventName.AUTH_USER_CHANGE_PASSWORD_CHANGED,
+      ];
       for (const routingKey of evnetsToListenTo) {
         await this._channel.bindQueue(
           this._queueName,

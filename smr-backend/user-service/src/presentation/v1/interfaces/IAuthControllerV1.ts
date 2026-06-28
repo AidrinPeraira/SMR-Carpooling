@@ -6,4 +6,6 @@ export interface IAuthControllerV1 {
   login(req: Request, res: Response): Promise<void>;
   googleAuth(req: Request, res: Response): Promise<void>;
   refreshTokens(req: Request, res: Response): Promise<void>;
+  generatePasswordChangeToken(req: Request, res: Response): Promise<void>;
+  changePassword(req: Request, res: Response): Promise<void>;
 }
