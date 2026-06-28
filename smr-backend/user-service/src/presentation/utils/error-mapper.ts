@@ -91,6 +91,7 @@ export const mapError = (err: unknown): ApplicationError => {
 
   // Redis Errors
   if (
+    // eslint-disable-next-line
     (err as any)?.name?.includes("Redis") ||
     // eslint-disable-next-line
     (err as any)?.stack?.includes("redis")
