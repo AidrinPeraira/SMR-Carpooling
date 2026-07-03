@@ -37,6 +37,7 @@
   /* --- Surfaces (Backgrounds) --- */
   --color-surface-base: oklch(0.99 0.003 153.26);
   --color-surface-sidebar: oklch(0.9687 0.0041 153.26);
+  --color-surface-secondary: oklch(0.9657 0.0129 141.81);
   --color-surface-card: oklch(1 0 0);
   --color-surface-muted: oklch(0.9687 0.006 153.26);
 
