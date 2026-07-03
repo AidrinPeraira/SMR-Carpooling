@@ -6,7 +6,7 @@ import { IEventBus } from "#/application/interfaces/services/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
-import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
+import { ISignupUserUseCase } from "#/application/interfaces/use-case/auth/ISignUpUserUseCase";
 import { UserEntity } from "#/domain/entities/UserEntity";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import {

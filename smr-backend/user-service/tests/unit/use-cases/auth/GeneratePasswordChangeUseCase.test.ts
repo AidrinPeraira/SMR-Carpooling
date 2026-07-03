@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/GeneratePasswordChangeTokenUseCase";
+import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/auth/GeneratePasswordChangeTokenUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockTokenService } from "&#/mocks/MockTokenService";
 import { mockEventBus } from "&#/mocks/MockEventBus";

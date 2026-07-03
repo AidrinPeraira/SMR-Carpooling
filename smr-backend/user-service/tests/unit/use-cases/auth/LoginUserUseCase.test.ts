@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { LoginUserUseCase } from "#/application/use-case/LoginUserUseCase";
+import { LoginUserUseCase } from "#/application/use-case/auth/LoginUserUseCase";
 import { LoginUserRequestDTO } from "#/application/dto/auth/LoginUserRequestDTO";
 import {
   AccountStatus,

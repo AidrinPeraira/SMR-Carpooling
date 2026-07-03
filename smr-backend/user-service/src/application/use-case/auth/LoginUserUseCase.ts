@@ -1,69 +1,72 @@
 import { AppConfig } from "#/application.config";
+import { LoginUserRequestDTO } from "#/application/dto/auth/LoginUserRequestDTO";
 import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
-import { VerifySignupEmailRequestDTO } from "#/application/dto/auth/VerifySignupEmailRequestDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
+import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
+import { ILoginUserUseCase } from "#/application/interfaces/use-case/auth/ILoginUserUseCase";
 import {
   AccountStatus,
   ApplicationError,
   AuthTokenPayload,
-  EmailVerificationTokenPayload,
   ErrorCode,
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
 } from "@smr/shared";
 
-export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
+export class LoginUserUseCase implements ILoginUserUseCase {
   constructor(
     private readonly _userRepository: IUserRepository,
+    private readonly _hashingService: IHashingService,
     private readonly _tokenService: ITokenService,
   ) {}
 
-  async execute(
-    data: VerifySignupEmailRequestDTO,
-  ): Promise<LoginUserResultDTO> {
-    const tokenPayload =
-      this._tokenService.verifyToken<EmailVerificationTokenPayload>(
-        data.verificationToken,
-      );
-
-    const existingUser = await this._userRepository.findByCustomId(
-      tokenPayload.userId,
-    );
-
+  async execute(data: LoginUserRequestDTO): Promise<LoginUserResultDTO> {
+    const existingUser = await this._userRepository.findByEmail(data.emailId);
     if (!existingUser) {
       throw new ApplicationError(
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { userId: tokenPayload.userId, emailId: tokenPayload.emailId },
+        { emailId: data.emailId },
       );
     }
 
-    if (
-      !existingUser.verificationToken ||
-      existingUser.verificationToken.value !== data.verificationToken ||
-      existingUser.verificationToken.isExpired()
-    ) {
+    //verifying credentials and user
+    const passwordMatch = this._hashingService.compareHash(
+      data.password,
+      existingUser.passwordHash,
+    );
+
+    if (!passwordMatch) {
       throw new ApplicationError(
         UserErrorMessage.INVALID_CREDENTIALS,
-        HttpStatusCodes.BadRequest,
+        HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        {
-          userId: tokenPayload.userId,
-          emailId: tokenPayload.emailId,
-        },
+        { emailId: data.emailId },
       );
     }
 
-    await this._userRepository.updateByCustomId(existingUser.userId, {
-      emailVerified: true,
-      accountStatus: AccountStatus.VERIFIIED,
-      verificationToken: undefined,
-    });
+    if (!existingUser.emailVerified) {
+      throw new ApplicationError(
+        UserErrorMessage.UNVERIFIED_EMAIL,
+        HttpStatusCodes.Unauthorized,
+        ErrorCode.DOMAIN_ACCESS_DENIED,
+        { emailId: data.emailId },
+      );
+    }
 
+    if (existingUser.accountStatus !== AccountStatus.VERIFIIED) {
+      throw new ApplicationError(
+        UserErrorMessage.ACCOUNT_SUSPENDED,
+        HttpStatusCodes.Unauthorized,
+        ErrorCode.DOMAIN_ACCESS_DENIED,
+        { emailId: data.emailId },
+      );
+    }
+
+    //generate token and session
     const now = Math.floor(Date.now() / 1000);
     const aceessTokenExpiry = now + AppConfig.ACCESS_TOKEN_LIFE_SECONDS;
     const refreshTokenExpiry = now + AppConfig.REFRESH_TOKEN_LIFE_SECONDS;

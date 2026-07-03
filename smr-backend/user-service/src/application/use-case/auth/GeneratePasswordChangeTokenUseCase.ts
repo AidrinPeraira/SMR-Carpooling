@@ -3,7 +3,7 @@ import { GeneratePasswordChangeTokenRequestDTO } from "#/application/dto/auth/Pa
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IEventBus } from "#/application/interfaces/services/IEventBus";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/IGeneratePasswordChangeToken";
+import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/auth/IGeneratePasswordChangeToken";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import {
   ApplicationError,

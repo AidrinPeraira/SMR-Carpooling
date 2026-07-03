@@ -1,10 +1,10 @@
-import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/IGoogleAuthUseCase";
-import { ILoginUserUseCase } from "#/application/interfaces/use-case/ILoginUserUseCase";
-import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/IRefreshTokenUseCase";
-import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
-import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
-import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/IGeneratePasswordChangeToken";
-import { IChangePasswordUseCase } from "#/application/interfaces/use-case/IChangePasswordUseCase";
+import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/auth/IGoogleAuthUseCase";
+import { ILoginUserUseCase } from "#/application/interfaces/use-case/auth/ILoginUserUseCase";
+import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/auth/IRefreshTokenUseCase";
+import { ISignupUserUseCase } from "#/application/interfaces/use-case/auth/ISignUpUserUseCase";
+import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/auth/IVerifySignupEmailUseCase";
+import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/auth/IGeneratePasswordChangeToken";
+import { IChangePasswordUseCase } from "#/application/interfaces/use-case/auth/IChangePasswordUseCase";
 import { IAuthControllerV1 } from "#/presentation/v1/interfaces/IAuthControllerV1";
 import {
   toLoginDTO,

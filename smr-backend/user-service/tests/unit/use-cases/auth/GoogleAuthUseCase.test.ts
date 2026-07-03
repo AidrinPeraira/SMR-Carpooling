@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GoogleAuthUseCase } from "#/application/use-case/GoggleAuthUseCase";
+import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
 import {
   AccountStatus,
   ApplicationError,

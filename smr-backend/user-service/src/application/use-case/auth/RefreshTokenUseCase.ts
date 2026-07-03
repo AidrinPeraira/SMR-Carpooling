@@ -3,7 +3,7 @@ import { RefreshTokenRequestDTO } from "#/application/dto/auth/RefreshTokenReque
 import { RefreshTokenResultDTO } from "#/application/dto/auth/RefreshTokenResultDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/IRefreshTokenUseCase";
+import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/auth/IRefreshTokenUseCase";
 import {
   AccountStatus,
   ApplicationError,

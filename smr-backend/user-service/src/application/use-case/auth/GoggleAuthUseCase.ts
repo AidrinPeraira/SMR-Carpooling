@@ -1,6 +1,6 @@
 import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
 import { IGoogleAuthService } from "#/application/interfaces/services/IGoogleAuthService";
-import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/IGoogleAuthUseCase";
+import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/auth/IGoogleAuthUseCase";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";

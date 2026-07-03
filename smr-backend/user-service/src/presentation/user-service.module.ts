@@ -1,11 +1,11 @@
 import express from "express";
 import { AppConfig } from "#/application.config";
-import { LoginUserUseCase } from "#/application/use-case/LoginUserUseCase";
-import { SignUpUserUseCase } from "#/application/use-case/SignUpUserUseCase";
-import { VerifySignupEmailUseCase } from "#/application/use-case/VerifySignupEmailUseCase";
-import { RefreshTokenUseCase } from "#/application/use-case/RefreshTokenUseCase";
-import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/GeneratePasswordChangeTokenUseCase";
-import { ChangePasswordUseCase } from "#/application/use-case/ChangePasswordUseCase";
+import { LoginUserUseCase } from "#/application/use-case/auth/LoginUserUseCase";
+import { SignUpUserUseCase } from "#/application/use-case/auth/SignUpUserUseCase";
+import { VerifySignupEmailUseCase } from "#/application/use-case/auth/VerifySignupEmailUseCase";
+import { RefreshTokenUseCase } from "#/application/use-case/auth/RefreshTokenUseCase";
+import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/auth/GeneratePasswordChangeTokenUseCase";
+import { ChangePasswordUseCase } from "#/application/use-case/auth/ChangePasswordUseCase";
 import { UserModel } from "#/infrastructure/database/models/MongoUserModel";
 import { MongoUserRespository } from "#/infrastructure/repository/MongoUserRepository";
 import { CryptoHashingService } from "#/infrastructure/services/CryptoHashingService";
@@ -16,7 +16,7 @@ import { AuthControllerV1 } from "#/presentation/v1/controllers/AuthControllerV1
 import { createAuthRouterV1 } from "#/presentation/v1/routes/AuthRouterV1";
 import { ConsolaLogger } from "@smr/shared";
 import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
-import { GoogleAuthUseCase } from "#/application/use-case/GoggleAuthUseCase";
+import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
 
 /**
  * Composition Root for the User Service.

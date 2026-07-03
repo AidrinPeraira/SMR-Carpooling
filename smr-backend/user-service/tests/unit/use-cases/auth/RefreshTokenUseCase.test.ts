@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { RefreshTokenUseCase } from "#/application/use-case/RefreshTokenUseCase";
+import { RefreshTokenUseCase } from "#/application/use-case/auth/RefreshTokenUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockTokenService } from "&#/mocks/MockTokenService";
 import { createMockUserData } from "&#/fixtures/dto/UserData";

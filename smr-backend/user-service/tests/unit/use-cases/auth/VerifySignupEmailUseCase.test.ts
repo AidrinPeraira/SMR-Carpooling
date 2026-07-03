@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { VerifySignupEmailUseCase } from "#/application/use-case/VerifySignupEmailUseCase";
+import { VerifySignupEmailUseCase } from "#/application/use-case/auth/VerifySignupEmailUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockTokenService } from "&#/mocks/MockTokenService";
 import { createMockUserData } from "&#/fixtures/dto/UserData";

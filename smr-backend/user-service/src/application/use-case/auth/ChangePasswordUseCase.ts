@@ -3,7 +3,7 @@ import { IUserRepository } from "#/application/interfaces/repository/IUserReposi
 import { IEventBus } from "#/application/interfaces/services/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { IChangePasswordUseCase } from "#/application/interfaces/use-case/IChangePasswordUseCase";
+import { IChangePasswordUseCase } from "#/application/interfaces/use-case/auth/IChangePasswordUseCase";
 import {
   ApplicationError,
   EmailVerificationTokenPayload,
