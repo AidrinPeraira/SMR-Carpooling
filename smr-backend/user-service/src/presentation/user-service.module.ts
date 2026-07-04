@@ -14,6 +14,9 @@ import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { RabbitMQEventBus } from "#/infrastructure/services/RabbitMQEventBus";
 import { AuthControllerV1 } from "#/presentation/v1/controllers/AuthControllerV1";
 import { createAuthRouterV1 } from "#/presentation/v1/routes/AuthRouterV1";
+import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
+import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
+import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
 import { ConsolaLogger } from "@smr/shared";
 import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
 import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
@@ -88,6 +91,13 @@ const changePasswordUseCase = new ChangePasswordUseCase(
   rabbitMQEventBus,
 );
 
+const getUserUseCase = new GetUserUseCase(mongoUserRepository);
+
+const profileControllerV1 = new ProfileControllerV1(
+  consolaLogger,
+  getUserUseCase,
+);
+
 const authControllerV1 = new AuthControllerV1(
   consolaLogger,
   signUpUseUseCase,
@@ -101,8 +111,10 @@ const authControllerV1 = new AuthControllerV1(
 
 // v1 router setup
 const authRouterV1 = createAuthRouterV1(authControllerV1);
+const profileRouterV1 = createProfileRouterV1(profileControllerV1);
 const v1Router = express.Router();
 v1Router.use("/auth", authRouterV1);
+v1Router.use("/profile", profileRouterV1);
 
 //exporting versioned routeres
 export const userServiceRouters = {

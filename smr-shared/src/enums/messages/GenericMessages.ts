@@ -5,6 +5,7 @@ export enum GenericSuccessMessage {
 
 export enum GenericErrorMessage {
   INTERNAL_SERVER_ERROR = "An unexpected error occurred. Please try again later.",
+  BAD_REQUEST = "The request is invalid or cannot be served.",
   UNAUTHORIZED = "You do not have permission to perform this action.",
   FORBIDDEN = "Access to this resource is denied.",
   VALIDATION_ERROR = "The provided data is invalid or malformed.",

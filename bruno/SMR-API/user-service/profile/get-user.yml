@@ -1,0 +1,145 @@
+info:
+  name: get-user
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:4001/v1/profile
+  headers:
+    - name: x-user-id
+      value: 58125c248ef0d70a22e261e678d5e519
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: failed
+    request:
+      url: http://localhost:4001/v1/profile
+      method: GET
+      headers:
+        - name: x-user-id
+          value: ""
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "164"
+        - name: etag
+          value: W/"a4-fzFdPLnAzR2YK7sxiNkezDVGOcA"
+        - name: date
+          value: Fri, 03 Jul 2026 17:59:51 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "The request is invalid or cannot be served.",
+            "error": {
+              "code": "ERR_INPUT_VALIDATION_FAILED",
+              "details": {
+                "reason": "User ID is required."
+              }
+            }
+          }
+  - name: success
+    request:
+      url: http://localhost:4001/v1/profile
+      method: GET
+      headers:
+        - name: x-user-id
+          value: 58125c248ef0d70a22e261e678d5e519
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "225"
+        - name: etag
+          value: W/"e1-sZuwXABhrZEzNfUxsWttS51Hz/Q"
+        - name: date
+          value: Fri, 03 Jul 2026 18:01:59 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": {
+              "first_name": "Aidrin",
+              "last_name": "Peraira",
+              "user_id": "58125c248ef0d70a22e261e678d5e519",
+              "user_role": "passenger",
+              "email_id": "aidrin.peraira@gmail.com"
+            }
+          }
