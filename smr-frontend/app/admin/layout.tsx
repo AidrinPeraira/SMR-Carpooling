@@ -1,5 +1,4 @@
 import { SideNav } from "@/components/SideNav";
-import PortalNavbar from "@/components/PortalNavbar";
 import { ReactNode } from "react";
 import {
   LayoutDashboard,
@@ -62,13 +61,10 @@ export default function AdminLayout({ children }: Props) {
   ];
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-surface-base">
-      <PortalNavbar />
-      <div className="flex-1 min-h-0">
-        <SideNav items={adminItems} groups={adminGroups}>
-          {children}
-        </SideNav>
-      </div>
+    <div className="h-screen w-screen overflow-hidden">
+      <SideNav items={adminItems} groups={adminGroups}>
+        {children}
+      </SideNav>
     </div>
   );
 }

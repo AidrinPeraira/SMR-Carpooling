@@ -8,9 +8,10 @@ import {
   SidebarHeader,
   SidebarItem,
 } from "@smr/ui";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface SideNavItem {
   name: string;
@@ -27,12 +28,19 @@ interface SideNavProps {
   groups?: SideNavGroup[];
   items?: SideNavItem[];
   onLogout?: () => void;
+  header?: ReactNode;
   children: ReactNode;
 }
 
-export function SideNav({ groups, items, onLogout, children }: SideNavProps) {
+export function SideNav({ groups, items, onLogout, header, children }: SideNavProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const pathname = usePathname();
+  const [animateIn, setAnimateIn] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setAnimateIn(true), 50);
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Normalize groups
   const navGroups: SideNavGroup[] = [
@@ -44,8 +52,14 @@ export function SideNav({ groups, items, onLogout, children }: SideNavProps) {
   const allHrefs = navGroups.flatMap((group) => group.items.map((item) => item.href));
 
   return (
-    <div className="flex h-full w-full overflow-hidden">
-      <Sidebar isCollapsed={isCollapsed} className="shrink-0 bg-surface-primary border-r-0">
+    <div className="flex h-full w-full overflow-hidden bg-surface-primary">
+      <Sidebar
+        isCollapsed={isCollapsed}
+        className={cn(
+          "shrink-0 bg-surface-primary border-r-0 transition-all duration-500 ease-out",
+          !animateIn && "w-0 p-0 border-r-0 opacity-0 -translate-x-full overflow-hidden"
+        )}
+      >
         <SidebarHeader
           isCollapsed={isCollapsed}
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -105,12 +119,23 @@ export function SideNav({ groups, items, onLogout, children }: SideNavProps) {
         </SidebarFooter>
       </Sidebar>
 
-      <main 
-        className="flex-1 min-w-0 overflow-y-auto bg-surface-base"
-        style={{ boxShadow: "inset 4px 4px 8px -2px rgba(0, 0, 0, 0.06)" }}
-      >
-        {children}
-      </main>
+      {/* Right Content Area */}
+      <div className="flex flex-col flex-1 min-w-0 h-full">
+        {header}
+        
+        {/* Canvas Padding Wrapper */}
+        <div className={`flex-1 min-h-0 w-full pr-4 pb-4 ${header ? "pt-0" : "pt-4"}`}>
+          {/* Page Canvas (Card) */}
+          <main 
+            className="h-full w-full overflow-y-auto bg-surface-base rounded-2xl"
+            style={{ 
+              boxShadow: "inset 4px 4px 10px -2px rgba(0, 0, 0, 0.06), inset -4px -4px 10px -2px rgba(0, 0, 0, 0.04)" 
+            }}
+          >
+            {children}
+          </main>
+        </div>
+      </div>
     </div>
   );
 }

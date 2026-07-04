@@ -34,13 +34,10 @@ export default function ProfileLayout({ children }: Props) {
   ];
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-surface-base">
-      <PortalNavbar />
-      <div className="flex-1 min-h-0">
-        <SideNav items={profileNavItems}>
-          {children}
-        </SideNav>
-      </div>
+    <div className="h-screen w-screen overflow-hidden">
+      <SideNav items={profileNavItems} header={<PortalNavbar />}>
+        {children}
+      </SideNav>
     </div>
   );
 }
