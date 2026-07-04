@@ -8,6 +8,9 @@ export function toGetUserResult(data: GetUserResultDTO): GetUserResult {
     user_id: data.user.userId,
     user_role: data.user.userRole,
     email_id: data.user.emailId,
+    phone_number: data.user.phoneNumber,
+    is_driver: data.user.isDriver,
+    created_at: data.user.createdAt.toISOString(),
     profile_image: data.user.profileImage,
   };
 }

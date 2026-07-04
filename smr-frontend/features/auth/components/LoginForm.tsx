@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { logger } from "@/lib/logger";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   className?: string;
@@ -17,6 +18,7 @@ interface Props {
 
 export function LoginForm({ className }: Props) {
   const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
   const toast = useToast();
   const router = useRouter();
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
@@ -37,6 +39,11 @@ export function LoginForm({ className }: Props) {
         const result = await loginUserAction(data);
         logger.info("Handle login result: ", result);
         if (result.success) {
+          //we cache the data using tanstack
+          if (result.payload?.user) {
+            queryClient.setQueryData(["currentUser"], result.payload.user);
+          }
+
           toast(result.message || "User login success!", {
             variant: "success",
             description: result.description,

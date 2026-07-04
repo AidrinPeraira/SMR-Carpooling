@@ -28,6 +28,9 @@ export interface LoginResult {
     email_id: string;
     user_role: UserRole;
     user_id: string;
+    phone_number: string;
+    is_driver: boolean;
+    created_at: string;
     profile_image?: string;
   };
   access_token: string;
@@ -61,4 +64,3 @@ export interface ChangePasswordRequest {
   confirm_password: string;
   token: string;
 }
-

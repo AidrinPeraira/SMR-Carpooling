@@ -8,7 +8,7 @@ import { setAuthCookies } from "@/lib/auth-cookies";
 
 export async function VerifySignupEmailAction(
   data: VerifyEmailRequest,
-): Promise<ActionResponse> {
+): Promise<ActionResponse<LoginResult>> {
   logger.info("Signup email verification action called");
 
   try {

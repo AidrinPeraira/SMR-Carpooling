@@ -40,6 +40,9 @@ export class GetUserUseCase implements IGetUserUseCase {
         lastName: existingUser.lastName,
         emailId: existingUser.emailId,
         userRole: existingUser.userRole,
+        phoneNumber: existingUser.phoneNumber,
+        isDriver: existingUser.isDriver,
+        createdAt: existingUser.createdAt,
         profileImage: existingUser.profileImage,
       },
     };

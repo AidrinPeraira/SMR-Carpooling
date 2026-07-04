@@ -6,5 +6,8 @@ export interface GetUserResult {
   email_id: string;
   user_role: UserRole;
   user_id: string;
+  phone_number: string;
+  is_driver: boolean;
+  created_at: string;
   profile_image?: string;
 }

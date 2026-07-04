@@ -7,6 +7,9 @@ export interface GetUserResultDTO {
     emailId: string;
     userRole: UserRole;
     userId: string;
+    phoneNumber: string;
+    isDriver: boolean;
+    createdAt: Date;
     profileImage?: string;
   };
 }
