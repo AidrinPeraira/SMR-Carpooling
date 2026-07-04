@@ -38,8 +38,11 @@ export function VerifySignupEmailCard() {
 
         if (result.success) {
           if (result.payload?.user) {
-            // we cahce the data in tanstack
             queryClient.setQueryData(["currentUser"], result.payload.user);
+            queryClient.setQueryDefaults(["currentUser"], {
+              staleTime: Infinity,
+              gcTime: Infinity,
+            });
           }
 
           toast(result.message, {

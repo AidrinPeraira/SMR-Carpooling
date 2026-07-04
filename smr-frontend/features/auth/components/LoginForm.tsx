@@ -39,9 +39,12 @@ export function LoginForm({ className }: Props) {
         const result = await loginUserAction(data);
         logger.info("Handle login result: ", result);
         if (result.success) {
-          //we cache the data using tanstack
           if (result.payload?.user) {
             queryClient.setQueryData(["currentUser"], result.payload.user);
+            queryClient.setQueryDefaults(["currentUser"], {
+              staleTime: Infinity,
+              gcTime: Infinity,
+            });
           }
 
           toast(result.message || "User login success!", {

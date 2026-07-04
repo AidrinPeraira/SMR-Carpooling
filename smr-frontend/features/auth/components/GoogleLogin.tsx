@@ -40,8 +40,11 @@ export function GoogleLogin({ className }: Props) {
         logger.info("Handle Google login result: ", result);
         if (result.success) {
           if (result.payload?.user) {
-            //we cache the data using tanstack
             queryClient.setQueryData(["currentUser"], result.payload.user);
+            queryClient.setQueryDefaults(["currentUser"], {
+              staleTime: Infinity,
+              gcTime: Infinity,
+            });
           }
 
           toast(result.message || "Google login success!", {
