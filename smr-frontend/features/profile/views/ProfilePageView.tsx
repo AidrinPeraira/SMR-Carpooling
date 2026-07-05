@@ -14,7 +14,7 @@ export async function ProfilePageView() {
         user = result.payload;
       }
     }
-  } catch (err) {
+  } catch {
     // Graceful fallback to null user
   }
 

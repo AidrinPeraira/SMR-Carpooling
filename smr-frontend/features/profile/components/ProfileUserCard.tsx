@@ -1,6 +1,7 @@
 import { Card, CardHeader, CardBody } from "@smr/ui";
 import { GetUserResult } from "@smr/shared";
 import { Edit, User } from "lucide-react";
+import Image from "next/image";
 
 interface Props {
   user: GetUserResult | null;
@@ -25,9 +26,11 @@ export function ProfileUserCard({ user }: Props) {
         <div className="flex items-center gap-4">
           <div className="w-20 h-20 rounded-full overflow-hidden border border-accent shadow-sm bg-surface-muted flex items-center justify-center">
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt="User profile"
+                width={80}
+                height={80}
                 className="w-full h-full object-cover"
               />
             ) : (

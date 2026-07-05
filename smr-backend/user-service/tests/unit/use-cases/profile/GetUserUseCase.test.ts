@@ -33,6 +33,9 @@ describe("GetUserUseCase", () => {
         lastName: mockUser.lastName,
         emailId: mockUser.emailId,
         userRole: mockUser.userRole,
+        phoneNumber: mockUser.phoneNumber,
+        isDriver: mockUser.isDriver,
+        createdAt: mockUser.createdAt,
         profileImage: mockUser.profileImage,
       },
     });
