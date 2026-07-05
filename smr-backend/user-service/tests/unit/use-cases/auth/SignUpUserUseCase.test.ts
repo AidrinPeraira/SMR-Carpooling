@@ -11,8 +11,8 @@ import { IEventBus } from "#/application/interfaces/services/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
-import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
-import { SignUpUserUseCase } from "#/application/use-case/SignUpUserUseCase";
+import { ISignupUserUseCase } from "#/application/interfaces/use-case/auth/ISignUpUserUseCase";
+import { SignUpUserUseCase } from "#/application/use-case/auth/SignUpUserUseCase";
 import { ApplicationError } from "@smr/shared";
 import { describe, expect, it, vi } from "vitest";
 

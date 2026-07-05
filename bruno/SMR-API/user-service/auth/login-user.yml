@@ -5,16 +5,31 @@ info:
 
 http:
   method: POST
-  url: http://localhost:4001/v1/auth/login
+  url: http://localhost:4000/api/v1/auth/login
   body:
     type: json
     data: |2-
-      
-       {
-         "email_id": "aidrin@test.com",
-         "password": "Passworwwd123!"
-       }
+        {
+          
+          "email_id": "timox75115@kinws.com",
+
+          "password": "Password123!"
+
+        }
   auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const data = res.body
+
+        if (data && data.access_token) {
+          bru.setCookie({
+            name: 'access_token',
+            value: data.access_token
+          });
+        }
 
 settings:
   encodeUrl: true
@@ -23,18 +38,20 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: success response
+  - name: example-sucess
     request:
-      url: http://localhost:4001/v1/auth/login
+      url: http://localhost:4000/api/v1/auth/login
       method: POST
       body:
         type: json
         data: |2-
-          
-           {
-             "email_id": "aidrin@test.com",
-             "password": "Password123!"
-           }
+            {
+              
+              "email_id": "timox75115@kinws.com",
+
+              "password": "Password123!"
+
+            }
     response:
       status: 200
       statusText: OK
@@ -68,11 +85,11 @@ examples:
         - name: content-type
           value: application/json; charset=utf-8
         - name: content-length
-          value: "971"
+          value: "1053"
         - name: etag
-          value: W/"3cb-jSTgh2B8tfIG2bs+tVcq32fcXeE"
+          value: W/"41d-roC1KfiYE+EBNnq7M68GBE2GqHE"
         - name: date
-          value: Thu, 04 Jun 2026 11:44:23 GMT
+          value: Sun, 05 Jul 2026 11:24:45 GMT
         - name: connection
           value: keep-alive
         - name: keep-alive
@@ -85,80 +102,16 @@ examples:
             "message": "Successfully logged in.",
             "payload": {
               "user": {
-                "first_name": "Aidrin",
-                "last_name": "Peraira",
-                "email_id": "aidrin@test.com",
+                "first_name": "User",
+                "last_name": "Two",
+                "email_id": "timox75115@kinws.com",
                 "user_role": "passenger",
-                "user_id": "a389b3d51070391ad6588f6fd993a074"
+                "user_id": "cfe5d0f4a63773876819827f5bba61b3",
+                "phone_number": "9876543210",
+                "is_driver": false,
+                "created_at": "2026-07-05T11:15:06.791Z"
               },
-              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImEzODliM2Q1MTA3MDM5MWFkNjU4OGY2ZmQ5OTNhMDc0IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluQHRlc3QuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4MDU3MzQ2MywiZXhwIjoxNzgwNTc0MzYzfQ.vQrh_d6vYEmf6wNkhiUH25Nfg49nqlADEplVBqPxiQ4",
-              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImEzODliM2Q1MTA3MDM5MWFkNjU4OGY2ZmQ5OTNhMDc0IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluQHRlc3QuY29tIn0sInRva2VuVHlwZSI6InJlZnJlc2hfdG9rZW4iLCJpYXQiOjE3ODA1NzM0NjMsImV4cCI6MTc4MDc0NjI2M30.F5ZmxM-YjZEpM0tgxHoTXJ9VRNRMaH8jBiSqtBuGmWc"
-            }
-          }
-  - name: "failed response: Password incorrect"
-    request:
-      url: http://localhost:4001/v1/auth/login
-      method: POST
-      body:
-        type: json
-        data: |2-
-          
-           {
-             "email_id": "aidrin@test.com",
-             "password": "Passworwwd123!"
-           }
-    response:
-      status: 401
-      statusText: Unauthorized
-      headers:
-        - name: access-control-allow-origin
-          value: "*"
-        - name: content-security-policy
-          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
-        - name: cross-origin-opener-policy
-          value: same-origin
-        - name: cross-origin-resource-policy
-          value: same-origin
-        - name: origin-agent-cluster
-          value: ?1
-        - name: referrer-policy
-          value: no-referrer
-        - name: strict-transport-security
-          value: max-age=31536000; includeSubDomains
-        - name: x-content-type-options
-          value: nosniff
-        - name: x-dns-prefetch-control
-          value: off
-        - name: x-download-options
-          value: noopen
-        - name: x-frame-options
-          value: SAMEORIGIN
-        - name: x-permitted-cross-domain-policies
-          value: none
-        - name: x-xss-protection
-          value: "0"
-        - name: content-type
-          value: application/json; charset=utf-8
-        - name: content-length
-          value: "161"
-        - name: etag
-          value: W/"a1-l9maXf5LyCjtpdfieHwWuc6Lf7I"
-        - name: date
-          value: Thu, 04 Jun 2026 11:44:41 GMT
-        - name: connection
-          value: keep-alive
-        - name: keep-alive
-          value: timeout=5
-      body:
-        type: json
-        data: |-
-          {
-            "success": false,
-            "message": "The email or password you entered is incorrect.",
-            "error": {
-              "code": "ERR_DOMAIN_ACCESS_DENIED",
-              "details": {
-                "emailId": "aidrin@test.com"
-              }
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjUwNjg1LCJleHAiOjE3ODMyNTE1ODV9._O2sGtSacG05tPK_5Eh-lh_TIfCxLjvksAN9JMSzWWY",
+              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoicmVmcmVzaF90b2tlbiIsImlhdCI6MTc4MzI1MDY4NSwiZXhwIjoxNzgzNDIzNDg1fQ.25y-S0_L_jALYcnEwJbgdGoSPy5ny7G0wOsHcS6kOA4"
             }
           }

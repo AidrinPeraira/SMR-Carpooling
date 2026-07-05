@@ -1,36 +1,45 @@
 import { AppConfig } from "#/application.config";
-import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
-import { VerifySignupEmailRequestDTO } from "#/application/dto/auth/VerifySignupEmailRequestDTO";
+import { RefreshTokenRequestDTO } from "#/application/dto/auth/RefreshTokenRequestDTO";
+import { RefreshTokenResultDTO } from "#/application/dto/auth/RefreshTokenResultDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/IVerifySignupEmailUseCase";
+import { IRefreshTokenUseCase } from "#/application/interfaces/use-case/auth/IRefreshTokenUseCase";
 import {
   AccountStatus,
   ApplicationError,
   AuthTokenPayload,
-  EmailVerificationTokenPayload,
   ErrorCode,
+  GenericErrorMessage,
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
 } from "@smr/shared";
 
-export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
+export class RefreshTokenUseCase implements IRefreshTokenUseCase {
   constructor(
     private readonly _userRepository: IUserRepository,
     private readonly _tokenService: ITokenService,
   ) {}
 
-  async execute(
-    data: VerifySignupEmailRequestDTO,
-  ): Promise<LoginUserResultDTO> {
-    const tokenPayload =
-      this._tokenService.verifyToken<EmailVerificationTokenPayload>(
-        data.verificationToken,
+  async execute(data: RefreshTokenRequestDTO): Promise<RefreshTokenResultDTO> {
+    const tokenPayload = this._tokenService.verifyRefreshToken(
+      data.refreshToken,
+    );
+
+    if (tokenPayload.tokenType !== TokenType.REFRESH_TOKEN) {
+      throw new ApplicationError(
+        GenericErrorMessage.UNAUTHORIZED,
+        HttpStatusCodes.Unauthorized,
+        ErrorCode.INPUT_UNAUTHORIZED,
+        {
+          location: "Refresh token use case",
+          description: "Token is not a refresh token",
+        },
       );
+    }
 
     const existingUser = await this._userRepository.findByCustomId(
-      tokenPayload.userId,
+      tokenPayload.user.userId,
     );
 
     if (!existingUser) {
@@ -38,32 +47,26 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { userId: tokenPayload.userId, emailId: tokenPayload.emailId },
-      );
-    }
-
-    if (
-      !existingUser.verificationToken ||
-      existingUser.verificationToken.value !== data.verificationToken ||
-      existingUser.verificationToken.isExpired()
-    ) {
-      throw new ApplicationError(
-        UserErrorMessage.INVALID_CREDENTIALS,
-        HttpStatusCodes.BadRequest,
-        ErrorCode.DOMAIN_ACCESS_DENIED,
         {
-          userId: tokenPayload.userId,
-          emailId: tokenPayload.emailId,
+          location: "Refresh token use case",
+          description: "User not found matching refresh token owner ID",
         },
       );
     }
 
-    await this._userRepository.updateByCustomId(existingUser.userId, {
-      emailVerified: true,
-      accountStatus: AccountStatus.VERIFIIED,
-      verificationToken: undefined,
-    });
+    if (existingUser.accountStatus == AccountStatus.BLOCKED) {
+      throw new ApplicationError(
+        UserErrorMessage.ACCOUNT_SUSPENDED,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        {
+          location: "Refresh token use case",
+          description: "User account status is blocked",
+        },
+      );
+    }
 
+    //generate token and session
     const now = Math.floor(Date.now() / 1000);
     const aceessTokenExpiry = now + AppConfig.ACCESS_TOKEN_LIFE_SECONDS;
     const refreshTokenExpiry = now + AppConfig.REFRESH_TOKEN_LIFE_SECONDS;
@@ -100,17 +103,6 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
     const refreshToken =
       this._tokenService.generateRefreshToken(refreshTokenPayload);
 
-    return {
-      user: {
-        userId: existingUser.userId,
-        userRole: existingUser.userRole,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        emailId: existingUser.emailId,
-        profileImage: existingUser.profileImage,
-      },
-      accessToken,
-      refreshToken,
-    };
+    return { accessToken, refreshToken };
   }
 }

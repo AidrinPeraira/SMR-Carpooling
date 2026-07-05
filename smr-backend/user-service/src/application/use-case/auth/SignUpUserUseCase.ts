@@ -6,7 +6,7 @@ import { IEventBus } from "#/application/interfaces/services/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
-import { ISignupUserUseCase } from "#/application/interfaces/use-case/ISignUpUserUseCase";
+import { ISignupUserUseCase } from "#/application/interfaces/use-case/auth/ISignUpUserUseCase";
 import { UserEntity } from "#/domain/entities/UserEntity";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import {
@@ -14,7 +14,6 @@ import {
   ApplicationError,
   EmailVerificationTokenPayload,
   ErrorCode,
-  ErrorDetails,
   EventName,
   HttpStatusCodes,
   TokenType,
@@ -56,7 +55,10 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
         UserErrorMessage.EMAIL_ALREADY_EXISTS,
         HttpStatusCodes.Conflict,
         ErrorCode.DOMAIN_ALREADY_EXISTS,
-        ErrorDetails.DOMAIN_ALREADY_EXISTS,
+        {
+          location: "Sign up user use case",
+          description: "User email already exists and is verified",
+        },
       );
     }
 

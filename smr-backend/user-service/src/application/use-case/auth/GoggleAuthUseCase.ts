@@ -1,6 +1,6 @@
 import { LoginUserResultDTO } from "#/application/dto/auth/LoginUserResultDTO";
 import { IGoogleAuthService } from "#/application/interfaces/services/IGoogleAuthService";
-import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/IGoogleAuthUseCase";
+import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/auth/IGoogleAuthUseCase";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
@@ -32,7 +32,11 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         UserErrorMessage.INVALID_CREDENTIALS,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_VALIDATION_ERROR,
-        { reason: "Google profile does not contain a valid email address." },
+        {
+          location: "Google auth use case",
+          description: "Google profile does not contain a valid email address.",
+          reason: "Google profile does not contain a valid email address.",
+        },
       );
     }
 
@@ -67,7 +71,11 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: user.emailId },
+        {
+          location: "Google auth use case",
+          description: "User account status is blocked or suspended",
+          emailId: user.emailId,
+        },
       );
     }
     //generate token
@@ -114,6 +122,9 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         firstName: user.firstName,
         lastName: user.lastName,
         emailId: user.emailId,
+        phoneNumber: user.phoneNumber,
+        isDriver: user.isDriver,
+        createdAt: user.createdAt,
         profileImage: user.profileImage,
       },
       accessToken,

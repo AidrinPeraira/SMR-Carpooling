@@ -67,3 +67,7 @@
 - [ ] wallet
 - [ ] Cancellation & Refunds
 - [ ] Transaction history
+
+## Common Features
+
+- [ ] System wide config with redundant db across services

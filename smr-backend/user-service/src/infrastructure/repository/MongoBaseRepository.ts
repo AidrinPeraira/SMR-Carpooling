@@ -2,7 +2,6 @@ import { IBaseRepository } from "#/application/interfaces/repository/IBaseReposi
 import {
   ApplicationError,
   ErrorCode,
-  ErrorDetails,
   GenericErrorMessage,
   HttpStatusCodes,
 } from "@smr/shared";
@@ -100,7 +99,10 @@ export abstract class MongoBaseRepository<
         GenericErrorMessage.INTERNAL_SERVER_ERROR,
         HttpStatusCodes.NotModified,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
+        {
+          location: "Mongo base repository - updateById",
+          description: "Database updateById operation failed or document not modified",
+        },
       );
     }
 
@@ -135,7 +137,10 @@ export abstract class MongoBaseRepository<
         GenericErrorMessage.INTERNAL_SERVER_ERROR,
         HttpStatusCodes.NotModified,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
+        {
+          location: "Mongo base repository - updateByCustomId",
+          description: "Database updateByCustomId operation failed or document not modified",
+        },
       );
     }
 
@@ -160,7 +165,10 @@ export abstract class MongoBaseRepository<
         GenericErrorMessage.INTERNAL_SERVER_ERROR,
         HttpStatusCodes.NotModified,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
+        {
+          location: "Mongo base repository - deleteById",
+          description: "Database deleteById operation failed or not acknowledged",
+        },
       );
     }
 
@@ -185,7 +193,10 @@ export abstract class MongoBaseRepository<
         GenericErrorMessage.INTERNAL_SERVER_ERROR,
         HttpStatusCodes.NotModified,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
+        {
+          location: "Mongo base repository - deleteByCustomId",
+          description: "Database deleteByCustomId operation failed or not acknowledged",
+        },
       );
     }
 
@@ -209,7 +220,10 @@ export abstract class MongoBaseRepository<
         GenericErrorMessage.INTERNAL_SERVER_ERROR,
         HttpStatusCodes.NotModified,
         ErrorCode.SYSTEM_DB_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
+        {
+          location: "Mongo base repository - save",
+          description: "Database save operation returned null or failed",
+        },
       );
     }
 

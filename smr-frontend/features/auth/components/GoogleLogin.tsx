@@ -11,6 +11,7 @@ import { useToast } from "@smr/ui";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { logger } from "@/lib/logger";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   className?: string;
@@ -18,6 +19,7 @@ interface Props {
 
 export function GoogleLogin({ className }: Props) {
   const [, startTransition] = useTransition();
+  const queryClient = useQueryClient();
   const googleClientId = String(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "");
   const toast = useToast();
   const router = useRouter();
@@ -37,6 +39,14 @@ export function GoogleLogin({ className }: Props) {
         const result = await googleLoginAction(token);
         logger.info("Handle Google login result: ", result);
         if (result.success) {
+          if (result.payload?.user) {
+            queryClient.setQueryData(["currentUser"], result.payload.user);
+            queryClient.setQueryDefaults(["currentUser"], {
+              staleTime: Infinity,
+              gcTime: Infinity,
+            });
+          }
+
           toast(result.message || "Google login success!", {
             variant: "success",
             description: result.description,

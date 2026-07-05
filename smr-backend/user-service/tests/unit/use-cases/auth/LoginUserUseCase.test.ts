@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { LoginUserUseCase } from "#/application/use-case/LoginUserUseCase";
+import { LoginUserUseCase } from "#/application/use-case/auth/LoginUserUseCase";
 import { LoginUserRequestDTO } from "#/application/dto/auth/LoginUserRequestDTO";
 import {
   AccountStatus,
@@ -68,7 +68,11 @@ describe("LoginUserUseCase", () => {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { emailId: loginRequest.emailId },
+        {
+          location: "Login user use case",
+          description: "User not found with matching email",
+          emailId: loginRequest.emailId,
+        },
       ),
     );
   });
@@ -84,7 +88,11 @@ describe("LoginUserUseCase", () => {
         UserErrorMessage.INVALID_CREDENTIALS,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: loginRequest.emailId },
+        {
+          location: "Login user use case",
+          description: "Password mismatch",
+          emailId: loginRequest.emailId,
+        },
       ),
     );
   });
@@ -101,7 +109,11 @@ describe("LoginUserUseCase", () => {
         UserErrorMessage.UNVERIFIED_EMAIL,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: loginRequest.emailId },
+        {
+          location: "Login user use case",
+          description: "User email address is not verified",
+          emailId: loginRequest.emailId,
+        },
       ),
     );
   });
@@ -121,7 +133,11 @@ describe("LoginUserUseCase", () => {
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: loginRequest.emailId },
+        {
+          location: "Login user use case",
+          description: "User account status is not verified/active",
+          emailId: loginRequest.emailId,
+        },
       ),
     );
   });

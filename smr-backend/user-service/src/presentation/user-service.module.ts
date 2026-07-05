@@ -1,11 +1,11 @@
 import express from "express";
 import { AppConfig } from "#/application.config";
-import { LoginUserUseCase } from "#/application/use-case/LoginUserUseCase";
-import { SignUpUserUseCase } from "#/application/use-case/SignUpUserUseCase";
-import { VerifySignupEmailUseCase } from "#/application/use-case/VerifySignupEmailUseCase";
-import { RefreshTokenUseCase } from "#/application/use-case/RefreshTokenUseCase";
-import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/GeneratePasswordChangeTokenUseCase";
-import { ChangePasswordUseCase } from "#/application/use-case/ChangePasswordUseCase";
+import { LoginUserUseCase } from "#/application/use-case/auth/LoginUserUseCase";
+import { SignUpUserUseCase } from "#/application/use-case/auth/SignUpUserUseCase";
+import { VerifySignupEmailUseCase } from "#/application/use-case/auth/VerifySignupEmailUseCase";
+import { RefreshTokenUseCase } from "#/application/use-case/auth/RefreshTokenUseCase";
+import { GeneratePasswordChangeTokenUseCase } from "#/application/use-case/auth/GeneratePasswordChangeTokenUseCase";
+import { ChangePasswordUseCase } from "#/application/use-case/auth/ChangePasswordUseCase";
 import { UserModel } from "#/infrastructure/database/models/MongoUserModel";
 import { MongoUserRespository } from "#/infrastructure/repository/MongoUserRepository";
 import { CryptoHashingService } from "#/infrastructure/services/CryptoHashingService";
@@ -14,9 +14,13 @@ import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { RabbitMQEventBus } from "#/infrastructure/services/RabbitMQEventBus";
 import { AuthControllerV1 } from "#/presentation/v1/controllers/AuthControllerV1";
 import { createAuthRouterV1 } from "#/presentation/v1/routes/AuthRouterV1";
+import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
+import { UpdateUserUseCase } from "#/application/use-case/profile/UpdateUserUseCase";
+import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
+import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
 import { ConsolaLogger } from "@smr/shared";
 import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
-import { GoogleAuthUseCase } from "#/application/use-case/GoggleAuthUseCase";
+import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
 
 /**
  * Composition Root for the User Service.
@@ -88,6 +92,15 @@ const changePasswordUseCase = new ChangePasswordUseCase(
   rabbitMQEventBus,
 );
 
+const getUserUseCase = new GetUserUseCase(mongoUserRepository);
+const updateUserUseCase = new UpdateUserUseCase(mongoUserRepository, cryptoHashingService);
+
+const profileControllerV1 = new ProfileControllerV1(
+  consolaLogger,
+  getUserUseCase,
+  updateUserUseCase,
+);
+
 const authControllerV1 = new AuthControllerV1(
   consolaLogger,
   signUpUseUseCase,
@@ -101,8 +114,10 @@ const authControllerV1 = new AuthControllerV1(
 
 // v1 router setup
 const authRouterV1 = createAuthRouterV1(authControllerV1);
+const profileRouterV1 = createProfileRouterV1(profileControllerV1);
 const v1Router = express.Router();
 v1Router.use("/auth", authRouterV1);
+v1Router.use("/profile", profileRouterV1);
 
 //exporting versioned routeres
 export const userServiceRouters = {

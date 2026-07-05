@@ -6,7 +6,7 @@ import { ILogger, PasswordChangedEvent } from "@smr/shared";
 export class PasswordChangedHandler implements IEventHandler<PasswordChangedEvent> {
   constructor(
     private readonly _logger: ILogger,
-    private readonly _useCase: ISendPasswordChangedMailUseCase,
+    private readonly _sendPasswordChangedMailUseCase: ISendPasswordChangedMailUseCase,
   ) {}
 
   async handle(event: PasswordChangedEvent): Promise<void> {
@@ -19,6 +19,6 @@ export class PasswordChangedHandler implements IEventHandler<PasswordChangedEven
     this._logger.info("Sending password change notification mail:  ", {
       emailId: dto.emailId,
     });
-    await this._useCase.execute(dto);
+    await this._sendPasswordChangedMailUseCase.execute(dto);
   }
 }

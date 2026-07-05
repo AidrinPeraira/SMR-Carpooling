@@ -3,7 +3,7 @@ import { IUserRepository } from "#/application/interfaces/repository/IUserReposi
 import { IEventBus } from "#/application/interfaces/services/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { IChangePasswordUseCase } from "#/application/interfaces/use-case/IChangePasswordUseCase";
+import { IChangePasswordUseCase } from "#/application/interfaces/use-case/auth/IChangePasswordUseCase";
 import {
   ApplicationError,
   EmailVerificationTokenPayload,
@@ -34,7 +34,11 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { emailId: data.emailId },
+        {
+          location: "Change password use case",
+          description: "User not found with matching email",
+          emailId: data.emailId,
+        },
       );
     }
 
@@ -47,7 +51,11 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase {
         UserErrorMessage.INVALID_TOKEN,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: data.emailId },
+        {
+          location: "Change password use case",
+          description: "Verification token mismatch or expired",
+          emailId: data.emailId,
+        },
       );
     }
 
@@ -60,7 +68,11 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase {
         UserErrorMessage.INVALID_TOKEN,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: data.emailId },
+        {
+          location: "Change password use case",
+          description: "Token type is not a password reset token",
+          emailId: data.emailId,
+        },
       );
     }
 
@@ -69,7 +81,11 @@ export class ChangePasswordUseCase implements IChangePasswordUseCase {
         UserErrorMessage.PASSWORD_MISMATCH,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_VALIDATION_ERROR,
-        { emailId: data.emailId },
+        {
+          location: "Change password use case",
+          description: "Passwords do not match",
+          emailId: data.emailId,
+        },
       );
     }
 

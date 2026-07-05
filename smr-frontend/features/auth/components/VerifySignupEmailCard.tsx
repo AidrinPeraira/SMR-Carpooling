@@ -15,9 +15,11 @@ import { CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function VerifySignupEmailCard() {
   const [pending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
 
   const params = useSearchParams();
   const token = params.get("token");
@@ -35,11 +37,23 @@ export function VerifySignupEmailCard() {
         });
 
         if (result.success) {
+          if (result.payload?.user) {
+            queryClient.setQueryData(["currentUser"], result.payload.user);
+            queryClient.setQueryDefaults(["currentUser"], {
+              staleTime: Infinity,
+              gcTime: Infinity,
+            });
+          }
+
           toast(result.message, {
             variant: "success",
             description: result.description,
           });
-          router.push("/");
+          router.push(
+            result.payload?.user.user_role
+              ? `/${result.payload?.user.user_role}`
+              : "/",
+          );
         } else {
           toast(result.errorMessage, {
             variant: "error",
@@ -57,7 +71,7 @@ export function VerifySignupEmailCard() {
         setFailed(true);
       }
     });
-  }, [token, toast, router]);
+  }, [token, toast, router, queryClient]);
 
   if (!token || failed) {
     return (

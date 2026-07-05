@@ -595,6 +595,111 @@
             class="text-xs font-mono mb-3"
             style="color: var(--color-content-secondary)"
           >
+            Modal.tsx (Interactive Dialog Overlay)
+          </h4>
+          
+          <div class="modal-container relative w-full h-72 border rounded-lg overflow-hidden flex items-center justify-center"
+               style="border-color: var(--color-border-strong); background-color: var(--color-surface-base);">
+            
+            <!-- Simulated background content -->
+            <div class="p-4 space-y-2 text-center select-none">
+              <h5 class="text-xs font-bold" style="color: var(--color-content-primary);">App Workspace Layer</h5>
+              <p class="text-[10px]" style="color: var(--color-content-secondary);">Modal blocks interactions with underlying elements when visible.</p>
+              <button 
+                class="mt-3 px-3 py-1.5 text-xs font-semibold rounded cursor-pointer transition-all shadow-sm"
+                style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                onclick="
+                  const container = this.closest('.modal-container');
+                  container.querySelector('.modal-box').classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+                  container.querySelector('.modal-backdrop').classList.remove('hidden');
+                "
+              >
+                Trigger Modal View
+              </button>
+            </div>
+            
+            <!-- Backdrop Overlay (hidden by default) -->
+            <div 
+              class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity hidden"
+              onclick="
+                const container = this.closest('.modal-container');
+                container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                this.classList.add('hidden');
+              "
+            ></div>
+            
+            <!-- Modal Box -->
+            <div 
+              class="modal-box absolute w-4/5 max-w-[280px] border shadow-2xl rounded-xl flex flex-col p-5 transition-all duration-200 scale-95 opacity-0 pointer-events-none"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-primary);
+              "
+            >
+              <div class="flex items-center justify-between pb-2.5 mb-3 border-b" style="border-color: var(--color-border-subtle);">
+                <h5 class="text-xs font-bold">Secure Account Access</h5>
+                <button 
+                  class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                  onclick="
+                    const container = this.closest('.modal-container');
+                    container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    container.querySelector('.modal-backdrop').classList.add('hidden');
+                  "
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="space-y-2 text-xs">
+                <p style="color: var(--color-content-secondary);" class="text-[11px] leading-relaxed">
+                  Authentication tokens will refresh automatically to ensure secure sessions are preserved.
+                </p>
+                <div class="pt-1.5">
+                  <label class="block text-[9px] uppercase font-bold tracking-wider mb-1" style="color: var(--color-content-tertiary);">Session Key</label>
+                  <input type="password" value="••••••••••••••••" readonly class="w-full px-2 py-1 text-[11px] rounded border" 
+                         style="border-color: var(--color-border-strong); background-color: var(--color-surface-muted); color: var(--color-content-primary);" />
+                </div>
+              </div>
+              
+              <div class="border-t pt-3 mt-4 flex gap-2 justify-end" style="border-color: var(--color-border-subtle);">
+                <button 
+                  class="px-2.5 py-1 text-[10px] font-semibold rounded border cursor-pointer" 
+                  style="border-color: var(--color-border-subtle); background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+                  onclick="
+                    const container = this.closest('.modal-container');
+                    container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    container.querySelector('.modal-backdrop').classList.add('hidden');
+                  "
+                >
+                  Close
+                </button>
+                <button 
+                  class="px-2.5 py-1 text-[10px] font-semibold rounded cursor-pointer" 
+                  style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                  onclick="
+                    const container = this.closest('.modal-container');
+                    container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    container.querySelector('.modal-backdrop').classList.add('hidden');
+                  "
+                >
+                  Authenticate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Spinner.tsx
           </h4>
           <div
@@ -903,18 +1008,21 @@
             class="text-xs font-mono mb-3"
             style="color: var(--color-content-secondary)"
           >
-            Sidebar.tsx Container
+            Sidebar.tsx Container (Grouped & Ungrouped)
           </h4>
           <div
-            class="w-56 border rounded-md p-3.5 flex flex-col gap-4"
+            class="w-56 border rounded-md p-3.5 flex flex-col gap-3.5"
             style="
               border-color: var(--color-border-strong);
               background-color: var(--color-surface-sidebar);
             "
           >
             <div
-              class="flex items-center gap-2 text-xs font-bold"
-              style="color: var(--color-content-primary)"
+              class="flex items-center gap-2 text-xs font-bold pb-2 border-b"
+              style="
+                color: var(--color-content-primary);
+                border-color: var(--color-border-subtle);
+              "
             >
               <div
                 class="w-2.5 h-2.5 rounded-full"
@@ -922,35 +1030,201 @@
               ></div>
               <span>smr-ui Pipeline</span>
             </div>
-            <div class="space-y-1">
-              <div
-                class="px-2.5 py-1.5 text-xs font-semibold rounded shadow-sm"
-                style="
-                  background-color: var(--color-accent);
-                  color: var(--color-accent-fg);
-                "
-              >
-                Domain Models
+
+            <nav class="space-y-3">
+              <!-- Ungrouped Item -->
+              <div class="space-y-1">
+                <a
+                  href="#"
+                  class="flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium rounded transition-colors"
+                  style="color: var(--color-content-primary);"
+                  onmouseover="this.style.backgroundColor = 'var(--color-surface-muted)'"
+                  onmouseout="this.style.backgroundColor = 'transparent'"
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0 opacity-70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Dashboard</span>
+                </a>
               </div>
-              <div
-                class="px-2.5 py-1.5 text-xs font-medium rounded transition-colors"
-                style="color: var(--color-content-secondary)"
-                onmouseover="
-                  this.style.backgroundColor = 'var(--color-surface-muted)'
-                "
-                onmouseout="this.style.backgroundColor = 'transparent'"
-              >
-                Infrastructure Provider
+
+              <!-- Group 1: Bounded Contexts -->
+              <div class="space-y-1">
+                <span
+                  class="px-2.5 text-[9px] font-bold uppercase tracking-wider block mb-1"
+                  style="color: var(--color-content-tertiary);"
+                >
+                  Bounded Contexts
+                </span>
+                <div
+                  class="px-2.5 py-1.5 text-xs font-semibold rounded shadow-sm flex items-center gap-2 cursor-default"
+                  style="
+                    background-color: var(--color-accent);
+                    color: var(--color-accent-fg);
+                  "
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span>Domain Models</span>
+                </div>
+                <div
+                  class="px-2.5 py-1.5 text-xs font-medium rounded transition-colors flex items-center gap-2 cursor-pointer"
+                  style="color: var(--color-content-secondary);"
+                  onmouseover="this.style.backgroundColor = 'var(--color-surface-muted)'"
+                  onmouseout="this.style.backgroundColor = 'transparent'"
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span>Infrastructure</span>
+                </div>
               </div>
-              <div
-                class="px-2.5 py-1.5 text-xs font-medium rounded transition-colors"
-                style="color: var(--color-content-secondary)"
-                onmouseover="
-                  this.style.backgroundColor = 'var(--color-surface-muted)'
+
+              <!-- Group 2: Engine -->
+              <div class="space-y-1">
+                <span
+                  class="px-2.5 text-[9px] font-bold uppercase tracking-wider block mb-1"
+                  style="color: var(--color-content-tertiary);"
+                >
+                  Engine
+                </span>
+                <div
+                  class="px-2.5 py-1.5 text-xs font-medium rounded transition-colors flex items-center gap-2 cursor-pointer"
+                  style="color: var(--color-content-secondary);"
+                  onmouseover="this.style.backgroundColor = 'var(--color-surface-muted)'"
+                  onmouseout="this.style.backgroundColor = 'transparent'"
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>Presentation</span>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
+            Drawer.tsx (Interactive Sheet Preview)
+          </h4>
+          
+          <div class="drawer-container relative w-full h-72 border rounded-lg overflow-hidden flex items-center justify-center"
+               style="border-color: var(--color-border-strong); background-color: var(--color-surface-base);">
+            
+            <!-- Simulated background content -->
+            <div class="p-4 space-y-2 text-center select-none">
+              <h5 class="text-xs font-bold" style="color: var(--color-content-primary);">Main Workspace Viewport</h5>
+              <p class="text-[10px]" style="color: var(--color-content-secondary);">Interactable elements are disabled when drawer overlay is active.</p>
+              <button 
+                class="mt-3 px-3 py-1.5 text-xs font-semibold rounded cursor-pointer transition-all shadow-sm"
+                style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                onclick="
+                  const container = this.closest('.drawer-container');
+                  container.querySelector('.drawer-sheet').classList.remove('translate-x-full');
+                  container.querySelector('.drawer-backdrop').classList.remove('hidden');
                 "
-                onmouseout="this.style.backgroundColor = 'transparent'"
               >
-                Presentation Engine
+                Open Drawer Demo
+              </button>
+            </div>
+            
+            <!-- Backdrop Overlay (hidden by default) -->
+            <div 
+              class="drawer-backdrop absolute inset-0 bg-black/40 backdrop-blur-[1px] transition-opacity hidden"
+              onclick="
+                const container = this.closest('.drawer-container');
+                container.querySelector('.drawer-sheet').classList.add('translate-x-full');
+                this.classList.add('hidden');
+              "
+            ></div>
+            
+            <!-- Drawer Sheet (Sliding from Right, hidden by translate-x-full by default) -->
+            <div 
+              class="drawer-sheet absolute top-0 right-0 h-full w-52 border-l shadow-2xl flex flex-col p-4 transition-transform duration-300 translate-x-full"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-primary);
+              "
+            >
+              <div class="flex items-center justify-between border-b pb-2 mb-4" style="border-color: var(--color-border-subtle);">
+                <div class="flex flex-col">
+                  <h5 class="text-xs font-bold">Filters & Sorting</h5>
+                  <span class="text-[9px]" style="color: var(--color-content-secondary);">Secondary task viewport</span>
+                </div>
+                <button 
+                  class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                  onclick="
+                    const container = this.closest('.drawer-container');
+                    container.querySelector('.drawer-sheet').classList.add('translate-x-full');
+                    container.querySelector('.drawer-backdrop').classList.add('hidden');
+                  "
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- Drawer Content -->
+              <div class="flex-1 space-y-3.5 text-xs overflow-y-auto">
+                <div class="space-y-1">
+                  <span class="text-[9px] uppercase font-bold tracking-wider" style="color: var(--color-content-tertiary);">Sort By</span>
+                  <select class="w-full p-1.5 text-[11px] rounded border focus:outline-none" 
+                          style="border-color: var(--color-border-strong); background-color: var(--color-surface-muted); color: var(--color-content-primary);">
+                    <option>Recent Activity</option>
+                    <option>Status Flag</option>
+                    <option>Node Execution</option>
+                  </select>
+                </div>
+                
+                <div class="space-y-1">
+                  <span class="text-[9px] uppercase font-bold tracking-wider" style="color: var(--color-content-tertiary);">Filter Status</span>
+                  <div class="space-y-1">
+                    <label class="flex items-center gap-1.5 text-[11px] cursor-pointer">
+                      <input type="checkbox" checked class="w-3 h-3 rounded accent-[var(--color-accent)]" />
+                      <span>Active</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 text-[11px] cursor-pointer">
+                      <input type="checkbox" class="w-3 h-3 rounded accent-[var(--color-accent)]" />
+                      <span>Staged</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Drawer Footer -->
+              <div class="border-t pt-3 mt-4 flex gap-2 justify-end" style="border-color: var(--color-border-subtle);">
+                <button 
+                  class="px-2.5 py-1 text-[10px] font-semibold rounded border cursor-pointer" 
+                  style="border-color: var(--color-border-subtle); background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+                  onclick="
+                    const container = this.closest('.drawer-container');
+                    container.querySelector('.drawer-sheet').classList.add('translate-x-full');
+                    container.querySelector('.drawer-backdrop').classList.add('hidden');
+                  "
+                >
+                  Cancel
+                </button>
+                <button 
+                  class="px-2.5 py-1 text-[10px] font-semibold rounded cursor-pointer" 
+                  style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                  onclick="
+                    const container = this.closest('.drawer-container');
+                    container.querySelector('.drawer-sheet').classList.add('translate-x-full');
+                    container.querySelector('.drawer-backdrop').classList.add('hidden');
+                  "
+                >
+                  Apply
+                </button>
               </div>
             </div>
           </div>
