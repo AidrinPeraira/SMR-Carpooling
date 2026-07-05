@@ -1,5 +1,13 @@
-import { GetUserResultDTO } from "#/application/dto/profile/GetUserDTO";
-import { GetUserResult } from "@smr/shared";
+import {
+  GetUserResultDTO,
+  UpdateUserRequestDTO,
+} from "#/application/dto/profile/UserProfileDTO";
+import {
+  GetUserResult,
+  UpdateUserRequest,
+  UpdateUserSchema,
+  zodParser,
+} from "@smr/shared";
 
 export function toGetUserResult(data: GetUserResultDTO): GetUserResult {
   return {
@@ -12,5 +20,17 @@ export function toGetUserResult(data: GetUserResultDTO): GetUserResult {
     is_driver: data.user.isDriver,
     created_at: data.user.createdAt.toISOString(),
     profile_image: data.user.profileImage,
+  };
+}
+
+export function toUpdateUserRequestDTO(data: unknown): UpdateUserRequestDTO {
+  const validated = zodParser<UpdateUserRequest>(UpdateUserSchema, data);
+  return {
+    firstName: validated.first_name,
+    lastName: validated.last_name,
+    emailId: validated.email_id,
+    userId: validated.user_id,
+    profileImage: validated.profile_image,
+    phoneNumber: validated.phone_number,
   };
 }

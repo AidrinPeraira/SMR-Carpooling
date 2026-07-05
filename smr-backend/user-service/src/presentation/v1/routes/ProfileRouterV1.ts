@@ -13,6 +13,7 @@ export function createProfileRouterV1(
   const router = Router();
 
   router.get("/", profileControllerV1.getUser.bind(profileControllerV1));
+  router.patch("/", profileControllerV1.updateUser.bind(profileControllerV1));
 
   return router;
 }

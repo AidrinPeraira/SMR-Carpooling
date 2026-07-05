@@ -13,3 +13,12 @@ export interface GetUserResultDTO {
     profileImage?: string;
   };
 }
+
+export interface UpdateUserRequestDTO {
+  firstName?: string;
+  lastName?: string;
+  emailId?: string;
+  userId: string;
+  phoneNumber?: string;
+  profileImage?: string;
+}

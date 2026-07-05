@@ -1,4 +1,4 @@
-import { GetUserResultDTO } from "#/application/dto/profile/GetUserDTO";
+import { GetUserResultDTO } from "#/application/dto/profile/UserProfileDTO";
 
 export interface IGetUserUseCase {
   /**

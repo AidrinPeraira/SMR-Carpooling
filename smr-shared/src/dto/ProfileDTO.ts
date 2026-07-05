@@ -11,3 +11,12 @@ export interface GetUserResult {
   created_at: string;
   profile_image?: string;
 }
+
+export interface UpdateUserRequest {
+  first_name?: string;
+  last_name?: string;
+  email_id?: string;
+  user_id: string;
+  phone_number?: string;
+  profile_image?: string;
+}

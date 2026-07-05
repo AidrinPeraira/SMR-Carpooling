@@ -15,6 +15,7 @@ import { RabbitMQEventBus } from "#/infrastructure/services/RabbitMQEventBus";
 import { AuthControllerV1 } from "#/presentation/v1/controllers/AuthControllerV1";
 import { createAuthRouterV1 } from "#/presentation/v1/routes/AuthRouterV1";
 import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
+import { UpdateUserUseCase } from "#/application/use-case/profile/UpdateUserUseCase";
 import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
 import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
 import { ConsolaLogger } from "@smr/shared";
@@ -92,10 +93,12 @@ const changePasswordUseCase = new ChangePasswordUseCase(
 );
 
 const getUserUseCase = new GetUserUseCase(mongoUserRepository);
+const updateUserUseCase = new UpdateUserUseCase(mongoUserRepository);
 
 const profileControllerV1 = new ProfileControllerV1(
   consolaLogger,
   getUserUseCase,
+  updateUserUseCase,
 );
 
 const authControllerV1 = new AuthControllerV1(

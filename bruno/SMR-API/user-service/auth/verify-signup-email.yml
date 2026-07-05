@@ -5,11 +5,13 @@ info:
 
 http:
   method: POST
-  url: http:..localhost:4001/v1/auth/verify-email?verification_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzg5YjNkNTEwNzAzOTFhZDY1ODhmNmZkOTkzYTA3NCIsImVtYWlsSWQiOiJhaWRyaW5AdGVzdC5jb20iLCJ0b2tlblR5cGUiOiJlbWFpbF92ZXJpZmljYXRpb25fdG9rZW4iLCJpYXQiOjE3ODA1NzI2MTA3MDYsImV4cCI6MTc4MDU3MzIxMDcwNn0.Z8Ku9Izl99iJ9J5yB96IBImqmJlby11A4dkUSYADeGg
-  params:
-    - name: verification_token
-      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMzg5YjNkNTEwNzAzOTFhZDY1ODhmNmZkOTkzYTA3NCIsImVtYWlsSWQiOiJhaWRyaW5AdGVzdC5jb20iLCJ0b2tlblR5cGUiOiJlbWFpbF92ZXJpZmljYXRpb25fdG9rZW4iLCJpYXQiOjE3ODA1NzI2MTA3MDYsImV4cCI6MTc4MDU3MzIxMDcwNn0.Z8Ku9Izl99iJ9J5yB96IBImqmJlby11A4dkUSYADeGg
-      type: query
+  url: http://localhost:4000/api/v1/auth/verify-email
+  body:
+    type: json
+    data: |-
+      {
+        "verification_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkMDZiNTlhYTBhNzM2Mjg0NjNhNDE4NjRmZjBiZDhhOCIsImVtYWlsSWQiOiJrb2xhdmloMzIwQGtpbndzLmNvbSIsInRva2VuVHlwZSI6ImVtYWlsX3ZlcmlmaWNhdGlvbl90b2tlbiIsImlhdCI6MTc4MzI0NDE3ODAzOCwiZXhwIjoxNzgzMjQ0Nzc4MDM4fQ.cH0NVQ8JqdinbIuTHtR-3JTzpOfpUoy9H3ue2M639Cg"
+      }
   auth: inherit
 
 settings:

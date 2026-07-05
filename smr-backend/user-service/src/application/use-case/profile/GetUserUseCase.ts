@@ -1,4 +1,4 @@
-import { GetUserResultDTO } from "#/application/dto/profile/GetUserDTO";
+import { GetUserResultDTO } from "#/application/dto/profile/UserProfileDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IGetUserUseCase } from "#/application/interfaces/use-case/profile/IGetUserUseCase";
 import {

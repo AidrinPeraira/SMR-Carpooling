@@ -38,7 +38,12 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { userId: tokenPayload.userId, emailId: tokenPayload.emailId },
+        {
+          errorLocation: "Verify signup mail use case",
+          description: "User not found with credentials in token",
+          userId: tokenPayload.userId,
+          emailId: tokenPayload.emailId,
+        },
       );
     }
 
@@ -52,6 +57,8 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
         HttpStatusCodes.BadRequest,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         {
+          errorLocation: "Verify signup email use case",
+          description: "Token not found or mismatch or expired",
           userId: tokenPayload.userId,
           emailId: tokenPayload.emailId,
         },
