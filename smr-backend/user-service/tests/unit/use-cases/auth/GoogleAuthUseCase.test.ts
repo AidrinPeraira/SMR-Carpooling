@@ -117,7 +117,11 @@ describe("GoogleAuthUseCase", () => {
         UserErrorMessage.INVALID_CREDENTIALS,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_VALIDATION_ERROR,
-        { reason: "Google profile does not contain a valid email address." },
+        {
+          location: "Google auth use case",
+          description: "Google profile does not contain a valid email address.",
+          reason: "Google profile does not contain a valid email address.",
+        },
       ),
     );
   });
@@ -141,7 +145,11 @@ describe("GoogleAuthUseCase", () => {
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: suspendedUser.emailId },
+        {
+          location: "Google auth use case",
+          description: "User account status is blocked or suspended",
+          emailId: suspendedUser.emailId,
+        },
       ),
     );
   });

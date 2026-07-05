@@ -29,7 +29,11 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { emailId: data.emailId },
+        {
+          location: "Login user use case",
+          description: "User not found with matching email",
+          emailId: data.emailId,
+        },
       );
     }
 
@@ -44,7 +48,11 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         UserErrorMessage.INVALID_CREDENTIALS,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: data.emailId },
+        {
+          location: "Login user use case",
+          description: "Password mismatch",
+          emailId: data.emailId,
+        },
       );
     }
 
@@ -53,7 +61,11 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         UserErrorMessage.UNVERIFIED_EMAIL,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: data.emailId },
+        {
+          location: "Login user use case",
+          description: "User email address is not verified",
+          emailId: data.emailId,
+        },
       );
     }
 
@@ -62,7 +74,11 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
-        { emailId: data.emailId },
+        {
+          location: "Login user use case",
+          description: "User account status is not verified/active",
+          emailId: data.emailId,
+        },
       );
     }
 

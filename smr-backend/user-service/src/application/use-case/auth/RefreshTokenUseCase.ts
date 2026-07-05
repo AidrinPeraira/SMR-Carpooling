@@ -9,7 +9,6 @@ import {
   ApplicationError,
   AuthTokenPayload,
   ErrorCode,
-  ErrorDetails,
   GenericErrorMessage,
   HttpStatusCodes,
   TokenType,
@@ -32,7 +31,10 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         GenericErrorMessage.UNAUTHORIZED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.INPUT_UNAUTHORIZED,
-        ErrorDetails.INPUT_UNAUTHORIZED,
+        {
+          location: "Refresh token use case",
+          description: "Token is not a refresh token",
+        },
       );
     }
 
@@ -45,7 +47,10 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "Refresh token use case",
+          description: "User not found matching refresh token owner ID",
+        },
       );
     }
 
@@ -54,7 +59,10 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Forbidden,
         ErrorCode.INPUT_FORBIDDEN,
-        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "Refresh token use case",
+          description: "User account status is blocked",
+        },
       );
     }
 

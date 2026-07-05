@@ -7,7 +7,6 @@ import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IU
 import {
   ApplicationError,
   ErrorCode,
-  ErrorDetails,
   HttpStatusCodes,
   UserErrorMessage,
 } from "@smr/shared";
@@ -22,7 +21,11 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "Update user use case",
+          description: "User not found with matching custom ID",
+          userId: data.userId,
+        },
       );
     }
 

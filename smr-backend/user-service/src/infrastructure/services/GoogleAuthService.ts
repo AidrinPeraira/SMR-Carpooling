@@ -32,6 +32,8 @@ export class GoogleAuthService implements IGoogleAuthService {
         HttpStatusCodes.Unauthorized,
         ErrorCode.INPUT_UNAUTHORIZED,
         {
+          location: "Google auth service",
+          description: "Google token validation returned empty payload",
           reason:
             "Google authentication failed. Token validation returned empty payload.",
         },

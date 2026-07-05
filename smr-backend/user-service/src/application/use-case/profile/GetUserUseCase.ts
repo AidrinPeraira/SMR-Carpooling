@@ -18,7 +18,11 @@ export class GetUserUseCase implements IGetUserUseCase {
         GenericErrorMessage.BAD_REQUEST,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_VALIDATION_ERROR,
-        { reason: "User ID is required." },
+        {
+          location: "Get user use case",
+          description: "User ID is required.",
+          reason: "User ID is required.",
+        },
       );
     }
 
@@ -29,7 +33,11 @@ export class GetUserUseCase implements IGetUserUseCase {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { userId },
+        {
+          location: "Get user use case",
+          description: "User not found in repository",
+          userId,
+        },
       );
     }
 

@@ -7,7 +7,6 @@ import {
   AccountStatus,
   ApplicationError,
   ErrorCode,
-  ErrorDetails,
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
@@ -67,7 +66,10 @@ describe("RefreshTokenUseCase", () => {
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "Refresh token use case",
+          description: "User not found matching refresh token owner ID",
+        },
       ),
     );
   });
@@ -89,7 +91,10 @@ describe("RefreshTokenUseCase", () => {
         UserErrorMessage.ACCOUNT_SUSPENDED,
         HttpStatusCodes.Forbidden,
         ErrorCode.INPUT_FORBIDDEN,
-        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "Refresh token use case",
+          description: "User account status is blocked",
+        },
       ),
     );
   });

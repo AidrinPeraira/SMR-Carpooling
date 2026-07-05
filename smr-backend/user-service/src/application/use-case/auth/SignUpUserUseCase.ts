@@ -14,7 +14,6 @@ import {
   ApplicationError,
   EmailVerificationTokenPayload,
   ErrorCode,
-  ErrorDetails,
   EventName,
   HttpStatusCodes,
   TokenType,
@@ -56,7 +55,10 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
         UserErrorMessage.EMAIL_ALREADY_EXISTS,
         HttpStatusCodes.Conflict,
         ErrorCode.DOMAIN_ALREADY_EXISTS,
-        ErrorDetails.DOMAIN_ALREADY_EXISTS,
+        {
+          location: "Sign up user use case",
+          description: "User email already exists and is verified",
+        },
       );
     }
 

@@ -32,7 +32,11 @@ export class GeneratePasswordChangeTokenUseCase implements IGeneratePasswordChan
         UserErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
-        { emailId: data.emailId },
+        {
+          location: "Generate password change token use case",
+          description: "User not found with matching email",
+          emailId: data.emailId,
+        },
       );
     }
 

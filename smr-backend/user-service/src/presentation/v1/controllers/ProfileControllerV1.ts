@@ -8,7 +8,6 @@ import {
 import {
   ApplicationError,
   ErrorCode,
-  ErrorDetails,
   GenericErrorMessage,
   GenericSuccessMessage,
   GetUserResult,
@@ -58,7 +57,10 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
         GenericErrorMessage.BAD_REQUEST,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_FORBIDDEN,
-        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "Profile controller V1 - updateUser",
+          description: "Authenticated user ID does not match target user ID in request body",
+        },
       );
     }
 
