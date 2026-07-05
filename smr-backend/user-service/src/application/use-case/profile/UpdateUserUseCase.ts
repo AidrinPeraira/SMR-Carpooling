@@ -3,6 +3,7 @@ import {
   GetUserResultDTO,
 } from "#/application/dto/profile/UserProfileDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
+import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
 import {
   ApplicationError,
@@ -12,7 +13,10 @@ import {
 } from "@smr/shared";
 
 export class UpdateUserUseCase implements IUpdateUserUseCase {
-  constructor(private readonly _userRespostiry: IUserRepository) {}
+  constructor(
+    private readonly _userRespostiry: IUserRepository,
+    private readonly _hashingService: IHashingService,
+  ) {}
   async execute(data: UpdateUserRequestDTO): Promise<GetUserResultDTO> {
     const existingUser = await this._userRespostiry.findByCustomId(data.userId);
 
@@ -25,6 +29,24 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
           location: "Update user use case",
           description: "User not found with matching custom ID",
           userId: data.userId,
+        },
+      );
+    }
+
+    const passwordMatch = this._hashingService.compareHash(
+      data.password,
+      existingUser.passwordHash,
+    );
+
+    if (!passwordMatch) {
+      throw new ApplicationError(
+        UserErrorMessage.INVALID_CREDENTIALS,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.DOMAIN_ACCESS_DENIED,
+        {
+          location: "Update user use case",
+          description: "User updated rejected due to incorrect password",
+          userId: existingUser.userId,
         },
       );
     }

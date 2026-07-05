@@ -28,8 +28,8 @@ export function toUpdateUserRequestDTO(data: unknown): UpdateUserRequestDTO {
   return {
     firstName: validated.first_name,
     lastName: validated.last_name,
-    emailId: validated.email_id,
     userId: validated.user_id,
+    password: validated.password,
     profileImage: validated.profile_image,
     phoneNumber: validated.phone_number,
   };

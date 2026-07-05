@@ -55,7 +55,7 @@ export function Toast({
       role="status"
       aria-live="polite"
       className={cn(
-        "flex items-center justify-between p-3 rounded border shadow-sm transition-all duration-200 w-full max-w-sm",
+        "flex items-center z-100 justify-between p-3 rounded border shadow-sm transition-all duration-200 w-full max-w-sm",
         styles.container,
         className,
       )}

@@ -4,6 +4,8 @@ import { UpdateUserRequest } from "../../dto";
 export const UpdateUserSchema: z.ZodType<UpdateUserRequest> = z.object({
   user_id: z.string().trim().min(2),
 
+  password: z.string().trim().min(2),
+
   first_name: z
     .string({ error: "First name is required" })
     .trim()
@@ -20,18 +22,6 @@ export const UpdateUserSchema: z.ZodType<UpdateUserRequest> = z.object({
     .regex(/^[a-zA-Z\s]+$/, {
       message: "Last name can only contain letters and spaces",
     })
-    .optional(),
-
-  email_id: z
-    .string({ error: "Email is required" })
-    .trim()
-    .toLowerCase()
-    .min(5, { message: "Email is too short" })
-    .max(255, { message: "Email is too long" })
-    .regex(
-      /^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]{3,})[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i,
-      { message: "Email is of invalid format." },
-    )
     .optional(),
 
   phone_number: z

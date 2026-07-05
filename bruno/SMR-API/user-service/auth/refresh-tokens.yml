@@ -5,12 +5,12 @@ info:
 
 http:
   method: POST
-  url: http://localhost:4001/v1/auth/refresh-token
+  url: http://localhost:4000/api/v1/auth/refresh-token
   body:
     type: json
     data: |-
       {
-        "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaWF0IjoxNzgyMjg1MjI1LCJleHAiOjE3ODI0NTgwMjV9.bKLgpbVoxo4F4aKa5vVOkYfH2eQmjvdwDVMhdC02nCI"
+        "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoicmVmcmVzaF90b2tlbiIsImlhdCI6MTc4MzI1MTA2NywiZXhwIjoxNzgzNDIzODY3fQ.HWlroBZrt5Ntr8wPou_2FpN9ES6sCoes4l51tQ47VmQ"
       }
   auth: inherit
 
@@ -21,15 +21,15 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: success
+  - name: example-success
     request:
-      url: http://localhost:4001/v1/auth/refresh-token
+      url: http://localhost:4000/api/v1/auth/refresh-token
       method: POST
       body:
         type: json
         data: |-
           {
-            "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaWF0IjoxNzgyMjg1MjI1LCJleHAiOjE3ODI0NTgwMjV9.bKLgpbVoxo4F4aKa5vVOkYfH2eQmjvdwDVMhdC02nCI"
+            "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoicmVmcmVzaF90b2tlbiIsImlhdCI6MTc4MzI1MTA2NywiZXhwIjoxNzgzNDIzODY3fQ.HWlroBZrt5Ntr8wPou_2FpN9ES6sCoes4l51tQ47VmQ"
           }
     response:
       status: 200
@@ -64,11 +64,11 @@ examples:
         - name: content-type
           value: application/json; charset=utf-8
         - name: content-length
-          value: "861"
+          value: "824"
         - name: etag
-          value: W/"35d-TQBMGtNa15x4QhA8vu/+Z1iwZ8U"
+          value: W/"338-794El6B3d2QeyA5YnGkny0GCYZI"
         - name: date
-          value: Wed, 24 Jun 2026 12:10:41 GMT
+          value: Sun, 05 Jul 2026 12:43:47 GMT
         - name: connection
           value: keep-alive
         - name: keep-alive
@@ -80,7 +80,7 @@ examples:
             "success": true,
             "message": "Tokens refreshed successfully.",
             "payload": {
-              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODIzMDMwNDEsImV4cCI6MTc4MjMwMzk0MX0.IUGGBRhqmHpbrGvh0DLjVFhZDiewYgT43HM6yXx_D04",
-              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjU4MTM0NzQwOTlhNGQwYTk3OTI5MDlkNTQ3NTgyOTE1IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4gUGVyYWlyYSIsImxhc3ROYW1lIjoiQkNSNzAiLCJlbWFpbElkIjoiNGxwaDQudDNzdDNyQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaWF0IjoxNzgyMzAzMDQxLCJleHAiOjE3ODI0NzU4NDF9.ZKsS6lPh5txwSofYS9QuKbkfoZr9E0u3i3HpJHGbXsY"
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjU1NDI3LCJleHAiOjE3ODMyNTYzMjd9.-q-muOzNa_RZn3u0yG55RbFV_kK2lbHmvQamOn_52aM",
+              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoicmVmcmVzaF90b2tlbiIsImlhdCI6MTc4MzI1NTQyNywiZXhwIjoxNzgzNDI4MjI3fQ.xNQSo5GHyOyKYGQk90Tf0hWsU6kQan1h_dPKfq8Ukiw"
             }
           }

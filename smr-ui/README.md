@@ -20,6 +20,7 @@ smr-ui/src/components/
 ├── feedback/ # Components that communicate system status
 │ ├── Alert/
 │ ├── Dialog/
+│ ├── Modal/
 │ ├── Spinner/
 │ └── Toast/
 ├── forms/ # Components used to collect user input
@@ -32,6 +33,7 @@ smr-ui/src/components/
 │ └── TimePicker/
 ├── layout/ # Components that structure the page visually
 │ ├── Divider/
+│ ├── Drawer/
 │ └── Sidebar/
 └── navigation/ # Components that help the user move around
 └── Pagination/
@@ -42,6 +44,7 @@ smr-ui/src/components/
 - install tha package and import the components to use. The list of components are:
   - Button
   - Label
+  - Modal
 
 - Also add the following line to `globals.css`
 

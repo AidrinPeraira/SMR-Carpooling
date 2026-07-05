@@ -49,7 +49,11 @@ export function VerifySignupEmailCard() {
             variant: "success",
             description: result.description,
           });
-          router.push("/");
+          router.push(
+            result.payload?.user.user_role
+              ? `/${result.payload?.user.user_role}`
+              : "/",
+          );
         } else {
           toast(result.errorMessage, {
             variant: "error",

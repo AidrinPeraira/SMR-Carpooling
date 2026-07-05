@@ -93,7 +93,7 @@ const changePasswordUseCase = new ChangePasswordUseCase(
 );
 
 const getUserUseCase = new GetUserUseCase(mongoUserRepository);
-const updateUserUseCase = new UpdateUserUseCase(mongoUserRepository);
+const updateUserUseCase = new UpdateUserUseCase(mongoUserRepository, cryptoHashingService);
 
 const profileControllerV1 = new ProfileControllerV1(
   consolaLogger,

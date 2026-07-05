@@ -4,6 +4,7 @@ import { ToastProvider } from "@smr/ui";
 import "./globals.css";
 import { QueryToastListener } from "@/components/QueryToastListener";
 import QueryProvider from "@/components/Provider/QueryProvider";
+import { ReactNode } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,8 +26,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
+  modal: ReactNode;
 }>) {
   return (
     <html
@@ -38,6 +41,7 @@ export default function RootLayout({
           <ToastProvider>
             <QueryToastListener />
             {children}
+            {modal}
           </ToastProvider>
         </QueryProvider>
       </body>

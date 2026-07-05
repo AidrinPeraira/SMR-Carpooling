@@ -2,6 +2,7 @@ import { ProfileDriverCard } from "@/features/profile/components/ProfileDriverCa
 import { ProfileUserCard } from "@/features/profile/components/ProfileUserCard";
 import { ProfileVehiclesCard } from "@/features/profile/components/ProfileVehiclesCard";
 import { apiServerFetch } from "@/lib/api-server";
+import { logger } from "@/lib/logger";
 
 export async function ProfilePageView() {
   let user = null;
@@ -14,14 +15,16 @@ export async function ProfilePageView() {
         user = result.payload;
       }
     }
-  } catch {
-    // Graceful fallback to null user
+  } catch (error: unknown) {
+    logger.error("Error fetching user data in profile card: ", error);
   }
 
   return (
     <div className="p-8 py-6 w-full">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-content-primary">Profile Overview</h1>
+        <h1 className="text-3xl font-bold text-content-primary">
+          Profile Overview
+        </h1>
         <p className="text-content-secondary mt-1">
           Manage your personal information and trip preferences.
         </p>

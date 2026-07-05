@@ -15,8 +15,8 @@ export interface GetUserResult {
 export interface UpdateUserRequest {
   first_name?: string;
   last_name?: string;
-  email_id?: string;
   user_id: string;
+  password: string;
   phone_number?: string;
   profile_image?: string;
 }

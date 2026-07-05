@@ -1,14 +1,25 @@
 info:
-  name: get-user
+  name: update-user
   type: http
-  seq: 1
+  seq: 2
 
 http:
-  method: GET
+  method: PATCH
   url: http://localhost:4000/api/v1/profile
   headers:
     - name: Authorization
-      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjU1NzQxLCJleHAiOjE3ODMyNTY2NDF9.ac85y2B7xAmSUj51A7Ld-h7ba01Q8vkyLfzjrAhVmI0
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjkzNjM2LCJleHAiOjE3ODMyOTQ1MzZ9.z8aziDYIaXtTU_QINBToAvt_jtmPpKcipJDYPjAMiRs
+  body:
+    type: json
+    data: |-
+      {
+                "user_id": "cfe5d0f4a63773876819827f5bba61b3",
+                "password": "Password123!",
+                "first_name": "Bill",
+                "last_name": "Gates",
+                "phone_number": "8989898980"
+              
+      }
   auth: inherit
 
 settings:
@@ -21,10 +32,21 @@ examples:
   - name: example-success
     request:
       url: http://localhost:4000/api/v1/profile
-      method: GET
+      method: PATCH
       headers:
         - name: Authorization
-          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjU1NzQxLCJleHAiOjE3ODMyNTY2NDF9.ac85y2B7xAmSUj51A7Ld-h7ba01Q8vkyLfzjrAhVmI0
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjkzNjM2LCJleHAiOjE3ODMyOTQ1MzZ9.z8aziDYIaXtTU_QINBToAvt_jtmPpKcipJDYPjAMiRs
+      body:
+        type: json
+        data: |-
+          {
+                    "user_id": "cfe5d0f4a63773876819827f5bba61b3",
+                    "password": "Password123!",
+                    "first_name": "Bill",
+                    "last_name": "Gates",
+                    "phone_number": "8989898980"
+                  
+          }
     response:
       status: 200
       statusText: OK
@@ -58,11 +80,11 @@ examples:
         - name: content-type
           value: application/json; charset=utf-8
         - name: content-length
-          value: "301"
+          value: "310"
         - name: etag
-          value: W/"12d-2yQjog0TFY4IHoQMJIunWymUTkg"
+          value: W/"136-lvk/dxUd2WIExhL1snPdDUiyiPw"
         - name: date
-          value: Sun, 05 Jul 2026 12:49:25 GMT
+          value: Sun, 05 Jul 2026 23:23:53 GMT
         - name: connection
           value: keep-alive
         - name: keep-alive
@@ -72,14 +94,14 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Operation completed successfully.",
+            "message": "Your profile information has been saved.",
             "payload": {
-              "first_name": "User",
-              "last_name": "Two",
+              "first_name": "Bill",
+              "last_name": "Gates",
               "user_id": "cfe5d0f4a63773876819827f5bba61b3",
               "user_role": "passenger",
               "email_id": "timox75115@kinws.com",
-              "phone_number": "9876543210",
+              "phone_number": "8989898980",
               "is_driver": false,
               "created_at": "2026-07-05T11:15:06.791Z"
             }

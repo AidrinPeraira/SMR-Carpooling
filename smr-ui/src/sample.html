@@ -595,6 +595,111 @@
             class="text-xs font-mono mb-3"
             style="color: var(--color-content-secondary)"
           >
+            Modal.tsx (Interactive Dialog Overlay)
+          </h4>
+          
+          <div class="modal-container relative w-full h-72 border rounded-lg overflow-hidden flex items-center justify-center"
+               style="border-color: var(--color-border-strong); background-color: var(--color-surface-base);">
+            
+            <!-- Simulated background content -->
+            <div class="p-4 space-y-2 text-center select-none">
+              <h5 class="text-xs font-bold" style="color: var(--color-content-primary);">App Workspace Layer</h5>
+              <p class="text-[10px]" style="color: var(--color-content-secondary);">Modal blocks interactions with underlying elements when visible.</p>
+              <button 
+                class="mt-3 px-3 py-1.5 text-xs font-semibold rounded cursor-pointer transition-all shadow-sm"
+                style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                onclick="
+                  const container = this.closest('.modal-container');
+                  container.querySelector('.modal-box').classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+                  container.querySelector('.modal-backdrop').classList.remove('hidden');
+                "
+              >
+                Trigger Modal View
+              </button>
+            </div>
+            
+            <!-- Backdrop Overlay (hidden by default) -->
+            <div 
+              class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity hidden"
+              onclick="
+                const container = this.closest('.modal-container');
+                container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                this.classList.add('hidden');
+              "
+            ></div>
+            
+            <!-- Modal Box -->
+            <div 
+              class="modal-box absolute w-4/5 max-w-[280px] border shadow-2xl rounded-xl flex flex-col p-5 transition-all duration-200 scale-95 opacity-0 pointer-events-none"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-primary);
+              "
+            >
+              <div class="flex items-center justify-between pb-2.5 mb-3 border-b" style="border-color: var(--color-border-subtle);">
+                <h5 class="text-xs font-bold">Secure Account Access</h5>
+                <button 
+                  class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                  onclick="
+                    const container = this.closest('.modal-container');
+                    container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    container.querySelector('.modal-backdrop').classList.add('hidden');
+                  "
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="space-y-2 text-xs">
+                <p style="color: var(--color-content-secondary);" class="text-[11px] leading-relaxed">
+                  Authentication tokens will refresh automatically to ensure secure sessions are preserved.
+                </p>
+                <div class="pt-1.5">
+                  <label class="block text-[9px] uppercase font-bold tracking-wider mb-1" style="color: var(--color-content-tertiary);">Session Key</label>
+                  <input type="password" value="••••••••••••••••" readonly class="w-full px-2 py-1 text-[11px] rounded border" 
+                         style="border-color: var(--color-border-strong); background-color: var(--color-surface-muted); color: var(--color-content-primary);" />
+                </div>
+              </div>
+              
+              <div class="border-t pt-3 mt-4 flex gap-2 justify-end" style="border-color: var(--color-border-subtle);">
+                <button 
+                  class="px-2.5 py-1 text-[10px] font-semibold rounded border cursor-pointer" 
+                  style="border-color: var(--color-border-subtle); background-color: var(--color-surface-muted); color: var(--color-content-secondary);"
+                  onclick="
+                    const container = this.closest('.modal-container');
+                    container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    container.querySelector('.modal-backdrop').classList.add('hidden');
+                  "
+                >
+                  Close
+                </button>
+                <button 
+                  class="px-2.5 py-1 text-[10px] font-semibold rounded cursor-pointer" 
+                  style="background-color: var(--color-accent); color: var(--color-accent-fg);"
+                  onclick="
+                    const container = this.closest('.modal-container');
+                    container.querySelector('.modal-box').classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    container.querySelector('.modal-backdrop').classList.add('hidden');
+                  "
+                >
+                  Authenticate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
             Spinner.tsx
           </h4>
           <div

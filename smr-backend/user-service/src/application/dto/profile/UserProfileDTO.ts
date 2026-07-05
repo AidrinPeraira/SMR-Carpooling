@@ -17,8 +17,8 @@ export interface GetUserResultDTO {
 export interface UpdateUserRequestDTO {
   firstName?: string;
   lastName?: string;
-  emailId?: string;
   userId: string;
+  password: string;
   phoneNumber?: string;
   profileImage?: string;
 }

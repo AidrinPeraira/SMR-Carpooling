@@ -52,6 +52,16 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
       existingUser.verificationToken.value !== data.verificationToken ||
       existingUser.verificationToken.isExpired()
     ) {
+      console.debug("Token existance: ", existingUser.verificationToken);
+      console.debug("Token equality: ", {
+        existing: existingUser.verificationToken?.value,
+        incoming: data.verificationToken,
+      });
+      console.debug(
+        "Token expiry: ",
+        existingUser.verificationToken?.isExpired(),
+      );
+
       throw new ApplicationError(
         UserErrorMessage.INVALID_CREDENTIALS,
         HttpStatusCodes.BadRequest,
