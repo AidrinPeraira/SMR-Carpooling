@@ -1,7 +1,6 @@
 import * as z from "zod";
-import { UpdateUserRequest } from "../../dto";
 
-export const UpdateUserSchema: z.ZodType<UpdateUserRequest> = z.object({
+export const UpdateUserSchema = z.object({
   user_id: z.string().trim().min(2),
 
   password: z.string().trim().min(2),

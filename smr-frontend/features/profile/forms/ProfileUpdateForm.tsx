@@ -22,7 +22,6 @@ import { logger } from "@/lib/logger";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserRequest } from "@/features/profile/api/requests/getUserRequest";
 import { updateUserAction } from "@/features/profile/api/actions/UpdateUserAction";
-import { error } from "console";
 
 interface Props {
   className?: string;
@@ -50,6 +49,7 @@ export function ProfileUpdateForm({ className }: Props) {
     handleSubmit,
     formState: { errors },
   } = useForm<UpdateUserRequest>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(UpdateUserSchema as any),
     values: user
       ? {
