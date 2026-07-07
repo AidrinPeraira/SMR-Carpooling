@@ -18,9 +18,13 @@ import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
 import { UpdateUserUseCase } from "#/application/use-case/profile/UpdateUserUseCase";
 import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
 import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
-import { ConsolaLogger } from "@smr/shared";
+import { ConsolaLogger, UserRole } from "@smr/shared";
 import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
 import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
+import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";
+import { AdminUserControllerV1 } from "#/presentation/v1/controllers/admin/AdminUserController";
+import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUsersRouterV1";
+import { GetAllUsersUseCase } from "#/application/use-case/profile/GetAllUsersUseCase";
 
 /**
  * Composition Root for the User Service.
@@ -28,8 +32,10 @@ import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase
  * repositories, use cases, and controllers.
  */
 
+//logger
 const consolaLogger = new ConsolaLogger();
 
+//services
 const cryptoHashingService = new CryptoHashingService();
 const cryptoUIDService = new CryptoUIDService();
 const jwtTokenService = new JWTTokenService(
@@ -37,15 +43,16 @@ const jwtTokenService = new JWTTokenService(
   AppConfig.ACCESS_TOKEN_SECRET,
   AppConfig.REFRESH_TOKEN_SECRET,
 );
-
 const rabbitMQEventBus = new RabbitMQEventBus(
   consolaLogger,
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
 );
 
+//repositories
 const mongoUserRepository = new MongoUserRespository(UserModel);
 
+//auth controller
 const signUpUseUseCase = new SignUpUserUseCase(
   mongoUserRepository,
   cryptoHashingService,
@@ -79,26 +86,18 @@ const googleAuthUseCase = new GoogleAuthUseCase(
   jwtTokenService,
 );
 
-const generatePasswordChangeTokenUseCase = new GeneratePasswordChangeTokenUseCase(
-  mongoUserRepository,
-  jwtTokenService,
-  rabbitMQEventBus,
-);
+const generatePasswordChangeTokenUseCase =
+  new GeneratePasswordChangeTokenUseCase(
+    mongoUserRepository,
+    jwtTokenService,
+    rabbitMQEventBus,
+  );
 
 const changePasswordUseCase = new ChangePasswordUseCase(
   mongoUserRepository,
   jwtTokenService,
   cryptoHashingService,
   rabbitMQEventBus,
-);
-
-const getUserUseCase = new GetUserUseCase(mongoUserRepository);
-const updateUserUseCase = new UpdateUserUseCase(mongoUserRepository, cryptoHashingService);
-
-const profileControllerV1 = new ProfileControllerV1(
-  consolaLogger,
-  getUserUseCase,
-  updateUserUseCase,
 );
 
 const authControllerV1 = new AuthControllerV1(
@@ -112,12 +111,40 @@ const authControllerV1 = new AuthControllerV1(
   changePasswordUseCase,
 );
 
-// v1 router setup
 const authRouterV1 = createAuthRouterV1(authControllerV1);
+
+//profile controller
+const getUserUseCase = new GetUserUseCase(mongoUserRepository);
+const updateUserUseCase = new UpdateUserUseCase(
+  mongoUserRepository,
+  cryptoHashingService,
+);
+
+const profileControllerV1 = new ProfileControllerV1(
+  consolaLogger,
+  getUserUseCase,
+  updateUserUseCase,
+);
+
+//admin user controller
+const getAllUsersUseCase = new GetAllUsersUseCase(mongoUserRepository);
+const adminUserControllerV1 = new AdminUserControllerV1(
+  consolaLogger,
+  getAllUsersUseCase,
+);
+
+const adminUserRoutesV1 = createAdminUsersRouteV1(adminUserControllerV1);
+
+// v1 router setup
 const profileRouterV1 = createProfileRouterV1(profileControllerV1);
 const v1Router = express.Router();
 v1Router.use("/auth", authRouterV1);
-v1Router.use("/profile", profileRouterV1);
+v1Router.use(
+  "/profile",
+  AuthMiddleware(UserRole.DRIVER, UserRole.PASSENGER),
+  profileRouterV1,
+);
+v1Router.use("/admin/users", AuthMiddleware(UserRole.ADMIN), adminUserRoutesV1);
 
 //exporting versioned routeres
 export const userServiceRouters = {

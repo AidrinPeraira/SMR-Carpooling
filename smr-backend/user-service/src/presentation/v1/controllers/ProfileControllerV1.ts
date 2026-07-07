@@ -59,7 +59,8 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
         ErrorCode.INPUT_FORBIDDEN,
         {
           location: "Profile controller V1 - updateUser",
-          description: "Authenticated user ID does not match target user ID in request body",
+          description:
+            "Authenticated user ID does not match target user ID in request body",
         },
       );
     }

@@ -1,17 +1,16 @@
-import { UserRole } from "@smr/shared";
+import { UserEntity } from "#/domain/entities/UserEntity";
+import { QueryDTO, UserRole } from "@smr/shared";
 
 export interface GetUserResultDTO {
-  user: {
-    firstName: string;
-    lastName: string;
-    emailId: string;
-    userRole: UserRole;
-    userId: string;
-    phoneNumber: string;
-    isDriver: boolean;
-    createdAt: Date;
-    profileImage?: string;
-  };
+  firstName: string;
+  lastName: string;
+  emailId: string;
+  userRole: UserRole;
+  userId: string;
+  phoneNumber: string;
+  isDriver: boolean;
+  createdAt: Date;
+  profileImage?: string;
 }
 
 export interface UpdateUserRequestDTO {
@@ -22,3 +21,5 @@ export interface UpdateUserRequestDTO {
   phoneNumber?: string;
   profileImage?: string;
 }
+
+export type GetAllUsersRequestQueryDTO = QueryDTO<UserEntity>;

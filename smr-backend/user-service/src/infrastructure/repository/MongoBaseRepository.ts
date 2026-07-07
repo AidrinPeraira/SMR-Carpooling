@@ -4,6 +4,8 @@ import {
   ErrorCode,
   GenericErrorMessage,
   HttpStatusCodes,
+  QueryDTO,
+  SortOrder,
 } from "@smr/shared";
 import { Document, Model, QueryFilter, UpdateQuery } from "mongoose";
 
@@ -37,11 +39,44 @@ export abstract class MongoBaseRepository<
   /**
    * This functions takes a Mongoose QueryFilter object and queries the DB to return an array of matching docs. An empty array if nothing is found.
    *
-   * @param query : Mongoose query
+   * @param query :  a domin query object that convert to Mongoose query
    * @return Array of Domain Entities
    */
-  async find(query: QueryFilter<DocType>): Promise<EntityType[]> {
-    const data = await this.model.find(query).lean();
+  async find(query: QueryDTO<EntityType>): Promise<EntityType[]> {
+    const queryObj: Record<string, any> = {};
+
+    if (query) {
+      //we add the search query
+      if (
+        query.search &&
+        query.searchFields &&
+        query.searchFields?.length > 0
+      ) {
+        queryObj.$or = query.searchFields.map((field) => ({
+          [field]: { $regex: query.search, $options: "i" },
+        }));
+      }
+
+      //we add filter query
+      if (query.filterField && query.filterValue) {
+        queryObj[query.filterField as string] = query.filterValue;
+      }
+    }
+
+    const mongoCursor = this.model.find(queryObj);
+
+    //add sort
+    if (query.sortField && query.sortValue) {
+      mongoCursor.sort({
+        [query.sortField.toString()]: query.sortValue == SortOrder.ASC ? 1 : -1,
+      });
+    }
+
+    const skip = (query.page - 1) * query.limit;
+    mongoCursor.skip(skip);
+    mongoCursor.limit(query.limit);
+
+    const data = await mongoCursor.lean().exec();
     return data.map((d) => this.toDomainEntityMapper(d));
   }
 
@@ -101,7 +136,8 @@ export abstract class MongoBaseRepository<
         ErrorCode.SYSTEM_DB_ERROR,
         {
           location: "Mongo base repository - updateById",
-          description: "Database updateById operation failed or document not modified",
+          description:
+            "Database updateById operation failed or document not modified",
         },
       );
     }
@@ -139,7 +175,8 @@ export abstract class MongoBaseRepository<
         ErrorCode.SYSTEM_DB_ERROR,
         {
           location: "Mongo base repository - updateByCustomId",
-          description: "Database updateByCustomId operation failed or document not modified",
+          description:
+            "Database updateByCustomId operation failed or document not modified",
         },
       );
     }
@@ -167,7 +204,8 @@ export abstract class MongoBaseRepository<
         ErrorCode.SYSTEM_DB_ERROR,
         {
           location: "Mongo base repository - deleteById",
-          description: "Database deleteById operation failed or not acknowledged",
+          description:
+            "Database deleteById operation failed or not acknowledged",
         },
       );
     }
@@ -195,7 +233,8 @@ export abstract class MongoBaseRepository<
         ErrorCode.SYSTEM_DB_ERROR,
         {
           location: "Mongo base repository - deleteByCustomId",
-          description: "Database deleteByCustomId operation failed or not acknowledged",
+          description:
+            "Database deleteByCustomId operation failed or not acknowledged",
         },
       );
     }

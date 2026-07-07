@@ -47,7 +47,11 @@ export function createApp(logger: ILogger) {
   const userServiceProxy = createProxyMiddleware<Request, Response>({
     target: AppConfig.USER_SERVICE_URL,
     changeOrigin: true,
-    pathFilter: ["/api/*/auth/**", "/api/*/profile/**"],
+    pathFilter: [
+      "/api/*/auth/**",
+      "/api/*/profile/**",
+      `"/api/*/admin/users/**"`,
+    ],
     pathRewrite: {
       "^/api": "",
     },
