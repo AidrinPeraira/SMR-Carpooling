@@ -1,5 +1,4 @@
-import { UserEntity } from "#/domain/entities/UserEntity";
-import { QueryDTO, UserRole } from "@smr/shared";
+import { UserRole } from "@smr/shared";
 
 export interface GetUserResultDTO {
   firstName: string;
@@ -21,5 +20,3 @@ export interface UpdateUserRequestDTO {
   phoneNumber?: string;
   profileImage?: string;
 }
-
-export type GetAllUsersRequestQueryDTO = QueryDTO<UserEntity>;

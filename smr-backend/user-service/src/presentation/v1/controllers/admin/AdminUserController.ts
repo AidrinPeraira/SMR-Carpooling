@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/profile/IGetAllUsersUseCase";
+import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 import { IAdminUserControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminUserControllerV1";
 import { toGetUserResult } from "#/presentation/v1/mapper/ProfileMapper";
 import { toGetAllUsersRequestQuery } from "#/presentation/v1/mapper/QueryMapper";

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GetAllUsersUseCase } from "#/application/use-case/profile/GetAllUsersUseCase";
+import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 import { UserRole } from "@smr/shared";

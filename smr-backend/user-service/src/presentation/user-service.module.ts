@@ -24,7 +24,7 @@ import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase
 import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";
 import { AdminUserControllerV1 } from "#/presentation/v1/controllers/admin/AdminUserController";
 import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUsersRouterV1";
-import { GetAllUsersUseCase } from "#/application/use-case/profile/GetAllUsersUseCase";
+import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 
 /**
  * Composition Root for the User Service.

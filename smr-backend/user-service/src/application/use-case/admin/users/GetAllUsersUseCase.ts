@@ -1,9 +1,7 @@
-import {
-  GetAllUsersRequestQueryDTO,
-  GetUserResultDTO,
-} from "#/application/dto/profile/UserProfileDTO";
+import { GetUserResultDTO } from "#/application/dto/profile/UserProfileDTO";
+import { GetAllUsersRequestQueryDTO } from "#/application/dto/admin/users/AdminUsersDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/profile/IGetAllUsersUseCase";
+import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   constructor(private readonly _userRepository: IUserRepository) {}

@@ -1,4 +1,4 @@
-import { GetAllUsersRequestQueryDTO } from "#/application/dto/profile/UserProfileDTO";
+import { GetAllUsersRequestQueryDTO } from "#/application/dto/admin/users/AdminUsersDTO";
 import { userQueryFieldMapper } from "#/presentation/utils/query-mapper";
 import { QuerySchema, zodParser } from "@smr/shared";
 

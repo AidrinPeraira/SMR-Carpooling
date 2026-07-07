@@ -17,19 +17,19 @@
 
 - [x] Email and password signup
 - [x] Email Verification (link-based)
-- [ ] Resend verification email - ?
+- [x] Resend verification email - ?
 - [x] Email and password login
 - [x] Token Management (Access & Refresh tokens)
 - [ ] Session Management (Redis-backed)
 - [ ] Logout
 - [x] Google OAuth Integration
-- [ ] Password Reset flow (Forgot/Verify/Reset)
+- [x] Password Reset flow (Forgot/Verify/Reset)
 - [ ] Role Switching (Passenger ↔ Driver)
 
 ### Profile
 
-- [ ] Get current user profile
-- [ ] Update profile details (Name, Bio, Phone, etc.)
+- [x] Get current user profile
+- [x] Update profile details (Name, Bio, Phone, etc.)
 - [ ] Profile Picture Upload
 
 ### Driver & Vehicle Registration
@@ -41,7 +41,7 @@
 
 ### Admin
 
-- [ ] View all registered users
+- [x] View all registered users
 - [ ] Toggle user status (Activate/Deactivate/Block)
 - [ ] Force log-out / Clear sessions (use redis blacklist)
 - [ ] Review and process Driver applications (Approve/Reject)
