@@ -25,6 +25,7 @@ import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";
 import { AdminUserControllerV1 } from "#/presentation/v1/controllers/admin/AdminUserController";
 import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUsersRouterV1";
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
+import { ChangeUserStatusUseCase } from "#/application/use-case/admin/users/ChangeUserStatusUseCase";
 
 /**
  * Composition Root for the User Service.
@@ -128,9 +129,13 @@ const profileControllerV1 = new ProfileControllerV1(
 
 //admin user controller
 const getAllUsersUseCase = new GetAllUsersUseCase(mongoUserRepository);
+const changeUserStatusUseCase = new ChangeUserStatusUseCase(
+  mongoUserRepository,
+);
 const adminUserControllerV1 = new AdminUserControllerV1(
   consolaLogger,
   getAllUsersUseCase,
+  changeUserStatusUseCase,
 );
 
 const adminUserRoutesV1 = createAdminUsersRouteV1(adminUserControllerV1);

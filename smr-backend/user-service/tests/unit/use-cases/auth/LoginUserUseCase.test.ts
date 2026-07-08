@@ -28,7 +28,7 @@ describe("LoginUserUseCase", () => {
 
   const mockUser = createMockUserData({
     passwordHash: "hashed_Password123!",
-    accountStatus: AccountStatus.VERIFIIED,
+    accountStatus: AccountStatus.ACTIVE,
     emailVerified: true,
   });
 
@@ -118,24 +118,24 @@ describe("LoginUserUseCase", () => {
     );
   });
 
-  it("should throw Unauthorized error for suspended account", async () => {
+  it("should throw Unauthorized error for blocked account", async () => {
     // Arrange
-    const suspendedUser = {
+    const blockedUser = {
       ...mockUser,
-      accountStatus: AccountStatus.SUSPENDED,
+      accountStatus: AccountStatus.BLOCKED,
     };
-    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(suspendedUser);
+    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(blockedUser);
     vi.mocked(mockHashingService.compareHash).mockReturnValue(true);
 
     // Act & Assert
     await expect(loginUserUseCase.execute(loginRequest)).rejects.toThrow(
       new ApplicationError(
-        UserErrorMessage.ACCOUNT_SUSPENDED,
+        UserErrorMessage.ACCOUNT_BLOCKED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         {
           location: "Login user use case",
-          description: "User account status is not verified/active",
+          description: "User account status is not active",
           emailId: loginRequest.emailId,
         },
       ),

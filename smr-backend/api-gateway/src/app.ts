@@ -50,7 +50,7 @@ export function createApp(logger: ILogger) {
     pathFilter: [
       "/api/*/auth/**",
       "/api/*/profile/**",
-      `"/api/*/admin/users/**"`,
+      "/api/*/admin/users/**",
     ],
     pathRewrite: {
       "^/api": "",

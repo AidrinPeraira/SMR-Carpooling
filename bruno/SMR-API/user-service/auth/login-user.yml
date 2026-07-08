@@ -11,9 +11,8 @@ http:
     data: |2-
         {
           
-          "email_id": "timox75115@kinws.com",
-
-          "password": "Password123!"
+          "email_id": "4lph4.t3st3r@gmail.com",
+          "password": "123qweASD@"
 
         }
   auth: inherit

@@ -33,7 +33,7 @@ describe("GoogleAuthUseCase", () => {
     lastName: "Doe",
     emailId: "johndoe@gmail.com",
     profileImage: "https://example.com/photo.jpg",
-    accountStatus: AccountStatus.VERIFIIED,
+    accountStatus: AccountStatus.ACTIVE,
     emailVerified: true,
   });
 
@@ -96,7 +96,7 @@ describe("GoogleAuthUseCase", () => {
         firstName: "John",
         lastName: "Doe",
         emailVerified: true,
-        accountStatus: AccountStatus.VERIFIIED,
+        accountStatus: AccountStatus.ACTIVE,
       }),
     );
   });
@@ -126,29 +126,29 @@ describe("GoogleAuthUseCase", () => {
     );
   });
 
-  it("should throw Unauthorized error if user account is suspended", async () => {
+  it("should throw Unauthorized error if user account is blocked", async () => {
     // Arrange
-    const suspendedUser = {
+    const blockedUser = {
       ...mockUser,
-      accountStatus: AccountStatus.SUSPENDED,
+      accountStatus: AccountStatus.BLOCKED,
     };
     vi.mocked(mockGoogleAuthService.verifyToken).mockResolvedValue(
       mockGoogleProfile,
     );
-    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(suspendedUser);
+    vi.mocked(mockUserRepository.findByEmail).mockResolvedValue(blockedUser);
 
     // Act & Assert
     await expect(
       googleAuthUseCase.execute("valid-google-token"),
     ).rejects.toThrow(
       new ApplicationError(
-        UserErrorMessage.ACCOUNT_SUSPENDED,
+        UserErrorMessage.ACCOUNT_BLOCKED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         {
           location: "Google auth use case",
-          description: "User account status is blocked or suspended",
-          emailId: suspendedUser.emailId,
+          description: "User account status is blocked",
+          emailId: blockedUser.emailId,
         },
       ),
     );

@@ -131,13 +131,12 @@ export abstract class MongoBaseRepository<
 
     if (!updated) {
       throw new ApplicationError(
-        GenericErrorMessage.INTERNAL_SERVER_ERROR,
-        HttpStatusCodes.NotModified,
-        ErrorCode.SYSTEM_DB_ERROR,
+        GenericErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
         {
           location: "Mongo base repository - updateById",
-          description:
-            "Database updateById operation failed or document not modified",
+          description: `Resource with ID ${id} not found`,
         },
       );
     }
@@ -170,13 +169,12 @@ export abstract class MongoBaseRepository<
 
     if (!updated) {
       throw new ApplicationError(
-        GenericErrorMessage.INTERNAL_SERVER_ERROR,
-        HttpStatusCodes.NotModified,
-        ErrorCode.SYSTEM_DB_ERROR,
+        GenericErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
         {
           location: "Mongo base repository - updateByCustomId",
-          description:
-            "Database updateByCustomId operation failed or document not modified",
+          description: `Resource with custom ID ${customId} not found`,
         },
       );
     }

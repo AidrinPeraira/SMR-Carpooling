@@ -13,8 +13,18 @@ export function createAdminUsersRouteV1(
   const router = Router();
 
   router.get(
-    "/profile",
+    "/",
     adminUserControllerV1.getAllUsers.bind(adminUserControllerV1),
+  );
+
+  router.patch(
+    "/block/:id",
+    adminUserControllerV1.blockUser.bind(adminUserControllerV1),
+  );
+
+  router.patch(
+    "/unblock/:id",
+    adminUserControllerV1.unBlockUser.bind(adminUserControllerV1),
   );
 
   return router;

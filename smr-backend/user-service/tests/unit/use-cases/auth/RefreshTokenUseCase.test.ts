@@ -35,7 +35,7 @@ describe("RefreshTokenUseCase", () => {
   const mockUser = createMockUserData({
     userId: mockUserId,
     emailId: mockEmail,
-    accountStatus: AccountStatus.VERIFIIED,
+    accountStatus: AccountStatus.ACTIVE,
   });
 
   beforeEach(() => {
@@ -88,7 +88,7 @@ describe("RefreshTokenUseCase", () => {
       useCase.execute({ refreshToken: mockRefreshToken }),
     ).rejects.toThrow(
       new ApplicationError(
-        UserErrorMessage.ACCOUNT_SUSPENDED,
+        UserErrorMessage.ACCOUNT_BLOCKED,
         HttpStatusCodes.Forbidden,
         ErrorCode.INPUT_FORBIDDEN,
         {

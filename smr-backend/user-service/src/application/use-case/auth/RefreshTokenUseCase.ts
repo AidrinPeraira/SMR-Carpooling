@@ -56,7 +56,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
     if (existingUser.accountStatus == AccountStatus.BLOCKED) {
       throw new ApplicationError(
-        UserErrorMessage.ACCOUNT_SUSPENDED,
+        UserErrorMessage.ACCOUNT_BLOCKED,
         HttpStatusCodes.Forbidden,
         ErrorCode.INPUT_FORBIDDEN,
         {
