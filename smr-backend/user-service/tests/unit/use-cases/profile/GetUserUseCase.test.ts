@@ -27,17 +27,15 @@ describe("GetUserUseCase", () => {
 
     expect(mockUserRepository.findByCustomId).toHaveBeenCalledWith(mockUserId);
     expect(result).toEqual({
-      user: {
-        userId: mockUser.userId,
-        firstName: mockUser.firstName,
-        lastName: mockUser.lastName,
-        emailId: mockUser.emailId,
-        userRole: mockUser.userRole,
-        phoneNumber: mockUser.phoneNumber,
-        isDriver: mockUser.isDriver,
-        createdAt: mockUser.createdAt,
-        profileImage: mockUser.profileImage,
-      },
+      userId: mockUser.userId,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
+      emailId: mockUser.emailId,
+      userRole: mockUser.userRole,
+      phoneNumber: mockUser.phoneNumber,
+      isDriver: mockUser.isDriver,
+      createdAt: mockUser.createdAt,
+      profileImage: mockUser.profileImage,
     });
   });
 

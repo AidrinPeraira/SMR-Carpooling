@@ -42,17 +42,15 @@ export class GetUserUseCase implements IGetUserUseCase {
     }
 
     return {
-      user: {
-        userId: existingUser.userId,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        emailId: existingUser.emailId,
-        userRole: existingUser.userRole,
-        phoneNumber: existingUser.phoneNumber,
-        isDriver: existingUser.isDriver,
-        createdAt: existingUser.createdAt,
-        profileImage: existingUser.profileImage,
-      },
+      userId: existingUser.userId,
+      firstName: existingUser.firstName,
+      lastName: existingUser.lastName,
+      emailId: existingUser.emailId,
+      userRole: existingUser.userRole,
+      phoneNumber: existingUser.phoneNumber,
+      isDriver: existingUser.isDriver,
+      createdAt: existingUser.createdAt,
+      profileImage: existingUser.profileImage,
     };
   }
 }

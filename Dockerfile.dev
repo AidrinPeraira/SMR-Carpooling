@@ -6,13 +6,13 @@ RUN corepack enable
 
 WORKDIR /app
 RUN mkdir -p /pnpm /app/node_modules \
-    /app/smr-shared/node_modules \
-    /app/smr-backend/api-gateway/node_modules \
-    /app/smr-backend/notification-service/node_modules \
-    /app/smr-backend/payment-service/node_modules \
-    /app/smr-backend/trip-service/node_modules \
-    /app/smr-backend/user-service/node_modules \
-    && chown -R node:node /app /pnpm
+  /app/smr-shared/node_modules \
+  /app/smr-backend/api-gateway/node_modules \
+  /app/smr-backend/notification-service/node_modules \
+  /app/smr-backend/payment-service/node_modules \
+  /app/smr-backend/trip-service/node_modules \
+  /app/smr-backend/user-service/node_modules \
+  && chown -R node:node /app /pnpm
 
 FROM base AS root-workspace
 USER node

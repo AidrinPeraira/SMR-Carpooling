@@ -57,23 +57,20 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         userRole: UserRole.PASSENGER,
         emailVerified: true,
         isDriver: false,
-        accountStatus: AccountStatus.VERIFIIED,
+        accountStatus: AccountStatus.ACTIVE,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    if (
-      user.accountStatus === AccountStatus.BLOCKED ||
-      user.accountStatus === AccountStatus.SUSPENDED
-    ) {
+    if (user.accountStatus === AccountStatus.BLOCKED) {
       throw new ApplicationError(
-        UserErrorMessage.ACCOUNT_SUSPENDED,
+        UserErrorMessage.ACCOUNT_BLOCKED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         {
           location: "Google auth use case",
-          description: "User account status is blocked or suspended",
+          description: "User account status is blocked",
           emailId: user.emailId,
         },
       );

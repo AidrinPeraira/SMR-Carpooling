@@ -57,17 +57,15 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
     });
 
     return {
-      user: {
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        emailId: updatedUser.emailId,
-        userId: updatedUser.userId,
-        userRole: updatedUser.userRole,
-        profileImage: updatedUser.profileImage,
-        createdAt: updatedUser.createdAt,
-        isDriver: updatedUser.isDriver,
-        phoneNumber: updatedUser.phoneNumber,
-      },
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      emailId: updatedUser.emailId,
+      userId: updatedUser.userId,
+      userRole: updatedUser.userRole,
+      profileImage: updatedUser.profileImage,
+      createdAt: updatedUser.createdAt,
+      isDriver: updatedUser.isDriver,
+      phoneNumber: updatedUser.phoneNumber,
     };
   }
 }

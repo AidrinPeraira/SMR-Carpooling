@@ -1,8 +1,8 @@
-import { ISessionRepository } from "#/application/interfaces/repository/ISessionRepository";
+import { ISessionStore } from "#/application/interfaces/store/ISessionStore";
 import { AuthSession } from "@smr/shared";
 import { RedisClientType } from "redis";
 
-export class RedisSessionRepository implements ISessionRepository {
+export class RedisSessionStore implements ISessionStore {
   constructor(private readonly _redisClient: RedisClientType) {}
 
   async setSession(
@@ -21,6 +21,10 @@ export class RedisSessionRepository implements ISessionRepository {
   async getSession(key: string): Promise<AuthSession | null> {
     const data = await this._redisClient.get(key);
     return data ? (JSON.parse(data) as AuthSession) : null;
+  }
+
+  async removeSession(key: string): Promise<void> {
+    await this._redisClient.unlink(key);
   }
 
   async updateSession(

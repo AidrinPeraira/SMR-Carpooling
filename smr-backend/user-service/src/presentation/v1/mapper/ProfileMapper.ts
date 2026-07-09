@@ -11,15 +11,15 @@ import {
 
 export function toGetUserResult(data: GetUserResultDTO): GetUserResult {
   return {
-    first_name: data.user.firstName,
-    last_name: data.user.lastName,
-    user_id: data.user.userId,
-    user_role: data.user.userRole,
-    email_id: data.user.emailId,
-    phone_number: data.user.phoneNumber,
-    is_driver: data.user.isDriver,
-    created_at: data.user.createdAt.toISOString(),
-    profile_image: data.user.profileImage,
+    first_name: data.firstName,
+    last_name: data.lastName,
+    user_id: data.userId,
+    user_role: data.userRole,
+    email_id: data.emailId,
+    phone_number: data.phoneNumber,
+    is_driver: data.isDriver,
+    created_at: data.createdAt.toISOString(),
+    profile_image: data.profileImage,
   };
 }
 

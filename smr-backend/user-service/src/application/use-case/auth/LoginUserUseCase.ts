@@ -69,14 +69,14 @@ export class LoginUserUseCase implements ILoginUserUseCase {
       );
     }
 
-    if (existingUser.accountStatus !== AccountStatus.VERIFIIED) {
+    if (existingUser.accountStatus !== AccountStatus.ACTIVE) {
       throw new ApplicationError(
-        UserErrorMessage.ACCOUNT_SUSPENDED,
+        UserErrorMessage.ACCOUNT_BLOCKED,
         HttpStatusCodes.Unauthorized,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         {
           location: "Login user use case",
-          description: "User account status is not verified/active",
+          description: "User account status is not active",
           emailId: data.emailId,
         },
       );

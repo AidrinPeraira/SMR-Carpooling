@@ -77,7 +77,7 @@ export class VerifySignupEmailUseCase implements IVerifySignupEmailUseCase {
 
     await this._userRepository.updateByCustomId(existingUser.userId, {
       emailVerified: true,
-      accountStatus: AccountStatus.VERIFIIED,
+      accountStatus: AccountStatus.ACTIVE,
       verificationToken: undefined,
     });
 
