@@ -1,4 +1,6 @@
+import { AccountStatus } from "../enums";
+
 export interface AuthSession {
   userId: string;
-  activeRefreshTokens: string[];
+  status: AccountStatus;
 }

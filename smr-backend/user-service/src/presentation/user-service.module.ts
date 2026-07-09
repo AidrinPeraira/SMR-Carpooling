@@ -26,6 +26,8 @@ import { AdminUserControllerV1 } from "#/presentation/v1/controllers/admin/Admin
 import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUsersRouterV1";
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { ChangeUserStatusUseCase } from "#/application/use-case/admin/users/ChangeUserStatusUseCase";
+import { redisClient } from "#/infrastructure/database/connect-redis";
+import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
 
 /**
  * Composition Root for the User Service.
@@ -52,6 +54,9 @@ const rabbitMQEventBus = new RabbitMQEventBus(
 
 //repositories
 const mongoUserRepository = new MongoUserRespository(UserModel);
+
+//stores
+const redisSessionStore = new RedisSessionStore(redisClient);
 
 //auth controller
 const signUpUseUseCase = new SignUpUserUseCase(
@@ -131,6 +136,8 @@ const profileControllerV1 = new ProfileControllerV1(
 const getAllUsersUseCase = new GetAllUsersUseCase(mongoUserRepository);
 const changeUserStatusUseCase = new ChangeUserStatusUseCase(
   mongoUserRepository,
+  redisSessionStore,
+  rabbitMQEventBus,
 );
 const adminUserControllerV1 = new AdminUserControllerV1(
   consolaLogger,

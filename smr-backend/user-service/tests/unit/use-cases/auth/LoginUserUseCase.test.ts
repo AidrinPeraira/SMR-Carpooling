@@ -11,7 +11,6 @@ import {
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockHashingService } from "&#/mocks/MockHashingService";
 import { mockTokenService } from "&#/mocks/MockTokenService";
-import { mockSessionRepository } from "&#/mocks/MockSessionRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 
 describe("LoginUserUseCase", () => {
@@ -46,7 +45,6 @@ describe("LoginUserUseCase", () => {
     vi.mocked(mockTokenService.generateRefreshToken).mockReturnValue(
       "refresh-token",
     );
-    vi.mocked(mockSessionRepository.getSession).mockResolvedValue(null);
 
     // Act
     const result = await loginUserUseCase.execute(loginRequest);
