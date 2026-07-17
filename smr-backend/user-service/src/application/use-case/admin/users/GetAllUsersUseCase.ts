@@ -1,5 +1,7 @@
-import { GetUserResultDTO } from "#/application/dto/profile/UserProfileDTO";
-import { GetAllUsersRequestQueryDTO } from "#/application/dto/admin/users/AdminUsersDTO";
+import {
+  GetAllUsersRequestQueryDTO,
+  GetAllUsersResponseDTO,
+} from "#/application/dto/admin/users/AdminUsersDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 
@@ -8,7 +10,7 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
 
   async execute(
     query: GetAllUsersRequestQueryDTO,
-  ): Promise<GetUserResultDTO[]> {
+  ): Promise<GetAllUsersResponseDTO[]> {
     const users = await this._userRepository.find(query);
     return users.map((user) => {
       return {
@@ -17,6 +19,7 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
         lastName: user.lastName,
         emailId: user.emailId,
         userRole: user.userRole,
+        accountStatus: user.accountStatus,
         phoneNumber: user.phoneNumber,
         isDriver: user.isDriver,
         createdAt: user.createdAt,

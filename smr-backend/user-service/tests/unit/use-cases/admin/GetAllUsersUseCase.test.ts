@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
-import { UserRole } from "@smr/shared";
+import { AccountStatus, UserRole } from "@smr/shared";
 
 describe("GetAllUsersUseCase", () => {
   const useCase = new GetAllUsersUseCase(mockUserRepository);
@@ -11,7 +11,7 @@ describe("GetAllUsersUseCase", () => {
     vi.clearAllMocks();
   });
 
-  it("should retrieve users matching query and map them to GetUserResultDTO", async () => {
+  it("should retrieve users matching query and map them to GetAllUsersResponseDTO", async () => {
     const mockQuery = {
       limit: 10,
       page: 1,
@@ -24,6 +24,7 @@ describe("GetAllUsersUseCase", () => {
       lastName: "Doe",
       emailId: "john.doe@example.com",
       userRole: UserRole.PASSENGER,
+      accountStatus: AccountStatus.ACTIVE,
       phoneNumber: "1111111111",
       isDriver: false,
     });
@@ -34,6 +35,7 @@ describe("GetAllUsersUseCase", () => {
       lastName: "Smith",
       emailId: "jane.smith@example.com",
       userRole: UserRole.DRIVER,
+      accountStatus: AccountStatus.BLOCKED,
       phoneNumber: "2222222222",
       isDriver: true,
     });
@@ -50,6 +52,7 @@ describe("GetAllUsersUseCase", () => {
       lastName: mockUser1.lastName,
       emailId: mockUser1.emailId,
       userRole: mockUser1.userRole,
+      accountStatus: mockUser1.accountStatus,
       phoneNumber: mockUser1.phoneNumber,
       isDriver: mockUser1.isDriver,
       createdAt: mockUser1.createdAt,
@@ -61,6 +64,7 @@ describe("GetAllUsersUseCase", () => {
       lastName: mockUser2.lastName,
       emailId: mockUser2.emailId,
       userRole: mockUser2.userRole,
+      accountStatus: mockUser2.accountStatus,
       phoneNumber: mockUser2.phoneNumber,
       isDriver: mockUser2.isDriver,
       createdAt: mockUser2.createdAt,
@@ -82,3 +86,4 @@ describe("GetAllUsersUseCase", () => {
     expect(result).toEqual([]);
   });
 });
+

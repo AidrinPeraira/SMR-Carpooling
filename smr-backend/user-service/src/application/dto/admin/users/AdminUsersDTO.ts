@@ -1,7 +1,20 @@
 import { UserEntity } from "#/domain/entities/UserEntity";
-import { AccountStatus, QueryDTO } from "@smr/shared";
+import { AccountStatus, QueryDTO, UserRole } from "@smr/shared";
 
 export type GetAllUsersRequestQueryDTO = QueryDTO<UserEntity>;
+
+export interface GetAllUsersResponseDTO {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  emailId: string;
+  userRole: UserRole;
+  accountStatus: AccountStatus;
+  isDriver: boolean;
+  phoneNumber: string;
+  profileImage?: string;
+  createdAt: Date;
+}
 
 export interface ChangeUserStatusRequestDTO {
   userId: string;
