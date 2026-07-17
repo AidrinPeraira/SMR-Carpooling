@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
-import { UserRole } from "@smr/shared";
+import { AccountStatus, UserRole } from "@smr/shared";
 
 describe("GetAllUsersUseCase", () => {
   const useCase = new GetAllUsersUseCase(mockUserRepository);
@@ -11,7 +11,7 @@ describe("GetAllUsersUseCase", () => {
     vi.clearAllMocks();
   });
 
-  it("should retrieve users matching query and map them to GetUserResultDTO", async () => {
+  it("should retrieve users matching query and map them to GetAllUsersResponseDTO", async () => {
     const mockQuery = {
       limit: 10,
       page: 1,
@@ -24,6 +24,7 @@ describe("GetAllUsersUseCase", () => {
       lastName: "Doe",
       emailId: "john.doe@example.com",
       userRole: UserRole.PASSENGER,
+      accountStatus: AccountStatus.ACTIVE,
       phoneNumber: "1111111111",
       isDriver: false,
     });
@@ -34,33 +35,50 @@ describe("GetAllUsersUseCase", () => {
       lastName: "Smith",
       emailId: "jane.smith@example.com",
       userRole: UserRole.DRIVER,
+      accountStatus: AccountStatus.BLOCKED,
       phoneNumber: "2222222222",
       isDriver: true,
     });
 
-    vi.mocked(mockUserRepository.find).mockResolvedValue([mockUser1, mockUser2]);
+    vi.mocked(mockUserRepository.find).mockResolvedValue({
+      data: [mockUser1, mockUser2],
+      paginationMeta: {
+        totatlItems: 2,
+        currentPage: 1,
+        limit: 10,
+        totalPages: 1,
+      },
+    });
 
     const result = await useCase.execute(mockQuery);
 
     expect(mockUserRepository.find).toHaveBeenCalledWith(mockQuery);
-    expect(result).toHaveLength(2);
-    expect(result[0]).toEqual({
+    expect(result.data).toHaveLength(2);
+    expect(result.paginationMeta).toEqual({
+      totatlItems: 2,
+      currentPage: 1,
+      limit: 10,
+      totalPages: 1,
+    });
+    expect(result.data[0]).toEqual({
       userId: mockUser1.userId,
       firstName: mockUser1.firstName,
       lastName: mockUser1.lastName,
       emailId: mockUser1.emailId,
       userRole: mockUser1.userRole,
+      accountStatus: mockUser1.accountStatus,
       phoneNumber: mockUser1.phoneNumber,
       isDriver: mockUser1.isDriver,
       createdAt: mockUser1.createdAt,
       profileImage: mockUser1.profileImage,
     });
-    expect(result[1]).toEqual({
+    expect(result.data[1]).toEqual({
       userId: mockUser2.userId,
       firstName: mockUser2.firstName,
       lastName: mockUser2.lastName,
       emailId: mockUser2.emailId,
       userRole: mockUser2.userRole,
+      accountStatus: mockUser2.accountStatus,
       phoneNumber: mockUser2.phoneNumber,
       isDriver: mockUser2.isDriver,
       createdAt: mockUser2.createdAt,
@@ -74,11 +92,25 @@ describe("GetAllUsersUseCase", () => {
       page: 1,
     };
 
-    vi.mocked(mockUserRepository.find).mockResolvedValue([]);
+    vi.mocked(mockUserRepository.find).mockResolvedValue({
+      data: [],
+      paginationMeta: {
+        totatlItems: 0,
+        currentPage: 1,
+        limit: 5,
+        totalPages: 0,
+      },
+    });
 
     const result = await useCase.execute(mockQuery);
 
     expect(mockUserRepository.find).toHaveBeenCalledWith(mockQuery);
-    expect(result).toEqual([]);
+    expect(result.data).toEqual([]);
+    expect(result.paginationMeta).toEqual({
+      totatlItems: 0,
+      currentPage: 1,
+      limit: 5,
+      totalPages: 0,
+    });
   });
 });

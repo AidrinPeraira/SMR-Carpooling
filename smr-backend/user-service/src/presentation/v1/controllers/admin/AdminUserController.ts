@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 import { IAdminUserControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminUserControllerV1";
-import { toGetUserResult } from "#/presentation/v1/mapper/ProfileMapper";
-import { toGetAllUsersRequestQuery } from "#/presentation/v1/mapper/QueryMapper";
+import {
+  toGetAllUsersRequestQuery,
+  toGetAllUsersResult,
+} from "#/presentation/v1/mapper/QueryMapper";
 import {
   AccountStatus,
   ApplicationError,
@@ -23,7 +25,12 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   ) {}
 
   /**
-   * take queries. validate it and find all users that match
+   * This constroller method takes the user query fields from the request query params
+   * and maps into into the shape needed by domain and calls the use case to
+   * get all the users that match, and sends it back to the client
+   *
+   * @param req - Express request object
+   * @param res - Express response object
    */
   async getAllUsers(req: Request, res: Response): Promise<void> {
     const query = toGetAllUsersRequestQuery(req.query);
@@ -32,15 +39,20 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
       adminUserId: req.headers["x-user-id"],
     });
 
-    const users = await this._getAllUsersUseCase.execute(query);
+    const result = await this._getAllUsersUseCase.execute(query);
 
     res.status(HttpStatusCodes.Ok).json({
-      users: users.map((v) => toGetUserResult(v)),
+      data: result.data.map((user) => toGetAllUsersResult(user)),
+      paginationMeta: result.paginationMeta,
     });
   }
 
   /**
-   * Blocks a single user
+   * This controller method gets the user id from  request path params and
+   * calls the use case to chagne the user status to blocked.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
    */
   async blockUser(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
@@ -68,7 +80,11 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   }
 
   /**
-   * Unblock user
+   * This controller method gets the user id from  request path params and
+   * calls the use case to chagne the user status to unblocked / active.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
    */
   async unBlockUser(req: Request, res: Response): Promise<void> {
     const { id } = req.params;

@@ -1,5 +1,8 @@
-import { GetUserResultDTO } from "#/application/dto/profile/UserProfileDTO";
-import { GetAllUsersRequestQueryDTO } from "#/application/dto/admin/users/AdminUsersDTO";
+import {
+  GetAllUsersResponseDTO,
+  GetAllUsersRequestQueryDTO,
+} from "#/application/dto/admin/users/AdminUsersDTO";
+import { PaginatedPayload } from "@smr/shared";
 
 /**
  * This is for the change user status use case
@@ -7,5 +10,7 @@ import { GetAllUsersRequestQueryDTO } from "#/application/dto/admin/users/AdminU
  * If the user is blocked it should update session store to blacklist the user
  */
 export interface IGetAllUsersUseCase {
-  execute(query: GetAllUsersRequestQueryDTO): Promise<GetUserResultDTO[]>;
+  execute(
+    query: GetAllUsersRequestQueryDTO,
+  ): Promise<PaginatedPayload<GetAllUsersResponseDTO[]>>;
 }

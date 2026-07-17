@@ -1,4 +1,4 @@
-import { QueryDTO } from "@smr/shared";
+import { PaginatedPayload, QueryDTO } from "@smr/shared";
 
 /**
  * This is the base repository interface
@@ -6,7 +6,7 @@ import { QueryDTO } from "@smr/shared";
  * base reposiroy should handle common database operations.
  */
 export interface IBaseRepository<EntityType> {
-  find(query: QueryDTO<EntityType>): Promise<EntityType[]>;
+  find(query: QueryDTO<EntityType>): Promise<PaginatedPayload<EntityType[]>>;
 
   findById(id: string): Promise<EntityType | null>;
 
