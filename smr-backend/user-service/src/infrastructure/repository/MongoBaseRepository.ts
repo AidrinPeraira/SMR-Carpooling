@@ -4,6 +4,7 @@ import {
   ErrorCode,
   GenericErrorMessage,
   HttpStatusCodes,
+  PaginatedPayload,
   QueryDTO,
   SortOrder,
 } from "@smr/shared";
@@ -40,9 +41,11 @@ export abstract class MongoBaseRepository<
    * This functions takes a Mongoose QueryFilter object and queries the DB to return an array of matching docs. An empty array if nothing is found.
    *
    * @param query :  a domin query object that convert to Mongoose query
-   * @return Array of Domain Entities
+   * @return Array of Domain Entities with pagination meta data
    */
-  async find(query: QueryDTO<EntityType>): Promise<EntityType[]> {
+  async find(
+    query: QueryDTO<EntityType>,
+  ): Promise<PaginatedPayload<EntityType[]>> {
     const queryObj: Record<string, any> = {};
 
     if (query) {
@@ -76,8 +79,20 @@ export abstract class MongoBaseRepository<
     mongoCursor.skip(skip);
     mongoCursor.limit(query.limit);
 
-    const data = await mongoCursor.lean().exec();
-    return data.map((d) => this.toDomainEntityMapper(d));
+    const [data, count] = await Promise.all([
+      mongoCursor.lean().exec(),
+      this.model.countDocuments(queryObj).exec(),
+    ]);
+
+    return {
+      data: data.map((d) => this.toDomainEntityMapper(d)),
+      paginationMeta: {
+        totatlItems: count,
+        currentPage: query.page,
+        limit: query.limit,
+        totalPages: count / query.limit,
+      },
+    };
   }
 
   /**

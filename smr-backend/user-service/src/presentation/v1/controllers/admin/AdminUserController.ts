@@ -39,10 +39,11 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
       adminUserId: req.headers["x-user-id"],
     });
 
-    const users = await this._getAllUsersUseCase.execute(query);
+    const result = await this._getAllUsersUseCase.execute(query);
 
     res.status(HttpStatusCodes.Ok).json({
-      users: users.map((v) => toGetAllUsersResult(v)),
+      data: result.data.map((user) => toGetAllUsersResult(user)),
+      paginationMeta: result.paginationMeta,
     });
   }
 
