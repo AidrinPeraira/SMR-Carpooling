@@ -8,7 +8,11 @@ http:
   url: http://localhost:4000/api/v1/admin/users?limit=1&page=3
   headers:
     - name: Authorization
+<<<<<<< Updated upstream
       value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDMwMTMzNywiZXhwIjoxNzg0MzAyMjM3fQ.v7cdIcSLf2gHBFu0-l0VScOPDPbFWV0XVZxHyafYLgA
+=======
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDEwMjMzOCwiZXhwIjoxNzg0MTAzMjM4fQ.Kdgn_D-uv2T8fq7BMAro1nHT0yvNoN7yufsMNdV9Zcs
+>>>>>>> Stashed changes
   params:
     - name: searchField
       value: first_name
@@ -51,6 +55,7 @@ settings:
 examples:
   - name: example-success
     request:
+<<<<<<< Updated upstream
       url: http://localhost:4000/api/v1/admin/users
       method: GET
       headers:
@@ -173,6 +178,20 @@ examples:
         - name: sortValue
           value: asc
           type: query
+=======
+      url: http://localhost:4000/api/v1/admin/users?search=Peraira&searchFields=first_name
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDEwMjMzOCwiZXhwIjoxNzg0MTAzMjM4fQ.Kdgn_D-uv2T8fq7BMAro1nHT0yvNoN7yufsMNdV9Zcs
+      params:
+        - name: search
+          value: Peraira
+          type: query
+        - name: searchFields
+          value: first_name
+          type: query
+>>>>>>> Stashed changes
     response:
       status: 200
       statusText: OK
@@ -206,11 +225,19 @@ examples:
         - name: content-type
           value: application/json; charset=utf-8
         - name: content-length
+<<<<<<< Updated upstream
           value: "470"
         - name: etag
           value: W/"1d6-M+PyGDTkLNNwhZQoP1YRNqz/IHU"
         - name: date
           value: Fri, 17 Jul 2026 15:18:41 GMT
+=======
+          value: "429"
+        - name: etag
+          value: W/"1ad-hosYgjs37zKqVusd/yRoloJDbQo"
+        - name: date
+          value: Wed, 15 Jul 2026 07:59:21 GMT
+>>>>>>> Stashed changes
         - name: connection
           value: keep-alive
         - name: keep-alive
@@ -219,7 +246,13 @@ examples:
         type: json
         data: |-
           {
+<<<<<<< Updated upstream
             "data": [
+=======
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": [
+>>>>>>> Stashed changes
               {
                 "first_name": "Aidrin Peraira",
                 "last_name": "BCR70",

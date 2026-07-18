@@ -9,6 +9,7 @@ import {
   SidebarItem,
 } from "@smr/ui";
 import { ReactNode, useState, useEffect } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -92,15 +93,15 @@ export function SideNav({ groups, items, onLogout, header, children }: SideNavPr
                           (pathname === otherHref || pathname.startsWith(otherHref + "/"))
                       );
                 return (
-                  <SidebarItem
-                    key={itemIdx}
-                    isCollapsed={isCollapsed}
-                    icon={item.icon}
-                    href={item.href}
-                    active={isActive}
-                  >
-                    {item.name}
-                  </SidebarItem>
+                  <Link key={itemIdx} href={item.href} className="block w-full">
+                    <SidebarItem
+                      isCollapsed={isCollapsed}
+                      icon={item.icon}
+                      active={isActive}
+                    >
+                      {item.name}
+                    </SidebarItem>
+                  </Link>
                 );
               })}
             </SidebarGroup>

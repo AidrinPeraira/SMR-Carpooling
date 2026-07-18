@@ -965,6 +965,99 @@
             />
           </div>
         </div>
+
+        <div
+          class="dropdown-container relative inline-block text-left w-full max-w-xs border-b pb-6 mb-6"
+          style="border-color: var(--color-border-subtle)"
+        >
+          <h4
+            class="text-xs font-mono mb-3"
+            style="color: var(--color-content-secondary)"
+          >
+            Dropdown.tsx
+          </h4>
+          <div class="relative">
+            <button
+              type="button"
+              class="w-full px-3 py-1.5 text-xs rounded border flex items-center justify-between cursor-pointer focus:outline-none"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+                color: var(--color-content-primary);
+              "
+              onclick="
+                const menu = this.nextElementSibling;
+                menu.classList.toggle('hidden');
+              "
+            >
+              <span class="dropdown-selected-text">Production (us-east)</span>
+              <svg
+                class="w-3.5 h-3.5 ml-2 transition-transform duration-200"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              class="dropdown-menu absolute z-10 mt-1 w-full rounded border shadow-lg hidden"
+              style="
+                border-color: var(--color-border-strong);
+                background-color: var(--color-surface-card);
+              "
+            >
+              <div class="py-1">
+                <button
+                  type="button"
+                  class="dropdown-item w-full text-left px-3 py-1.5 text-xs flex items-center justify-between cursor-pointer transition-colors"
+                  style="color: var(--color-content-primary);"
+                  onmouseover="this.style.backgroundColor = 'var(--color-surface-muted)'"
+                  onmouseout="this.style.backgroundColor = 'transparent'"
+                  onclick="
+                    const container = this.closest('.dropdown-container');
+                    container.querySelector('.dropdown-selected-text').textContent = 'Production (us-east)';
+                    container.querySelector('.dropdown-menu').classList.add('hidden');
+                  "
+                >
+                  <span>Production (us-east)</span>
+                  <svg class="w-3 h-3 text-[var(--color-accent)]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="dropdown-item w-full text-left px-3 py-1.5 text-xs flex items-center justify-between cursor-pointer transition-colors"
+                  style="color: var(--color-content-secondary);"
+                  onmouseover="this.style.backgroundColor = 'var(--color-surface-muted)'"
+                  onmouseout="this.style.backgroundColor = 'transparent'"
+                  onclick="
+                    const container = this.closest('.dropdown-container');
+                    container.querySelector('.dropdown-selected-text').textContent = 'Staging (us-west)';
+                    container.querySelector('.dropdown-menu').classList.add('hidden');
+                  "
+                >
+                  <span>Staging (us-west)</span>
+                </button>
+                <button
+                  type="button"
+                  class="dropdown-item w-full text-left px-3 py-1.5 text-xs flex items-center justify-between cursor-pointer transition-colors"
+                  style="color: var(--color-content-secondary);"
+                  onmouseover="this.style.backgroundColor = 'var(--color-surface-muted)'"
+                  onmouseout="this.style.backgroundColor = 'transparent'"
+                  onclick="
+                    const container = this.closest('.dropdown-container');
+                    container.querySelector('.dropdown-selected-text').textContent = 'Development (local)';
+                    container.querySelector('.dropdown-menu').classList.add('hidden');
+                  "
+                >
+                  <span>Development (local)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="mb-10">
@@ -1312,6 +1405,18 @@
         // Separate instantiation avoids shared object state leaks across columns
         lightTarget.appendChild(template.content.cloneNode(true));
         darkTarget.appendChild(template.content.cloneNode(true));
+      });
+
+      document.addEventListener("click", (e) => {
+        const dropdownContainers = document.querySelectorAll('.dropdown-container');
+        dropdownContainers.forEach(container => {
+          if (!container.contains(e.target)) {
+            const menu = container.querySelector('.dropdown-menu');
+            if (menu) {
+              menu.classList.add('hidden');
+            }
+          }
+        });
       });
     </script>
   </body>

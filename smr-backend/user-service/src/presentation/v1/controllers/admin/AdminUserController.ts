@@ -10,6 +10,7 @@ import {
   ApplicationError,
   ErrorCode,
   GenericErrorMessage,
+  GenericSuccessMessage,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
@@ -41,10 +42,12 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
 
     const result = await this._getAllUsersUseCase.execute(query);
 
-    res.status(HttpStatusCodes.Ok).json({
-      data: result.data.map((user) => toGetAllUsersResult(user)),
-      paginationMeta: result.paginationMeta,
-    });
+    res.status(HttpStatusCodes.Ok).json(
+      makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, {
+        data: result.data.map((user) => toGetAllUsersResult(user)),
+        paginationMeta: result.paginationMeta,
+      }),
+    );
   }
 
   /**

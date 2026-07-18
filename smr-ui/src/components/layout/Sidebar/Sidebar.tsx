@@ -95,7 +95,6 @@ interface SidebarItemProps {
   children?: ReactNode;
   active?: boolean;
   onClick?: () => void;
-  href?: string;
   className?: string;
 }
 
@@ -105,7 +104,6 @@ export function SidebarItem({
   children,
   active = false,
   onClick,
-  href,
   className,
 }: SidebarItemProps) {
   const styles = cn(
@@ -126,15 +124,6 @@ export function SidebarItem({
   ) : null;
 
   const tooltipText = isCollapsed && typeof children === "string" ? children : undefined;
-
-  if (href) {
-    return (
-      <a href={href} className={styles} title={tooltipText}>
-        {renderedIcon}
-        {!isCollapsed && <span className="truncate">{children}</span>}
-      </a>
-    );
-  }
 
   return (
     <button onClick={onClick} className={styles} title={tooltipText}>
