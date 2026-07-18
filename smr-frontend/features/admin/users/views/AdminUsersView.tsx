@@ -9,11 +9,12 @@ import { getAllUsersRequest } from "@/features/admin/users/api/requests/getAllUs
 import { GetAllUsersResult, QueryDTO, SortOrder, UserRole } from "@smr/shared";
 import { Button, Loader, Table, TableProps, Tag } from "@smr/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 export default function AdminUsersView() {
   const existingParams = useSearchParams();
+  const router = useRouter();
 
   //lets craft the query from any params that exist
 
@@ -133,15 +134,28 @@ export default function AdminUsersView() {
       {
         headerName: "Role",
         fieldName: "user_role",
-        customRender: (value) => {
-          return <Tag variant="accent">{String(value).toUpperCase()}</Tag>;
+        customRender: (value, row) => {
+          return (
+            <div className="flex gap-1">
+              <Tag variant="accent">{String(value).toUpperCase()}</Tag>
+              <Tag>
+                {String(
+                  row.is_driver ? "Registered Driver" : "Not Registered Driver",
+                )}
+              </Tag>
+            </div>
+          );
         },
       },
       {
         headerName: "Action",
-        customRender: () => {
+        customRender: (_v, row) => {
           return (
-            <Button variant="ghost" className="text-xs">
+            <Button
+              onClick={() => router.push(`/admin/users/${row.user_id}`)}
+              variant="ghost"
+              className="text-xs"
+            >
               View Details
             </Button>
           );

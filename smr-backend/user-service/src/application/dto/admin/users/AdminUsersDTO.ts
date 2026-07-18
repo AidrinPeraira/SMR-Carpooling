@@ -11,12 +11,24 @@ export interface GetAllUsersResponseDTO {
   userRole: UserRole;
   accountStatus: AccountStatus;
   isDriver: boolean;
-  phoneNumber: string;
-  profileImage?: string;
   createdAt: Date;
 }
 
 export interface ChangeUserStatusRequestDTO {
   userId: string;
   status: AccountStatus;
+}
+
+export interface GetFullUserProfileRequestDTO {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  emailId: string;
+  userRole: UserRole;
+  accountStatus: AccountStatus;
+  emailVerified: boolean;
+  isDriver: boolean;
+  phoneNumber: string;
+  profileImage?: string;
+  createdAt: Date;
 }
