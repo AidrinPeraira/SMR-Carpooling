@@ -4,6 +4,7 @@ import {
 } from "#/application/dto/admin/users/AdminUsersDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
+import { UserEntity } from "#/domain/entities/UserEntity";
 import { PaginatedPayload } from "@smr/shared";
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
@@ -12,7 +13,19 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   async execute(
     query: GetAllUsersRequestQueryDTO,
   ): Promise<PaginatedPayload<GetAllUsersResponseDTO[]>> {
-    const result = await this._userRepository.find(query);
+    const searchFields: (keyof UserEntity)[] = [
+      "firstName",
+      "lastName",
+      "emailId",
+      "phoneNumber",
+    ];
+
+    const queryWithSearchFields = {
+      ...query,
+      searchFields: query.search ? searchFields : undefined,
+    };
+
+    const result = await this._userRepository.find(queryWithSearchFields);
     return {
       data: result.data.map((user) => {
         return {

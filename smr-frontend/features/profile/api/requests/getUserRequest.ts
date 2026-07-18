@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { GetUserResult } from "@smr/shared";
 
 export async function getUserRequest(): Promise<GetUserResult> {
@@ -9,7 +10,8 @@ export async function getUserRequest(): Promise<GetUserResult> {
   });
 
   if (!response.ok) {
-    throw new Error();
+    logger.error("Failed to get user datails");
+    throw new Error("Failed to fetch user data");
   }
 
   const result = await response.json();

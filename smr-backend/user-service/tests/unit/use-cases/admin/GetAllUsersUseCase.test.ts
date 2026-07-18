@@ -3,6 +3,7 @@ import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUse
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 import { AccountStatus, UserRole } from "@smr/shared";
+import { userQueryFieldMapper } from "#/presentation/utils/query-mapper";
 
 describe("GetAllUsersUseCase", () => {
   const useCase = new GetAllUsersUseCase(mockUserRepository);
@@ -12,6 +13,7 @@ describe("GetAllUsersUseCase", () => {
   });
 
   it("should retrieve users matching query and map them to GetAllUsersResponseDTO", async () => {
+    const searchFields = ["first_name", "last_name", "email_id", "phone_number"];
     const mockQuery = {
       limit: 10,
       page: 1,
@@ -52,7 +54,10 @@ describe("GetAllUsersUseCase", () => {
 
     const result = await useCase.execute(mockQuery);
 
-    expect(mockUserRepository.find).toHaveBeenCalledWith(mockQuery);
+    expect(mockUserRepository.find).toHaveBeenCalledWith({
+      ...mockQuery,
+      searchFields: searchFields.map(userQueryFieldMapper),
+    });
     expect(result.data).toHaveLength(2);
     expect(result.paginationMeta).toEqual({
       totatlItems: 2,
@@ -104,7 +109,10 @@ describe("GetAllUsersUseCase", () => {
 
     const result = await useCase.execute(mockQuery);
 
-    expect(mockUserRepository.find).toHaveBeenCalledWith(mockQuery);
+    expect(mockUserRepository.find).toHaveBeenCalledWith({
+      ...mockQuery,
+      searchFields: undefined,
+    });
     expect(result.data).toEqual([]);
     expect(result.paginationMeta).toEqual({
       totatlItems: 0,
