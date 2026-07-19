@@ -15,7 +15,7 @@ export interface GetAllUsersResult {
   created_at: Date;
 }
 
-export interface getFullUserProfileResult {
+export interface GetFullUserProfileResult {
   user_id: string;
   first_name: string;
   last_name: string;
