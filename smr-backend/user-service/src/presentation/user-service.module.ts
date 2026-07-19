@@ -26,6 +26,7 @@ import { AdminUserControllerV1 } from "#/presentation/v1/controllers/admin/Admin
 import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUsersRouterV1";
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { ChangeUserStatusUseCase } from "#/application/use-case/admin/users/ChangeUserStatusUseCase";
+import { GetFullUserProfileUseCase } from "#/application/use-case/admin/users/GetFullUserProfileUseCase";
 import { redisClient } from "#/infrastructure/database/connect-redis";
 import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
 
@@ -134,6 +135,7 @@ const profileControllerV1 = new ProfileControllerV1(
 
 //admin user controller
 const getAllUsersUseCase = new GetAllUsersUseCase(mongoUserRepository);
+const getFullUserProfileUseCase = new GetFullUserProfileUseCase(mongoUserRepository);
 const changeUserStatusUseCase = new ChangeUserStatusUseCase(
   mongoUserRepository,
   redisSessionStore,
@@ -143,6 +145,7 @@ const adminUserControllerV1 = new AdminUserControllerV1(
   consolaLogger,
   getAllUsersUseCase,
   changeUserStatusUseCase,
+  getFullUserProfileUseCase,
 );
 
 const adminUserRoutesV1 = createAdminUsersRouteV1(adminUserControllerV1);

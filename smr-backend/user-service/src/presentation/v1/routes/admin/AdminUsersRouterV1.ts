@@ -17,6 +17,11 @@ export function createAdminUsersRouteV1(
     adminUserControllerV1.getAllUsers.bind(adminUserControllerV1),
   );
 
+  router.get(
+    "/:userId",
+    adminUserControllerV1.getFullUserProfile.bind(adminUserControllerV1),
+  );
+
   router.patch(
     "/block/:id",
     adminUserControllerV1.blockUser.bind(adminUserControllerV1),

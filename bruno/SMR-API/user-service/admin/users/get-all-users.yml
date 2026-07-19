@@ -5,15 +5,20 @@ info:
 
 http:
   method: GET
-  url: http://localhost:4000/api/v1/admin/users?search=Peraira
+  url: http://localhost:4000/api/v1/admin/users?filterFields=accountStatus&filterValue=blocked
   headers:
     - name: Authorization
-      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDM5MDAwNywiZXhwIjoxNzg0MzkwOTA3fQ.3p0FbjYAbA1mLyYRYWBljmA01tsWuqXo_g1UP7SNNPM
-    - name: ""
-      value: ""
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDQzNjk5MiwiZXhwIjoxNzg0NDM3ODkyfQ.GiH2JwtVk9V0QHDnIsA8WbTc2GLVFmCmvEFJnwja0BY
   params:
     - name: search
       value: Peraira
+      type: query
+      disabled: true
+    - name: filterFields
+      value: accountStatus
+      type: query
+    - name: filterValue
+      value: blocked
       type: query
   auth: inherit
 

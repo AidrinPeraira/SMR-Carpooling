@@ -21,7 +21,7 @@
 - [x] Email and password login
 - [x] Token Management (Access & Refresh tokens)
 - [ ] Session Management (Redis-backed)
-- [ ] Logout
+- [x] Logout
 - [x] Google OAuth Integration
 - [x] Password Reset flow (Forgot/Verify/Reset)
 - [ ] Role Switching (Passenger ↔ Driver)
@@ -71,3 +71,7 @@
 ## Common Features
 
 - [ ] System wide config with redundant db across services
+
+## Security Feature
+
+- [x] Query validation prevents mongo db query injection via the query params
