@@ -2,7 +2,7 @@ import {
   GetAllUsersResponseDTO,
   GetFullUserProfileResponseDTO,
 } from "#/application/dto/admin/users/AdminUsersDTO";
-import { GetAllUsersResult, getFullUserProfileResult } from "@smr/shared";
+import { GetAllUsersResult, GetFullUserProfileResult } from "@smr/shared";
 
 /**
  * This funciton takes the get user data form getALlusersUseCAse
@@ -36,7 +36,7 @@ export function toGetAllUsersResult(
  */
 export function toGetFullUserProfileResult(
   data: GetFullUserProfileResponseDTO,
-): getFullUserProfileResult {
+): GetFullUserProfileResult {
   return {
     user_id: data.userId,
     first_name: data.firstName,
