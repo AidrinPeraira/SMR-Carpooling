@@ -15,14 +15,20 @@ import {
   ILogger,
   makeSuccessResponse,
   UserSuccessMessage,
+  zodParser,
+  UserIdParamSchema,
+  UserIdParamSchemaType,
 } from "@smr/shared";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
+import { IGetFullUserProfileUseCase } from "#/application/interfaces/use-case/admin/users/IGetFullUserProfileUseCase";
+import { toGetFullUserProfileResult } from "#/presentation/v1/mapper/admin/AdminUsersMapper";
 
 export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   constructor(
     private readonly _logger: ILogger,
     private readonly _getAllUsersUseCase: IGetAllUsersUseCase,
     private readonly _changeUserStatusUseCase: IChangeUserStatusUseCase,
+    private readonly _getFullUserProfileUseCase: IGetFullUserProfileUseCase,
   ) {}
 
   /**
@@ -48,6 +54,37 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
         paginationMeta: result.paginationMeta,
       }),
     );
+  }
+
+  /**
+   * This method gets the user id from request prams
+   * validates it using schema parser
+   *  and calls the use case to get full user profile details for tha admin
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getFullUserProfile(req: Request, res: Response): Promise<void> {
+    const { userId } = zodParser<UserIdParamSchemaType>(
+      UserIdParamSchema,
+      req.params,
+    );
+
+    this._logger.info("Fetching full user profile for userId: ", {
+      adminUserId: req.headers["x-user-id"],
+      userId: userId,
+    });
+
+    const result = await this._getFullUserProfileUseCase.execute(userId);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          toGetFullUserProfileResult(result),
+        ),
+      );
   }
 
   /**

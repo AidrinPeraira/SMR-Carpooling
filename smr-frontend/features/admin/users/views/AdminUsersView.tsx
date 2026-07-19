@@ -6,7 +6,13 @@ import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
 import { getAllUsersRequest } from "@/features/admin/users/api/requests/getAllUsersRequest";
-import { GetAllUsersResult, QueryDTO, SortOrder, UserRole } from "@smr/shared";
+import {
+  AccountStatus,
+  GetAllUsersResult,
+  QueryDTO,
+  SortOrder,
+  UserRole,
+} from "@smr/shared";
 import { Button, Loader, Table, TableProps, Tag } from "@smr/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -80,8 +86,8 @@ export default function AdminUsersView() {
       return await getAllUsersRequest(queryParams);
     },
     placeholderData: keepPreviousData,
-    staleTime: 60 * 10,
-    gcTime: 60 * 10,
+    staleTime: process.env.NODE_ENV == "production" ? 60 * 10 : 0,
+    gcTime: process.env.NODE_ENV == "production" ? 60 * 10 : 0,
   });
 
   //loading screen while fetching data
@@ -166,8 +172,12 @@ export default function AdminUsersView() {
   };
 
   const filterFields = {
-    AccountStatus: ["active", "blocked"],
-    UserRole: [UserRole.ADMIN, UserRole.PASSENGER, UserRole.DRIVER],
+    accountStatus: [
+      AccountStatus.ACTIVE,
+      AccountStatus.BLOCKED,
+      AccountStatus.PENDING_VERIFICATION,
+    ],
+    userRole: [UserRole.ADMIN, UserRole.PASSENGER, UserRole.DRIVER],
   };
 
   const sortFields = ["userRole", "accountStatus", "createdAt"];

@@ -19,7 +19,7 @@ export interface ChangeUserStatusRequestDTO {
   status: AccountStatus;
 }
 
-export interface GetFullUserProfileRequestDTO {
+export interface GetFullUserProfileResponseDTO {
   userId: string;
   firstName: string;
   lastName: string;

@@ -51,9 +51,7 @@ export function toGetAllUsersResult(
     user_role: data.userRole,
     email_id: data.emailId,
     account_status: data.accountStatus,
-    phone_number: data.phoneNumber,
     is_driver: data.isDriver,
     created_at: data.createdAt,
-    profile_image: data.profileImage,
   };
 }
