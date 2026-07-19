@@ -6,7 +6,7 @@ import { VehicleDetailsCard } from "@/features/admin/users/components/user-detai
 
 export function AdminUserDetailsView() {
   return (
-    <div>
+    <div className="space-y-6 w-full max-w-6xl mx-auto p-6 md:p-8">
       <ProfileDetailsCard />
       <DriverDetailsCard />
       <VehicleDetailsCard />
