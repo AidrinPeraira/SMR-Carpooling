@@ -1,7 +1,7 @@
 {
   "name": "@smr/ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/src/index.d.ts",
@@ -60,5 +60,8 @@
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -37,5 +37,11 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "publishConfig": {
+    "dependencies": {
+      "@smr/shared": "^0.0.1",
+      "@smr/ui": "^0.0.1"
+    }
   }
 }
