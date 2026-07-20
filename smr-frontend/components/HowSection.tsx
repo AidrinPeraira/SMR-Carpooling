@@ -1,4 +1,4 @@
-import { Card, CardBody, CardFooter, CardHeader } from "@smr/ui";
+import { Card, CardBody, CardFooter, CardHeader } from "@sharemyride/ui";
 import { Banknote, SearchCheck, Users } from "lucide-react";
 
 export function HowSection() {

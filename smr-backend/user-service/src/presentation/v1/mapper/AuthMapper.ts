@@ -24,7 +24,7 @@ import {
   ForgotPasswordSchema,
   ChangePasswordRequest,
   ChangePasswordSchema,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import {
   GeneratePasswordChangeTokenRequestDTO,
   PasswordChangeRequestDTO,

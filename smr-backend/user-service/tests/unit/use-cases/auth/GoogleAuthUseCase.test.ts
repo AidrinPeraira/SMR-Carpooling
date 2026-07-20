@@ -6,7 +6,7 @@ import {
   HttpStatusCodes,
   UserErrorMessage,
   ErrorCode,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { mockGoogleAuthService } from "&#/mocks/MockGoogleAuthService";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockUidGenerator } from "&#/mocks/MockUidGenerator";

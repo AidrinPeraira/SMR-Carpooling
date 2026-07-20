@@ -1,4 +1,4 @@
-import { DomainEvent } from "@smr/shared";
+import { DomainEvent } from "@sharemyride/shared";
 
 /**
  * This is the interface for the Message Broker to handle

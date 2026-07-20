@@ -12,8 +12,8 @@ import {
   QueryDTO,
   SortOrder,
   UserRole,
-} from "@smr/shared";
-import { Button, Loader, Table, TableProps, Tag } from "@smr/ui";
+} from "@sharemyride/shared";
+import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";

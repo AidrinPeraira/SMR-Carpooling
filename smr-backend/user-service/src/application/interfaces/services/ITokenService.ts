@@ -1,4 +1,4 @@
-import { AuthTokenPayload } from "@smr/shared";
+import { AuthTokenPayload } from "@sharemyride/shared";
 
 /**
  * This interface defines a service for creating and verifying the various types of JWT TOkens.

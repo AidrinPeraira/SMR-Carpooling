@@ -49,7 +49,7 @@ smr-ui/src/components/
 - Also add the following line to `globals.css`
 
 ```
-@import "@smr/ui/css";
+@import "@sharemyride/ui/css";
 ```
 
 # Custom Themes

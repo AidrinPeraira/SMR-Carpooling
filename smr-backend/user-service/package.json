@@ -21,7 +21,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@smr/shared": "workspace:*",
+    "@sharemyride/shared": "workspace:*",
     "add": "^2.0.6",
     "amqplib": "^2.0.1",
     "cors": "^2.8.6",
@@ -37,7 +37,7 @@
   },
   "publishConfig": {
     "dependencies": {
-      "@smr/shared": "^0.0.1"
+      "@sharemyride/shared": "^0.0.1"
     }
   }
 }

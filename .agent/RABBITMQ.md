@@ -25,7 +25,7 @@ All event payloads published to RabbitMQ must be strictly validated before trans
 
 ```typescript
 import { IEventBus } from "#/application/interfaces/services/IEventBus";
-import { UserRegisteredEvent } from "@smr/shared";
+import { UserRegisteredEvent } from "@sharemyride/shared";
 
 export class RegisterUserUseCase {
   constructor(

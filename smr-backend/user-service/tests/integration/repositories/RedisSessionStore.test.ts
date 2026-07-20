@@ -1,5 +1,5 @@
 import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
-import { AuthSession, AccountStatus } from "@smr/shared";
+import { AuthSession, AccountStatus } from "@sharemyride/shared";
 import { createClient } from "redis";
 import { beforeAll, afterAll, beforeEach, describe, it, expect } from "vitest";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pagination as P } from "@smr/ui";
+import { Pagination as P } from "@sharemyride/ui";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export function Pagination({

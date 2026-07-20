@@ -22,7 +22,7 @@ Follow these rules to keep the codebase consistent and high quality.
 - **Dependency Injection**: Always inject dependencies via constructors using interfaces.
 - **No Cross-Layer Leaks**: Infrastructure details (like Mongoose models) should never leak into the Domain or Application layers.
 - **Mappers**: Use mappers to convert between Entities and DTOs in the Presentation layer.
-- **Validation**: Use Zod (in `@smr/shared`) for request body validation.
+- **Validation**: Use Zod (in `@sharemyride/shared`) for request body validation.
 
 ## 4. Git & Commits
 

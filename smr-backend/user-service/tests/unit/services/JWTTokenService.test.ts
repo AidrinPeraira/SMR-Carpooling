@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import jwt from "jsonwebtoken";
-import { AuthTokenPayload, TokenType, UserRole } from "@smr/shared";
+import { AuthTokenPayload, TokenType, UserRole } from "@sharemyride/shared";
 
 describe("JWTTokenService", () => {
   const genericSecret = "generic-secret";

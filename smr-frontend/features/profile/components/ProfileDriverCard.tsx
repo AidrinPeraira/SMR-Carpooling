@@ -1,5 +1,5 @@
-import { Button, Card, CardBody } from "@smr/ui";
-import { GetUserResult } from "@smr/shared";
+import { Button, Card, CardBody } from "@sharemyride/ui";
+import { GetUserResult } from "@sharemyride/shared";
 import { Check, Link } from "lucide-react";
 
 interface Props {

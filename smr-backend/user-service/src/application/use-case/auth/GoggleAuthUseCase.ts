@@ -14,7 +14,7 @@ import {
   TokenType,
   UserErrorMessage,
   UserRole,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
   constructor(

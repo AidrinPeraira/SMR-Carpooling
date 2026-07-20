@@ -6,7 +6,7 @@ import { mockHashingService } from "&#/mocks/MockHashingService";
 import { mockEventBus } from "&#/mocks/MockEventBus";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
-import { TokenType } from "@smr/shared";
+import { TokenType } from "@sharemyride/shared";
 
 describe("ChangePasswordUseCase", () => {
   const useCase = new ChangePasswordUseCase(

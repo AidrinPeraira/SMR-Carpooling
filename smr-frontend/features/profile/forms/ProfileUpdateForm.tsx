@@ -4,7 +4,7 @@ import {
   UpdateUserRequest,
   UpdateUserSchema,
   GetUserResult,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import {
   Avatar,
   Button,
@@ -14,7 +14,7 @@ import {
   Label,
   Loader,
   useToast,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";

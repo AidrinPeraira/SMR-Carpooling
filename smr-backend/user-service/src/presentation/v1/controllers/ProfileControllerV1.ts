@@ -15,7 +15,7 @@ import {
   ILogger,
   makeSuccessResponse,
   UserSuccessMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { Request, Response } from "express";
 
 export class ProfileControllerV1 implements IProfileControllerV1 {

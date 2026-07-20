@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ToastProvider } from "@smr/ui";
+import { ToastProvider } from "@sharemyride/ui";
 import "./globals.css";
 import { QueryToastListener } from "@/components/QueryToastListener";
 import QueryProvider from "@/components/Provider/QueryProvider";

@@ -6,7 +6,7 @@ import {
   ErrorCode,
   GenericErrorMessage,
   HttpStatusCodes,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 import { OAuth2Client } from "google-auth-library";
 import { CryptoHashingService } from "./CryptoHashingService";

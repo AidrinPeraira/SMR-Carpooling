@@ -1,5 +1,5 @@
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
-import { AuthTokenPayload } from "@smr/shared";
+import { AuthTokenPayload } from "@sharemyride/shared";
 import jwt from "jsonwebtoken";
 
 export class JWTTokenService implements ITokenService {

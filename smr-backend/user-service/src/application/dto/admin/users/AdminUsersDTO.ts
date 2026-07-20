@@ -1,5 +1,5 @@
 import { UserEntity } from "#/domain/entities/UserEntity";
-import { AccountStatus, QueryDTO, UserRole } from "@smr/shared";
+import { AccountStatus, QueryDTO, UserRole } from "@sharemyride/shared";
 
 export type GetAllUsersRequestQueryDTO = QueryDTO<UserEntity>;
 

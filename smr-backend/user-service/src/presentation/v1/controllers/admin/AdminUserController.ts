@@ -18,7 +18,7 @@ import {
   zodParser,
   UserIdParamSchema,
   UserIdParamSchemaType,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
 import { IGetFullUserProfileUseCase } from "#/application/interfaces/use-case/admin/users/IGetFullUserProfileUseCase";
 import { toGetFullUserProfileResult } from "#/presentation/v1/mapper/admin/AdminUsersMapper";

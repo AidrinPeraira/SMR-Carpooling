@@ -11,7 +11,7 @@ import {
   EventName,
   UserBlockedEvent,
   UserUnblockedEvent,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class ChangeUserStatusUseCase implements IChangeUserStatusUseCase {
   constructor(

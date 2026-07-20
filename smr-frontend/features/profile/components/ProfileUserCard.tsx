@@ -1,5 +1,5 @@
-import { Card, CardHeader, CardBody } from "@smr/ui";
-import { GetUserResult } from "@smr/shared";
+import { Card, CardHeader, CardBody } from "@sharemyride/ui";
+import { GetUserResult } from "@sharemyride/shared";
 import { Edit, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

@@ -2,7 +2,7 @@ import {
   GetAllUsersResponseDTO,
   GetAllUsersRequestQueryDTO,
 } from "#/application/dto/admin/users/AdminUsersDTO";
-import { PaginatedPayload } from "@smr/shared";
+import { PaginatedPayload } from "@sharemyride/shared";
 
 /**
  * This is for the change user status use case

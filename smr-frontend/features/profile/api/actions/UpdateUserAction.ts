@@ -3,7 +3,7 @@
 import { apiServerFetch } from "@/lib/api-server";
 import { logger } from "@/lib/logger";
 import { ActionResponse } from "@/types/ResponseType";
-import { ApiResponse, GetUserResult, UpdateUserRequest } from "@smr/shared";
+import { ApiResponse, GetUserResult, UpdateUserRequest } from "@sharemyride/shared";
 
 export async function updateUserAction(
   data: UpdateUserRequest,

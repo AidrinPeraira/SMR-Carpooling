@@ -1,4 +1,4 @@
-import { PaginatedPayload, QueryDTO } from "@smr/shared";
+import { PaginatedPayload, QueryDTO } from "@sharemyride/shared";
 
 /**
  * This is the base repository interface

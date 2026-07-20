@@ -7,7 +7,7 @@ import {
   HttpStatusCodes,
   UserErrorMessage,
   ErrorCode,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockHashingService } from "&#/mocks/MockHashingService";
 import { mockTokenService } from "&#/mocks/MockTokenService";

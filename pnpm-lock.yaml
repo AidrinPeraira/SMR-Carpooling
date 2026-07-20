@@ -261,7 +261,7 @@ importers:
 
   smr-backend/api-gateway:
     dependencies:
-      '@smr/shared':
+      '@sharemyride/shared':
         specifier: workspace:*
         version: link:../../smr-shared
       cors:
@@ -288,7 +288,7 @@ importers:
 
   smr-backend/notification-service:
     dependencies:
-      '@smr/shared':
+      '@sharemyride/shared':
         specifier: workspace:*
         version: link:../../smr-shared
       amqplib:
@@ -312,7 +312,7 @@ importers:
 
   smr-backend/payment-service:
     dependencies:
-      '@smr/shared':
+      '@sharemyride/shared':
         specifier: workspace:*
         version: link:../../smr-shared
       cors:
@@ -330,7 +330,7 @@ importers:
 
   smr-backend/trip-service:
     dependencies:
-      '@smr/shared':
+      '@sharemyride/shared':
         specifier: workspace:*
         version: link:../../smr-shared
       cors:
@@ -348,7 +348,7 @@ importers:
 
   smr-backend/user-service:
     dependencies:
-      '@smr/shared':
+      '@sharemyride/shared':
         specifier: workspace:*
         version: link:../../smr-shared
       add:
@@ -396,10 +396,10 @@ importers:
       '@react-oauth/google':
         specifier: ^0.13.5
         version: 0.13.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@smr/shared':
+      '@sharemyride/shared':
         specifier: workspace:*
         version: link:../smr-shared
-      '@smr/ui':
+      '@sharemyride/ui':
         specifier: workspace:*
         version: link:../smr-ui
       '@tanstack/react-query':

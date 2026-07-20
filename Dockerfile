@@ -24,9 +24,9 @@ COPY --chown=node:node ./tsconfig.base.json ./
 # --- Shared Library for Backend Services---
 FROM root-workspace AS shared-backend-build
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/shared...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @sharemyride/shared...
 COPY --chown=node:node ./smr-shared/ ./smr-shared/
-RUN pnpm --filter @smr/shared build
+RUN pnpm --filter @sharemyride/shared build
 
 # --- API Gateway ---
 FROM root-workspace AS api-gateway-installer

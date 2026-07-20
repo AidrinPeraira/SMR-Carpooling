@@ -26,7 +26,7 @@ import {
   RefreshTokenResult,
   SignUpResult,
   UserSuccessMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { Request, Response } from "express";
 
 export class AuthControllerV1 implements IAuthControllerV1 {

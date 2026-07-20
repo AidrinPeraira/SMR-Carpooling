@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@smr/ui";
+import { Button } from "@sharemyride/ui";
 import { ArrowLeft, Home, Compass } from "lucide-react";
 
 export default function NotFound() {

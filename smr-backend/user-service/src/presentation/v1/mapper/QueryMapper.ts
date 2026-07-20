@@ -3,7 +3,7 @@ import {
   GetAllUsersResponseDTO,
 } from "#/application/dto/admin/users/AdminUsersDTO";
 import { userQueryFieldMapper } from "#/presentation/utils/query-mapper";
-import { GetAllUsersResult, QuerySchema, zodParser } from "@smr/shared";
+import { GetAllUsersResult, QuerySchema, zodParser } from "@sharemyride/shared";
 
 /**
  * This function takes an query object passed from request controller

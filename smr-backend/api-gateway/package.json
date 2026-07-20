@@ -18,7 +18,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@smr/shared": "workspace:*",
+    "@sharemyride/shared": "workspace:*",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -29,7 +29,7 @@
   },
   "publishConfig": {
     "dependencies": {
-      "@smr/shared": "^0.0.1"
+      "@sharemyride/shared": "^0.0.1"
     }
   }
 }

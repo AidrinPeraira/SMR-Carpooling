@@ -1,4 +1,4 @@
-import { DomainEvent, EventName, UserSignUpEvent } from "@smr/shared";
+import { DomainEvent, EventName, UserSignUpEvent } from "@sharemyride/shared";
 
 export const mockUserSignUpEvent: UserSignUpEvent = {
   eventName: EventName.AUTH_USER_SIGNUP,

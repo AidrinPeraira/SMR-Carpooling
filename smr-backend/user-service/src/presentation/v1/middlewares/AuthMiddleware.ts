@@ -5,7 +5,7 @@ import {
   GenericErrorMessage,
   HttpStatusCodes,
   UserRole,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export function AuthMiddleware(...allowedRoles: UserRole[]) {
   return (req: Request, _res: Response, next: NextFunction) => {

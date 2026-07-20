@@ -5,7 +5,7 @@ import {
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 import { UserEntity } from "#/domain/entities/UserEntity";
-import { PaginatedPayload } from "@smr/shared";
+import { PaginatedPayload } from "@sharemyride/shared";
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   constructor(private readonly _userRepository: IUserRepository) {}

@@ -2,7 +2,7 @@ import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { HttpStatusCodes, makeFailedResponse, type ILogger } from "@smr/shared";
+import { HttpStatusCodes, makeFailedResponse, type ILogger } from "@sharemyride/shared";
 import { mapError } from "./presentation/utils/error-mapper";
 import { userServiceRouters } from "#/presentation/user-service.module";
 import morgan from "morgan";

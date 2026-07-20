@@ -9,7 +9,7 @@ services:
       - .:/app
       - /app/node_modules
       - /app/smr-shared/node_modules
-    command: pnpm --filter @smr/shared run dev
+    command: pnpm --filter @sharemyride/shared run dev
     develop:
       watch:
         - action: sync

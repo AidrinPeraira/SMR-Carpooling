@@ -11,7 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import { logoutUserAction } from "@/features/auth/api/actions/LogoutUserAction";
-import { useToast } from "@smr/ui";
+import { useToast } from "@sharemyride/ui";
 import { useRouter } from "next/navigation";
 
 interface Props {

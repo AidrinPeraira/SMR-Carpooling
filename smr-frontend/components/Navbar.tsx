@@ -1,4 +1,4 @@
-import { Button } from "@smr/ui";
+import { Button } from "@sharemyride/ui";
 import Image from "next/image";
 import Link from "next/link";
 

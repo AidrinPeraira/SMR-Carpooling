@@ -10,7 +10,7 @@ import {
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 describe("RefreshTokenUseCase", () => {
   const useCase = new RefreshTokenUseCase(mockUserRepository, mockTokenService);

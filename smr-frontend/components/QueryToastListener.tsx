@@ -1,5 +1,5 @@
 "use client";
-import { useToast } from "@smr/ui";
+import { useToast } from "@sharemyride/ui";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 

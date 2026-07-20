@@ -15,7 +15,7 @@ import {
   PasswordChangeRequestEventPayload,
   TokenType,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class GeneratePasswordChangeTokenUseCase implements IGeneratePasswordChangeTokenUseCase {
   constructor(
