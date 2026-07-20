@@ -1,0 +1,119 @@
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: user-service-prod
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+    depends_on:
+      - redis
+      - rabbitmq
+    env_file:
+      - ./smr-backend/user-service/.env
+    environment:
+      - NODE_ENV=production
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-gateway-prod
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./smr-backend/api-gateway/.env
+    environment:
+      - NODE_ENV=production
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: notification-service-prod
+    restart: unless-stopped
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./smr-backend/notification-service/.env
+    environment:
+      - NODE_ENV=production
+
+  trip-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: trip-service-prod
+    restart: unless-stopped
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./smr-backend/trip-service/.env
+    environment:
+      - NODE_ENV=production
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: payment-service-prod
+    restart: unless-stopped
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./smr-backend/payment-service/.env
+    environment:
+      - NODE_ENV=production
+
+  # --- Infrastructure Services ---
+
+  redis:
+    image: redis:7.0-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./smr-infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./smr-infra/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./smr-infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+
+  loki:
+    image: grafana/loki:latest
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./smr-infra/loki/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:latest
+    restart: unless-stopped
+    volumes:
+      - ./smr-infra/promtail/promtail-config.yaml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
+    command: -config.file=/etc/promtail/config.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./smr-infra/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_LOG_LEVEL=warn
