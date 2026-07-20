@@ -26,10 +26,5 @@
     "http-proxy-middleware": "^4.1.1",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.11.0"
-  },
-  "publishConfig": {
-    "dependencies": {
-      "@sharemyride/shared": "^0.0.1"
-    }
   }
 }

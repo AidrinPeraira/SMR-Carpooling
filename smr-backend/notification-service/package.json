@@ -27,10 +27,5 @@
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "resend": "^6.12.4"
-  },
-  "publishConfig": {
-    "dependencies": {
-      "@sharemyride/shared": "^0.0.1"
-    }
   }
 }

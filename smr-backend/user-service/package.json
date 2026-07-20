@@ -34,10 +34,5 @@
     "morgan": "^1.11.0",
     "redis": "^6.0.0",
     "zod": "^4.4.3"
-  },
-  "publishConfig": {
-    "dependencies": {
-      "@sharemyride/shared": "^0.0.1"
-    }
   }
 }
