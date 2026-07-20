@@ -1,5 +1,9 @@
 # ShareMyRide Architecture
 
+> [!WARNING]
+> **DEPRECATED / OUT OF DATE**
+> This architecture documentation is old, does not align with the current system design, and needs to be updated with the latest design.
+
 The project is a microservices monorepo designed for scalability and maintainability.
 
 ## 1. System Overview

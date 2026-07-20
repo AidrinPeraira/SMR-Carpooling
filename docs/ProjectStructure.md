@@ -18,14 +18,16 @@ This document outlines the organization of the **ShareMyRide** codebase. The pla
 ```text
 ShareMyRide/
 ├── smr-backend/            # Core microservices (Clean Architecture)
-│   ├── api-gateway/        # Platform entry point & Orchestrator
+│   ├── api-gateway/        # Platform entry point & Orchestrator (middleware-based)
 │   ├── user-service/       # Identity, Auth, and Profile management
 │   ├── trip-service/       # Carpooling and Trip logic
 │   ├── payment-service/    # Financial transactions & Stripe integration
 │   └── notification-service/# Multi-channel alerts (Email/Push)
-├── smr-frontend/           # Next.js web application
+├── smr-frontend/           # Next.js web application (Feature-Based Architecture)
 ├── smr-ui/                 # Shared UI Component Library (Storybook + Vite)
 ├── smr-shared/             # Internal library (DTOs, Enums, Errors, Schemas)
+├── smr-infra/              # Infrastructure configurations (Grafana, Loki, Promtail, RabbitMQ, Redis)
+├── bruno/                  # Bruno API Client collection & environments
 ├── docs/                   # System, API, and workflow documentation
 ├── package.json            # Root workspace configuration (pnpm)
 └── pnpm-workspace.yaml     # Workspace definitions
@@ -35,7 +37,7 @@ ShareMyRide/
 
 ## 3. Backend Service Architecture
 
-Each service (within `smr-backend/`) implements **Clean Architecture**:
+Each service (within `smr-backend/`) implements **Clean Architecture** (with the exception of `api-gateway`, which is a simpler gateway built directly with Express middleware):
 
 ```text
 [service-name]/src/
@@ -49,7 +51,8 @@ Each service (within `smr-backend/`) implements **Clean Architecture**:
 ├── infrastructure/         # Layer 3: External Adapters (The "How")
 │   ├── database/           # Models and Schemas (e.g., Mongoose)
 │   ├── repository/         # DB persistence implementations
-│   └── services/           # External API/System implementations (JWT, Hashing, etc.)
+│   ├── services/           # External API/System implementations (JWT, Hashing, etc.)
+│   └── store/              # Data stores / cache (e.g., RedisSessionStore)
 └── presentation/           # Layer 4: Entry Points (The "Where")
     ├── v1/                 # Versioned API logic
     │   ├── controllers/    # Request/Response handlers
@@ -98,7 +101,7 @@ Follow these steps when implementing a new feature to maintain architectural int
 
 ### Step 6: Wiring & Verification (Composition Root)
 
-- Wire all dependencies (DI) in the `[service].module.ts` file.
+- Wire all dependencies (DI) in the `presentation/[service].module.ts` file.
 - Export versioned routers (e.g., `v1Router`) and mount them in `app.ts`.
 - **Documentation**: Add JSDoc to all new classes and exported methods.
 - **Testing**: Add a corresponding unit test in `tests/unit/` or integration test in `tests/integration/`.
@@ -110,28 +113,25 @@ Follow these steps when implementing a new feature to maintain architectural int
 The frontend follows a **Feature-Based Architecture** to keep domain logic separate from routing and UI primitives.
 
 ```text
-smr-frontend/src/
+smr-frontend/
 ├── app/                    # Routing & Layouts (Next.js App Router)
 ├── features/               # Domain-specific logic (The "Heart")
-│   ├── [feature-name]/
-│   │   ├── api/            # API hooks (React Query) or Server Actions
-│   │   ├── components/     # Feature-specific components (e.g., TripCard)
-│   │   ├── types/          # Feature-specific TS definitions
-│   │   └── index.ts        # Public API / Barrel file
-├── components/             # Global UI Primitives (The "Blocks")
-│   └── ui/                 # Shared atoms (Button, Input, Card)
-├── hooks/                  # Global shared hooks
+│   └── [feature-name]/
+│       ├── api/            # API hooks (React Query) or Server Actions
+│       ├── components/     # Feature-specific components
+│       └── views/          # Complete page views for the feature
+├── components/             # Page-specific layouts and helper components (Navbar, Footer, etc.)
 ├── lib/                    # Shared configurations (apiClient, utils)
-└── store/                  # Global state management (Zustand)
+├── types/                  # Global shared TS definitions
+└── public/                 # Static assets (images, icons)
 ```
 
 ---
 
 ## 6. Frontend Feature Composition
 
-To maintain modularity, features should only be accessed through their `index.ts` file.
+Features are structured to maintain domain isolation and code clarity.
 
-1. **Isolation**: A feature should not import from another feature's internal folders. Use the public API (`index.ts`).
-2. **Separation of Concerns**: Use `components/ui/` for generic, stateless components.
-3. **Domain Logic**: Business-aware components (like `TripCard`) live inside their respective `features/` folder.
-4. **Data Fetching**: Keep API calls and data transformation logic within the feature's `api/` folder.
+1. **Domain Logic & Views**: Business-aware components and page views (such as user details or auth forms) live inside their respective `features/[feature-name]/views/` or `features/[feature-name]/components/` folders.
+2. **Separation of Concerns**: Generic UI primitives (like buttons, dialogs, inputs, cards) are imported from the shared `@smr/ui` library.
+3. **Data Fetching**: Keep API queries, mutations, and cache management (using React Query) inside the feature's `api/` folder.
