@@ -1,5 +1,9 @@
 # ShareMyRide Architecture
 
+> [!WARNING]
+> **DEPRECATED / OUT OF DATE**
+> This architecture documentation is old, does not align with the current system design, and needs to be updated with the latest design.
+
 "ShareMyRide" is a platform that connects people travelling solo over long distances. It helps them share their car with others who are travelling along the same route.
 
 **Share the Car. Share the Journey. Share the Expenses.**
