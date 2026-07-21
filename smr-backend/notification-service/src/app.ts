@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { ApplicationError, HttpStatusCodes, type ILogger } from "@smr/shared";
+import { ApplicationError, HttpStatusCodes, type ILogger } from "@sharemyride/shared";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -16,7 +16,7 @@ export function createApp(logger: ILogger) {
   app.use(cors());
   app.use(helmet());
 
-  app.get("/health", (req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
 
@@ -24,12 +24,12 @@ export function createApp(logger: ILogger) {
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ApplicationError) {
       logger.error(err.message, {
-        origin: err.origin,
+        message: err.message,
         errorCode: err.errorCode,
         details: err.details,
         statusCode: err.statusCode,
         stack: err.stack,
-        internalError: err.err,
+        internalError: err.cause,
       });
 
       return res.status(err.statusCode).json({

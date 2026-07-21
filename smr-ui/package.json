@@ -1,7 +1,6 @@
 {
-  "name": "@smr/ui",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@sharemyride/ui",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/src/index.d.ts",
@@ -9,7 +8,8 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./css": "./dist/index.css"
   },
   "files": [
     "dist"
@@ -17,6 +17,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prepublishOnly": "pnpm run build",
+    "publish": "pnpm publish",
+    "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
@@ -52,5 +55,14 @@
     "vite": "^8.0.12",
     "vite-plugin-dts": "^5.0.0",
     "vitest": "^4.1.6"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

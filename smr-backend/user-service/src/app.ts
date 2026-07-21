@@ -1,10 +1,23 @@
 import "dotenv/config";
-import express, { type Request, type Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { HttpStatusCodes, type ILogger } from "@smr/shared";
-import { mapError } from "./utils/error-mapper";
+import {
+  HttpStatusCodes,
+  makeFailedResponse,
+  type ILogger,
+} from "@sharemyride/shared";
+import { userServiceRouters } from "#/presentation/user-service.module";
+import morgan from "morgan";
+import { mapError } from "#/presentation/utils/error-mapper";
 
+/**
+ * Express Application Factory.
+ * Configures middleware, health checks, versioned routes, and global error handling.
+ *
+ * @param logger - The logger instance to be used across the application lifecycle.
+ * @returns The configured Express Application instance.
+ */
 export function createApp(logger: ILogger) {
   const app = express();
 
@@ -12,32 +25,43 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
+  app.use(
+    morgan("dev", {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+    }),
+  );
 
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
 
+  //routes
+  app.use("/v1", userServiceRouters.v1);
+
   //global error handler
-  app.use((err: unknown, req: Request, res: Response) => {
-    const mappedError = mapError(err, "user-service");
+  app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
+    const mappedError = mapError(err);
 
     logger.error(mappedError.message, {
-      origin: mappedError.origin,
       errorCode: mappedError.errorCode,
       details: mappedError.details,
       statusCode: mappedError.statusCode,
       stack: mappedError.stack,
-      internalError: mappedError.err,
+      internalError: mappedError.cause,
       url: req.url,
       method: req.method,
     });
-
-    return res.status(mappedError.statusCode).json({
-      success: false,
-      message: mappedError.message,
-      errorCode: mappedError.errorCode,
-      details: mappedError.details,
-    });
+    res
+      .status(mappedError.statusCode)
+      .json(
+        makeFailedResponse(
+          mappedError.message,
+          mappedError.errorCode,
+          mappedError.details,
+        ),
+      );
   });
 
   return app;

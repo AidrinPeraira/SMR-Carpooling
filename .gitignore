@@ -15,6 +15,7 @@ next-env.d.ts
 
 # Testing
 coverage/
+*.lcov
 
 # Logs
 logs/

@@ -4,21 +4,27 @@
   "description": "",
   "main": "index.js",
   "imports": {
-    "#/*": "./src/*"
+    "#/*": {
+      "production": "./dist/src/*.js",
+      "default": "./src/*"
+    }
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "docker:build": "docker build --target trip-service-prod -t aidrinperaira/trip-service:latest -f ../../Dockerfile.prod ../..",
+    "docker:push": "docker push aidrinperaira/trip-service:latest",
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@smr/shared": "workspace:*",
+    "@sharemyride/shared": "^0.0.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

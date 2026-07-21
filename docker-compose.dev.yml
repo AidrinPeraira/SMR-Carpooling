@@ -9,7 +9,7 @@ services:
       - .:/app
       - /app/node_modules
       - /app/smr-shared/node_modules
-    command: pnpm --filter @smr/shared run dev
+    command: pnpm --filter @sharemyride/shared run dev
     develop:
       watch:
         - action: sync
@@ -20,10 +20,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: user-service
+      target: user-service-dev
     tty: true
     ports:
       - "4001:4001"
+    depends_on:
+      - redis
+      - rabbitmq
     env_file:
       - ./smr-backend/user-service/.env
     environment:
@@ -51,7 +54,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: api-gateway
+      target: api-gateway-dev
     tty: true
     ports:
       - "4000:4000"
@@ -82,7 +85,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: notification-service
+      target: notification-service-dev
     tty: true
     ports:
       - "4002:4002"
@@ -113,7 +116,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: trip-service
+      target: trip-service-dev
     tty: true
     ports:
       - "4003:4003"
@@ -144,7 +147,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: payment-service
+      target: payment-service-dev
     tty: true
     ports:
       - "4004:4004"
@@ -170,3 +173,49 @@ services:
         - action: sync
           path: ./smr-shared/dist
           target: /app/smr-shared/dist
+
+  # --- Infrastructure Services ---
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./smr-infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./smr-infra/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./smr-infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./smr-infra/loki/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./smr-infra/promtail/promtail-config.yaml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
+    command: -config.file=/etc/promtail/config.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./smr-infra/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_LOG_LEVEL=warn

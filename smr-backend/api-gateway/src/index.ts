@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
-import { ConsolaLogger } from "@smr/shared";
+import { ConsolaLogger } from "@sharemyride/shared";
 
 async function startServer(): Promise<void> {
   const logger = new ConsolaLogger();

@@ -1,0 +1,150 @@
+"use client";
+
+import { VerifySignupEmailAction } from "@/features/auth/api/actions/VerifySignupEMailAction";
+import { logger } from "@/lib/logger";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Loader,
+  useToast,
+} from "@sharemyride/ui";
+import { CheckCircle, XCircle } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
+export function VerifySignupEmailCard() {
+  const [pending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
+
+  const params = useSearchParams();
+  const token = params.get("token");
+  const toast = useToast();
+  const router = useRouter();
+  const [failed, setFailed] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!token) return;
+
+    startTransition(async () => {
+      try {
+        const result = await VerifySignupEmailAction({
+          verification_token: token,
+        });
+
+        if (result.success) {
+          if (result.payload?.user) {
+            queryClient.setQueryData(["currentUser"], result.payload.user);
+            queryClient.setQueryDefaults(["currentUser"], {
+              staleTime: Infinity,
+              gcTime: Infinity,
+            });
+          }
+
+          toast(result.message, {
+            variant: "success",
+            description: result.description,
+          });
+          router.push(
+            result.payload?.user.user_role
+              ? `/${result.payload?.user.user_role}`
+              : "/",
+          );
+        } else {
+          toast(result.errorMessage, {
+            variant: "error",
+            description: result.description,
+          });
+          setFailed(true);
+        }
+      } catch (error: unknown) {
+        logger.error("Error verifying signup email", error);
+
+        toast("Error verifying email", {
+          variant: "error",
+          description: "Please try again later.",
+        });
+        setFailed(true);
+      }
+    });
+  }, [token, toast, router, queryClient]);
+
+  if (!token || failed) {
+    return (
+      <Card className="flex flex-col items-center justify-center p-4">
+        <CardHeader className="flex flex-col items-center gap-1">
+          <XCircle
+            height={70}
+            width={70}
+            className="rounded rounded-full w-fit p-2 bg-error text-fg-error"
+          />
+          <h1 className="font-bold text-xl text-center">
+            Invalid Verification Link
+          </h1>
+        </CardHeader>
+        <CardBody className="flex flex-col mt-1 text-fg-secondary items-center justify-center">
+          <p className="text-sm text-center">
+            The verification token is missing or invalid. Please check your
+            email link or try signing up again.
+          </p>
+        </CardBody>
+        <CardFooter className="flex flex-col items-center justify-center gap-2">
+          <Link href="/">
+            <Button>Go Back Home</Button>
+          </Link>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  if (pending) {
+    return (
+      <Card className="flex flex-col items-center justify-center p-4">
+        <CardHeader className="flex flex-col items-center gap-1">
+          <Loader className="w-16 h-16 border-7 border-t-fg-secondary" />
+          <h1 className="font-bold text-xl">Your email is being verified!</h1>
+        </CardHeader>
+        <CardBody className="flex flex-col mt-1 text-fg-secondary items-center justify-center">
+          <p className="text-lg text-center mt-1">
+            Thank you for joining ShareMyRide. You can start riding very soon.
+          </p>
+        </CardBody>
+        <CardFooter className="flex flex-col items-center justify-center gap-2">
+          <p className="text-sm text-fg-secondary">
+            You&apos;ll be redirected shortly
+          </p>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="flex flex-col items-center justify-center p-4">
+      <CardHeader className="flex flex-col items-center gap-1">
+        <CheckCircle
+          height={70}
+          width={70}
+          className="rounded rounded-full w-fit p-2 bg-accent text-fg-accent"
+        />
+        <h1 className="font-bold text-xl">Email verified successfully!</h1>
+      </CardHeader>
+      <CardBody className="flex flex-col mt-1 text-fg-secondary items-center justify-center">
+        <p className="text-sm text-center">
+          Thank you for verifying your email. You can now access all
+          features.{" "}
+        </p>
+        <p className="text-lg text-center mt-1"> Welcome to ShareMyRide!</p>
+      </CardBody>
+      <CardFooter className="flex flex-col items-center justify-center gap-2">
+        <Link href="/">
+          <Button>Continue to ShareMyRide</Button>
+        </Link>
+        <p className="text-sm text-fg-secondary">Redirecting to home page</p>
+      </CardFooter>
+    </Card>
+  );
+}

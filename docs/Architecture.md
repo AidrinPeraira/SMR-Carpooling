@@ -1,5 +1,9 @@
 # ShareMyRide Architecture
 
+> [!WARNING]
+> **DEPRECATED / OUT OF DATE**
+> This architecture documentation is old, does not align with the current system design, and needs to be updated with the latest design.
+
 "ShareMyRide" is a platform that connects people travelling solo over long distances. It helps them share their car with others who are travelling along the same route.
 
 **Share the Car. Share the Journey. Share the Expenses.**
@@ -10,7 +14,7 @@ Users can become passengers or drivers and switch between roles to hitch a ride 
 
 ## 2. Core Services (Business Logic)
 
-The ecosystem is partitioned into seven specialized services, coordinated through an API Gateway.
+The ecosystem is partitioned into several specialized services, coordinated through an API Gateway. Currently, there are five core services implemented, with more planned.
 
 | Service                   | Purpose            | Key Responsibilities                                                                                   |
 | :------------------------ | :----------------- | :----------------------------------------------------------------------------------------------------- |
@@ -20,7 +24,7 @@ The ecosystem is partitioned into seven specialized services, coordinated throug
 | **Trip Service**          | Core Logic         | Handles the creation, discovery, and management of carpooling trips and routes.                        |
 | **Payment Service**       | Financials         | Processes transactions via Stripe and maintains financial records of shared expenses.                  |
 | **Notification Service**  | Engagement         | Dispatches email and push notifications triggered by system events.                                    |
-| **Communication Service** | Real-time          | Facilitates the chat system and Voice calling signaling via WebSockets and webRTC.                     |
+| **Communication Service** | Real-time          | _(Planned)_ Will facilitate the chat system and Voice calling signaling via WebSockets and webRTC.     |
 
 ---
 
@@ -124,3 +128,6 @@ To ensure long-term scalability and maintainability, the following technical man
   - User Service uses MongoDB for profiles and Redis for session management.
   - Trip Service uses MongoDB for trip data.
 - **Observability**: The system uses **Loki** for log scraping and **Grafana** for metrics visualization, ensuring full visibility into the health of all services.
+
+- docker for devlopment and deployment
+- api versioning.

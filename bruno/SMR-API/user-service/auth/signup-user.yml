@@ -1,0 +1,98 @@
+info:
+  name: signup-user
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/auth/signup
+  body:
+    type: json
+    data: |2-
+        {
+          "first_name": "User",
+          "last_name": "Two",
+          "email_id": "timox75115@kinws.com",
+          "phone_number": "9876543210",
+          "password": "Password123!",
+          "confirm_password": "Password123!"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/auth/signup
+      method: POST
+      body:
+        type: json
+        data: |2-
+            {
+              "first_name": "User",
+              "last_name": "One",
+              "email_id": "kolavih320@kinws.com",
+              "phone_number": "9876543210",
+              "password": "Password123!",
+              "confirm_password": "Password123!"
+            }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "192"
+        - name: etag
+          value: W/"c0-W5sUFbgL4CoUEcxtC0mg10Px0m8"
+        - name: date
+          value: Sun, 05 Jul 2026 10:55:59 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "User account created successfully.",
+            "payload": {
+              "first_name": "User",
+              "last_name": "One",
+              "email_id": "kolavih320@kinws.com",
+              "user_id": "d06b59aa0a73628463a41864ff0bd8a8"
+            }
+          }

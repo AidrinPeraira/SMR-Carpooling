@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+#Introduction
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- This module builds UI componets and tests them using `storybook`
+- It follows a simple folder structure based on functionality.
+- All componets are then imported into `smr-frontend` as a dependency.
 
-Currently, two official plugins are available:
+# Folder Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```
+smr-ui/src/components/
+├── actions/ # Components that trigger an event
+│ ├── Button/ # e.g., Button.tsx, Button.stories.tsx, index.ts
+│ └── IconButton/
+├── data-display/ # Components that show information
+│ ├── Avatar/
+│ ├── Badge/
+│ ├── Card/
+│ ├── Table/
+│ └── Tag/
+├── feedback/ # Components that communicate system status
+│ ├── Alert/
+│ ├── Dialog/
+│ ├── Modal/
+│ ├── Spinner/
+│ └── Toast/
+├── forms/ # Components used to collect user input
+│ ├── Checkbox/
+│ ├── DatePicker/
+│ ├── Dropdown/
+│ ├── Input/
+│ ├── Label/
+│ ├── Search/
+│ └── TimePicker/
+├── layout/ # Components that structure the page visually
+│ ├── Divider/
+│ ├── Drawer/
+│ └── Sidebar/
+└── navigation/ # Components that help the user move around
+└── Pagination/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# How to use?
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+- install tha package and import the components to use. The list of components are:
+  - Button
+  - Label
+  - Modal
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+- Also add the following line to `globals.css`
+
 ```
+@import "@sharemyride/ui/css";
+```
+
+# Custom Themes
+
+This package uses tailwind v4 for css styles for the ui components. the default theme can be overidden by add the follwing css to you `globals.css` file and changes the values to match your requirement.
+
+```
+Sample css
+```
+
+# Sample Componets Showcase
+
+[View the Component Blueprint Matrix](./src/sample.html)

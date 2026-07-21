@@ -24,12 +24,18 @@ git pull origin develop
 
 ## 3. Create a Feature Branch
 
-Branch off `develop` using a clear naming convention that references the issue number.
+Branch off `develop` using a clear naming convention that reflects the type of work, the service affected, and the specific feature.
+
+**Format:** `<type>/<service>/<feature-description>`
+
+- **Type:** `feat`, `fix`, `chore`, `docs`, `refactor`
+- **Service:** `user-service`, `api-gateway`, `frontend`, `shared`, `ui`, `workspace`
+- **Description:** Kebab-case description of the task.
 
 ```bash
-git checkout -b feature/issue-<number>
-# Example: git checkout -b feature/issue-42
-
+# Example:
+git checkout -b feat/user-service/auth-signup
+git checkout -b chore/workspace/ci-cd-setup
 ```
 
 ## 4. Develop, Test, and Commit
@@ -38,60 +44,75 @@ Work on your feature or fix in isolation.
 
 - Write the core implementation.
 - Write the corresponding unit/integration tests.
-- Maintain strict **scope control**: If you think of extra changes or enhancements while working, do not add them now. **Open a new issue** for them instead.
+- Maintain strict **scope control**.
 
 ### Micro-Commit Format
 
-Make incremental commits as you progress. Always include the issue number in the title.
+Make incremental commits as you progress. Include the issue number in the title for traceability.
 
 ```text
 <type>: <short description> (#<issue_number>)
 
-- Bullet point detailing a specific change
-- Another quick detail if necessary
+  Modules Touched:
+   - <Service/Module A>
+   - <Service/Module B>
 
+  Things Done
+   - <Major change or implementation detail>
+   - <Supporting change or refactor>
+   - <Bug fix or edge-case handling included in the task>
+   - <Testing or configuration updates>
 ```
 
-_Example:_
+---
+
+## 5. Issue & Pull Request Templates
+
+To maintain consistency, use the following templates for tracking and merging work.
+
+### Issue Template
 
 ```text
-feat: setup initial Prisma schema for Hands module (#42)
+[Module]: Feature Title
 
-- Define Professional entity models
-- Add database migration script
+**Goal**
+Briefly describe what this task achieves.
 
+**Modules Affected**
+- Service A
+- Service B
+
+**Check List**
+- [ ] Requirement 1
+- [ ] Requirement 2
 ```
 
-## 5. The Final Commit (Close the Issue)
-
-When the feature is 100% complete and all tests pass, add the automation keyword to your **final commit body** to close the issue upon merging.
-
-> **Note:** Use `Closes #42` (no colon) to trigger automatic issue closing.
+### Pull Request (PR) Template
 
 ```text
-feat: finalize database setup for Hands module (#42)
+## Overview
+Briefly describe the changes in this PR.
 
-- Complete Prisma client generation
-- Clean up redundant configuration
+## Related Issue
+Closes #<issue_number>
 
-Closes #42
+## Changes Made
+- [ ] Implemented X
+- [ ] Fixed Y
+- [ ] Added tests for Z
 
 ```
+
+---
 
 ## 6. Push and Create a Pull Request
 
-1. Push your completed local branch to the remote repository:
-
-```bash
-git push origin feature/issue-42
-
-```
-
-2. Go to the remote repository and open a **Pull Request (PR)**.
-3. Ensure the PR targets the **`develop`** branch.
-4. Reference the issue number in the PR description.
+1. Push your branch: `git push origin feat/user-service/auth-signup`
+2. Open a **Pull Request (PR)** targeting the **`develop`** branch.
+3. **Important:** Add the keyword `Closes #<number>` in the **PR description**. This ensures the issue is automatically closed when the PR is merged into `develop`.
 
 ## 7. CI/CD & Verification
 
-- Wait for the CI/CD pipeline to run. Handle and fix any build or Docker deployment errors.
-- Once verified, merge the PR into `develop`.
+- Wait for CI/CD checks to pass.
+- Once reviewed and verified, merge the PR into `develop`.
+- On successful merge to `develop`, the CD pipeline will automatically promote changes to `master`.

@@ -1,0 +1,381 @@
+info:
+  name: get-users
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:4000/api/v1/admin/users?limit=1&page=3
+  headers:
+    - name: Authorization
+<<<<<<< Updated upstream
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDMwMTMzNywiZXhwIjoxNzg0MzAyMjM3fQ.v7cdIcSLf2gHBFu0-l0VScOPDPbFWV0XVZxHyafYLgA
+=======
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDEwMjMzOCwiZXhwIjoxNzg0MTAzMjM4fQ.Kdgn_D-uv2T8fq7BMAro1nHT0yvNoN7yufsMNdV9Zcs
+>>>>>>> Stashed changes
+  params:
+    - name: searchField
+      value: first_name
+      type: query
+      disabled: true
+    - name: searchValue
+      value: Aidrin
+      type: query
+      disabled: true
+    - name: filterField
+      value: user_role
+      type: query
+      disabled: true
+    - name: filterValue
+      value: admin
+      type: query
+      disabled: true
+    - name: sortField
+      value: created_at
+      type: query
+      disabled: true
+    - name: sortValue
+      value: asc
+      type: query
+      disabled: true
+    - name: limit
+      value: "1"
+      type: query
+    - name: page
+      value: "3"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+<<<<<<< Updated upstream
+      url: http://localhost:4000/api/v1/admin/users
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDMwMTMzNywiZXhwIjoxNzg0MzAyMjM3fQ.v7cdIcSLf2gHBFu0-l0VScOPDPbFWV0XVZxHyafYLgA
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "1124"
+        - name: etag
+          value: W/"464-nJVnYwyfmzGPKrguB0A3eaL9a8Q"
+        - name: date
+          value: Fri, 17 Jul 2026 15:16:55 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "data": [
+              {
+                "first_name": "Aidrin",
+                "last_name": "Peraira",
+                "user_id": "4378c2d1604b9a0fa330bd561486a02d",
+                "user_role": "passenger",
+                "email_id": "aidrin.peraira@gmail.com",
+                "account_status": "active",
+                "phone_number": "9400409843",
+                "is_driver": false,
+                "created_at": "2026-07-08T17:33:45.412Z"
+              },
+              {
+                "first_name": "Aidrin Peraira",
+                "last_name": "BCR70",
+                "user_id": "e1c978f5daa1c3552fa124b3873ab27a",
+                "user_role": "admin",
+                "email_id": "4lph4.t3st3r@gmail.com",
+                "account_status": "active",
+                "phone_number": "00000000000",
+                "is_driver": false,
+                "created_at": "2026-07-08T17:44:50.150Z",
+                "profile_image": "https://lh3.googleusercontent.com/a/ACg8ocIc_92ka1rnG1gA_ev2SfX-WNpsCoXmLKOSP1JNoDlBDkbpLA=s96-c"
+              },
+              {
+                "first_name": "Navam",
+                "last_name": "Architecture",
+                "user_id": "835e562ca83a837d6d93397fdc3545c6",
+                "user_role": "passenger",
+                "email_id": "navamarchitecture@gmail.com",
+                "account_status": "active",
+                "phone_number": "00000000000",
+                "is_driver": false,
+                "created_at": "2026-07-08T17:46:11.217Z",
+                "profile_image": "https://lh3.googleusercontent.com/a/ACg8ocK9IKWQIeQbzrESTRlToR5euT_89Y2l31_NCLrmePYCL4SAQ44=s96-c"
+              }
+            ],
+            "paginationMeta": {
+              "totatlItems": 3,
+              "currentPage": 1,
+              "limit": 10,
+              "totalPages": 0.3
+            }
+          }
+  - name: example-success
+    description: With query
+    request:
+      url: http://localhost:4000/api/v1/admin/users?searchField=first_name&searchValue=Aidrin&filterField=user_role&filterValue=admin&sortField=created_at&sortValue=asc
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDMwMTMzNywiZXhwIjoxNzg0MzAyMjM3fQ.v7cdIcSLf2gHBFu0-l0VScOPDPbFWV0XVZxHyafYLgA
+      params:
+        - name: searchField
+          value: first_name
+          type: query
+        - name: searchValue
+          value: Aidrin
+          type: query
+        - name: filterField
+          value: user_role
+          type: query
+        - name: filterValue
+          value: admin
+          type: query
+        - name: sortField
+          value: created_at
+          type: query
+        - name: sortValue
+          value: asc
+          type: query
+=======
+      url: http://localhost:4000/api/v1/admin/users?search=Peraira&searchFields=first_name
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDEwMjMzOCwiZXhwIjoxNzg0MTAzMjM4fQ.Kdgn_D-uv2T8fq7BMAro1nHT0yvNoN7yufsMNdV9Zcs
+      params:
+        - name: search
+          value: Peraira
+          type: query
+        - name: searchFields
+          value: first_name
+          type: query
+>>>>>>> Stashed changes
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+<<<<<<< Updated upstream
+          value: "470"
+        - name: etag
+          value: W/"1d6-M+PyGDTkLNNwhZQoP1YRNqz/IHU"
+        - name: date
+          value: Fri, 17 Jul 2026 15:18:41 GMT
+=======
+          value: "429"
+        - name: etag
+          value: W/"1ad-hosYgjs37zKqVusd/yRoloJDbQo"
+        - name: date
+          value: Wed, 15 Jul 2026 07:59:21 GMT
+>>>>>>> Stashed changes
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+<<<<<<< Updated upstream
+            "data": [
+=======
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": [
+>>>>>>> Stashed changes
+              {
+                "first_name": "Aidrin Peraira",
+                "last_name": "BCR70",
+                "user_id": "e1c978f5daa1c3552fa124b3873ab27a",
+                "user_role": "admin",
+                "email_id": "4lph4.t3st3r@gmail.com",
+                "account_status": "active",
+                "phone_number": "00000000000",
+                "is_driver": false,
+                "created_at": "2026-07-08T17:44:50.150Z",
+                "profile_image": "https://lh3.googleusercontent.com/a/ACg8ocIc_92ka1rnG1gA_ev2SfX-WNpsCoXmLKOSP1JNoDlBDkbpLA=s96-c"
+              }
+            ],
+            "paginationMeta": {
+              "totatlItems": 1,
+              "currentPage": 1,
+              "limit": 10,
+              "totalPages": 0.1
+            }
+          }
+  - name: example-success
+    description: Pagination
+    request:
+      url: http://localhost:4000/api/v1/admin/users?limit=1&page=3
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDMwMTMzNywiZXhwIjoxNzg0MzAyMjM3fQ.v7cdIcSLf2gHBFu0-l0VScOPDPbFWV0XVZxHyafYLgA
+      params:
+        - name: searchField
+          value: first_name
+          type: query
+          disabled: true
+        - name: searchValue
+          value: Aidrin
+          type: query
+          disabled: true
+        - name: filterField
+          value: user_role
+          type: query
+          disabled: true
+        - name: filterValue
+          value: admin
+          type: query
+          disabled: true
+        - name: sortField
+          value: created_at
+          type: query
+          disabled: true
+        - name: sortValue
+          value: asc
+          type: query
+          disabled: true
+        - name: limit
+          value: "1"
+          type: query
+        - name: page
+          value: "3"
+          type: query
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "475"
+        - name: etag
+          value: W/"1db-hQBQKbq9lw6aBkuWVMs02dXuboY"
+        - name: date
+          value: Fri, 17 Jul 2026 15:20:04 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "data": [
+              {
+                "first_name": "Navam",
+                "last_name": "Architecture",
+                "user_id": "835e562ca83a837d6d93397fdc3545c6",
+                "user_role": "passenger",
+                "email_id": "navamarchitecture@gmail.com",
+                "account_status": "active",
+                "phone_number": "00000000000",
+                "is_driver": false,
+                "created_at": "2026-07-08T17:46:11.217Z",
+                "profile_image": "https://lh3.googleusercontent.com/a/ACg8ocK9IKWQIeQbzrESTRlToR5euT_89Y2l31_NCLrmePYCL4SAQ44=s96-c"
+              }
+            ],
+            "paginationMeta": {
+              "totatlItems": 3,
+              "currentPage": 3,
+              "limit": 1,
+              "totalPages": 3
+            }
+          }

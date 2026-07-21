@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@source not "./sample.html";
+
+@theme {
+  /* --- Surfaces (Backgrounds) --- */
+  --color-surface-base: oklch(0.99 0.003 153.26);
+  --color-surface-sidebar: oklch(0.9687 0.0041 153.26);
+  --color-surface-card: oklch(1 0 0);
+  --color-surface-muted: oklch(0.9687 0.006 153.26);
+
+  /* --- Borders --- */
+  --color-border-subtle: oklch(0.9334 0.005 256.34);
+  --color-border-strong: oklch(0.9189 0.008 142.1);
+
+  /* --- Brand / Accents --- */
+  --color-accent: oklch(0.7468 0.1785 153);
+  --color-accent-fg: oklch(0.2001 0.012 126.61);
+
+  /* --- Content (Typography & Icons) --- */
+  --color-content-primary: oklch(0.2001 0.012 126.61);
+  --color-content-secondary: oklch(0.5956 0.0185 143.43);
+  --color-content-tertiary: oklch(0.72 0.012 143.43);
+
+  /* --- Status / Intent Layers --- */
+  --color-error-surface: oklch(0.88 0.08 15);
+  --color-error-border: oklch(0.97 0.015 15);
+  --color-error-content: oklch(0.55 0.18 15);
+
+  --color-warning-surface: oklch(0.97 0.02 80);
+  --color-warning-border: oklch(0.91 0.07 80);
+  --color-warning-content: oklch(0.52 0.13 60);
+
+  --color-success-surface: oklch(0.98 0.015 145);
+  --color-success-border: oklch(0.91 0.04 145);
+  --color-success-content: oklch(0.53 0.16 145);
+}
+
+.dark {
+  /* --- Surfaces (Backgrounds) --- */
+  --color-surface-base: oklch(0.1201 0.012 126.61);
+  --color-surface-sidebar: oklch(0.1601 0.012 126.61);
+  --color-surface-card: oklch(0.2001 0.012 126.61);
+  --color-surface-muted: oklch(0.22 0.012 126.61);
+
+  /* --- Borders --- */
+  --color-border-subtle: oklch(0.28 0.01 126.61);
+  --color-border-strong: oklch(0.35 0.015 142.1);
+
+  /* --- Brand / Accents --- */
+  --color-accent: oklch(0.7 0.165 153);
+  --color-accent-fg: oklch(0.1201 0.012 126.61);
+
+  /* --- Content (Typography & Icons) --- */
+  --color-content-primary: oklch(0.9687 0.006 153.26);
+  --color-content-secondary: oklch(0.68 0.015 143.43);
+  --color-content-tertiary: oklch(0.45 0.01 143.43);
+
+  /* --- Status / Intent Layers --- */
+  --color-error-surface: oklch(0.82 0.07 15);
+  --color-error-border: oklch(0.32 0.09 15);
+  --color-error-content: oklch(0.25 0.08 15);
+
+  --color-warning-surface: oklch(0.26 0.07 65);
+  --color-warning-border: oklch(0.34 0.08 65);
+  --color-warning-content: oklch(0.85 0.06 75);
+
+  --color-success-surface: oklch(0.22 0.05 145);
+  --color-success-border: oklch(0.29 0.06 145);
+  --color-success-content: oklch(0.81 0.08 145);
+}
+
+/* --- Inactive Button States --- */
+button:disabled,
+button.btn-inactive {
+  background-color: var(--color-surface-muted) !important;
+  color: var(--color-content-tertiary) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
