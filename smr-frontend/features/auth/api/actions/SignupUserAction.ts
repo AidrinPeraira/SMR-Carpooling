@@ -8,7 +8,7 @@ import {
   LoginResult,
   SignUpResult,
   SignUpUserSchemaType,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export async function signupUserAction(
   data: SignUpUserSchemaType,

@@ -1,5 +1,5 @@
 import { ISessionStore } from "#/application/interfaces/store/ISessionStore";
-import { AuthSession } from "@smr/shared";
+import { AuthSession } from "@sharemyride/shared";
 import { RedisClientType } from "redis";
 
 export class RedisSessionStore implements ISessionStore {

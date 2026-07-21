@@ -7,7 +7,7 @@ import {
   GoogleOAuthProvider,
 } from "@react-oauth/google";
 import { googleLoginAction } from "@/features/auth/api/actions/GoogleLoginAction";
-import { useToast } from "@smr/ui";
+import { useToast } from "@sharemyride/ui";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { logger } from "@/lib/logger";

@@ -13,7 +13,7 @@ import {
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
   constructor(

@@ -14,7 +14,7 @@ import {
   Loader,
   useToast,
   Dialog,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ban } from "lucide-react";
 import { useParams } from "next/navigation";

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { PasswordChangedHandler } from "#/presentation/event-handlers/PasswordChangedHandler";
 import { MockLogger } from "&#/mocks/MockLogger";
-import { PasswordChangedEvent, EventName } from "@smr/shared";
+import { PasswordChangedEvent, EventName } from "@sharemyride/shared";
 
 describe("PasswordChangedHandler", () => {
   it("should map event payload and invoke use case", async () => {

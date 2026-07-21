@@ -3,7 +3,7 @@
 import { apiServerFetch } from "@/lib/api-server";
 import { logger } from "@/lib/logger";
 import { ActionResponse } from "@/types/ResponseType";
-import { ApiResponse, ChangePasswordRequest } from "@smr/shared";
+import { ApiResponse, ChangePasswordRequest } from "@sharemyride/shared";
 
 export async function changePasswordAction(
   data: ChangePasswordRequest,

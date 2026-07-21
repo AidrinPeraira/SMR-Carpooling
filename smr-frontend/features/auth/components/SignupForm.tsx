@@ -1,10 +1,10 @@
 "use client";
 
 import { GoogleLogin } from "@/features/auth/components/GoogleLogin";
-import { Button, cn, Input, Label, Loader, useToast } from "@smr/ui";
+import { Button, cn, Input, Label, Loader, useToast } from "@sharemyride/ui";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { SignUpRequest, SignUpUserSchema } from "@smr/shared";
+import { SignUpRequest, SignUpUserSchema } from "@sharemyride/shared";
 import { signupUserAction } from "@/features/auth/api/actions/SignupUserAction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";

@@ -1,6 +1,6 @@
 import { SignUpRequestDTO } from "#/application/dto/auth/SignUpRequestDTO";
 import { SignUpResultDTO } from "#/application/dto/auth/SignUpResultDTO";
-import { UserRole } from "@smr/shared";
+import { UserRole } from "@sharemyride/shared";
 import { MOCK_USER_ID } from "../constants/AuthConstants";
 
 export function createSignupRequestDTO(

@@ -9,7 +9,7 @@ services:
       - .:/app
       - /app/node_modules
       - /app/smr-shared/node_modules
-    command: pnpm --filter @smr/shared run dev
+    command: pnpm --filter @sharemyride/shared run dev
     develop:
       watch:
         - action: sync
@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: user-service
+      target: user-service-dev
     tty: true
     ports:
       - "4001:4001"
@@ -54,7 +54,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: api-gateway
+      target: api-gateway-dev
     tty: true
     ports:
       - "4000:4000"
@@ -85,7 +85,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: notification-service
+      target: notification-service-dev
     tty: true
     ports:
       - "4002:4002"
@@ -116,7 +116,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: trip-service
+      target: trip-service-dev
     tty: true
     ports:
       - "4003:4003"
@@ -147,7 +147,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-      target: payment-service
+      target: payment-service-dev
     tty: true
     ports:
       - "4004:4004"

@@ -14,7 +14,7 @@ import {
   PasswordChangedEventPayload,
   TokenType,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class ChangePasswordUseCase implements IChangePasswordUseCase {
   constructor(

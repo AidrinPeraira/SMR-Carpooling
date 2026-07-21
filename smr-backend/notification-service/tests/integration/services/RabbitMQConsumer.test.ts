@@ -1,6 +1,6 @@
 import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { RabbitMQConsumer } from "#/infrastructure/services/RabbitMQConsumer";
-import { EventName } from "@smr/shared";
+import { EventName } from "@sharemyride/shared";
 import { MockLogger } from "&#/mocks/MockLogger";
 import { MockEventDispatcher } from "&#/mocks/MockEventDispatcher";
 import { mockUserSignUpEvent } from "&#/fixtures/events/DomainEvents";

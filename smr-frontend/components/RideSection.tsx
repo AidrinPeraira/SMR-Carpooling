@@ -6,7 +6,7 @@ import {
   CardHeader,
   Tag,
   Button,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import {
   Star,
   CheckCircle,

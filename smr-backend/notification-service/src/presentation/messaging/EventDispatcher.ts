@@ -1,6 +1,6 @@
 import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { DomainEvent, EventName, ILogger } from "@smr/shared";
+import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
 
 export class EventDispatcher implements IEventDispatcher {
   private readonly _handlersList: Map<EventName, IEventHandler>;

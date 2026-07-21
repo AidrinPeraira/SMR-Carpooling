@@ -1,5 +1,5 @@
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
-import { AccountStatus, UserRole } from "@smr/shared";
+import { AccountStatus, UserRole } from "@sharemyride/shared";
 
 export interface UserEntity {
   id: string;

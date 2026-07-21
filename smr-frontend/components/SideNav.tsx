@@ -7,7 +7,7 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarItem,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

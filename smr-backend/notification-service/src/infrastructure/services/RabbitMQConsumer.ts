@@ -1,6 +1,6 @@
 import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
 import { IMessageConsumer } from "#/application/interfaces/messaging/IMessageConsumer";
-import { DomainEvent, EventName, ILogger } from "@smr/shared";
+import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
 import amqp from "amqplib";
 
 type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;

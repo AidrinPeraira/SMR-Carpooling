@@ -21,7 +21,7 @@ import {
   UserRole,
   UserSignUpEvent,
   UserSignupEventPayload,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class SignUpUserUseCase implements ISignupUserUseCase {
   constructor(

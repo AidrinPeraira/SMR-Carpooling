@@ -1,6 +1,6 @@
 import { clearAuthCookies, setAuthCookies } from "@/lib/auth-cookies";
 import { logger } from "@/lib/logger";
-import { ApiResponse } from "@smr/shared";
+import { ApiResponse } from "@sharemyride/shared";
 import { cookies } from "next/headers";
 
 /**

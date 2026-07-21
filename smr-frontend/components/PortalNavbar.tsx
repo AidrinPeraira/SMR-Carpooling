@@ -7,7 +7,7 @@ import {
   DrawerBody,
   DrawerFooter,
   DrawerHeader,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

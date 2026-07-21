@@ -10,10 +10,10 @@ import {
   Label,
   cn,
   useToast,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangePasswordSchema, ChangePasswordRequest } from "@smr/shared";
+import { ChangePasswordSchema, ChangePasswordRequest } from "@sharemyride/shared";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useTransition } from "react";
 import { changePasswordAction } from "@/features/auth/api/actions/ChangePasswordAction";

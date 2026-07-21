@@ -26,7 +26,7 @@ import {
   RefreshTokenResult,
   SignUpResult,
   UserSuccessMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { Request, Response } from "express";
 
 export class AuthControllerV1 implements IAuthControllerV1 {
@@ -133,7 +133,6 @@ export class AuthControllerV1 implements IAuthControllerV1 {
   }
 
   async refreshTokens(req: Request, res: Response): Promise<void> {
-    console.log("Refreesh tooken....: ", req.body);
     const refreshTokenData = toRefreshTokenDTO(req.body);
 
     this._logger.info("Token refresh request: ");

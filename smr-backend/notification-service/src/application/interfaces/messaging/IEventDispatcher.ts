@@ -1,5 +1,5 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { DomainEvent, EventName } from "@smr/shared";
+import { DomainEvent, EventName } from "@sharemyride/shared";
 
 export interface IEventDispatcher {
   /**

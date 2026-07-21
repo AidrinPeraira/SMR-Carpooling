@@ -11,7 +11,7 @@ import {
   HttpStatusCodes,
   makeFailedResponse,
   type ILogger,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import { AppConfig } from "#/application.config";
 import morgan from "morgan";

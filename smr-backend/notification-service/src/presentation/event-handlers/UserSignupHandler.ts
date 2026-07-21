@@ -1,7 +1,7 @@
 import { SinupVerifcationMailRequestDTO } from "#/application/dto/email/SignupVerificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/ISendSignupVerificationMailUseCase";
-import { ILogger, UserSignUpEvent } from "@smr/shared";
+import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
 
 export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
   constructor(

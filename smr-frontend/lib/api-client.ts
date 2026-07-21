@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { ApiResponse } from "@smr/shared";
+import { ApiResponse } from "@sharemyride/shared";
 
 /**
  * This function is a fetch request wrapper for client side use.

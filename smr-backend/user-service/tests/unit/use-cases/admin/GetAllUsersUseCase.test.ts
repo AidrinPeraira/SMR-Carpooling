@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
-import { AccountStatus, UserRole } from "@smr/shared";
+import { AccountStatus, UserRole } from "@sharemyride/shared";
 import { userQueryFieldMapper } from "#/presentation/utils/query-mapper";
 
 describe("GetAllUsersUseCase", () => {

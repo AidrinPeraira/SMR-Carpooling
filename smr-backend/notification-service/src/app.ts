@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { ApplicationError, HttpStatusCodes, type ILogger } from "@smr/shared";
+import { ApplicationError, HttpStatusCodes, type ILogger } from "@sharemyride/shared";
 
 export function createApp(logger: ILogger) {
   const app = express();

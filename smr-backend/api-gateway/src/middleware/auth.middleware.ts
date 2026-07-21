@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { HttpStatusCodes, makeFailedResponse } from "@smr/shared";
+import { HttpStatusCodes, makeFailedResponse } from "@sharemyride/shared";
 import { AppConfig } from "#/application.config";
 
 const PUBLIC_PATHS = [

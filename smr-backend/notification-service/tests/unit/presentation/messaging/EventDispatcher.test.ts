@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { EventDispatcher } from "#/presentation/messaging/EventDispatcher";
-import { EventName } from "@smr/shared";
+import { EventName } from "@sharemyride/shared";
 import { MockLogger } from "&#/mocks/MockLogger";
 import { MockEventHandler } from "&#/mocks/MockEventHandler";
 import { mockGenericEvent } from "&#/fixtures/events/DomainEvents";

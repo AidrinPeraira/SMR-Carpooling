@@ -1,5 +1,5 @@
 import { apiClientFetch } from "@/lib/api-client";
-import { GetAllUsersResult, PaginatedPayload } from "@smr/shared";
+import { GetAllUsersResult, PaginatedPayload } from "@sharemyride/shared";
 
 export async function getAllUsersRequest(params?: Record<string, string>) {
   let url = "/api/v1/admin/users";

@@ -1,4 +1,4 @@
-import { UserRole } from "@smr/shared";
+import { UserRole } from "@sharemyride/shared";
 
 export interface LoginUserResultDTO {
   user: {

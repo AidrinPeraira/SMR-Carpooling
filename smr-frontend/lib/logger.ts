@@ -1,4 +1,4 @@
-import { ConsolaLogger, ILogger } from "@smr/shared";
+import { ConsolaLogger, ILogger } from "@sharemyride/shared";
 
 let logger: ILogger;
 
