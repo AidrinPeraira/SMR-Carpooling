@@ -1,6 +1,6 @@
 "use client";
 
-import { DropDown, Label } from "@smr/ui";
+import { DropDown, Label } from "@sharemyride/ui";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export interface FilterProps {

@@ -1,7 +1,7 @@
 import { PasswordChangeRequestMailDTO } from "#/application/dto/email/PasswordChangeMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendPasswordChangeRequestMailUseCase } from "#/application/interfaces/use-case/ISendPasswordChangeRequestMailUseCase";
-import { ILogger, PasswordChangeRequestEvent } from "@smr/shared";
+import { ILogger, PasswordChangeRequestEvent } from "@sharemyride/shared";
 
 export class PasswordChangeRequestHandler implements IEventHandler<PasswordChangeRequestEvent> {
   constructor(

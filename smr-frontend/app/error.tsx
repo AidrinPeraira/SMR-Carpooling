@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Button } from "@smr/ui";
+import { Button } from "@sharemyride/ui";
 import { ArrowLeft, Home, RefreshCw, AlertTriangle } from "lucide-react";
 import { logger } from "@/lib/logger";
 

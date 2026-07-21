@@ -7,7 +7,7 @@ import {
   PaginatedPayload,
   QueryDTO,
   SortOrder,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 import { Document, Model, QueryFilter, UpdateQuery } from "mongoose";
 
 /**

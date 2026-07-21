@@ -1,5 +1,5 @@
 import { AppConfig } from "#/application.config";
-import { ILogger } from "@smr/shared";
+import { ILogger } from "@sharemyride/shared";
 import { createClient } from "redis";
 
 export const redisClient = createClient({

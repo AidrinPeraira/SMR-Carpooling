@@ -3,7 +3,7 @@
 import { apiServerFetch } from "@/lib/api-server";
 import { logger } from "@/lib/logger";
 import { ActionResponse } from "@/types/ResponseType";
-import { ApiResponse, LoginResult, VerifyEmailRequest } from "@smr/shared";
+import { ApiResponse, LoginResult, VerifyEmailRequest } from "@sharemyride/shared";
 import { setAuthCookies } from "@/lib/auth-cookies";
 
 export async function VerifySignupEmailAction(

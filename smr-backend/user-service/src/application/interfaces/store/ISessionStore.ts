@@ -1,4 +1,4 @@
-import { AuthSession } from "@smr/shared";
+import { AuthSession } from "@sharemyride/shared";
 
 /**
  * This is the interface for the session  repositpry.

@@ -1,4 +1,4 @@
-import { Card, CardBody, Tag } from "@smr/ui";
+import { Card, CardBody, Tag } from "@sharemyride/ui";
 import { Car } from "lucide-react";
 
 interface Vehicle {

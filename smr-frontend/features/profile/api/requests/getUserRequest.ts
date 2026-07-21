@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { GetUserResult } from "@smr/shared";
+import { GetUserResult } from "@sharemyride/shared";
 
 export async function getUserRequest(): Promise<GetUserResult> {
   const response = await fetch("/api/v1/profile", {

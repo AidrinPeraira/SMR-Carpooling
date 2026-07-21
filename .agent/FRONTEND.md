@@ -15,7 +15,7 @@
 
 ## 3. UI Components
 
-- Use components from `@smr/ui` whenever possible.
+- Use components from `@sharemyride/ui` whenever possible.
 - If a component is generic and reusable, add it to `smr-ui` first.
 - If a component is specific to a feature, keep it in the feature's `components/` folder.
 

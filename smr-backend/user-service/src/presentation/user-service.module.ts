@@ -18,7 +18,7 @@ import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
 import { UpdateUserUseCase } from "#/application/use-case/profile/UpdateUserUseCase";
 import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
 import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
-import { ConsolaLogger, UserRole } from "@smr/shared";
+import { ConsolaLogger, UserRole } from "@sharemyride/shared";
 import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
 import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
 import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";

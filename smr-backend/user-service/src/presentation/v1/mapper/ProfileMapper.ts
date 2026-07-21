@@ -7,7 +7,7 @@ import {
   UpdateUserRequest,
   UpdateUserSchema,
   zodParser,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export function toGetUserResult(data: GetUserResultDTO): GetUserResult {
   return {

@@ -10,7 +10,7 @@ import {
   CardHeader,
   Loader,
   useToast,
-} from "@smr/ui";
+} from "@sharemyride/ui";
 import { CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";

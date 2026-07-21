@@ -8,7 +8,7 @@ import {
   AccountStatus,
   AuthSessionNames,
   EventName,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 describe("ChangeUserStatusUseCase", () => {
   const useCase = new ChangeUserStatusUseCase(

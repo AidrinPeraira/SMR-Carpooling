@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, Table, Tag } from "@smr/ui";
+import { Card, CardBody, Table, Tag } from "@sharemyride/ui";
 
 interface Trip {
   date: string;

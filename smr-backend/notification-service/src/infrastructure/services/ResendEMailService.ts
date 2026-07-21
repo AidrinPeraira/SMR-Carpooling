@@ -1,7 +1,7 @@
 import { AppConfig } from "#/application.config";
 import { IMailService } from "#/application/interfaces/services/IMailService";
 import { NotificationEntity } from "#/domain/entities/NotificationEntity";
-import { ILogger } from "@smr/shared";
+import { ILogger } from "@sharemyride/shared";
 import { Resend } from "resend";
 
 export class ResendEmailService implements IMailService {

@@ -2,7 +2,7 @@ import {
   GetAllUsersResponseDTO,
   GetFullUserProfileResponseDTO,
 } from "#/application/dto/admin/users/AdminUsersDTO";
-import { GetAllUsersResult, GetFullUserProfileResult } from "@smr/shared";
+import { GetAllUsersResult, GetFullUserProfileResult } from "@sharemyride/shared";
 
 /**
  * This funciton takes the get user data form getALlusersUseCAse

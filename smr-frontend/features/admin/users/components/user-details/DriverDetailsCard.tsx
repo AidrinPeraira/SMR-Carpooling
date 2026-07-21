@@ -1,4 +1,4 @@
-import { Button, Card, CardBody } from "@smr/ui";
+import { Button, Card, CardBody } from "@sharemyride/ui";
 import { Eye, UserX } from "lucide-react";
 
 interface DriverDetailsCardProps {

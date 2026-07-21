@@ -1,5 +1,5 @@
-import { Card, CardBody } from "@smr/ui";
-import { GetUserResult } from "@smr/shared";
+import { Card, CardBody } from "@sharemyride/ui";
+import { GetUserResult } from "@sharemyride/shared";
 
 interface Props {
   user: GetUserResult | null;

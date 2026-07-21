@@ -1,15 +1,15 @@
 import { AppConfig } from "#/application.config";
 import { IGoogleAuthService } from "#/application/interfaces/services/IGoogleAuthService";
 import { UserEntity } from "#/domain/entities/UserEntity";
+import { CryptoHashingService } from "#/infrastructure/services/CryptoHashingService";
 import {
   ApplicationError,
   ErrorCode,
   GenericErrorMessage,
   HttpStatusCodes,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 import { OAuth2Client } from "google-auth-library";
-import { CryptoHashingService } from "./CryptoHashingService";
 import { randomBytes } from "node:crypto";
 
 export class GoogleAuthService implements IGoogleAuthService {

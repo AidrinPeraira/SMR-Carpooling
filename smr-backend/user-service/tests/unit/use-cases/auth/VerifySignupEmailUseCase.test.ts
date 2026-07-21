@@ -4,7 +4,7 @@ import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockTokenService } from "&#/mocks/MockTokenService";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
-import { TokenType } from "@smr/shared";
+import { TokenType } from "@sharemyride/shared";
 
 describe("VerifySignupEmailUseCase", () => {
   const useCase = new VerifySignupEmailUseCase(

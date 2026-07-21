@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, Label } from "@smr/ui";
+import { Input, Label } from "@sharemyride/ui";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 

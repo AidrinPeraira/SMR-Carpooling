@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
-import { GenericErrorMessage, UserRole } from "@smr/shared";
+import { GenericErrorMessage, UserRole } from "@sharemyride/shared";
 
 describe("GetUserUseCase", () => {
   const useCase = new GetUserUseCase(mockUserRepository);

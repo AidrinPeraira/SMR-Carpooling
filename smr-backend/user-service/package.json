@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "imports": {
-    "#/*": "./src/*",
+    "#/*": {
+      "production": "./dist/src/*.js",
+      "default": "./src/*"
+    },
     "&#/*": "./tests/*"
   },
   "scripts": {
@@ -14,14 +17,17 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "docker:build": "docker build --target user-service-prod -t aidrinperaira/user-service:latest -f ../../Dockerfile.prod ../..",
+    "docker:push": "docker push aidrinperaira/user-service:latest",
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@smr/shared": "workspace:*",
+    "@sharemyride/shared": "^0.0.1",
     "add": "^2.0.6",
     "amqplib": "^2.0.1",
     "cors": "^2.8.6",

@@ -1,4 +1,4 @@
-import { AccountStatus, UserRole } from "@smr/shared";
+import { AccountStatus, UserRole } from "@sharemyride/shared";
 import mongoose, { HydratedDocument, InferSchemaType } from "mongoose";
 
 const tokenSchema = new mongoose.Schema({

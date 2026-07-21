@@ -7,7 +7,7 @@ import {
   GenericErrorMessage,
   HttpStatusCodes,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class GetUserUseCase implements IGetUserUseCase {
   constructor(private readonly _userRepository: IUserRepository) {}

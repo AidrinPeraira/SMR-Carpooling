@@ -1,7 +1,7 @@
 "use client";
 
-import { SortOrder } from "@smr/shared";
-import { DropDown, Label } from "@smr/ui";
+import { SortOrder } from "@sharemyride/shared";
+import { DropDown, Label } from "@sharemyride/ui";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export interface SortProps {

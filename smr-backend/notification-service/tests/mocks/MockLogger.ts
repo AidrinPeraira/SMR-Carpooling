@@ -1,4 +1,4 @@
-import { ILogger } from "@smr/shared";
+import { ILogger } from "@sharemyride/shared";
 import { vi } from "vitest";
 
 export const MockLogger = vi.fn(

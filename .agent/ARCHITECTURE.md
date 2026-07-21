@@ -7,8 +7,8 @@ The project is a microservices monorepo designed for scalability and maintainabi
 - **Monorepo Manager**: pnpm workspaces.
 - **Backend**: Node.js microservices following **Clean Architecture**.
 - **Frontend**: Next.js application using **Feature-Based Architecture**.
-- **Shared Library**: `@smr/shared` for common code (DTOs, Enums, Errors, Logger).
-- **UI Library**: `@smr/ui` for shared React components (Vite + Storybook).
+- **Shared Library**: `@sharemyride/shared` for common code (DTOs, Enums, Errors, Logger).
+- **UI Library**: `@sharemyride/ui` for shared React components (Vite + Storybook).
 - **Communication**:
   - **Synchronous**: REST APIs via Express.
   - **Asynchronous**: Event-driven using RabbitMQ.
@@ -34,5 +34,5 @@ The frontend in `smr-frontend/` organizes code by business features:
 
 ## 4. Shared Packages
 
-- **@smr/shared**: Centralized source of truth for cross-service contracts (DTOs, Enums, Errors, etc.).
-- **@smr/ui**: Isolated UI component library (Storybook + Vite) containing the global, stateless UI primitives (buttons, inputs, tables, etc.) to ensure visual consistency across the platform.
+- **@sharemyride/shared**: Centralized source of truth for cross-service contracts (DTOs, Enums, Errors, etc.).
+- **@sharemyride/ui**: Isolated UI component library (Storybook + Vite) containing the global, stateless UI primitives (buttons, inputs, tables, etc.) to ensure visual consistency across the platform.

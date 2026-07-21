@@ -5,6 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r run build",
+    "packages:build": "pnpm -r --filter @sharemyride/shared --filter @sharemyride/ui run build",
+    "packages:publish": "pnpm -r --filter @sharemyride/shared --filter @sharemyride/ui publish",
+    "docker:build": "pnpm -r --filter @smr/* run docker:build",
+    "docker:push": "pnpm -r --filter @smr/* run docker:push",
+    "docker:publish": "pnpm -r --filter @smr/* run docker:publish",
     "lint": "pnpm -r run lint",
     "type-check": "pnpm -r run type-check",
     "format": "prettier --write .",

@@ -12,7 +12,7 @@ import { UserSignupHandler } from "#/presentation/event-handlers/UserSignupHandl
 import { PasswordChangeRequestHandler } from "#/presentation/event-handlers/PasswordChangeRequestHandler";
 import { PasswordChangedHandler } from "#/presentation/event-handlers/PasswordChangedHandler";
 import { EventDispatcher } from "#/presentation/messaging/EventDispatcher";
-import { ConsolaLogger, EventName } from "@smr/shared";
+import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
 const consolaLogger = new ConsolaLogger();
 

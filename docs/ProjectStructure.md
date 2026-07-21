@@ -8,7 +8,7 @@ This document outlines the organization of the **ShareMyRide** codebase. The pla
 
 - **Clean Architecture**: Backend services decouple business logic from external frameworks.
 - **Service Isolation**: Each microservice manages its own domain and database.
-- **Shared Contracts**: Common types, DTOs, and schemas are centralized in `@smr/shared`.
+- **Shared Contracts**: Common types, DTOs, and schemas are centralized in `@sharemyride/shared`.
 - **Interface-Driven Design**: Dependencies are injected via interfaces to ensure testability.
 
 ---
@@ -133,5 +133,5 @@ smr-frontend/
 Features are structured to maintain domain isolation and code clarity.
 
 1. **Domain Logic & Views**: Business-aware components and page views (such as user details or auth forms) live inside their respective `features/[feature-name]/views/` or `features/[feature-name]/components/` folders.
-2. **Separation of Concerns**: Generic UI primitives (like buttons, dialogs, inputs, cards) are imported from the shared `@smr/ui` library.
+2. **Separation of Concerns**: Generic UI primitives (like buttons, dialogs, inputs, cards) are imported from the shared `@sharemyride/ui` library.
 3. **Data Fetching**: Keep API queries, mutations, and cache management (using React Query) inside the feature's `api/` folder.

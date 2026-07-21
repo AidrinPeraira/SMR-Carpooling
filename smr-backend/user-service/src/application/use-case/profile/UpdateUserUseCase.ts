@@ -10,7 +10,7 @@ import {
   ErrorCode,
   HttpStatusCodes,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export class UpdateUserUseCase implements IUpdateUserUseCase {
   constructor(

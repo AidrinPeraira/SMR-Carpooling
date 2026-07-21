@@ -8,7 +8,7 @@ import {
   ErrorDetails,
   GenericErrorMessage,
   UserErrorMessage,
-} from "@smr/shared";
+} from "@sharemyride/shared";
 
 export const mapError = (err: unknown): ApplicationError => {
   // If it's already an ApplicationError, return it
