@@ -18,6 +18,8 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist",
+    "prepublishOnly": "pnpm run build",
+    "publish": "pnpm publish",
     "type-check": "tsc --noEmit",
     "dev": "tsup src/index.ts --dts --watch --format esm,cjs --out-dir dist",
     "clean": "rm -rf dist",

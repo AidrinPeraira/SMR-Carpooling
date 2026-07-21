@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r run build",
+    "packages:build": "pnpm -r --filter @sharemyride/shared --filter @sharemyride/ui run build",
+    "packages:publish": "pnpm -r --filter @sharemyride/shared --filter @sharemyride/ui publish",
     "lint": "pnpm -r run lint",
     "type-check": "pnpm -r run type-check",
     "format": "prettier --write .",
