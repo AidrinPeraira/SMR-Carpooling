@@ -14,7 +14,10 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "docker:build": "docker build --target payment-service-prod -t sharemyride/payment-service:latest -f ../../Dockerfile.prod ../..",
+    "docker:push": "docker push sharemyride/payment-service:latest",
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
   },
   "keywords": [],
   "author": "",
