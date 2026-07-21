@@ -18,8 +18,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "docker:build": "docker build --target user-service-prod -t sharemyride/user-service:latest -f ../../Dockerfile.prod ../..",
-    "docker:push": "docker push sharemyride/user-service:latest",
+    "docker:build": "docker build --target user-service-prod -t aidrinperaira/user-service:latest -f ../../Dockerfile.prod ../..",
+    "docker:push": "docker push aidrinperaira/user-service:latest",
     "docker:publish": "pnpm run docker:build && pnpm run docker:push"
   },
   "keywords": [],

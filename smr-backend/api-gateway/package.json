@@ -15,8 +15,8 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "docker:build": "docker build --target api-gateway-prod -t sharemyride/api-gateway:latest -f ../../Dockerfile.prod ../..",
-    "docker:push": "docker push sharemyride/api-gateway:latest",
+    "docker:build": "docker build --target api-gateway-prod -t aidrinperaira/api-gateway:latest -f ../../Dockerfile.prod ../..",
+    "docker:push": "docker push aidrinperaira/api-gateway:latest",
     "docker:publish": "pnpm run docker:build && pnpm run docker:push"
   },
   "keywords": [],
