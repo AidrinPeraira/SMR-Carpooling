@@ -133,7 +133,6 @@ export class AuthControllerV1 implements IAuthControllerV1 {
   }
 
   async refreshTokens(req: Request, res: Response): Promise<void> {
-    console.log("Refreesh tooken....: ", req.body);
     const refreshTokenData = toRefreshTokenDTO(req.body);
 
     this._logger.info("Token refresh request: ");

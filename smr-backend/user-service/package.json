@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "imports": {
-    "#/*": "./src/*",
+    "#/*": {
+      "production": "./dist/src/*.js",
+      "default": "./src/*"
+    },
     "&#/*": "./tests/*"
   },
   "scripts": {
@@ -21,7 +24,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@sharemyride/shared": "workspace:*",
+    "@sharemyride/shared": "^0.0.1",
     "add": "^2.0.6",
     "amqplib": "^2.0.1",
     "cors": "^2.8.6",
