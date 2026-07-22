@@ -10,6 +10,7 @@ import {
 import { userServiceRouters } from "#/presentation/user-service.module";
 import morgan from "morgan";
 import { mapError } from "#/presentation/utils/error-mapper";
+import { keyMiddleware } from "#/presentation/middleware/key.middleware";
 
 /**
  * Express Application Factory.
@@ -36,6 +37,8 @@ export function createApp(logger: ILogger) {
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
+
+  app.use(keyMiddleware);
 
   //routes
   app.use("/v1", userServiceRouters.v1);

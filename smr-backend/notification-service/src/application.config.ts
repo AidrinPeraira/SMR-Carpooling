@@ -15,4 +15,9 @@ export const AppConfig = {
     String(process.env.RABBITMQ_EXCHANGE_NAME) || "sharemyride.events",
   RABBITMQ_QUEUE_NAME:
     String(process.env.RABBITMQ_QUEUE_NAME) || "smr.notifications.queue",
+
+  API_GATEWAY_KEY: String(
+    process.env.API_GATEWAY_KEY ||
+      "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
 };

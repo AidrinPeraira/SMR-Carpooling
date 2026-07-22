@@ -31,4 +31,9 @@ export const AppConfig = {
 
   GOOGLE_CLIENT_SECRET: String(process.env.GOOGLE_CLIENT_SECRET),
   GOOGLE_CLIENT_ID: String(process.env.GOOGLE_CLIENT_ID),
+
+  API_GATEWAY_KEY: String(
+    process.env.API_GATEWAY_KEY ||
+      "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
 };

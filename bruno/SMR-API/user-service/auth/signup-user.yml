@@ -6,6 +6,9 @@ info:
 http:
   method: POST
   url: http://localhost:4000/api/v1/auth/signup
+  headers:
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
   body:
     type: json
     data: |2-

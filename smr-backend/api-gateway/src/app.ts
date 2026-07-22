@@ -16,7 +16,7 @@ import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import { AppConfig } from "#/application.config";
 import morgan from "morgan";
 import { authMiddleware } from "#/middleware/auth.middleware";
-// import { keyMiddleware } from "#/middleware/key.middleware";
+import { keyMiddleware } from "#/middleware/key.middleware";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -39,7 +39,7 @@ export function createApp(logger: ILogger) {
   });
 
   //middlewares
-  // app.use(keyMiddleware);
+  app.use(keyMiddleware);
   app.use(authMiddleware);
 
   //Http Proxy Implementaion
@@ -57,6 +57,7 @@ export function createApp(logger: ILogger) {
     },
     on: {
       proxyReq: (proxyReq, req) => {
+        // proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
         fixRequestBody(proxyReq, req);
       },
       error: (error: unknown, _req, res) => {
