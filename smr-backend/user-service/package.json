@@ -20,7 +20,8 @@
     "test:watch": "vitest",
     "docker:build": "docker build --target user-service-prod -t aidrinperaira/user-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/user-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
+    "update:shared": "pnpm add @sharemyride/shared@latest"
   },
   "keywords": [],
   "author": "",

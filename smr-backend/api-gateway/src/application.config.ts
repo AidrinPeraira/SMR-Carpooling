@@ -11,4 +11,6 @@ export const AppConfig = {
     String(process.env.FRONTEND_KEY || "smr_frontend_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe"),
   API_GATEWAY_KEY:
     String(process.env.API_GATEWAY_KEY || "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe"),
+  REDIS_URL:
+    String(process.env.REDIS_URL || "redis://localhost:6379"),
 };

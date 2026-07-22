@@ -6,8 +6,6 @@ import { ISessionStore } from "#/application/interfaces/store/ISessionStore";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
 import {
   AccountStatus,
-  AuthSession,
-  AuthSessionNames,
   EventName,
   UserBlockedEvent,
   UserUnblockedEvent,
@@ -49,14 +47,8 @@ export class ChangeUserStatusUseCase implements IChangeUserStatusUseCase {
 
       await this._eventBus.publish(event);
 
-      //create blacklist in session repository
-      const blacklistData: AuthSession = {
-        userId: updatedUser.userId,
-        status: AccountStatus.BLOCKED,
-      };
-
-      const key = `${AuthSessionNames.AUTH_BLACKLIST}:${updatedUser.userId}`;
-      await this._sessionStore.setSession(key, blacklistData);
+      // Add to session store blacklist
+      await this._sessionStore.addToSessionBlacklist(updatedUser.userId);
     }
 
     if (data.status == AccountStatus.ACTIVE) {
@@ -72,9 +64,8 @@ export class ChangeUserStatusUseCase implements IChangeUserStatusUseCase {
 
       await this._eventBus.publish(event);
 
-      //clear session repo blacklist from user
-      const key = `${AuthSessionNames.AUTH_BLACKLIST}:${updatedUser.userId}`;
-      await this._sessionStore.removeSession(key);
+      // Remove from session store blacklist
+      await this._sessionStore.removeFromSessionBlacklist(updatedUser.userId);
     }
   }
 }

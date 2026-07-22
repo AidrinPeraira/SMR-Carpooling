@@ -19,7 +19,8 @@
     "test:watch": "vitest",
     "docker:build": "docker build --target notification-service-prod -t aidrinperaira/notification-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/notification-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
+    "update:shared": "pnpm add @sharemyride/shared@latest"
   },
   "keywords": [],
   "author": "",

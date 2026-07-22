@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "docker:build": "docker build --target payment-service-prod -t aidrinperaira/payment-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/payment-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
+    "update:shared": "pnpm add @sharemyride/shared@latest"
   },
   "keywords": [],
   "author": "",

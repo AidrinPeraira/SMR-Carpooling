@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "docker:build": "docker build --target api-gateway-prod -t aidrinperaira/api-gateway:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/api-gateway:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
+    "update:shared": "pnpm add @sharemyride/shared@latest"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +32,7 @@
     "helmet": "^8.1.0",
     "http-proxy-middleware": "^4.1.1",
     "jsonwebtoken": "^9.0.3",
-    "morgan": "^1.11.0"
+    "morgan": "^1.11.0",
+    "redis": "^6.0.0"
   }
 }

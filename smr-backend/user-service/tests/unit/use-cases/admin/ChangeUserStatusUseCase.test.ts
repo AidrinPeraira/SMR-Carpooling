@@ -58,14 +58,7 @@ describe("ChangeUserStatusUseCase", () => {
       }),
     );
 
-    const expectedBlacklistKey = `${AuthSessionNames.AUTH_BLACKLIST}:user-123`;
-    expect(mockSessionStore.setSession).toHaveBeenCalledWith(
-      expectedBlacklistKey,
-      {
-        userId: "user-123",
-        status: AccountStatus.BLOCKED,
-      },
-    );
+    expect(mockSessionStore.addToSessionBlacklist).toHaveBeenCalledWith("user-123");
   });
 
   it("should unblock user, publish unblock event and remove the user from session store blacklist", async () => {
@@ -100,8 +93,7 @@ describe("ChangeUserStatusUseCase", () => {
       }),
     );
 
-    const expectedBlacklistKey = `${AuthSessionNames.AUTH_BLACKLIST}:user-123`;
-    expect(mockSessionStore.removeSession).toHaveBeenCalledWith(expectedBlacklistKey);
+    expect(mockSessionStore.removeFromSessionBlacklist).toHaveBeenCalledWith("user-123");
   });
 
   it("should propagate errors if database update fails", async () => {
@@ -118,6 +110,6 @@ describe("ChangeUserStatusUseCase", () => {
     await expect(useCase.execute(request)).rejects.toThrow("Database error");
 
     expect(mockEventBus.publish).not.toHaveBeenCalled();
-    expect(mockSessionStore.setSession).not.toHaveBeenCalled();
+    expect(mockSessionStore.addToSessionBlacklist).not.toHaveBeenCalled();
   });
 });

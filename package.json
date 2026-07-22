@@ -7,6 +7,7 @@
     "build": "pnpm -r run build",
     "packages:build": "pnpm -r --filter @sharemyride/shared --filter @sharemyride/ui run build",
     "packages:publish": "pnpm -r --filter @sharemyride/shared --filter @sharemyride/ui publish",
+    "packages:update": "pnpm -r run update:shared",
     "docker:build": "pnpm -r --filter @smr/* run docker:build",
     "docker:push": "pnpm -r --filter @smr/* run docker:push",
     "docker:publish": "pnpm -r --filter @smr/* run docker:publish",
