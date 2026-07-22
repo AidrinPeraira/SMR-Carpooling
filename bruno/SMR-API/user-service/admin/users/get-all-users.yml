@@ -9,6 +9,8 @@ http:
   headers:
     - name: Authorization
       value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDQzNjk5MiwiZXhwIjoxNzg0NDM3ODkyfQ.GiH2JwtVk9V0QHDnIsA8WbTc2GLVFmCmvEFJnwja0BY
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
   params:
     - name: search
       value: Peraira

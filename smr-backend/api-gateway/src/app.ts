@@ -57,8 +57,8 @@ export function createApp(logger: ILogger) {
     },
     on: {
       proxyReq: (proxyReq, req) => {
+        // proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
         fixRequestBody(proxyReq, req);
-        proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
       },
       error: (error: unknown, _req, res) => {
         logger.error("User service proxy error: ", error);

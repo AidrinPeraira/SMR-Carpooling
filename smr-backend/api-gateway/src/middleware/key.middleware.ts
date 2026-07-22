@@ -15,13 +15,14 @@ export function keyMiddleware(req: Request, res: Response, next: NextFunction) {
   //check for valid frontend
   const frontendKey = req.headers["x-frontend-key"];
   if (!frontendKey || frontendKey !== AppConfig.FRONTEND_KEY) {
-    return res
+    res
       .status(HttpStatusCodes.Forbidden)
       .json(
         makeFailedResponse(
           "Forbidden: Request must originate from a verified client",
         ),
       );
+    return;
   }
 
   //attatch gateway key
