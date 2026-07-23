@@ -16,6 +16,11 @@ import {
   UserRole,
 } from "@sharemyride/shared";
 
+/**
+ * This use case handles authenticating  a user using google auth
+ * It logs the user in i fthe user exists or creates a new user
+ * if the user doesn't exist
+ */
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
   constructor(
     private readonly googleAuthService: IGoogleAuthService,
@@ -42,6 +47,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 
     let user = await this.userRepository.findByEmail(result.emailId);
 
+    //if the user doesn't exist create a new one
     if (!user) {
       const userId = this.uniqueIdGenerator.generateRandomId();
       const now = new Date();
