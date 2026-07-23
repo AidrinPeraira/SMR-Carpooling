@@ -76,6 +76,24 @@ export default async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   console.log("Next middleware running on path: ", path);
 
+  /**
+   * when server componets get a forbidden request or fails token refresh
+   * the redirect to "/" with a "user_forbidden" error in query pram
+   * This conditional block catches it and clears cookies and redirects to shoe the toast
+   * to the user.
+   *
+   * This is needed because server components can't handle cookie changes
+   */
+  const errorParam = request.nextUrl.searchParams.get("error");
+  if (errorParam == "user_forbidden") {
+    const response = NextResponse.redirect(
+      new URL("/?error=You'r account has been blocked.", request.url),
+    );
+    response.cookies.delete("access_token");
+    response.cookies.delete("refresh_token");
+    return response;
+  }
+
   let accessToken = request.cookies.get("access_token")?.value;
   const refreshToken = request.cookies.get("refresh_token")?.value;
 
@@ -92,6 +110,7 @@ export default async function proxy(request: NextRequest) {
   let newAccessToken = "";
 
   try {
+    //refresh if there is no access token
     if (!accessToken && refreshToken) {
       const tokens = await getNewTokens(refreshToken);
       isRefreshed = true;
@@ -103,6 +122,7 @@ export default async function proxy(request: NextRequest) {
       request.cookies.set("refresh_token", newRefreshToken);
     }
 
+    //no access token and no refresh token
     //not logged in user
     if (!accessToken) {
       if (!isPublicRoute) {

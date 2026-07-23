@@ -15,8 +15,7 @@ const PUBLIC_PATHS = [
 ];
 
 /**
- * This middleware validates autorization header token
- * for access
+ * This middleware validates authorization header token for access
  */
 export function authMiddleware(
   req: Request,
@@ -47,7 +46,7 @@ export function authMiddleware(
     const secret = AppConfig.ACCESS_TOKEN_SECRET;
     const payload = jwt.verify(token, secret) as any;
 
-    //make cutom headers for other services to read
+    //make custom headers for other services to read
     req.headers["x-user-id"] = payload.user.userId;
     req.headers["x-user-role"] = payload.user.userRole;
     req.headers["x-user-email"] = payload.user.emailId;
