@@ -3,6 +3,9 @@ packages:
   - smr-backend/*
   - smr-shared
   - smr-ui
+overrides:
+  "@sharemyride/shared": "workspace:*"
+  "@sharemyride/ui": "workspace:*"
 allowBuilds:
   cpu-features: true
   esbuild: true

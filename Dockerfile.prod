@@ -133,4 +133,3 @@ RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --om
 COPY --chown=node:node --from=payment-service-builder /app/smr-backend/payment-service/dist/ ./dist
 EXPOSE 4004
 CMD ["node", "--conditions", "production", "dist/src/index.js"]
-
