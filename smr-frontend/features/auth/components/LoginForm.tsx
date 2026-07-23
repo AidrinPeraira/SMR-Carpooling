@@ -1,7 +1,15 @@
 "use client";
 
 import { GoogleLogin } from "@/features/auth/components/GoogleLogin";
-import { Button, cn, Dialog, Input, Label, Loader, useToast } from "@sharemyride/ui";
+import {
+  Button,
+  cn,
+  Dialog,
+  Input,
+  Label,
+  Loader,
+  useToast,
+} from "@sharemyride/ui";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { LoginRequest, LoginUserSchema } from "@sharemyride/shared";
@@ -37,7 +45,6 @@ export function LoginForm({ className }: Props) {
     startTransition(async () => {
       try {
         const result = await loginUserAction(data);
-        logger.info("Handle login result: ", result);
         if (result.success) {
           if (result.payload?.user) {
             queryClient.setQueryData(["currentUser"], result.payload.user);

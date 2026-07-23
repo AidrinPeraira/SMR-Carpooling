@@ -2,7 +2,6 @@ import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { HttpStatusCodes, makeFailedResponse } from "@sharemyride/shared";
 import { AppConfig } from "#/application.config";
-import { blacklistService } from "#/services/blacklist.service";
 
 const PUBLIC_PATHS = [
   "/health",
@@ -16,10 +15,9 @@ const PUBLIC_PATHS = [
 ];
 
 /**
- * This middleware validates autorization header token
- * for access and checks if user is in session blacklist
+ * This middleware validates authorization header token for access
  */
-export async function authMiddleware(
+export function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
@@ -47,15 +45,6 @@ export async function authMiddleware(
   try {
     const secret = AppConfig.ACCESS_TOKEN_SECRET;
     const payload = jwt.verify(token, secret) as any;
-    const userId = payload.user.userId;
-
-    // Check if user is blacklisted
-    const isBlacklisted = await blacklistService.isSessionBlacklisted(userId);
-    if (isBlacklisted) {
-      return res
-        .status(HttpStatusCodes.Forbidden)
-        .json(makeFailedResponse("Account has been blocked"));
-    }
 
     //make custom headers for other services to read
     req.headers["x-user-id"] = payload.user.userId;

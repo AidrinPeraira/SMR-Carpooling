@@ -2,6 +2,7 @@ import { clearAuthCookies, setAuthCookies } from "@/lib/auth-cookies";
 import { logger } from "@/lib/logger";
 import { ApiResponse } from "@sharemyride/shared";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 /**
  * helper function to refresh tokens
@@ -41,6 +42,7 @@ async function getNewTokens(
  * It handles refresh logic
  *  - during refresh setting cookies might throw error in fully server side components
  *  - so we have try catch wrappper for set and clear cookies
+ *  - if such a case happens we redirect to "/" with error in query param and let proxy.ts handle clearing the cookies
  */
 export async function apiServerFetch(
   urlPath: string,
@@ -63,6 +65,21 @@ export async function apiServerFetch(
     headers,
   });
 
+  if (response.status === 403) {
+    //user is user is forbiden
+    try {
+      await clearAuthCookies();
+    } catch (error: unknown) {
+      //clear cookies might fail in server componetns
+      //redirect instead and let middleware / proxy.ts handle clearign cookies
+      console.warn(
+        "api-server: Failed to clear cookies. Redirecting to force clear from middleware.",
+        error,
+      );
+      redirect("/?error=user_forbidden");
+    }
+  }
+
   if (response.status === 401 && refreshToken) {
     logger.info("Access token expired (401), attempting to refresh token...");
     try {
@@ -71,13 +88,15 @@ export async function apiServerFetch(
       try {
         await setAuthCookies(tokens.access_token, tokens.refresh_token);
       } catch (cookieError) {
+        //this might hit if the request came from a server comoponent
+        //just ignore it. another valid request will refresh the cookie again.
         console.warn(
-          "apiServerFetch: Failed to set cookies (expected in Server Components)",
+          "api-server: Failed to set new tokens in cookies.",
           cookieError,
         );
       }
 
-      //retry request and return response
+      //retry orgiginal request and return response
       const retryHeaders: HeadersInit = {
         ...headers,
         Authorization: `Bearer ${tokens.access_token}`,
@@ -88,16 +107,17 @@ export async function apiServerFetch(
         headers: retryHeaders,
       });
     } catch (refreshError) {
-      logger.error(
-        "apiServerFetch: Silent refresh failed. Logging out user.",
-        refreshError,
-      );
+      //refresh attempt fails
+      //the helper throws an error
+      logger.error("api-server: Token refresh failed", refreshError);
 
       //clear auth cookies on refresh falure
       try {
         await clearAuthCookies();
       } catch (cookieError) {
         console.warn("apiServerFetch: Failed to clear cookies", cookieError);
+        //in case the clear cookies fail we send a redirect request
+        redirect("/?error=user_forbidden");
       }
     }
   }

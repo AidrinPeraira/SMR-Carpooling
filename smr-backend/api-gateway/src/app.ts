@@ -16,6 +16,7 @@ import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import { AppConfig } from "#/application.config";
 import morgan from "morgan";
 import { authMiddleware } from "#/middleware/auth.middleware";
+import { blacklistMiddleware } from "#/middleware/blacklist.middleware";
 import { keyMiddleware } from "#/middleware/key.middleware";
 
 export function createApp(logger: ILogger) {
@@ -41,6 +42,7 @@ export function createApp(logger: ILogger) {
   //middlewares
   app.use(keyMiddleware);
   app.use(authMiddleware);
+  app.use(blacklistMiddleware);
 
   //Http Proxy Implementaion
   //we will create and use more instances like this to forward requests to the other services
