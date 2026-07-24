@@ -59,7 +59,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         emailId: result.emailId,
         phoneNumber: result.phoneNumber || "00000000000",
         passwordHash: result.passwordHash || "google-oauth",
-        profileImage: result.profileImage,
         userRole: UserRole.PASSENGER,
         emailVerified: true,
         isDriver: false,

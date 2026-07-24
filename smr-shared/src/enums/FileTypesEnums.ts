@@ -3,3 +3,5 @@ export enum ImageFileTypes {
   PNG = "image/png",
   WEBP = "image/webp",
 }
+
+export type FileType = ImageFileTypes;

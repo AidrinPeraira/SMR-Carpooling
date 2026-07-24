@@ -1,4 +1,4 @@
-import { UserRole } from "@sharemyride/shared";
+import { ImageFileTypes, UserRole } from "@sharemyride/shared";
 
 export interface GetUserResultDTO {
   firstName: string;
@@ -19,4 +19,23 @@ export interface UpdateUserRequestDTO {
   password: string;
   phoneNumber?: string;
   profileImage?: string;
+}
+
+export interface GetAvatarUploadUrlRequestDTO {
+  userId: string;
+  fileType: ImageFileTypes;
+}
+
+export interface GetAvatarUploadUrlResutlDTO {
+  url: string;
+  expiresAt: Date;
+}
+
+export interface UpdateAvatarRequestDTO {
+  userId: string;
+  profileImage: string;
+}
+
+export interface UpdateAvatarResponseDTO {
+  profileImage: string;
 }
