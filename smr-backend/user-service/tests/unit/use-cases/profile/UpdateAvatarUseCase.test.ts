@@ -33,7 +33,7 @@ describe("UpdateAvatarUseCase", () => {
       ...existingUser,
       profileImage: newProfileImagePath,
     });
-    vi.mocked(mockStorageService.deleteFile).mockResolvedValue();
+    vi.mocked(mockStorageService.deleteFile).mockResolvedValue(undefined);
 
     const result = await useCase.execute({
       userId: mockUserId,

@@ -52,7 +52,12 @@ describe("GetAvatarUploadUrlUseCase", () => {
 
   it("should rethrow ApplicationError if storage service fails", async () => {
     vi.mocked(mockStorageService.generateSignedUploadURL).mockRejectedValue(
-      new ApplicationError("Storage failure", 500, "ERR_SYSTEM_INTERNAL_ERROR" as any),
+      new ApplicationError(
+        "Storage failure",
+        500,
+        "ERR_SYSTEM_INTERNAL_ERROR" as any,
+        { location: "test" },
+      ),
     );
 
     await expect(
