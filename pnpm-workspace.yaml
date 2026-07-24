@@ -6,10 +6,10 @@ packages:
 overrides:
   "@sharemyride/shared": "workspace:*"
   "@sharemyride/ui": "workspace:*"
-onlyBuiltDependencies:
-  - cpu-features
-  - esbuild
-  - protobufjs
-  - sharp
-  - ssh2
-  - unrs-resolver
+allowBuilds:
+  cpu-features: true
+  esbuild: true
+  protobufjs: true
+  sharp: true
+  ssh2: true
+  unrs-resolver: true
