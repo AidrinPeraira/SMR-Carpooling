@@ -15,5 +15,14 @@ export function createProfileRouterV1(
   router.get("/", profileControllerV1.getUser.bind(profileControllerV1));
   router.patch("/", profileControllerV1.updateUser.bind(profileControllerV1));
 
+  router.post(
+    "/avatar/upload-url",
+    profileControllerV1.getAvatarUploadUrl.bind(profileControllerV1),
+  );
+  router.patch(
+    "/avatar",
+    profileControllerV1.updateAvatar.bind(profileControllerV1),
+  );
+
   return router;
 }

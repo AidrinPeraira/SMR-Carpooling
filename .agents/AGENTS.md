@@ -14,4 +14,15 @@
 
 - **Preserve Existing Comments**: Never delete or strip existing user comments or docstrings during refactoring, even if they contain typos or minor inaccuracies, unless explicitly instructed by the user. Highlight major inconsistencies verbally instead.
 
+## Monorepo & Shared Package Workflow
+
+- **Rebuild Shared Package**: Whenever modifying or adding DTOs, schemas, or enums in `@sharemyride/shared` (`smr-shared`), always run `pnpm --filter @sharemyride/shared build` so dependent microservices pick up the updated TypeScript declaration files (`dist/`).
+
+## API & Application DTO Casing Convention
+
+- **API/External DTOs (`@sharemyride/shared`)**: Use `snake_case` for all property names in public API request/response types and Zod schemas.
+- **Application DTOs (`src/application/dto/`)**: Use `camelCase` for all internal application DTO property names.
+- **Mappers (`src/presentation/v1/mapper/`)**: Always map between `snake_case` API DTOs (validated via Zod) and `camelCase` internal Application DTOs.
+
+
 

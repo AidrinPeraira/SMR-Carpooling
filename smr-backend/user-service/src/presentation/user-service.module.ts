@@ -16,6 +16,9 @@ import { AuthControllerV1 } from "#/presentation/v1/controllers/AuthControllerV1
 import { createAuthRouterV1 } from "#/presentation/v1/routes/AuthRouterV1";
 import { GetUserUseCase } from "#/application/use-case/profile/GetUserUseCase";
 import { UpdateUserUseCase } from "#/application/use-case/profile/UpdateUserUseCase";
+import { GetAvatarUploadUrlUseCase } from "#/application/use-case/profile/GetAvatarUploadUrlUseCase";
+import { UpdateAvatarUseCase } from "#/application/use-case/profile/UpdateAvatarUseCase";
+import { S3StorageService } from "#/infrastructure/services/S3StorageService";
 import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
 import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
 import { ConsolaLogger, UserRole } from "@sharemyride/shared";
@@ -52,6 +55,7 @@ const rabbitMQEventBus = new RabbitMQEventBus(
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
 );
+const s3StorageService = new S3StorageService();
 
 //repositories
 const mongoUserRepository = new MongoUserRespository(UserModel);
@@ -126,11 +130,21 @@ const updateUserUseCase = new UpdateUserUseCase(
   mongoUserRepository,
   cryptoHashingService,
 );
+const getAvatarUploadUrlUseCase = new GetAvatarUploadUrlUseCase(
+  s3StorageService,
+);
+const updateAvatarUseCase = new UpdateAvatarUseCase(
+  mongoUserRepository,
+  s3StorageService,
+  consolaLogger,
+);
 
 const profileControllerV1 = new ProfileControllerV1(
   consolaLogger,
   getUserUseCase,
   updateUserUseCase,
+  getAvatarUploadUrlUseCase,
+  updateAvatarUseCase,
 );
 
 //admin user controller

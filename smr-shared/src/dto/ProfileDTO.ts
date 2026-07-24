@@ -1,4 +1,4 @@
-import { UserRole } from "../enums";
+import { ImageFileTypes, UserRole } from "../enums";
 
 export interface GetUserResult {
   first_name: string;
@@ -20,3 +20,21 @@ export interface UpdateUserRequest {
   phone_number?: string;
   profile_image?: string;
 }
+
+export interface GetAvatarUploadUrlRequest {
+  file_type: ImageFileTypes;
+}
+
+export interface GetAvatarUploadUrlResult {
+  url: string;
+  expires_at: string;
+}
+
+export interface UpdateAvatarRequest {
+  profile_image: string;
+}
+
+export interface UpdateAvatarResult {
+  profile_image: string;
+}
+
