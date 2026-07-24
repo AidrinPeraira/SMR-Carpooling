@@ -1,19 +1,27 @@
+import { IGetAvatarUploadUrlUseCase } from "#/application/interfaces/use-case/profile/IGetAvatarUploadUrlUseCase";
 import { IGetUserUseCase } from "#/application/interfaces/use-case/profile/IGetUserUseCase";
+import { IUpdateAvatarUseCase } from "#/application/interfaces/use-case/profile/IUpdateAvatarUseCase";
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
 import { IProfileControllerV1 } from "#/presentation/v1/interfaces/IProfileControllerV1";
 import {
+  toGetAvatarUploadUrlRequestDTO,
+  toGetAvatarUploadUrlResult,
   toGetUserResult,
+  toUpdateAvatarRequestDTO,
+  toUpdateAvatarResult,
   toUpdateUserRequestDTO,
 } from "#/presentation/v1/mapper/ProfileMapper";
 import {
   ApplicationError,
   ErrorCode,
+  GetAvatarUploadUrlResult,
   GenericErrorMessage,
   GenericSuccessMessage,
   GetUserResult,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  UpdateAvatarResult,
   UserSuccessMessage,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
@@ -23,6 +31,8 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
     private readonly _logger: ILogger,
     private readonly _getUserUseCase: IGetUserUseCase,
     private readonly _updateUserUseCase: IUpdateUserUseCase,
+    private readonly _getAvatarUploadUrlUseCase: IGetAvatarUploadUrlUseCase,
+    private readonly _updateAvatarUseCase: IUpdateAvatarUseCase,
   ) {}
 
   async getUser(req: Request, res: Response): Promise<void> {
@@ -76,4 +86,37 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
         ),
       );
   }
+
+  async getAvatarUploadUrl(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+
+    const dto = toGetAvatarUploadUrlRequestDTO(req.body, userId);
+    const result = await this._getAvatarUploadUrlUseCase.execute(dto);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<GetAvatarUploadUrlResult>(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          toGetAvatarUploadUrlResult(result),
+        ),
+      );
+  }
+
+  async updateAvatar(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+
+    const dto = toUpdateAvatarRequestDTO(req.body, userId);
+    const result = await this._updateAvatarUseCase.execute(dto);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<UpdateAvatarResult>(
+          UserSuccessMessage.PROFILE_UPDATED,
+          toUpdateAvatarResult(result),
+        ),
+      );
+  }
 }
+

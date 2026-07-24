@@ -1,9 +1,19 @@
 import {
+  GetAvatarUploadUrlRequestDTO,
+  GetAvatarUploadUrlResutlDTO,
   GetUserResultDTO,
+  UpdateAvatarRequestDTO,
+  UpdateAvatarResponseDTO,
   UpdateUserRequestDTO,
 } from "#/application/dto/profile/UserProfileDTO";
 import {
+  GetAvatarUploadUrlRequest,
+  GetAvatarUploadUrlResult,
+  GetAvatarUploadUrlSchema,
   GetUserResult,
+  UpdateAvatarRequest,
+  UpdateAvatarResult,
+  UpdateAvatarSchema,
   UpdateUserRequest,
   UpdateUserSchema,
   zodParser,
@@ -34,3 +44,46 @@ export function toUpdateUserRequestDTO(data: unknown): UpdateUserRequestDTO {
     phoneNumber: validated.phone_number,
   };
 }
+
+export function toGetAvatarUploadUrlRequestDTO(
+  data: unknown,
+  userId: string,
+): GetAvatarUploadUrlRequestDTO {
+  const validated = zodParser<GetAvatarUploadUrlRequest>(
+    GetAvatarUploadUrlSchema,
+    data,
+  );
+  return {
+    userId,
+    fileType: validated.file_type,
+  };
+}
+
+export function toGetAvatarUploadUrlResult(
+  data: GetAvatarUploadUrlResutlDTO,
+): GetAvatarUploadUrlResult {
+  return {
+    url: data.url,
+    expires_at: data.expiresAt.toISOString(),
+  };
+}
+
+export function toUpdateAvatarRequestDTO(
+  data: unknown,
+  userId: string,
+): UpdateAvatarRequestDTO {
+  const validated = zodParser<UpdateAvatarRequest>(UpdateAvatarSchema, data);
+  return {
+    userId,
+    profileImage: validated.profile_image,
+  };
+}
+
+export function toUpdateAvatarResult(
+  data: UpdateAvatarResponseDTO,
+): UpdateAvatarResult {
+  return {
+    profile_image: data.profileImage,
+  };
+}
+

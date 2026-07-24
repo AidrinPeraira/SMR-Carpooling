@@ -36,4 +36,15 @@ export const AppConfig = {
     process.env.API_GATEWAY_KEY ||
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
+
+  UPLOAD_URL_TTL_SECONDS: Number(process.env.UPLOAD_URL_TTL_SECONDS) || 300,
+  MAX_AVATAR_SIZE_BYTES:
+    Number(process.env.MAX_AVATAR_SIZE_BYTES) * 1024 * 1024 || 5 * 1024 * 1024,
+
+  S3_API_URL: String(process.env.S3_API_URL) || "abc",
+
+  S3_BUCKET_NAME: String(process.env.S3_BUCKET_NAME) || "sharemyride-bucket",
+  S3_ACCESS_ID: String(process.env.S3_ACCESS_ID) || "123",
+  S3_SECRET_KEY: String(process.env.S3_SECRET_KEY) || "asdf",
+  S3_PUBLIC_DOMAIN: String(process.env.S3_PUBLIC_DOMAIN) || "",
 };
