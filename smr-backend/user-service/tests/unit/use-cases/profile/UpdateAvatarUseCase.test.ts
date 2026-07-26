@@ -45,7 +45,7 @@ describe("UpdateAvatarUseCase", () => {
     expect(mockUserRepository.updateById).toHaveBeenCalledWith(
       existingUser.id,
       expect.objectContaining({
-        profileImage: newProfileImagePath,
+        profileImage: publicCdnUrl,
         updatedAt: expect.any(Date),
       }),
     );

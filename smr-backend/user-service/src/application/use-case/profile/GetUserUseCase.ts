@@ -41,6 +41,8 @@ export class GetUserUseCase implements IGetUserUseCase {
       );
     }
 
+    console.log("Profile URL: ", existingUser.profileImage);
+
     return {
       userId: existingUser.userId,
       firstName: existingUser.firstName,

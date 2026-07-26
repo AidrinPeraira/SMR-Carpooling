@@ -43,7 +43,7 @@ export class UpdateAvatarUseCase implements IUpdateAvatarUseCase {
     const publicUrl = await this._storageService.getPublicURL(dto.profileImage);
 
     await this._userRepository.updateById(existingUser.id, {
-      profileImage: dto.profileImage,
+      profileImage: publicUrl,
       updatedAt: new Date(),
     });
 
@@ -64,4 +64,3 @@ export class UpdateAvatarUseCase implements IUpdateAvatarUseCase {
     };
   }
 }
-
