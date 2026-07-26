@@ -97,3 +97,9 @@
 
 - zustand and redux stores state it gets from the server. But what if the server value changes? Tanstack querry is desinged to handle storing state owned by the server on the client side.
 - It is optimised for caching the requests also.
+
+## Primsa : ORM for Postgress
+
+- postgress is the recomended db for complex transactions and fool proof atmocity.
+- trip service methods align with the postgress requirements and hence prism
+- prisma is a common orm that allows usage of postgress like mongoose

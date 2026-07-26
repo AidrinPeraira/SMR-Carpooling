@@ -15,6 +15,9 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio",
     "docker:build": "docker build --target trip-service-prod -t aidrinperaira/trip-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/trip-service:latest",
     "docker:publish": "pnpm run docker:build && pnpm run docker:push",
@@ -25,10 +28,13 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.0",
+    "@prisma/client": "^7.9.0",
     "@sharemyride/shared": "^0.0.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "helmet": "^8.1.0"
+    "helmet": "^8.1.0",
+    "pg": "^8.22.0"
   }
 }
