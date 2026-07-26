@@ -10,7 +10,7 @@ export async function getUserRequest(): Promise<GetUserResult> {
   });
 
   if (!response.ok) {
-    logger.error("Failed to get user datails");
+    logger.error("Failed to get user datails", await response.json());
     throw new Error("Failed to fetch user data");
   }
 
