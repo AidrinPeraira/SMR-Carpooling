@@ -8,6 +8,7 @@ import {
  * This is for the users to select to add their own vehicles.
  *  - It creates new vehicle
  *  - Updates in-memory store with updated config data
+ *  - Publishes an event for user service to store vehicle data
  */
 export interface ICreateNewVehicleUseCase {
   execute(data: CreateNewVehicleRequestDTO): Promise<CreateNewVehicleResultDTO>;
