@@ -8,4 +8,6 @@ export const AppConfig = {
     process.env.API_GATEWAY_KEY ||
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
+
+  DATABASE_URL: String(process.env.DATABASE_URL) || "",
 };
