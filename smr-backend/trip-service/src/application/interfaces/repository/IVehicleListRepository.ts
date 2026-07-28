@@ -1,16 +1,21 @@
-import { IBaseRepository } from "#/application/interfaces/repository/IBaseRepository";
 import { VehicleList } from "#/domain/entities/ConfigurationEntities";
 import { VehicleTypes } from "@sharemyride/shared";
 
 /**
  * This is the repository interface for vehicle list' data
  */
-export interface IVehicleListRepository extends IBaseRepository<VehicleList> {
+export interface IVehicleListRepository {
+  save(data: Omit<VehicleList, "id">): Promise<VehicleList>;
+
   findType(type: VehicleTypes): Promise<VehicleList | null>;
+
   findExistingVehicle(
     type: VehicleTypes,
     make: string,
     model: string,
   ): Promise<VehicleList | null>;
+
   findAll(): Promise<VehicleList[] | null>;
+
+  updateById(id: string, data: Partial<VehicleList>): Promise<VehicleList>;
 }
