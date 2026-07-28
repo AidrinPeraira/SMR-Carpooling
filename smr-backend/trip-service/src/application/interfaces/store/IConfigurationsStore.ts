@@ -12,5 +12,5 @@ export interface IConfigurationStore {
   setVehicleList(vehicles: VehicleList[]): Promise<void>;
   getPricingRules(): Promise<PricingRules[] | null>;
   setPricingRules(pricingRules: PricingRules[]): Promise<void>;
-  invalidateCache(): Promise<void>;
+  invalidateCache(key: string): Promise<void>;
 }

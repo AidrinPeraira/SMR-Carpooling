@@ -31,7 +31,6 @@ export interface CreateNewPricingRequestDTO {
   vehicleType: VehicleTypes;
   pricePerKm: number;
   basePrice: number;
-  isActive?: boolean;
 }
 
 export interface CreateNewPricingResultDTO {

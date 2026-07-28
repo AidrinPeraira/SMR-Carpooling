@@ -10,6 +10,8 @@ model VehicleList {
   vehicleMake  String
   vehicleModel String
   isActive     Boolean
+
+  @@unique([vehicleType, vehicleMake, vehicleModel])
 }
 
 model PricingRules {

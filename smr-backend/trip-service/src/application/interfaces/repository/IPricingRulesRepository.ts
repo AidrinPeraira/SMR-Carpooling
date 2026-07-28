@@ -7,4 +7,5 @@ import { VehicleTypes } from "@sharemyride/shared";
  */
 export interface IPricingRulesRepository extends IBaseRepository<PricingRules> {
   findByVehicleType(type: VehicleTypes): Promise<PricingRules | null>;
+  findAll(): Promise<PricingRules[] | null>;
 }

@@ -1,4 +1,5 @@
 import { DomainEvent, EventName } from "@sharemyride/shared";
+import { IEventHandler } from "./IEventHandler";
 
 /**
  * This class acts as a register for all events and their corresponding handlers.
