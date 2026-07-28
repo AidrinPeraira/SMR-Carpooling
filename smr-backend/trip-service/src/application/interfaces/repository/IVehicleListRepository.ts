@@ -7,8 +7,6 @@ import { VehicleTypes } from "@sharemyride/shared";
 export interface IVehicleListRepository {
   save(data: Omit<VehicleList, "id">): Promise<VehicleList>;
 
-  findType(type: VehicleTypes): Promise<VehicleList | null>;
-
   findExistingVehicle(
     type: VehicleTypes,
     make: string,

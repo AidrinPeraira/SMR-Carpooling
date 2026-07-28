@@ -6,7 +6,6 @@ const VehicleListRepository = vi.fn(
     find = vi.fn();
     findById = vi.fn();
     findByCustomId = vi.fn();
-    findType = vi.fn();
     findExistingVehicle = vi.fn();
     findAll = vi.fn();
     save = vi.fn();
