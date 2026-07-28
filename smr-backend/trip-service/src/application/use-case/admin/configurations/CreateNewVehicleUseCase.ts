@@ -74,7 +74,7 @@ export class CreateNewVehicleUseCase implements ICreateNewVehicleUseCase {
       payload: newVehicle,
       timestamp: new Date(),
     };
-    this._eventBus.publish(event);
+    await this._eventBus.publish(event);
 
     return { vehicle: newVehicle };
   }

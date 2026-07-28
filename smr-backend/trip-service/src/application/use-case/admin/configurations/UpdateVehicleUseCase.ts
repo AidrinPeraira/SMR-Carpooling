@@ -70,7 +70,7 @@ export class UpdateVehicleUseCase implements IUpdateVehicleUseCase {
       },
       timestamp: new Date(),
     };
-    this._eventBus.publish(event);
+    await this._eventBus.publish(event);
 
     return { vehicle: updatedVehicle };
   }
