@@ -10,4 +10,5 @@ export const AppConfig = {
   ),
 
   DATABASE_URL: String(process.env.DATABASE_URL) || "",
+  REDIS_URL: String(process.env.REDIS_URL) || "redis://localhost:6379",
 };

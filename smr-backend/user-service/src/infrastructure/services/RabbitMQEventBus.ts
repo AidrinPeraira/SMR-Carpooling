@@ -90,6 +90,13 @@ export class RabbitMQEventBus implements IEventBus {
     }
   }
 
+  /**
+   * This method takes the domain event object, with the payload and
+   * publishes an event to the message broker queue. It uses the event
+   * name as the routing key.
+   *
+   * @param event : Domain event with name and payload and other meta data
+   */
   async publish<EventPayloadType>(
     event: DomainEvent<EventPayloadType>,
   ): Promise<void> {

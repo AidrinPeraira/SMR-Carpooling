@@ -1,28 +1,35 @@
-import { DomainEvent } from "@sharemyride/shared";
+import { DomainEvent, EventName } from "@sharemyride/shared";
 
 /**
- * This is the interface for the Message Broker to handle
- * event driven architecture. It should follow the pub-sub design pattern with the topic exchange approach.
+ * Interface for the Message Broker to handle Event-Driven Architecture.
+ * Follows the Pub/Sub design pattern using RabbitMQ topic exchanges.
  */
 export interface IEventBus {
   /**
-   * This method conncects and assers queues / exchanges to the message broker
+   * Connects to the message broker, sets up reconnect listeners,
+   * and asserts base exchange and Dead Letter Queues (DLQ).
    */
   connect(): Promise<void>;
 
   /**
-   * This method publishes events for other services to consume
+   * Publishes domain events to the topic exchange.
    *
-   * @param event: Domain event with payload
+   * @param event - Domain event with payload and metadata
    */
   publish<EventPayloadType>(
     event: DomainEvent<EventPayloadType>,
   ): Promise<void>;
 
-  /*
-   * Starts the event listener that checks for events
-   * It calls the event dispatcher which inturn calls the right handler to consume
-   * the event
+  /**
+   * Asserts the service queue and binds it to specified event routing keys on the exchange.
+   *
+   * @param eventsToListenTo - List of event names/routing keys to subscribe to.
+   */
+  subscribe(eventsToListenTo?: EventName[]): Promise<void>;
+
+  /**
+   * Starts the worker listener to consume messages from the queue,
+   * deserialize payloads, and dispatch events to handlers.
    */
   consume(): Promise<void>;
 }
