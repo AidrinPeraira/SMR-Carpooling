@@ -1,5 +1,6 @@
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
-import { DomainEvent, ILogger } from "@sharemyride/shared";
+import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
+import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
 import amqp from "amqplib";
 
 type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
@@ -7,7 +8,7 @@ type AmqpChannel = Awaited<ReturnType<AmqpConnection["createChannel"]>>;
 
 /**
  * Implementation of IEventBus using RabbitMQ.
- * Manages connections, topology (Exchanges, DLX, DLQ), and event publishing.
+ * Manages connections, topology (Exchanges, DLX, DLQ), event publishing, and consuming.
  */
 export class RabbitMQEventBus implements IEventBus {
   private _connection: AmqpConnection | null;
@@ -20,10 +21,17 @@ export class RabbitMQEventBus implements IEventBus {
   private readonly _dlxName: string;
   private readonly _dlqName: string;
 
+  //consuming
+  private _isConsuming: boolean = false;
+  private readonly _eventDispatcher: IEventDispatcher;
+  private readonly _queueName: string;
+
   constructor(
     logger: ILogger,
     url: string,
     exchangeName: string = "sharemyride.events",
+    eventDispatcher?: IEventDispatcher,
+    queueName: string = "smr.user_service.queue",
   ) {
     this._logger = logger;
     this._url = url;
@@ -33,12 +41,18 @@ export class RabbitMQEventBus implements IEventBus {
 
     this._dlqName = `${exchangeName}.dlx`;
     this._dlxName = `${exchangeName}.dlq`;
+
+    this._queueName = queueName;
+    this._eventDispatcher = eventDispatcher ?? {
+      register: async () => {},
+      dispatch: async () => {},
+    };
   }
 
   /**
    * This method establishes a connection to the rabbit mq server.
-   * It creates a channel and exhange right after.
-   * It reties on failure to connect and sents event listner to try reconnect on connection close
+   * It creates a channel and exchange right after.
+   * It retries on failure to connect and sets event listener to try reconnect on connection close
    */
   async connect(): Promise<void> {
     try {
@@ -71,7 +85,7 @@ export class RabbitMQEventBus implements IEventBus {
         durable: true,
       });
 
-      //create a queuw for deal letters in the dl exchange
+      //create a queue for dead letters in the dl exchange
       await this._channel.assertQueue(this._dlqName, {
         durable: true,
       });
@@ -79,7 +93,7 @@ export class RabbitMQEventBus implements IEventBus {
       //bind failed messages to the dead letter queue
       await this._channel.bindQueue(this._dlqName, this._dlxName, "#"); // "#" is used to catch all events irrespective of the routing key.
 
-      this._logger.info("Rabbit MQ exchange and dead letter aasserted.");
+      this._logger.info("Rabbit MQ exchange and dead letter asserted.");
     } catch (error: unknown) {
       //retrying on failure to connect
       this._logger.info("RabbitMQ connection failed!", error);
@@ -87,6 +101,43 @@ export class RabbitMQEventBus implements IEventBus {
       setTimeout(async () => {
         await this.connect();
       }, 5000);
+    }
+  }
+
+  /**
+   * Asserts the service queue and binds it to specified event routing keys on the exchange.
+   *
+   * @param eventsToListenTo - List of event routing keys to subscribe to.
+   */
+  async subscribe(eventsToListenTo: EventName[] = []): Promise<void> {
+    if (!this._channel) {
+      this._logger.error(
+        "RabbitMQ channel not initialised. Cannot subscribe to queues",
+      );
+      return;
+    }
+
+    try {
+      //bind a queue for the user service
+      await this._channel.assertQueue(this._queueName, {
+        durable: true,
+        arguments: {
+          "x-dead-letter-exchange": this._dlxName, //for failed messages
+        },
+      });
+
+      //Binding the routing keys for consumer queue
+      for (const routingKey of eventsToListenTo) {
+        await this._channel.bindQueue(
+          this._queueName,
+          this._exchangeName,
+          routingKey,
+        );
+        this._logger.info("Bound consumer queue for routing key: ", routingKey);
+      }
+    } catch (error: unknown) {
+      this._logger.error("Error subscribing queue to events: ", error);
+      throw error;
     }
   }
 
@@ -134,6 +185,69 @@ export class RabbitMQEventBus implements IEventBus {
       this._logger.error("Error publishing event: ", {
         eventName: event.eventName,
       });
+      throw error;
+    }
+  }
+
+  /**
+   * Starts consuming messages from the queue and dispatches events to registered handlers.
+   */
+  async consume(): Promise<void> {
+    if (!this._channel) {
+      this._logger.error(
+        "RabbitMQ channel not initialised. Cannot start consumption",
+      );
+      return;
+    }
+
+    if (this._isConsuming) {
+      this._logger.info("Consumer already running. Skipping duplicate attempt");
+      return;
+    }
+
+    try {
+      await this._channel.prefetch(1); //settings to consume 1 event at a time
+
+      this._logger.info("Subscribing consumer to queue: ", this._queueName);
+      this._isConsuming = true;
+
+      await this._channel.consume(this._queueName, async (message) => {
+        //this method is called when a message is received
+
+        if (!message) {
+          this._logger.warn("Consumer was cancelled by RabbitMQ server.");
+          return;
+        }
+
+        if (message == null) {
+          //if the rabbit mq server closes the connection it will not throw error
+          //so we need a retry mechanism
+
+          this._logger.warn("Consumer cancelled by server. Forcing reconnect.");
+          await this._connection?.close();
+          //we force close the connection. This will trigger the on close listener and try again
+        }
+
+        try {
+          //parse the message and call the dispatcher
+
+          const content = message.content.toString();
+          const event = JSON.parse(content) as DomainEvent<unknown>;
+
+          this._logger.info("Event received: ", event.eventName);
+
+          await this._eventDispatcher.dispatch(event);
+
+          this._channel?.ack(message);
+        } catch (error) {
+          this._logger.error("Error processing message. Moving to DLQ", error);
+          this._isConsuming = false;
+          this._channel?.nack(message, false, false);
+          //the not acknowledged response to rabbit mq will requeue the event into the deadletter
+        }
+      });
+    } catch (error: unknown) {
+      this._logger.error("Error in consuming events: ", error);
       throw error;
     }
   }

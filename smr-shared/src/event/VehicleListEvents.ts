@@ -2,7 +2,7 @@ import { VehicleTypes } from "../enums";
 import { DomainEvent } from "./DomainEvent";
 
 export interface NewVehicleEventPayload {
-  id?: string;
+  id: string;
   vehicleType: VehicleTypes;
   vehicleModel: string;
   vehicleMake: string;
