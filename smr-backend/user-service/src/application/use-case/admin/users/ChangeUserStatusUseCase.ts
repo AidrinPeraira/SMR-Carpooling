@@ -1,8 +1,8 @@
 import { ChangeUserStatusRequestDTO } from "#/application/dto/admin/users/AdminUsersDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { ISessionStore } from "#/application/interfaces/store/ISessionStore";
-// import { IEventBus } from "#/application/interfaces/services/IEventBus";
+// import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
 import {
   AccountStatus,

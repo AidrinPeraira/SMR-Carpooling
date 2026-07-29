@@ -1,4 +1,4 @@
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { DomainEvent, ILogger } from "@sharemyride/shared";
 import amqp from "amqplib";
 

@@ -1,4 +1,4 @@
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { vi } from "vitest";
 
 const EventBus = vi.fn(
