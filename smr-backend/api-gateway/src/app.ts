@@ -73,7 +73,31 @@ export function createApp(logger: ILogger) {
     },
   });
 
+  const tripServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.TRIP_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: ["/api/*/admin/trip/**"],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        // proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("Trip service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("Trip Service is unavailable"));
+        }
+      },
+    },
+  });
+
   app.use(userServiceProxy);
+  app.use(tripServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

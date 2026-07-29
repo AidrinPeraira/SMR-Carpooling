@@ -130,10 +130,7 @@ export class EventBus implements IEventBus {
           this._exchangeName,
           routingKey,
         );
-        this._logger.info(
-          "Bound consumer queue for routing key: ",
-          routingKey,
-        );
+        this._logger.info("Bound consumer queue for routing key: ", routingKey);
       }
     } catch (error: unknown) {
       this._logger.error("Error subscribing queue to events: ", error);

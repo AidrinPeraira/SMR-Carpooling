@@ -1,16 +1,15 @@
 import "dotenv/config";
-import express, {
-  type Request,
-  type Response,
-  type NextFunction,
-} from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import morgan from "morgan";
 import {
-  ApplicationError,
   HttpStatusCodes,
+  makeFailedResponse,
   type ILogger,
 } from "@sharemyride/shared";
+import { tripServiceRouters } from "#/presentation/trip-service.module";
+import { mapError } from "#/presentation/utils/error-mapper";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
 
 export function createApp(logger: ILogger) {
@@ -20,48 +19,46 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
+  app.use(
+    morgan("dev", {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+    }),
+  );
 
-  app.get("/health", (req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
 
   app.use(keyMiddleware);
 
-  //global error handler
+  // routes
+  app.use("/v1", tripServiceRouters.v1);
+
+  // global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
-    if (err instanceof ApplicationError) {
-      logger.error(err.message, {
-        message: err.message,
-        errorCode: err.errorCode,
-        details: err.details,
-        statusCode: err.statusCode,
-        stack: err.stack,
-        internalError: err.cause,
-      });
+    const mappedError = mapError(err);
 
-      return res.status(err.statusCode).json({
-        success: false,
-        message: err.message,
-        errorCode: err.errorCode,
-        details: err.details,
-      });
-    }
-
-    // Unhandled errors
-    const errorMessage =
-      err instanceof Error ? err.message : "Internal Server Error";
-    const errorStack = err instanceof Error ? err.stack : undefined;
-
-    logger.error(errorMessage, {
-      stack: errorStack,
+    logger.error(mappedError.message, {
+      errorCode: mappedError.errorCode,
+      details: mappedError.details,
+      statusCode: mappedError.statusCode,
+      stack: mappedError.stack,
+      internalError: mappedError.cause,
       url: req.url,
       method: req.method,
     });
 
-    res.status(HttpStatusCodes.InternalServerError).json({
-      success: false,
-      message: "An unexpected error occurred",
-    });
+    res
+      .status(mappedError.statusCode)
+      .json(
+        makeFailedResponse(
+          mappedError.message,
+          mappedError.errorCode,
+          mappedError.details,
+        ),
+      );
   });
 
   return app;
