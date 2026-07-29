@@ -90,7 +90,10 @@ export class EventBus implements IEventBus {
       await this._channel.bindQueue(this._dlqName, this._dlxName, "#"); // "#" is used to catch all events irrespective of the routing key.
 
       this._logger.info("Rabbit MQ exchange and dead letter asserted.");
+
+      await this.subscribe();
       this._logger.info("RabbitMQ initialised successfully");
+      await this.consume();
     } catch (error: unknown) {
       //retrying on failure to connect
       this._logger.info("RabbitMQ connection failed!", error);

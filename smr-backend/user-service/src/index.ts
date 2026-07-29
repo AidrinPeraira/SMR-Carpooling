@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
-import { ConsolaLogger, EventName } from "@sharemyride/shared";
+import { ConsolaLogger } from "@sharemyride/shared";
 import { eventBus } from "#/presentation/user-service.module";
 import { connectMongoDB } from "#/infrastructure/database/connect-mongodb";
 import { connectRedis } from "#/infrastructure/database/connect-redis";
@@ -12,13 +12,8 @@ async function startServer(): Promise<void> {
   //Connect MongoDB
   await connectMongoDB(logger);
 
-  //Connect RabbitMQ & start consuming
+  //Connect RabbitMQ
   await eventBus.connect();
-  await eventBus.subscribe([
-    EventName.ADMIN_ADD_NEW_VEHICLE,
-    EventName.ADMIN_UPDATE_NEW_VEHICLE,
-  ]);
-  await eventBus.consume();
 
   //Connect Redis
   await connectRedis(logger);

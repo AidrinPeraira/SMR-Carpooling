@@ -94,6 +94,15 @@ export class RabbitMQEventBus implements IEventBus {
       await this._channel.bindQueue(this._dlqName, this._dlxName, "#"); // "#" is used to catch all events irrespective of the routing key.
 
       this._logger.info("Rabbit MQ exchange and dead letter asserted.");
+
+      //bind queues and start consuming
+      await this.subscribe([
+        EventName.ADMIN_ADD_NEW_VEHICLE,
+        EventName.ADMIN_UPDATE_NEW_VEHICLE,
+      ]);
+      this._logger.info("RabbitMQ initialised successfully");
+
+      await this.consume();
     } catch (error: unknown) {
       //retrying on failure to connect
       this._logger.info("RabbitMQ connection failed!", error);
