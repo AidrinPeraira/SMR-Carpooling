@@ -13,6 +13,8 @@
     "docker:build": "pnpm -r --filter @smr/* run docker:build",
     "docker:push": "pnpm -r --filter @smr/* run docker:push",
     "docker:publish": "pnpm -r --filter @smr/* run docker:publish",
+    "prisma:generate": "pnpm -r --if-present run prisma:generate",
+    "prisma:migrate": "pnpm -r --if-present run prisma:migrate",
     "lint": "pnpm -r run lint",
     "type-check": "pnpm -r run type-check",
     "format": "prettier --write .",
