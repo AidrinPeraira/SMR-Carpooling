@@ -72,15 +72,14 @@ CMD ["node", "--conditions", "production", "dist/src/index.js"]
 FROM base AS trip-service-builder
 WORKDIR /app
 COPY tsconfig.base.json ./
-COPY ./smr-backend/trip-service/package.json ./smr-backend/trip-service/tsconfig.json ./smr-backend/trip-service/prisma.config.ts ./smr-backend/trip-service/
 WORKDIR /app/smr-backend/trip-service
+COPY ./smr-backend/trip-service/package.json ./smr-backend/trip-service/tsconfig.json ./smr-backend/trip-service/prisma.config.ts ./
 RUN --mount=type=cache,target=/root/.npm npm install
 RUN --mount=type=cache,target=/root/.npm npm install --save-dev prisma typescript @types/node @types/express @types/cors @types/jsonwebtoken @types/morgan @types/amqplib
-WORKDIR /app
-COPY ./smr-backend/trip-service/src ./smr-backend/trip-service/src
-WORKDIR /app/smr-backend/trip-service
-RUN npx prisma generate
+COPY ./smr-backend/trip-service/src ./src
+RUN npm run prisma:generate
 RUN npm run build -- --noEmit false
+RUN mkdir -p ./dist/src/infrastructure/database/generated && cp -r ./src/infrastructure/database/generated/* ./dist/src/infrastructure/database/generated/
 
 FROM base AS trip-service-prod
 USER node
