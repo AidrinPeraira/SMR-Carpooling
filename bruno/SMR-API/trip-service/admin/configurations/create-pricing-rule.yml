@@ -1,0 +1,173 @@
+info:
+  name: create-pricing-rule
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/admin/trip/config/pricing
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTMyNzU5NiwiZXhwIjoxNzg1MzI4NDk2fQ.YiBIdsbqctF-PZzEieAtB95ucbwCckTvr_2jAonEZ8Y
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "vehicle_type": "sedan",
+          "price_per_km": 15,
+          "base_price": 50
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/admin/trip/config/pricing
+      method: POST
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTMxOTAxMCwiZXhwIjoxNzg1MzE5OTEwfQ.OCxMqnnfpsRHme3MW2j5fbQuxf2NdzanxXaB2lFW9Uc
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |2-
+            {
+              "vehicle_type": "sedan",
+              "price_per_km": 15,
+              "base_price": 50
+            }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "192"
+        - name: etag
+          value: W/"c0-lbEQVXCn3l4F0Ep0RSeg4a0AoMw"
+        - name: date
+          value: Wed, 29 Jul 2026 10:07:26 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": {
+              "id": "e52e0144-f203-4b95-b60c-1f9293355214",
+              "vehicle_type": "sedan",
+              "price_per_km": 15,
+              "base_price": 50,
+              "is_active": true
+            }
+          }
+  - name: example-failure
+    request:
+      url: http://localhost:4000/api/v1/admin/trip/config/pricing
+      method: POST
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTMxOTAxMCwiZXhwIjoxNzg1MzE5OTEwfQ.OCxMqnnfpsRHme3MW2j5fbQuxf2NdzanxXaB2lFW9Uc
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |2-
+            {
+              "vehicle_type": "sedan",
+              "price_per_km": 15,
+              "base_price": 50
+            }
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "265"
+        - name: etag
+          value: W/"109-tV6fmXiaUxGdCeGPIwH/EIn31BM"
+        - name: date
+          value: Wed, 29 Jul 2026 10:07:43 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Pricing rule for vehicle type already exists. Please update existing pricing rules instead of creating a new entry.",
+            "error": {
+              "code": "ERR_DOMAIN_ALREADY_EXISTS",
+              "details": "Domain Conflict: A resource with these details already exists."
+            }
+          }

@@ -22,3 +22,6 @@ Dockerfile*
 **/tests
 **/vitest.config.ts
 coverage
+
+# Prisma
+**/generated

@@ -21,7 +21,7 @@ import { UpdateAvatarUseCase } from "#/application/use-case/profile/UpdateAvatar
 import { S3StorageService } from "#/infrastructure/services/S3StorageService";
 import { ProfileControllerV1 } from "#/presentation/v1/controllers/ProfileControllerV1";
 import { createProfileRouterV1 } from "#/presentation/v1/routes/ProfileRouterV1";
-import { ConsolaLogger, UserRole } from "@sharemyride/shared";
+import { ConsolaLogger, EventName, UserRole } from "@sharemyride/shared";
 import { GoogleAuthService } from "#/infrastructure/services/GoogleAuthService";
 import { GoogleAuthUseCase } from "#/application/use-case/auth/GoggleAuthUseCase";
 import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";
@@ -32,6 +32,12 @@ import { ChangeUserStatusUseCase } from "#/application/use-case/admin/users/Chan
 import { GetFullUserProfileUseCase } from "#/application/use-case/admin/users/GetFullUserProfileUseCase";
 import { redisClient } from "#/infrastructure/database/connect-redis";
 import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
+import { MongoVehicleListRepository } from "#/infrastructure/repository/MongoVehicleListRepostirory";
+import { NewVehicleListConfigUseCase } from "#/application/use-case/admin/config/NewVehicleListConfigUseCase";
+import { UpdateVehicleListConfigUseCase } from "#/application/use-case/admin/config/UpdateVehicleListConfigUseCase";
+import { EventDispatcher } from "#/presentation/v1/messages/EventDispatcher";
+import { NewVehicleConfigHandler } from "#/presentation/v1/messages/event-handler/NewVehicleConfigHandler";
+import { UpdateVehicleConfigHandler } from "#/presentation/v1/messages/event-handler/UpdateVehicleConfigHandler";
 
 /**
  * Composition Root for the User Service.
@@ -50,15 +56,48 @@ const jwtTokenService = new JWTTokenService(
   AppConfig.ACCESS_TOKEN_SECRET,
   AppConfig.REFRESH_TOKEN_SECRET,
 );
+
+//repositories
+const mongoUserRepository = new MongoUserRespository(UserModel);
+const mongoVehicleListRepository = new MongoVehicleListRepository();
+
+//use cases - vehicle config
+const newVehicleListConfigUseCase = new NewVehicleListConfigUseCase(
+  mongoVehicleListRepository,
+);
+const updateVehicleListConfigUseCase = new UpdateVehicleListConfigUseCase(
+  mongoVehicleListRepository,
+);
+
+//messaging - event handlers & dispatcher
+const eventDispatcher = new EventDispatcher(consolaLogger);
+
+const newVehicleConfigHandler = new NewVehicleConfigHandler(
+  consolaLogger,
+  newVehicleListConfigUseCase,
+);
+const updateVehicleConfigHandler = new UpdateVehicleConfigHandler(
+  consolaLogger,
+  updateVehicleListConfigUseCase,
+);
+
+eventDispatcher.register(
+  EventName.ADMIN_ADD_NEW_VEHICLE,
+  newVehicleConfigHandler,
+);
+eventDispatcher.register(
+  EventName.ADMIN_UPDATE_NEW_VEHICLE,
+  updateVehicleConfigHandler,
+);
+
 const rabbitMQEventBus = new RabbitMQEventBus(
   consolaLogger,
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
+  eventDispatcher,
+  "smr.user_service.queue",
 );
 const s3StorageService = new S3StorageService();
-
-//repositories
-const mongoUserRepository = new MongoUserRespository(UserModel);
 
 //stores
 const redisSessionStore = new RedisSessionStore(redisClient);
@@ -149,7 +188,9 @@ const profileControllerV1 = new ProfileControllerV1(
 
 //admin user controller
 const getAllUsersUseCase = new GetAllUsersUseCase(mongoUserRepository);
-const getFullUserProfileUseCase = new GetFullUserProfileUseCase(mongoUserRepository);
+const getFullUserProfileUseCase = new GetFullUserProfileUseCase(
+  mongoUserRepository,
+);
 const changeUserStatusUseCase = new ChangeUserStatusUseCase(
   mongoUserRepository,
   redisSessionStore,

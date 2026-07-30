@@ -7,8 +7,10 @@ overrides:
   "@sharemyride/shared": "workspace:*"
   "@sharemyride/ui": "workspace:*"
 allowBuilds:
+  '@prisma/engines': true
   cpu-features: true
   esbuild: true
+  prisma: true
   protobufjs: true
   sharp: true
   ssh2: true

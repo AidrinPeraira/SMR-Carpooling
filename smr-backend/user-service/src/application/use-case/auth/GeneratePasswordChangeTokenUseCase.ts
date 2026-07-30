@@ -1,7 +1,7 @@
 import { AppConfig } from "#/application.config";
 import { GeneratePasswordChangeTokenRequestDTO } from "#/application/dto/auth/PasswordChangeDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/auth/IGeneratePasswordChangeToken";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
