@@ -100,4 +100,5 @@ FROM trip-service-installer AS trip-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
 COPY --chown=node:node ./smr-backend/trip-service/ ./smr-backend/trip-service/
 EXPOSE 4004
+RUN pnpm --filter @smr/trip-service run prisma:generate
 CMD ["pnpm", "--filter", "@smr/trip-service", "run", "dev"]
