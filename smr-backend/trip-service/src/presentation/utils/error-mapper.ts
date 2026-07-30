@@ -25,7 +25,6 @@ export const mapError = (err: unknown): ApplicationError => {
 
   // RabbitMQ / amqplib Errors
   if (
-    // eslint-disable-next-line
     (err as any)?.name === "AmqpLibError" ||
     // eslint-disable-next-line
     (err as any)?.stack?.includes("amqplib")
