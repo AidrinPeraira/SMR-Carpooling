@@ -37,6 +37,7 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@prisma/client": "^7.9.0",
     "@types/amqplib": "^0.10.8",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",

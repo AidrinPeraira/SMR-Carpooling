@@ -43,6 +43,7 @@ export default defineConfig(
       "**/node_modules",
       "**/dist/**",
       "**/build/**",
+      "**/generated/**",
       "smr-frontend/**",
       "smr-ui/**",
       "**/tests/**",
