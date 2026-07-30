@@ -32,9 +32,6 @@ jobs:
       - name: Build Dependencies
         run: pnpm --filter @sharemyride/shared --filter @sharemyride/ui run build
 
-      - name: Generate Prisma Clients
-        run: pnpm run prisma:generate
-
       - name: Workspace Lint
         run: pnpm run lint
 
@@ -65,9 +62,6 @@ jobs:
 
       - name: Build Dependencies
         run: pnpm --filter @sharemyride/shared --filter @sharemyride/ui run build
-
-      - name: Generate Prisma Clients
-        run: pnpm run prisma:generate
 
       - name: Run Tests
         run: pnpm run test
