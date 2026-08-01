@@ -7,3 +7,4 @@ export * from "./SessionEnums";
 export * from "./FileTypesEnums";
 export * from "./VehicleEnums";
 export * from "./ConfigEnums";
+export * from "./ApplicationEnums";
