@@ -2,10 +2,10 @@ export interface ResubmitRenewVehicleApplicationRequestDTO {
   applicationId: string;
 
   registrationNumber?: string;
-  registrationExpiry?: string;
+  registrationExpiry?: Date;
   registrationFile?: string;
 
   insuranceNumber?: string;
-  insuranceExpiry?: string;
+  insuranceExpiry?: Date;
   insuranceFile?: string;
 }

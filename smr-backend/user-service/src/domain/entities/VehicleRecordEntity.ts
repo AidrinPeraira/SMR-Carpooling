@@ -11,11 +11,11 @@ export interface VehicleRecordEntity {
   vehicleCapacity: number;
 
   registrationNumber: string;
-  registrationExpiry: string;
+  registrationExpiry: Date;
   registrationFile: string;
 
   insuranceNumber: string;
-  insuranceExpiry: string;
+  insuranceExpiry: Date;
   insuranceFile: string;
 
   createdAt: Date;

@@ -4,7 +4,8 @@ export interface ResubmitOnboardingApplicationRequestDTO {
   applicationId: string;
 
   licenseNumber?: string;
-  licenseExpiry?: string;
+  licenseExpiry?: Date;
+  licenseFile?: string;
 
   vehicleType?: VehicleTypes;
   vehicleModel?: string;
@@ -12,10 +13,10 @@ export interface ResubmitOnboardingApplicationRequestDTO {
   vehicleImage?: string;
 
   registrationNumber?: string;
-  registrationExpiry?: string;
+  registrationExpiry?: Date;
   registrationFile?: string;
 
   insuranceNumber?: string;
-  insuranceExpiry?: string;
+  insuranceExpiry?: Date;
   insuranceFile?: string;
 }

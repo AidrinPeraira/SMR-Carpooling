@@ -4,7 +4,7 @@ export interface OnboardingApplicationRequestDTO {
   userId: string;
 
   licenseNumber: string;
-  licenseExpiry: string;
+  licenseExpiry: Date;
   licenseFile: string;
 
   vehicleType: VehicleTypes;
@@ -12,11 +12,12 @@ export interface OnboardingApplicationRequestDTO {
   vehicleMake: string;
   vehicleImage: string;
   vehicleCapacity: number;
+
   registrationNumber: string;
-  registrationExpiry: string;
+  registrationExpiry: Date;
   registrationFile: string;
 
   insuranceNumber: string;
-  insuranceExpiry: string;
+  insuranceExpiry: Date;
   insuranceFile: string;
 }

@@ -35,7 +35,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
    * @param data Vehicle application data
    */
   async execute(data: NewVehicleApplicationRequestDTO): Promise<void> {
-    if (data.vehicleCapacity <= 0 || data.vehicleCapacity > 10) {
+    if (data.vehicleCapacity <= 0 || data.vehicleCapacity > 7) {
       throw new ApplicationError(
         GenericErrorMessage.BAD_REQUEST,
         HttpStatusCodes.BadRequest,
@@ -43,7 +43,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
         ErrorDetails.INPUT_VALIDATION_ERROR,
         {
           location: "NewVehicleApplicationUseCase - execute",
-          description: "Vehicle capacity must be between 1 and 10 seats",
+          description: "Vehicle capacity must be between 1 and 7 seats",
         },
       );
     }

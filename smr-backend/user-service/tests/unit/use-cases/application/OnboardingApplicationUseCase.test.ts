@@ -42,7 +42,7 @@ describe("OnboardingApplicationUseCase", () => {
       useCase.execute({
         userId: "user-1",
         licenseNumber: "DL123",
-        licenseExpiry: "2030-01-01",
+        licenseExpiry: new Date("2030-01-01"),
         licenseFile: "temp/user-files/user-1/driver_license-123.jpg",
         vehicleType: VehicleTypes.SEDAN,
         vehicleModel: "Civic",
@@ -50,10 +50,10 @@ describe("OnboardingApplicationUseCase", () => {
         vehicleImage: "temp/user-files/user-1/vehicle_image-123.jpg",
         vehicleCapacity: 0,
         registrationNumber: "REG123",
-        registrationExpiry: "2030-01-01",
+        registrationExpiry: new Date("2030-01-01"),
         registrationFile: "temp/user-files/user-1/vehicle_registration-123.jpg",
         insuranceNumber: "INS123",
-        insuranceExpiry: "2030-01-01",
+        insuranceExpiry: new Date("2030-01-01"),
         insuranceFile: "temp/user-files/user-1/vehicle_insurance-123.jpg",
       }),
     ).rejects.toThrow();
@@ -65,7 +65,7 @@ describe("OnboardingApplicationUseCase", () => {
     const dto = {
       userId: "user-1",
       licenseNumber: "DL123",
-      licenseExpiry: "2030-01-01",
+      licenseExpiry: new Date("2030-01-01"),
       licenseFile: "temp/user-files/user-1/driver_license-123.jpg",
       vehicleType: VehicleTypes.SEDAN,
       vehicleModel: "Civic",
@@ -73,10 +73,10 @@ describe("OnboardingApplicationUseCase", () => {
       vehicleImage: "temp/user-files/user-1/vehicle_image-123.jpg",
       vehicleCapacity: 4,
       registrationNumber: "REG123",
-      registrationExpiry: "2030-01-01",
+      registrationExpiry: new Date("2030-01-01"),
       registrationFile: "temp/user-files/user-1/vehicle_registration-123.jpg",
       insuranceNumber: "INS123",
-      insuranceExpiry: "2030-01-01",
+      insuranceExpiry: new Date("2030-01-01"),
       insuranceFile: "temp/user-files/user-1/vehicle_insurance-123.jpg",
     };
 

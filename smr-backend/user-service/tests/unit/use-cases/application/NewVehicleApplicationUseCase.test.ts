@@ -41,10 +41,10 @@ describe("NewVehicleApplicationUseCase", () => {
         vehicleImage: "temp/user-files/user-1/vehicle_image-123.jpg",
         vehicleCapacity: 15,
         registrationNumber: "REG123",
-        registrationExpiry: "2030-01-01",
+        registrationExpiry: new Date("2030-01-01"),
         registrationFile: "temp/user-files/user-1/vehicle_registration-123.jpg",
         insuranceNumber: "INS123",
-        insuranceExpiry: "2030-01-01",
+        insuranceExpiry: new Date("2030-01-01"),
         insuranceFile: "temp/user-files/user-1/vehicle_insurance-123.jpg",
       }),
     ).rejects.toThrow();
@@ -61,10 +61,10 @@ describe("NewVehicleApplicationUseCase", () => {
       vehicleImage: "temp/user-files/user-1/vehicle_image-123.jpg",
       vehicleCapacity: 4,
       registrationNumber: "REG123",
-      registrationExpiry: "2030-01-01",
+      registrationExpiry: new Date("2030-01-01"),
       registrationFile: "temp/user-files/user-1/vehicle_registration-123.jpg",
       insuranceNumber: "INS123",
-      insuranceExpiry: "2030-01-01",
+      insuranceExpiry: new Date("2030-01-01"),
       insuranceFile: "temp/user-files/user-1/vehicle_insurance-123.jpg",
     };
 
