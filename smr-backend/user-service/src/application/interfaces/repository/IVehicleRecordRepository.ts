@@ -6,4 +6,8 @@ export interface IVehicleRecordRepository
   findByApplicationId(
     applicationId: string,
   ): Promise<VehicleRecordEntity | null>;
+
+  findByRegistrationNumber(
+    registrationNumber: string,
+  ): Promise<VehicleRecordEntity[]>;
 }

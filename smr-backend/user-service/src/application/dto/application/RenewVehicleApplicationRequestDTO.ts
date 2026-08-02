@@ -3,10 +3,10 @@ export interface RenewVehicleApplicationRequestDTO {
 
   registrationNumber: string;
 
-  registrationExpiry?: string;
-  registrationFile?: string;
+  registrationExpiry: string;
+  registrationFile: string;
 
-  insuranceNumber?: string;
-  insuranceExpiry?: string;
-  insuranceFile?: string;
+  insuranceNumber: string;
+  insuranceExpiry: string;
+  insuranceFile: string;
 }

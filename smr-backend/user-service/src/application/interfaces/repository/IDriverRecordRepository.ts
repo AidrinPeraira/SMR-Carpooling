@@ -6,4 +6,8 @@ export interface IDriverRecordRepository
   findByApplicationId(
     applicationId: string,
   ): Promise<DriverRecordEntity | null>;
+
+  findByLicenseNumber(
+    licenseNumber: string,
+  ): Promise<DriverRecordEntity[]>;
 }
