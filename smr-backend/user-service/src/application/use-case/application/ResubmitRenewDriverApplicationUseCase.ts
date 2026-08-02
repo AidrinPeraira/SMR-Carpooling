@@ -3,7 +3,6 @@ import { IApplicationRepository } from "#/application/interfaces/repository/IApp
 import { IDriverRecordRepository } from "#/application/interfaces/repository/IDriverRecordRepository";
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IResubmitRenewDriverApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewDriverApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { DriverRecordEntity } from "#/domain/entities/DriverRecordEntity";
 import {
   ApplicationError,
@@ -104,6 +103,6 @@ export class ResubmitRenewDriverApplicationUseCase
     await this._applicationRepository.updateByCustomId(data.applicationId, {
       applicationStatus: ApplicationStatus.PENDING,
       updatedAt: new Date(),
-    } as Partial<BaseApplicationEntity>);
+    });
   }
 }

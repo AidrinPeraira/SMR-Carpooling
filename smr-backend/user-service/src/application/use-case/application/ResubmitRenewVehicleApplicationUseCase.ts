@@ -3,7 +3,6 @@ import { IApplicationRepository } from "#/application/interfaces/repository/IApp
 import { IVehicleRecordRepository } from "#/application/interfaces/repository/IVehicleRecordRepository";
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IResubmitRenewVehicleApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewVehicleApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { VehicleRecordEntity } from "#/domain/entities/VehicleRecordEntity";
 import {
   ApplicationError,
@@ -124,6 +123,6 @@ export class ResubmitRenewVehicleApplicationUseCase
     await this._applicationRepository.updateByCustomId(data.applicationId, {
       applicationStatus: ApplicationStatus.PENDING,
       updatedAt: new Date(),
-    } as Partial<BaseApplicationEntity>);
+    });
   }
 }

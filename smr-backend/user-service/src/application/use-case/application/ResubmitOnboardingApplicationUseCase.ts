@@ -4,7 +4,6 @@ import { IDriverRecordRepository } from "#/application/interfaces/repository/IDr
 import { IVehicleRecordRepository } from "#/application/interfaces/repository/IVehicleRecordRepository";
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IResubmitOnboardingApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitOnboardingApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { DriverRecordEntity } from "#/domain/entities/DriverRecordEntity";
 import { VehicleRecordEntity } from "#/domain/entities/VehicleRecordEntity";
 import {
@@ -191,6 +190,6 @@ export class ResubmitOnboardingApplicationUseCase implements IResubmitOnboarding
     await this._applicationRepository.updateByCustomId(data.applicationId, {
       applicationStatus: ApplicationStatus.PENDING,
       updatedAt: new Date(),
-    } as Partial<BaseApplicationEntity>);
+    });
   }
 }
