@@ -5,6 +5,7 @@ export interface OnboardingApplicationRequestDTO {
 
   licenseNumber: string;
   licenseExpiry: string;
+  licenseFile: string;
 
   vehicleType: VehicleTypes;
   vehicleModel: string;

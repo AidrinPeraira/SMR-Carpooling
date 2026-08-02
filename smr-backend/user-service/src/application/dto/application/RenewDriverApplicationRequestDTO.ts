@@ -4,5 +4,5 @@ export interface RenewDriverApplicationRequsetDTO {
   licenseNumber: string;
 
   licenseExpiry: string;
-  licaenseFile: string;
+  licenseFile: string;
 }

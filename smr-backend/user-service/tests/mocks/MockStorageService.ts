@@ -6,6 +6,7 @@ const StorageService = vi.fn(
     generateSignedUploadURL = vi.fn();
     generateSignedDownloadURL = vi.fn();
     getPublicURL = vi.fn();
+    moveFile = vi.fn();
     deleteFile = vi.fn();
   },
 );

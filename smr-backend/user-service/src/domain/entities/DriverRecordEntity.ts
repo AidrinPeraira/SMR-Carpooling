@@ -3,7 +3,7 @@ export interface DriverRecordEntity {
   applicationId: string;
   licenseNumber: string;
   licenseExpiry: string;
-  licaenseFile: string;
+  licenseFile: string;
   createdAt: Date;
   updatedAt: Date;
 }

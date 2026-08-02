@@ -7,6 +7,7 @@ import {
   HttpStatusCodes,
 } from "@sharemyride/shared";
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
@@ -114,6 +115,32 @@ export class S3StorageService implements IStorageService {
     const cleanDomain = publicDomain.replace(/\/$/, "");
     const cleanPath = filePath.replace(/^\//, "");
     return `${cleanDomain}/${cleanPath}`;
+  }
+
+  async moveFile(fromPath: string, toPath: string): Promise<void> {
+    try {
+      const copyCommand = new CopyObjectCommand({
+        Bucket: this.bucketName,
+        CopySource: `${this.bucketName}/${fromPath}`,
+        Key: toPath,
+      });
+
+      await this.client.send(copyCommand);
+      await this.deleteFile(fromPath);
+    } catch (error) {
+      throw new ApplicationError(
+        GenericErrorMessage.INTERNAL_SERVER_ERROR,
+        HttpStatusCodes.InternalServerError,
+        ErrorCode.SYSTEM_INTERNAL_ERROR,
+        {
+          location: "S3StorageService.moveFile",
+          description: "Failed to move file in S3 storage",
+          fromPath,
+          toPath,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      );
+    }
   }
 
   async deleteFile(filePath: string): Promise<void> {

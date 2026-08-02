@@ -18,6 +18,8 @@ export interface IStorageService {
 
   getPublicURL(filePath: string): Promise<string>;
 
+  // this method copies and deltes internally
+  moveFile(fromPath: string, toPath: string): Promise<void>;
+
   deleteFile(filePath: string): Promise<void>;
 }
-
