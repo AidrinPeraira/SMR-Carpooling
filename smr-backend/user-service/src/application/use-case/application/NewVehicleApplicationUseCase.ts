@@ -4,7 +4,7 @@ import { IVehicleRecordRepository } from "#/application/interfaces/repository/IV
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { INewVehicleApplicationUseCase } from "#/application/interfaces/use-case/application/INewVehicleApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { VehicleRecordEntity } from "#/domain/entities/VehicleRecordEntity";
 import {
   ApplicationError,
@@ -35,7 +35,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
    * @param data Vehicle application data
    */
   async execute(data: NewVehicleApplicationRequestDTO): Promise<void> {
-    if (data.vehicleCapacity <= 0 || data.vehicleCapacity > 7) {
+    if (data.vehicleCapacity <= 0 || data.vehicleCapacity > 10) {
       throw new ApplicationError(
         GenericErrorMessage.BAD_REQUEST,
         HttpStatusCodes.BadRequest,
@@ -43,7 +43,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
         ErrorDetails.INPUT_VALIDATION_ERROR,
         {
           location: "NewVehicleApplicationUseCase - execute",
-          description: "Vehicle capacity must be between 1 and 7 seats",
+          description: "Vehicle capacity must be between 1 and 10 seats",
         },
       );
     }
@@ -51,7 +51,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
     const applicationId = this._uniqueIdGenerator.generateRandomId();
     const now = new Date();
 
-    const applicationData: Omit<BaseApplicationEntity, "id"> = {
+    const applicationData: Omit<ApplicationEntity, "id"> = {
       applicationId,
       userId: data.userId,
       applicationType: ApplicationType.NEW_VEHICLE,

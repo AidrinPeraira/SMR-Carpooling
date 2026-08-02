@@ -5,7 +5,7 @@ import { IVehicleRecordRepository } from "#/application/interfaces/repository/IV
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { IOnboardingApplicationUseCase } from "#/application/interfaces/use-case/application/IOnboardinApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { DriverRecordEntity } from "#/domain/entities/DriverRecordEntity";
 import { VehicleRecordEntity } from "#/domain/entities/VehicleRecordEntity";
 import {
@@ -54,7 +54,7 @@ export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCa
     const applicationId = this._uniqueIdGenerator.generateRandomId();
     const now = new Date();
 
-    const applicationData: Omit<BaseApplicationEntity, "id"> = {
+    const applicationData: Omit<ApplicationEntity, "id"> = {
       applicationId,
       userId: data.userId,
       applicationType: ApplicationType.ONBOARDING,

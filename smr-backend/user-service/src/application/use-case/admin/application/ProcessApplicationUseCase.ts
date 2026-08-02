@@ -3,7 +3,7 @@ import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IApplicationRepository } from "#/application/interfaces/repository/IApplicationRepository";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { IPocessApplicationUseCase } from "#/application/interfaces/use-case/admin/application/IProcessApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import {
   ApplicationApprovedEvent,
   ApplicationApprovedEventPayload,
@@ -41,7 +41,7 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
     await this._applicationRepository.updateByCustomId(id, {
       applicationStatus,
       $push: { adminComments: adminComment },
-    } as unknown as Partial<BaseApplicationEntity>);
+    } as unknown as Partial<ApplicationEntity>);
 
     const fullApplication =
       await this._applicationRepository.getFullApplicationDetails(id);

@@ -4,7 +4,7 @@ import { IVehicleRecordRepository } from "#/application/interfaces/repository/IV
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { IRenewVehicleApplicationUseCase } from "#/application/interfaces/use-case/application/IRenewVehicleApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { VehicleRecordEntity } from "#/domain/entities/VehicleRecordEntity";
 import {
   ApplicationError,
@@ -77,7 +77,7 @@ export class RenewVehicleApplicationUseCase implements IRenewVehicleApplicationU
     const applicationId = this._uniqueIdGenerator.generateRandomId();
     const now = new Date();
 
-    const applicationData: Omit<BaseApplicationEntity, "id"> = {
+    const applicationData: Omit<ApplicationEntity, "id"> = {
       applicationId,
       userId: data.userId,
       applicationType: ApplicationType.RENEW_VEHICLE,

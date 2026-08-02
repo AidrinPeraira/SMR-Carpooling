@@ -4,7 +4,7 @@ import { IDriverRecordRepository } from "#/application/interfaces/repository/IDr
 import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { IRenewDriverApplicationUseCase } from "#/application/interfaces/use-case/application/IRenewDriverApplicationUseCase";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { DriverRecordEntity } from "#/domain/entities/DriverRecordEntity";
 import {
   ApplicationError,
@@ -72,7 +72,7 @@ export class RenewDriverApplicationUseCase implements IRenewDriverApplicationUse
     const applicationId = this._uniqueIdGenerator.generateRandomId();
     const now = new Date();
 
-    const applicationData: Omit<BaseApplicationEntity, "id"> = {
+    const applicationData: Omit<ApplicationEntity, "id"> = {
       applicationId,
       userId: data.userId,
       applicationType: ApplicationType.RENEW_DRIVER,

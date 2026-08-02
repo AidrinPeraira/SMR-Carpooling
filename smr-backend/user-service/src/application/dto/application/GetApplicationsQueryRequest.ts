@@ -1,4 +1,4 @@
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { QueryDTO } from "@sharemyride/shared";
 
-export type GetApplicationsQueryRequest = QueryDTO<BaseApplicationEntity>;
+export type GetApplicationsQueryRequest = QueryDTO<ApplicationEntity>;

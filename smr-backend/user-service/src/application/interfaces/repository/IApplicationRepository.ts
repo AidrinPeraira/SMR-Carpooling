@@ -4,13 +4,13 @@ import {
 } from "#/application/dto/admin/application/AdminApplicationsDTO";
 import { GetApplicationDetailsResultDTO } from "#/application/dto/application/GetApplicationDetailsResultDTO";
 import { IBaseRepository } from "#/application/interfaces/repository/IBaseRepository";
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
+import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**
- * This is  the repository for all applications (BaseApplicationEntities)
+ * This is the repository for all applications (ApplicationEntities)
  */
-export interface IApplicationRepository extends IBaseRepository<BaseApplicationEntity> {
+export interface IApplicationRepository extends IBaseRepository<ApplicationEntity> {
   /**
    * This method queries applications and joins them with corresponding user data
    * from user table using aggregation / joins.
