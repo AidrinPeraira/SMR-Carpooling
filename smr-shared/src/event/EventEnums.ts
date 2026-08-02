@@ -8,4 +8,8 @@ export enum EventName {
 
   ADMIN_ADD_NEW_VEHICLE = "admin.trip.new_vehicle",
   ADMIN_UPDATE_NEW_VEHICLE = "admin.trip.update_vehicle",
+
+  ADMIN_APPROVE_APPLICTION = "admin.application.approve",
+  ADMIN_REJECT_APPLICATION = "admin.application.reject",
+  ADMIN_RETURN_APPLICTION = "admin.application.return",
 }

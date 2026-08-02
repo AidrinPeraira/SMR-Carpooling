@@ -8,6 +8,8 @@ export interface NewVehicleApplicationRequestDTO {
   vehicleMake: string;
   vehicleImage: string;
 
+  vehicleCapacity: number;
+
   registrationNumber: string;
   registrationExpiry: string;
   registrationFile: string;

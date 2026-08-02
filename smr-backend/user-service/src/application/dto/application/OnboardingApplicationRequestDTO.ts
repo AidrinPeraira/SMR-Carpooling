@@ -10,7 +10,7 @@ export interface OnboardingApplicationRequestDTO {
   vehicleModel: string;
   vehicleMake: string;
   vehicleImage: string;
-
+  vehicleCapacity: number;
   registrationNumber: string;
   registrationExpiry: string;
   registrationFile: string;

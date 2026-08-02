@@ -9,5 +9,5 @@ export interface IGetApplicationsUseCase {
   execute(
     userId: string,
     query: GetApplicationsQueryRequest,
-  ): Promise<PaginatedPayload<GetApplicationsResultDTO>>;
+  ): Promise<PaginatedPayload<GetApplicationsResultDTO[]>>;
 }

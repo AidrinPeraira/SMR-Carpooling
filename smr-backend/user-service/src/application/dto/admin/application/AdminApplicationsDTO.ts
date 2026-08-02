@@ -1,4 +1,3 @@
-import { BaseApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { AdminComment } from "#/domain/ValueObjects/AdminComment";
 import {
   ApplicationStatus,
@@ -6,11 +5,15 @@ import {
   QueryDTO,
 } from "@sharemyride/shared";
 
-export type GetAllApplicationsQueryDTO = QueryDTO<BaseApplicationEntity>;
+export type GetAllApplicationsQueryDTO =
+  QueryDTO<GetAllApplicationsResponseDTO>;
 
 export interface GetAllApplicationsResponseDTO {
   applicationId: string;
   userId: string;
+  firstName: string;
+  lastName: string;
+  emailId: string;
   applicationType: ApplicationType;
   applicationStatus: ApplicationStatus;
   createdAt: Date;
