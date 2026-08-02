@@ -1,33 +1,33 @@
 import { VehicleTypes } from "../../enums";
 
-export interface CreatePricingRequestAPI {
+export interface CreatePricingRequest {
   vehicle_type: VehicleTypes;
   price_per_km: number;
   base_price: number;
 }
 
-export interface UpdatePricingRequestAPI {
+export interface UpdatePricingRequest {
   vehicle_type?: VehicleTypes;
   price_per_km?: number;
   base_price?: number;
   is_active?: boolean;
 }
 
-export interface CreateVehicleRequestAPI {
+export interface CreateVehicleRequest {
   vehicle_type: VehicleTypes;
   vehicle_make: string;
   vehicle_model: string;
   is_active?: boolean;
 }
 
-export interface UpdateVehicleRequestAPI {
+export interface UpdateVehicleRequest {
   vehicle_type?: VehicleTypes;
   vehicle_make?: string;
   vehicle_model?: string;
   is_active?: boolean;
 }
 
-export interface PricingRuleResponseAPI {
+export interface PricingRuleResult {
   id: string;
   vehicle_type: VehicleTypes;
   price_per_km: number;
@@ -37,7 +37,7 @@ export interface PricingRuleResponseAPI {
   updated_at?: Date;
 }
 
-export interface VehicleListResponseAPI {
+export interface VehicleListResult {
   id: string;
   vehicle_type: VehicleTypes;
   vehicle_make: string;
@@ -47,7 +47,7 @@ export interface VehicleListResponseAPI {
   updated_at?: Date;
 }
 
-export interface GetConfigurationsResponseAPI {
-  vehicles: VehicleListResponseAPI[];
-  pricing_rules: PricingRuleResponseAPI[];
+export interface GetConfigurationsResult {
+  vehicles: VehicleListResult[];
+  pricing_rules: PricingRuleResult[];
 }

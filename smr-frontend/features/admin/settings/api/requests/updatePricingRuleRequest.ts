@@ -1,14 +1,14 @@
 import { apiClientFetch } from "@/lib/api-client";
 import {
-  PricingRuleResponseAPI,
-  UpdatePricingRequestAPI,
+  PricingRuleResult,
+  UpdatePricingRequest,
 } from "@sharemyride/shared";
 
 export async function updatePricingRuleRequest(
   id: string,
-  data: UpdatePricingRequestAPI,
+  data: UpdatePricingRequest,
 ) {
-  return await apiClientFetch<PricingRuleResponseAPI>(
+  return await apiClientFetch<PricingRuleResult>(
     `/api/v1/admin/trip/config/pricing/${id}`,
     {
       method: "PATCH",

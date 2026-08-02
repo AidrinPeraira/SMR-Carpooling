@@ -1,8 +1,8 @@
 import { apiClientFetch } from "@/lib/api-client";
-import { GetConfigurationsResponseAPI } from "@sharemyride/shared";
+import { GetConfigurationsResult } from "@sharemyride/shared";
 
 export async function getConfigurationsRequest() {
-  return await apiClientFetch<GetConfigurationsResponseAPI>(
+  return await apiClientFetch<GetConfigurationsResult>(
     "/api/v1/admin/trip/config",
   );
 }
