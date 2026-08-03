@@ -14,4 +14,6 @@ export * from "./components/sections/DriverOverviewCard";
 export * from "./components/sections/VehicleOverviewCard";
 export * from "./components/AdminReturnBanner";
 
+export * from "./api/requests/getVehicleListRequest";
+
 export * from "./utils/mapApplicationPrefillData";

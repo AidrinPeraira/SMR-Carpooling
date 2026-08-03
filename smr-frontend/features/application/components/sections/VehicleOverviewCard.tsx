@@ -11,6 +11,7 @@ interface Props {
     registration_number?: string;
     registration_expiry?: string | Date;
     registration_file?: string;
+    insurance_number?: string;
     insurance_expiry?: string | Date;
     insurance_file?: string;
     vehicle_image?: string;
@@ -80,6 +81,15 @@ export function VehicleOverviewCard({ data, onEdit }: Props) {
           </span>
           <p className="text-sm font-semibold text-content-primary">
             {regExpiry}
+          </p>
+        </div>
+
+        <div>
+          <span className="text-xs uppercase font-bold text-content-secondary block">
+            Insurance Policy Number
+          </span>
+          <p className="text-sm font-semibold text-content-primary">
+            {data.insurance_number || "—"}
           </p>
         </div>
 

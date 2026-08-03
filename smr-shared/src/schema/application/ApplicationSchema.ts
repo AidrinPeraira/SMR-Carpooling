@@ -12,6 +12,7 @@ export const OnboardingApplicationSchema = z.object({
   registration_number: z.string().trim().min(1, "Registration number is required"),
   registration_expiry: z.coerce.date(),
   registration_file: z.string().trim().min(1, "Registration file is required"),
+  insurance_number: z.string().trim().min(1, "Insurance number is required"),
   insurance_expiry: z.coerce.date(),
   insurance_file: z.string().trim().min(1, "Insurance file is required"),
   vehicle_image: z.string().trim().min(1, "Vehicle image is required"),
@@ -25,6 +26,7 @@ export const NewVehicleApplicationSchema = z.object({
   registration_number: z.string().trim().min(1, "Registration number is required"),
   registration_expiry: z.coerce.date(),
   registration_file: z.string().trim().min(1, "Registration file is required"),
+  insurance_number: z.string().trim().min(1, "Insurance number is required"),
   insurance_expiry: z.coerce.date(),
   insurance_file: z.string().trim().min(1, "Insurance file is required"),
   vehicle_image: z.string().trim().min(1, "Vehicle image is required"),
@@ -40,6 +42,7 @@ export const RenewVehicleApplicationSchema = z.object({
   registration_number: z.string().trim().min(1, "Registration number is required"),
   registration_expiry: z.coerce.date(),
   registration_file: z.string().trim().min(1, "Registration file is required"),
+  insurance_number: z.string().trim().min(1, "Insurance number is required"),
   insurance_expiry: z.coerce.date(),
   insurance_file: z.string().trim().min(1, "Insurance file is required"),
 });

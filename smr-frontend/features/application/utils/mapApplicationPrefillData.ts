@@ -24,6 +24,7 @@ export function mapApplicationPrefillData(details?: ApplicationDetailsResult): a
     registration_number: details.vehicle_record?.registration_number ?? "",
     registration_expiry: formatDate(details.vehicle_record?.registration_expiry),
     registration_file: details.vehicle_record?.registration_file ?? "",
+    insurance_number: details.vehicle_record?.insurance_number ?? "",
     insurance_expiry: formatDate(details.vehicle_record?.insurance_expiry),
     insurance_file: details.vehicle_record?.insurance_file ?? "",
     vehicle_image: details.vehicle_record?.vehicle_image ?? "",

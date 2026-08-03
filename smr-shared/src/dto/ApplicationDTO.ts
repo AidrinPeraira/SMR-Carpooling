@@ -11,6 +11,7 @@ export interface OnboardingApplicationRequest {
   registration_number: string;
   registration_expiry: string | Date;
   registration_file: string;
+  insurance_number: string;
   insurance_expiry: string | Date;
   insurance_file: string;
   vehicle_image: string;
@@ -24,6 +25,7 @@ export interface NewVehicleApplicationRequest {
   registration_number: string;
   registration_expiry: string | Date;
   registration_file: string;
+  insurance_number: string;
   insurance_expiry: string | Date;
   insurance_file: string;
   vehicle_image: string;
@@ -39,6 +41,7 @@ export interface RenewVehicleApplicationRequest {
   registration_number: string;
   registration_expiry: string | Date;
   registration_file: string;
+  insurance_number: string;
   insurance_expiry: string | Date;
   insurance_file: string;
 }
@@ -54,6 +57,7 @@ export interface ResubmitOnboardingApplicationRequest {
   registration_number?: string;
   registration_expiry?: string | Date;
   registration_file?: string;
+  insurance_number?: string;
   insurance_expiry?: string | Date;
   insurance_file?: string;
   vehicle_image?: string;
@@ -67,6 +71,7 @@ export interface ResubmitNewVehicleApplicationRequest {
   registration_number?: string;
   registration_expiry?: string | Date;
   registration_file?: string;
+  insurance_number?: string;
   insurance_expiry?: string | Date;
   insurance_file?: string;
   vehicle_image?: string;
@@ -82,6 +87,7 @@ export interface ResubmitRenewVehicleApplicationRequest {
   registration_number?: string;
   registration_expiry?: string | Date;
   registration_file?: string;
+  insurance_number?: string;
   insurance_expiry?: string | Date;
   insurance_file?: string;
 }
@@ -120,6 +126,7 @@ export interface VehicleRecordResult {
   registration_number: string;
   registration_expiry: Date;
   registration_file: string;
+  insurance_number: string;
   insurance_expiry: Date;
   insurance_file: string;
   vehicle_image: string;

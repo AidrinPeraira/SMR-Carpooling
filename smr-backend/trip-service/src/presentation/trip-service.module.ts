@@ -20,8 +20,7 @@ import { AdminConfigurationControllerV1 } from "#/presentation/v1/controllers/ad
 import { ApplicationApprovedHandler } from "#/presentation/v1/event-handlers/ApplicationApprovedEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { createAdminConfigurationRouterV1 } from "#/presentation/v1/routes/admin/AdminConfigurationRouterV1";
-import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";
-import { ConsolaLogger, EventName, UserRole } from "@sharemyride/shared";
+import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
 /**
  * Composition Root for the Trip Service.
@@ -115,7 +114,6 @@ const adminConfigurationRoutesV1 = createAdminConfigurationRouterV1(
 const v1Router = express.Router();
 v1Router.use(
   "/admin/trip/config",
-  AuthMiddleware(UserRole.ADMIN),
   adminConfigurationRoutesV1,
 );
 
