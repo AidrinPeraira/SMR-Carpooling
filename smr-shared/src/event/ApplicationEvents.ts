@@ -42,11 +42,13 @@ interface VehicleData {
 
 interface DriverData {
   driverRecordId: string;
+  licenseNumber: string;
+  licenseImage: string;
 }
 
 export interface ApplicationApprovedEventPayload {
   applicationId: string;
-  applicatoinType: ApplicationType;
+  applicationType: ApplicationType;
   userId: string;
   firstName: string;
   lastName: string;

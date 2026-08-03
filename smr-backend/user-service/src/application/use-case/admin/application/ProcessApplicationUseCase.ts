@@ -100,7 +100,7 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
 
       const eventPayload: ApplicationApprovedEventPayload = {
         applicationId: fullApplication.applicationId,
-        applicatoinType: fullApplication.applicationType,
+        applicationType: fullApplication.applicationType,
         userId: fullApplication.userId,
         firstName: fullApplication.firstName,
         lastName: fullApplication.lastName,
@@ -122,6 +122,8 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
         driverData: fullApplication.driverRecord
           ? {
               driverRecordId: fullApplication.driverRecord.recordId,
+              licenseNumber: fullApplication.driverRecord.licenseNumber,
+              licenseImage: fullApplication.driverRecord.licenseFile,
             }
           : undefined,
       };

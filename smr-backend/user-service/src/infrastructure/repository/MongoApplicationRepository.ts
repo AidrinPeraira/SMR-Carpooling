@@ -19,7 +19,7 @@ import {
   PaginatedPayload,
   SortOrder,
 } from "@sharemyride/shared";
-import { Model } from "mongoose";
+import { Model, PipelineStage } from "mongoose";
 
 export class MongoApplicationRepository
   extends MongoBaseRepository<ApplicationEntity, ApplicationDoc>
@@ -55,7 +55,7 @@ export class MongoApplicationRepository
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
 
-    const aggregatePipeline: unknown[] = [
+    const aggregatePipeline: PipelineStage[] = [
       {
         $lookup: {
           from: "users",

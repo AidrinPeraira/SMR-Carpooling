@@ -8,3 +8,4 @@ export * from "./FileTypesEnums";
 export * from "./VehicleEnums";
 export * from "./ConfigEnums";
 export * from "./ApplicationEnums";
+export * from "./DriverEnums";

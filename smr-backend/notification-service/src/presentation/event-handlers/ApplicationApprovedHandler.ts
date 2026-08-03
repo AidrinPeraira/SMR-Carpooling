@@ -15,7 +15,7 @@ export class ApplicationApprovedHandler
     const dto: ApplicationApprovedMailDTO = {
       userName: `${event.payload.firstName} ${event.payload.lastName}`,
       emailId: event.payload.emailId,
-      applicationType: event.payload.applicatoinType,
+      applicationType: event.payload.applicationType,
       comment: event.payload.comment,
     };
 
