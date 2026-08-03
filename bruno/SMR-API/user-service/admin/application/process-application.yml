@@ -1,0 +1,28 @@
+info:
+  name: process-application
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/admin/applications/process
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTczMDE3MCwiZXhwIjoxNzg1NzMxMDcwfQ.w64LEWZzCde0z3sDzlBhev_O2crTLTKg3vsz4vNyscM
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "application_id": "APP123456",
+          "application_status": "approved",
+          "comment": "All documents verified successfully."
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

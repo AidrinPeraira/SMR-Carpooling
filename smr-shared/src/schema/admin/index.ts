@@ -1,3 +1,3 @@
 export * from "./users";
 export * from "./configurations";
-
+export * from "./AdminApplicationSchema";

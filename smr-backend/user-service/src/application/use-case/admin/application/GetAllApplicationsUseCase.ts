@@ -7,7 +7,7 @@ import { IGetAllApplicationsUseCase } from "#/application/interfaces/use-case/ad
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**
- * This class is the impelmentatoin for the use case that gets
+ * This class is the implementation for the use case that gets
  * all applications and lists them for the admin
  */
 export class GetAllApplicationsUseCase implements IGetAllApplicationsUseCase {
@@ -25,7 +25,7 @@ export class GetAllApplicationsUseCase implements IGetAllApplicationsUseCase {
    */
   async execute(
     query: GetAllApplicationsQueryDTO,
-  ): Promise<PaginatedPayload<GetAllApplicationsResponseDTO>> {
+  ): Promise<PaginatedPayload<GetAllApplicationsResponseDTO[]>> {
     const searchFields: (keyof GetAllApplicationsResponseDTO)[] = [
       "firstName",
       "lastName",

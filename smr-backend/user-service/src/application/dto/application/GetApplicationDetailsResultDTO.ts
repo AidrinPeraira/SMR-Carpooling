@@ -13,7 +13,7 @@ export interface GetApplicationDetailsResultDTO {
   applicationStatus: ApplicationStatus;
   createdAt: Date;
   updatedAt: Date;
-  adminComments: AdminComment[];
-  driverRecord?: Omit<DriverRecordEntity, "applicationId">;
-  vehicleRecord?: Omit<VehicleRecordEntity, "applicationId">;
+  adminComments?: AdminComment[];
+  driverRecord?: DriverRecordEntity;
+  vehicleRecord?: VehicleRecordEntity;
 }

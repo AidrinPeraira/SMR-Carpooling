@@ -6,6 +6,7 @@ export interface ResubmitNewVehicleApplicationRequestDTO {
   vehicleType?: VehicleTypes;
   vehicleModel?: string;
   vehicleMake?: string;
+  vehicleCapacity?: number;
   vehicleImage?: string;
 
   registrationNumber?: string;

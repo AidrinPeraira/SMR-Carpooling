@@ -20,7 +20,7 @@ export interface IApplicationRepository extends IBaseRepository<ApplicationEntit
    */
   findApplications(
     query: GetAllApplicationsQueryDTO,
-  ): Promise<PaginatedPayload<GetAllApplicationsResponseDTO>>;
+  ): Promise<PaginatedPayload<GetAllApplicationsResponseDTO[]>>;
 
   /**
    * this method finds the single application and aggregates / joins it with the

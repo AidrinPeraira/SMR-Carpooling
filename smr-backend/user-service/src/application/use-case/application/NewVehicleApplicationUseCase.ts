@@ -92,7 +92,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
       registrationNumber: data.registrationNumber,
       registrationExpiry: data.registrationExpiry,
       registrationFile: finalRegistrationFile,
-      insuranceNumber: data.insuranceNumber,
+      insuranceNumber: data.insuranceNumber || "",
       insuranceExpiry: data.insuranceExpiry,
       insuranceFile: finalInsuranceFile,
       createdAt: now,

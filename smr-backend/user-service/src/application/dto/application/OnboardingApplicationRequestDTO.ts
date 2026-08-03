@@ -17,7 +17,7 @@ export interface OnboardingApplicationRequestDTO {
   registrationExpiry: Date;
   registrationFile: string;
 
-  insuranceNumber: string;
+  insuranceNumber?: string;
   insuranceExpiry: Date;
   insuranceFile: string;
 }

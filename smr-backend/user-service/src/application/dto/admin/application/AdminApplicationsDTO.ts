@@ -17,6 +17,7 @@ export interface GetAllApplicationsResponseDTO {
   applicationType: ApplicationType;
   applicationStatus: ApplicationStatus;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ProcessApplicationRequestDTO {
