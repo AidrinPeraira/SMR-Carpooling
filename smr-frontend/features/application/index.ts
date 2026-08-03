@@ -18,5 +18,10 @@ export * from "./components/FileUploadComponent";
 export * from "./api/requests/getVehicleListRequest";
 export * from "./api/requests/getFileUploadUrlRequest";
 
+export * from "./api/actions/submitOnboardingApplicationAction";
+export * from "./api/actions/submitNewVehicleApplicationAction";
+export * from "./api/actions/submitDriverRenewalAction";
+export * from "./api/actions/submitVehicleRenewalAction";
+
 export * from "./utils/mapApplicationPrefillData";
 

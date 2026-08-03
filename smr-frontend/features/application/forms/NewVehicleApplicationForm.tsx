@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -11,6 +12,8 @@ import {
 import { logger } from "@/lib/logger";
 import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
 import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
+
+import { submitNewVehicleApplicationAction } from "../api/actions/submitNewVehicleApplicationAction";
 
 interface Props {
   initialValues?: Partial<NewVehicleApplicationSchemaType>;
@@ -24,6 +27,7 @@ export function NewVehicleApplicationForm({
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
+  const router = useRouter();
 
   const {
     register,
@@ -53,12 +57,23 @@ export function NewVehicleApplicationForm({
 
         if (onSubmitAction) {
           await onSubmitAction(data);
+          router.push("/profile/applications");
+          return;
         }
 
-        toast("New Vehicle Application Submitted!", {
-          variant: "success",
-          description: "Your vehicle details have been logged successfully.",
-        });
+        const result = await submitNewVehicleApplicationAction(data as any);
+        if (result.success) {
+          toast(result.message || "New Vehicle Application Submitted!", {
+            variant: "success",
+            description: result.description || "Your vehicle application has been submitted successfully.",
+          });
+          router.push("/profile/applications");
+        } else {
+          toast(result.errorMessage || "Submission error", {
+            variant: "error",
+            description: result.description || "Something went wrong while submitting.",
+          });
+        }
       } catch (error) {
         logger.error("Error submitting vehicle application form: ", error);
         toast("Submission error", {

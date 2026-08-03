@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -14,6 +15,8 @@ import { VehicleFieldsSection } from "@/features/application/components/sections
 import { DriverOverviewCard } from "@/features/application/components/sections/DriverOverviewCard";
 import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
+import { submitOnboardingApplicationAction } from "../api/actions/submitOnboardingApplicationAction";
+
 interface Props {
   initialValues?: Partial<OnboardingApplicationSchemaType>;
   onSubmitAction?: (data: OnboardingApplicationSchemaType) => Promise<any>;
@@ -26,6 +29,7 @@ export function OnboardingApplicationForm({
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
+  const router = useRouter();
 
   const {
     register,
@@ -55,14 +59,23 @@ export function OnboardingApplicationForm({
 
         if (onSubmitAction) {
           await onSubmitAction(data);
+          router.push("/profile/applications");
+          return;
         }
 
-        // Dummy placeholder submit success
-        toast("Onboarding Application Submitted!", {
-          variant: "success",
-          description:
-            "Your driver & vehicle details have been logged successfully.",
-        });
+        const result = await submitOnboardingApplicationAction(data as any);
+        if (result.success) {
+          toast(result.message || "Onboarding Application Submitted!", {
+            variant: "success",
+            description: result.description || "Your application has been submitted successfully.",
+          });
+          router.push("/profile/applications");
+        } else {
+          toast(result.errorMessage || "Submission error", {
+            variant: "error",
+            description: result.description || "Something went wrong while submitting.",
+          });
+        }
       } catch (error) {
         logger.error("Error submitting onboarding application form: ", error);
         toast("Submission error", {

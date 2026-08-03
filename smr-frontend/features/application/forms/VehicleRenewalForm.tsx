@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -12,6 +13,8 @@ import { logger } from "@/lib/logger";
 import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
 import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
+import { submitVehicleRenewalAction } from "../api/actions/submitVehicleRenewalAction";
+
 interface Props {
   initialValues?: Partial<RenewVehicleApplicationSchemaType>;
   onSubmitAction?: (data: RenewVehicleApplicationSchemaType) => Promise<any>;
@@ -21,6 +24,7 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
+  const router = useRouter();
 
   const {
     register,
@@ -50,13 +54,23 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
 
         if (onSubmitAction) {
           await onSubmitAction(data);
+          router.push("/profile/applications");
+          return;
         }
 
-        toast("Vehicle Renewal Submitted!", {
-          variant: "success",
-          description:
-            "Your vehicle renewal details have been logged successfully.",
-        });
+        const result = await submitVehicleRenewalAction(data as any);
+        if (result.success) {
+          toast(result.message || "Vehicle Renewal Submitted!", {
+            variant: "success",
+            description: result.description || "Your vehicle renewal application has been submitted successfully.",
+          });
+          router.push("/profile/applications");
+        } else {
+          toast(result.errorMessage || "Submission error", {
+            variant: "error",
+            description: result.description || "Something went wrong while submitting.",
+          });
+        }
       } catch (error) {
         logger.error("Error submitting vehicle renewal form: ", error);
         toast("Submission error", {

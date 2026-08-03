@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -12,6 +13,8 @@ import { logger } from "@/lib/logger";
 import { DriverFieldsSection } from "@/features/application/components/sections/DriverFieldsSection";
 import { DriverOverviewCard } from "@/features/application/components/sections/DriverOverviewCard";
 
+import { submitDriverRenewalAction } from "../api/actions/submitDriverRenewalAction";
+
 interface Props {
   initialValues?: Partial<RenewDriverApplicationSchemaType>;
   onSubmitAction?: (data: RenewDriverApplicationSchemaType) => Promise<any>;
@@ -21,6 +24,7 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
+  const router = useRouter();
 
   const {
     register,
@@ -50,13 +54,23 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
 
         if (onSubmitAction) {
           await onSubmitAction(data);
+          router.push("/profile/applications");
+          return;
         }
 
-        toast("Driver Renewal Submitted!", {
-          variant: "success",
-          description:
-            "Your driver renewal details have been logged successfully.",
-        });
+        const result = await submitDriverRenewalAction(data as any);
+        if (result.success) {
+          toast(result.message || "Driver Renewal Submitted!", {
+            variant: "success",
+            description: result.description || "Your driver renewal application has been submitted successfully.",
+          });
+          router.push("/profile/applications");
+        } else {
+          toast(result.errorMessage || "Submission error", {
+            variant: "error",
+            description: result.description || "Something went wrong while submitting.",
+          });
+        }
       } catch (error) {
         logger.error("Error submitting driver renewal form: ", error);
         toast("Submission error", {
