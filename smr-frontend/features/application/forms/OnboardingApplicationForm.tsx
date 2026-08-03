@@ -76,7 +76,7 @@ export function OnboardingApplicationForm({ initialValues, onSubmitAction }: Pro
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       {step === "fill" ? (
         <>
-          <DriverFieldsSection register={register} errors={errors} />
+          <DriverFieldsSection register={register} control={control} errors={errors} />
           <VehicleFieldsSection register={register} control={control} errors={errors} />
 
           <Button type="button" onClick={handleProceedToReview} className="w-full">

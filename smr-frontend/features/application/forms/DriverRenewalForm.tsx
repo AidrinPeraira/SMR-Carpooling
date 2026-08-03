@@ -28,6 +28,7 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
     handleSubmit,
     trigger,
     getValues,
+    control,
     formState: { errors },
   } = useForm<RenewDriverApplicationSchemaType>({
     resolver: zodResolver(RenewDriverApplicationSchema) as any,
@@ -72,7 +73,7 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       {step === "fill" ? (
         <>
-          <DriverFieldsSection register={register} errors={errors} />
+          <DriverFieldsSection register={register} control={control} errors={errors} />
 
           <Button type="button" onClick={handleProceedToReview} className="w-full">
             Review Driver Details

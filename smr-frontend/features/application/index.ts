@@ -13,7 +13,10 @@ export * from "./components/sections/VehicleFieldsSection";
 export * from "./components/sections/DriverOverviewCard";
 export * from "./components/sections/VehicleOverviewCard";
 export * from "./components/AdminReturnBanner";
+export * from "./components/FileUploadComponent";
 
 export * from "./api/requests/getVehicleListRequest";
+export * from "./api/requests/getFileUploadUrlRequest";
 
 export * from "./utils/mapApplicationPrefillData";
+

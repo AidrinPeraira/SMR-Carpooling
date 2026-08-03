@@ -3,9 +3,10 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DropDown, Input, Label, Loader } from "@sharemyride/ui";
-import { VehicleListResult, VehicleTypes } from "@sharemyride/shared";
+import { VehicleListResult, VehicleTypes, FileNames } from "@sharemyride/shared";
 import { Controller, FieldErrors, UseFormRegister, useWatch } from "react-hook-form";
 import { getVehicleListRequest } from "../../api/requests/getVehicleListRequest";
+import { FileUploadComponent } from "../FileUploadComponent";
 
 interface Props {
   register: UseFormRegister<any>;
@@ -217,16 +218,32 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         </div>
       </div>
 
-      {/* Registration File Placeholder */}
-      <div className="flex flex-col gap-1 relative group">
-        <Label>Registration Document (Upload)</Label>
-        <Input placeholder="Document file path or URL" {...register("registration_file")} />
-        {errors.registration_file && (
-          <p className="text-xs font-semibold pl-1 text-fg-danger">
-            {String(errors.registration_file.message || "Registration file required")}
-          </p>
-        )}
-      </div>
+      {/* Registration File Upload */}
+      {control ? (
+        <Controller
+          name="registration_file"
+          control={control}
+          render={({ field }) => (
+            <FileUploadComponent
+              fileName={FileNames.VEHICLE_REGISTRATION}
+              label="Registration Document"
+              value={field.value}
+              onChange={(path) => field.onChange(path)}
+              error={errors.registration_file?.message as string}
+            />
+          )}
+        />
+      ) : (
+        <div className="flex flex-col gap-1 relative group">
+          <Label>Registration Document (Upload)</Label>
+          <Input placeholder="Document file path or URL" {...register("registration_file")} />
+          {errors.registration_file && (
+            <p className="text-xs font-semibold pl-1 text-fg-danger">
+              {String(errors.registration_file.message || "Registration file required")}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Insurance Number */}
@@ -252,27 +269,59 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         </div>
       </div>
 
-      {/* Insurance File Placeholder */}
-      <div className="flex flex-col gap-1 relative group">
-        <Label>Insurance Document (Upload)</Label>
-        <Input placeholder="Document file path or URL" {...register("insurance_file")} />
-        {errors.insurance_file && (
-          <p className="text-xs font-semibold pl-1 text-fg-danger">
-            {String(errors.insurance_file.message || "Insurance file required")}
-          </p>
-        )}
-      </div>
+      {/* Insurance File Upload */}
+      {control ? (
+        <Controller
+          name="insurance_file"
+          control={control}
+          render={({ field }) => (
+            <FileUploadComponent
+              fileName={FileNames.VEHICLE_INSURANCE}
+              label="Insurance Document"
+              value={field.value}
+              onChange={(path) => field.onChange(path)}
+              error={errors.insurance_file?.message as string}
+            />
+          )}
+        />
+      ) : (
+        <div className="flex flex-col gap-1 relative group">
+          <Label>Insurance Document (Upload)</Label>
+          <Input placeholder="Document file path or URL" {...register("insurance_file")} />
+          {errors.insurance_file && (
+            <p className="text-xs font-semibold pl-1 text-fg-danger">
+              {String(errors.insurance_file.message || "Insurance file required")}
+            </p>
+          )}
+        </div>
+      )}
 
-      {/* Vehicle Image Placeholder */}
-      <div className="flex flex-col gap-1 relative group">
-        <Label>Vehicle Image (Upload)</Label>
-        <Input placeholder="Vehicle photo URL or file path" {...register("vehicle_image")} />
-        {errors.vehicle_image && (
-          <p className="text-xs font-semibold pl-1 text-fg-danger">
-            {String(errors.vehicle_image.message || "Vehicle image required")}
-          </p>
-        )}
-      </div>
+      {/* Vehicle Image Upload */}
+      {control ? (
+        <Controller
+          name="vehicle_image"
+          control={control}
+          render={({ field }) => (
+            <FileUploadComponent
+              fileName={FileNames.VEHICLE_IMAGE}
+              label="Vehicle Image"
+              value={field.value}
+              onChange={(path) => field.onChange(path)}
+              error={errors.vehicle_image?.message as string}
+            />
+          )}
+        />
+      ) : (
+        <div className="flex flex-col gap-1 relative group">
+          <Label>Vehicle Image (Upload)</Label>
+          <Input placeholder="Vehicle photo URL or file path" {...register("vehicle_image")} />
+          {errors.vehicle_image && (
+            <p className="text-xs font-semibold pl-1 text-fg-danger">
+              {String(errors.vehicle_image.message || "Vehicle image required")}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
