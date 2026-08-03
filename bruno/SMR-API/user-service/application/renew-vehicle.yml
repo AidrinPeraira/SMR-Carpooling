@@ -18,6 +18,7 @@ http:
           "registration_number": "KA01AB1234",
           "registration_expiry": "2032-12-31T00:00:00.000Z",
           "registration_file": "temp/renewed_reg.pdf",
+          "insurance_number": "INS-99988877",
           "insurance_expiry": "2032-12-31T00:00:00.000Z",
           "insurance_file": "temp/renewed_insurance.pdf"
         }

@@ -25,6 +25,7 @@ http:
           "registration_number": "KA01AB1234",
           "registration_expiry": "2030-12-31T00:00:00.000Z",
           "registration_file": "temp/reg_doc.pdf",
+          "insurance_number": "INS-12345678",
           "insurance_expiry": "2030-12-31T00:00:00.000Z",
           "insurance_file": "temp/insurance_doc.pdf",
           "vehicle_image": "temp/vehicle_img.jpg"

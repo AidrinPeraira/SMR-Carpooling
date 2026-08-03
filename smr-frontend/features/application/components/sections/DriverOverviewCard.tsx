@@ -11,19 +11,28 @@ interface Props {
   onEdit?: () => void;
 }
 
+function formatDate(value?: string | Date): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+}
+
 export function DriverOverviewCard({ data, onEdit }: Props) {
-  const expiryFormatted = data.license_expiry
-    ? typeof data.license_expiry === "string"
-      ? data.license_expiry
-      : new Date(data.license_expiry).toISOString().split("T")[0]
-    : "—";
+  const expiryFormatted = formatDate(data.license_expiry);
 
   return (
     <Card className="w-full">
       <CardHeader className="flex items-center justify-between border-b border-border-strong pb-2">
-        <h3 className="text-md font-bold text-content-primary">Driver Overview</h3>
+        <h3 className="text-md font-bold text-content-primary">
+          Driver Overview
+        </h3>
         {onEdit && (
-          <Button variant="secondary" className="px-2 py-1 text-xs" type="button" onClick={onEdit}>
+          <Button
+            variant="secondary"
+            className="px-2 py-1 text-xs"
+            type="button"
+            onClick={onEdit}
+          >
             Edit
           </Button>
         )}

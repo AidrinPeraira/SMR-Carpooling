@@ -19,18 +19,15 @@ interface Props {
   onEdit?: () => void;
 }
 
-export function VehicleOverviewCard({ data, onEdit }: Props) {
-  const regExpiry = data.registration_expiry
-    ? typeof data.registration_expiry === "string"
-      ? data.registration_expiry
-      : new Date(data.registration_expiry).toISOString().split("T")[0]
-    : "—";
+function formatDate(value?: string | Date): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+}
 
-  const insExpiry = data.insurance_expiry
-    ? typeof data.insurance_expiry === "string"
-      ? data.insurance_expiry
-      : new Date(data.insurance_expiry).toISOString().split("T")[0]
-    : "—";
+export function VehicleOverviewCard({ data, onEdit }: Props) {
+  const regExpiry = formatDate(data.registration_expiry);
+  const insExpiry = formatDate(data.insurance_expiry);
 
   return (
     <Card className="w-full">

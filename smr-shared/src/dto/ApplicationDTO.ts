@@ -1,4 +1,4 @@
-import { ApplicationStatus, ApplicationType, VehicleTypes } from "../enums";
+import { ApplicationStatus, ApplicationType, FileNames, ImageFileTypes, VehicleTypes } from "../enums";
 
 export interface OnboardingApplicationRequest {
   license_number: string;
@@ -90,6 +90,16 @@ export interface ResubmitRenewVehicleApplicationRequest {
   insurance_number?: string;
   insurance_expiry?: string | Date;
   insurance_file?: string;
+}
+
+export interface GetFileUploadUrlRequest {
+  file_type: ImageFileTypes;
+  file_name: FileNames;
+}
+
+export interface GetFileUploadUrlResult {
+  url: string;
+  expires_at: string;
 }
 
 export interface AdminCommentResult {

@@ -8,10 +8,13 @@ import { IResubmitNewVehicleApplicationUseCase } from "#/application/interfaces/
 import { IResubmitOnboardingApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitOnboardingApplicationUseCase";
 import { IResubmitRenewDriverApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewDriverApplicationUseCase";
 import { IResubmitRenewVehicleApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewVehicleApplicationUseCase";
+import { IGetFileUploadUrlUseCase } from "#/application/interfaces/use-case/IGetFileUploadUrlUseCase";
 import { IApplicationControllerV1 } from "#/presentation/v1/interfaces/IApplicationControllerV1";
 import {
   toApplicationDetailsResult,
   toGetApplicationsSummaryResult,
+  toGetFileUploadUrlRequestDTO,
+  toGetFileUploadUrlResult,
   toNewVehicleApplicationRequestDTO,
   toOnboardingApplicationRequestDTO,
   toRenewDriverApplicationRequestDTO,
@@ -27,6 +30,9 @@ import {
   ApplicationIdParamSchemaType,
   ApplicationSuccessMessage,
   GenericSuccessMessage,
+  GetFileUploadUrlResult,
+  GetFileUploadUrlSchema,
+  GetFileUploadUrlSchemaType,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
@@ -53,6 +59,7 @@ import { Request, Response } from "express";
 export class ApplicationControllerV1 implements IApplicationControllerV1 {
   constructor(
     private readonly _logger: ILogger,
+    private readonly _getFileUploadUrlUseCase: IGetFileUploadUrlUseCase,
     private readonly _onboardingApplicationUseCase: IOnboardingApplicationUseCase,
     private readonly _newVehicleApplicationUseCase: INewVehicleApplicationUseCase,
     private readonly _renewDriverApplicationUseCase: IRenewDriverApplicationUseCase,
@@ -64,6 +71,27 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     private readonly _getApplicationsUseCase: IGetApplicationsUseCase,
     private readonly _getApplicationDetailsUseCase: IGetApplicationDetailsUseCase,
   ) {}
+
+  async getFileUploadUrl(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+    this._logger.info("Getting file upload URL for userId: ", userId);
+
+    const body = zodParser<GetFileUploadUrlSchemaType>(
+      GetFileUploadUrlSchema,
+      req.body,
+    );
+    const dto = toGetFileUploadUrlRequestDTO(body, userId);
+    const result = await this._getFileUploadUrlUseCase.execute(dto);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<GetFileUploadUrlResult>(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          toGetFileUploadUrlResult(result),
+        ),
+      );
+  }
 
   async onboardingApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
@@ -134,6 +162,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       ApplicationIdParamSchema,
       req.params,
     );
+
     this._logger.info("Resubmitting onboarding application: ", applicationId);
 
     const body = zodParser<ResubmitOnboardingApplicationSchemaType>(
@@ -153,6 +182,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       ApplicationIdParamSchema,
       req.params,
     );
+
     this._logger.info("Resubmitting new vehicle application: ", applicationId);
 
     const body = zodParser<ResubmitNewVehicleApplicationSchemaType>(
@@ -172,6 +202,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       ApplicationIdParamSchema,
       req.params,
     );
+
     this._logger.info("Resubmitting renew driver application: ", applicationId);
 
     const body = zodParser<ResubmitRenewDriverApplicationSchemaType>(
@@ -191,6 +222,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       ApplicationIdParamSchema,
       req.params,
     );
+
     this._logger.info("Resubmitting renew vehicle application: ", applicationId);
 
     const body = zodParser<ResubmitRenewVehicleApplicationSchemaType>(
@@ -207,16 +239,14 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
   async getApplications(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info("Fetching applications for user: ", userId);
+    this._logger.info("Getting applications for userId: ", userId);
 
-    const results = await this._getApplicationsUseCase.execute(userId);
+    const list = await this._getApplicationsUseCase.execute(userId);
+    const result = list.map((item) => toGetApplicationsSummaryResult(item, userId));
 
-    res.status(HttpStatusCodes.Ok).json(
-      makeSuccessResponse(
-        GenericSuccessMessage.OPERATION_SUCCESSFUL,
-        results.map((app) => toGetApplicationsSummaryResult(app, userId)),
-      ),
-    );
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, result));
   }
 
   async getApplicationDetails(req: Request, res: Response): Promise<void> {
@@ -224,16 +254,23 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       ApplicationIdParamSchema,
       req.params,
     );
-    this._logger.info("Fetching details for application: ", applicationId);
 
-    const result = await this._getApplicationDetailsUseCase.execute(applicationId);
+    this._logger.info(
+      "Getting application details for applicationId: ",
+      applicationId,
+    );
+
+    const details = await this._getApplicationDetailsUseCase.execute(
+      applicationId,
+    );
+    const result = toApplicationDetailsResult(details);
 
     res
       .status(HttpStatusCodes.Ok)
       .json(
         makeSuccessResponse<ApplicationDetailsResult>(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toApplicationDetailsResult(result),
+          result,
         ),
       );
   }

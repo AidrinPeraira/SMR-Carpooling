@@ -13,6 +13,11 @@ export function createApplicationRouterV1(
   const router = Router();
 
   router.post(
+    "/upload-url",
+    applicationControllerV1.getFileUploadUrl.bind(applicationControllerV1),
+  );
+
+  router.post(
     "/onboarding",
     applicationControllerV1.onboardingApplication.bind(applicationControllerV1),
   );

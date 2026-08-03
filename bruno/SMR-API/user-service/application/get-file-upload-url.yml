@@ -1,11 +1,11 @@
 info:
-  name: new-vehicle
+  name: get-file-upload-url
   type: http
-  seq: 2
+  seq: 12
 
 http:
   method: POST
-  url: http://localhost:4000/api/v1/applications/vehicle
+  url: http://localhost:4000/api/v1/applications/upload-url
   headers:
     - name: Authorization
       value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTczMDE3NiwiZXhwIjoxNzg1NzMxMDc2fQ.5EMz9Tdx_6yy_z1flF2qzbfLDn2LJYn_foQ0Kub71nY
@@ -15,17 +15,8 @@ http:
     type: json
     data: |2-
         {
-          "vehicle_type": "suv",
-          "vehicle_make": "Honda",
-          "vehicle_model": "CR-V",
-          "vehicle_capacity": 5,
-          "registration_number": "KA02CD5678",
-          "registration_expiry": "2030-12-31T00:00:00.000Z",
-          "registration_file": "temp/reg_doc2.pdf",
-          "insurance_number": "INS-87654321",
-          "insurance_expiry": "2030-12-31T00:00:00.000Z",
-          "insurance_file": "temp/insurance_doc2.pdf",
-          "vehicle_image": "temp/vehicle_img2.jpg"
+          "file_type": "image/png",
+          "file_name": "driver_license"
         }
   auth: inherit
 

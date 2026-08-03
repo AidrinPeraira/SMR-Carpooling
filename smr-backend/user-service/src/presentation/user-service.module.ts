@@ -58,6 +58,7 @@ import { ResubmitRenewDriverApplicationUseCase } from "#/application/use-case/ap
 import { ResubmitRenewVehicleApplicationUseCase } from "#/application/use-case/application/ResubmitRenewVehicleApplicationUseCase";
 import { GetApplicationsUseCase } from "#/application/use-case/application/GetApplicationsUseCase";
 import { GetApplicationDetailsUseCase } from "#/application/use-case/application/GetApplicationDetailsUseCase";
+import { GetFileUploadUrlUseCase } from "#/application/use-case/GetFileUploadUrlUseCase";
 
 // Admin Application Use Cases
 import { GetAllApplicationsUseCase } from "#/application/use-case/admin/application/GetAllApplicationsUseCase";
@@ -305,8 +306,11 @@ const getApplicationDetailsUseCase = new GetApplicationDetailsUseCase(
   mongoApplicationRepository,
 );
 
+const getFileUploadUrlUseCase = new GetFileUploadUrlUseCase(s3StorageService);
+
 const applicationControllerV1 = new ApplicationControllerV1(
   consolaLogger,
+  getFileUploadUrlUseCase,
   onboardingApplicationUseCase,
   newVehicleApplicationUseCase,
   renewDriverApplicationUseCase,

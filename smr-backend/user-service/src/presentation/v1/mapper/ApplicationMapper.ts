@@ -8,10 +8,14 @@ import { ResubmitRenewDriverApplicationRequestDTO } from "#/application/dto/appl
 import { ResubmitRenewVehicleApplicationRequestDTO } from "#/application/dto/application/ResubmitRenewVehicleApplicationRequestDTO";
 import { GetApplicationDetailsResultDTO } from "#/application/dto/application/GetApplicationDetailsResultDTO";
 import { GetApplicationsResultDTO } from "#/application/dto/application/GetApplicationsResultDTO";
+import { GetFileUploadUrlRequestDTO } from "#/application/dto/GetFileUploadUrlRequestDTO";
+import { GetFileUploadUrlResponseDTO } from "#/application/dto/GetFileUploadUrlResponseDTO";
 import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import {
   ApplicationDetailsResult,
   ApplicationResult,
+  GetFileUploadUrlResult,
+  GetFileUploadUrlSchemaType,
   NewVehicleApplicationSchemaType,
   OnboardingApplicationSchemaType,
   RenewDriverApplicationSchemaType,
@@ -21,6 +25,26 @@ import {
   ResubmitRenewDriverApplicationSchemaType,
   ResubmitRenewVehicleApplicationSchemaType,
 } from "@sharemyride/shared";
+
+export function toGetFileUploadUrlRequestDTO(
+  body: GetFileUploadUrlSchemaType,
+  userId: string,
+): GetFileUploadUrlRequestDTO {
+  return {
+    userId,
+    fileType: body.file_type,
+    fileName: body.file_name,
+  };
+}
+
+export function toGetFileUploadUrlResult(
+  dto: GetFileUploadUrlResponseDTO,
+): GetFileUploadUrlResult {
+  return {
+    url: dto.url,
+    expires_at: dto.expiresAt.toISOString(),
+  };
+}
 
 export function toOnboardingApplicationRequestDTO(
   body: OnboardingApplicationSchemaType,

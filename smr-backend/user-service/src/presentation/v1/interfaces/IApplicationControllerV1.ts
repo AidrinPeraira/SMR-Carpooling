@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 export interface IApplicationControllerV1 {
+  getFileUploadUrl(req: Request, res: Response): Promise<void>;
   onboardingApplication(req: Request, res: Response): Promise<void>;
   newVehicleApplication(req: Request, res: Response): Promise<void>;
   renewDriverApplication(req: Request, res: Response): Promise<void>;

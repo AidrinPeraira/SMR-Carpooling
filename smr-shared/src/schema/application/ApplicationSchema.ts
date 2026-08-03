@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { VehicleTypes } from "../../enums";
+import { FileNames, ImageFileTypes, VehicleTypes } from "../../enums";
 
 export const OnboardingApplicationSchema = z.object({
   license_number: z.string().trim().min(1, "License number is required"),
@@ -52,6 +52,15 @@ export const ResubmitNewVehicleApplicationSchema = NewVehicleApplicationSchema.p
 export const ResubmitRenewDriverApplicationSchema = RenewDriverApplicationSchema.partial();
 export const ResubmitRenewVehicleApplicationSchema = RenewVehicleApplicationSchema.partial();
 
+export const GetFileUploadUrlSchema = z.object({
+  file_type: z.nativeEnum(ImageFileTypes, {
+    message: "Invalid image file type. Supported types: image/jpg, image/png, image/webp",
+  }),
+  file_name: z.nativeEnum(FileNames, {
+    message: "Invalid file name. Supported names: driver_license, vehicle_registration, vehicle_insurance, vehicle_image",
+  }),
+});
+
 export const ApplicationIdParamSchema = z.object({
   applicationId: z.string().trim().min(1, "Application ID is required"),
 });
@@ -64,4 +73,5 @@ export type ResubmitOnboardingApplicationSchemaType = z.infer<typeof ResubmitOnb
 export type ResubmitNewVehicleApplicationSchemaType = z.infer<typeof ResubmitNewVehicleApplicationSchema>;
 export type ResubmitRenewDriverApplicationSchemaType = z.infer<typeof ResubmitRenewDriverApplicationSchema>;
 export type ResubmitRenewVehicleApplicationSchemaType = z.infer<typeof ResubmitRenewVehicleApplicationSchema>;
+export type GetFileUploadUrlSchemaType = z.infer<typeof GetFileUploadUrlSchema>;
 export type ApplicationIdParamSchemaType = z.infer<typeof ApplicationIdParamSchema>;
