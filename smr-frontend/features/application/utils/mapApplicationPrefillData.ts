@@ -1,6 +1,14 @@
 import { ApplicationDetailsResult } from "@sharemyride/shared";
 
-export function mapApplicationPrefillData(details?: ApplicationDetailsResult): any {
+/**
+ * This is a helper function to populate form data if availabel for
+ * resubmit and renewal views
+ *
+ * @param details : Ful aplication details
+ */
+export function mapApplicationPrefillData(
+  details?: ApplicationDetailsResult,
+): any {
   if (!details) return undefined;
 
   const formatDate = (date?: Date | string) => {
@@ -22,7 +30,9 @@ export function mapApplicationPrefillData(details?: ApplicationDetailsResult): a
     vehicle_model: details.vehicle_record?.vehicle_model ?? "",
     vehicle_capacity: details.vehicle_record?.vehicle_capacity ?? 4,
     registration_number: details.vehicle_record?.registration_number ?? "",
-    registration_expiry: formatDate(details.vehicle_record?.registration_expiry),
+    registration_expiry: formatDate(
+      details.vehicle_record?.registration_expiry,
+    ),
     registration_file: details.vehicle_record?.registration_file ?? "",
     insurance_number: details.vehicle_record?.insurance_number ?? "",
     insurance_expiry: formatDate(details.vehicle_record?.insurance_expiry),

@@ -3,7 +3,7 @@
 import { Input, Label } from "@sharemyride/ui";
 import { FileNames } from "@sharemyride/shared";
 import { Controller, FieldErrors, UseFormRegister } from "react-hook-form";
-import { FileUploadComponent } from "../FileUploadComponent";
+import { FileUploadComponent } from "@/features/application/components/FileUploadComponent";
 
 interface Props {
   register: UseFormRegister<any>;
@@ -14,17 +14,26 @@ interface Props {
 export function DriverFieldsSection({ register, control, errors }: Props) {
   return (
     <div className="flex flex-col gap-4 rounded-md border border-border-strong bg-surface-card p-5 shadow-sm">
-      <h2 className="text-lg font-bold text-content-primary">Driver Information</h2>
+      <h2 className="text-lg font-bold text-content-primary">
+        Driver Information
+      </h2>
 
       {/* License Number */}
       <div className="flex flex-col gap-1 relative group">
         <Label>License Number</Label>
-        <Input placeholder="e.g. DL-1420110012345" {...register("license_number")} />
+        <Input
+          placeholder="e.g. DL-1420110012345"
+          {...register("license_number")}
+        />
         {errors.license_number && (
           <>
-            <p className="text-xs font-semibold pl-1 text-fg-danger">Invalid Entry</p>
+            <p className="text-xs font-semibold pl-1 text-fg-danger">
+              Invalid Entry
+            </p>
             <p className="hidden absolute text-xs bg-surface-secondary group-hover:block border border-border-subtle max-w-3/4 right-0 top-3/4 rounded p-1 shadow text-fg-secondary font-semibold z-10">
-              {String(errors.license_number.message || "License number is required")}
+              {String(
+                errors.license_number.message || "License number is required",
+              )}
             </p>
           </>
         )}
@@ -36,9 +45,14 @@ export function DriverFieldsSection({ register, control, errors }: Props) {
         <Input type="date" {...register("license_expiry")} />
         {errors.license_expiry && (
           <>
-            <p className="text-xs font-semibold pl-1 text-fg-danger">Invalid Entry</p>
+            <p className="text-xs font-semibold pl-1 text-fg-danger">
+              Invalid Entry
+            </p>
             <p className="hidden absolute text-xs bg-surface-secondary group-hover:block border border-border-subtle max-w-3/4 right-0 top-3/4 rounded p-1 shadow text-fg-secondary font-semibold z-10">
-              {String(errors.license_expiry.message || "Valid license expiry date required")}
+              {String(
+                errors.license_expiry.message ||
+                  "Valid license expiry date required",
+              )}
             </p>
           </>
         )}

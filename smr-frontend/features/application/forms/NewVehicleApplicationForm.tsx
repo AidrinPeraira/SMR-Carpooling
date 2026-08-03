@@ -9,16 +9,18 @@ import {
   NewVehicleApplicationSchemaType,
 } from "@sharemyride/shared";
 import { logger } from "@/lib/logger";
-
-import { VehicleFieldsSection } from "../components/sections/VehicleFieldsSection";
-import { VehicleOverviewCard } from "../components/sections/VehicleOverviewCard";
+import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
+import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
 interface Props {
   initialValues?: Partial<NewVehicleApplicationSchemaType>;
   onSubmitAction?: (data: NewVehicleApplicationSchemaType) => Promise<any>;
 }
 
-export function NewVehicleApplicationForm({ initialValues, onSubmitAction }: Props) {
+export function NewVehicleApplicationForm({
+  initialValues,
+  onSubmitAction,
+}: Props) {
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
@@ -73,21 +75,34 @@ export function NewVehicleApplicationForm({ initialValues, onSubmitAction }: Pro
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       {step === "fill" ? (
         <>
-          <VehicleFieldsSection register={register} control={control} errors={errors} />
+          <VehicleFieldsSection
+            register={register}
+            control={control}
+            errors={errors}
+          />
 
-          <Button type="button" onClick={handleProceedToReview} className="w-full">
+          <Button
+            type="button"
+            onClick={handleProceedToReview}
+            className="w-full"
+          >
             Review Vehicle Details
           </Button>
         </>
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-content-primary">Review Vehicle Details</h2>
+            <h2 className="text-xl font-bold text-content-primary">
+              Review Vehicle Details
+            </h2>
             <p className="text-xs text-content-secondary">
               Verify vehicle specifications before final submission.
             </p>
 
-            <VehicleOverviewCard data={formData} onEdit={() => setStep("fill")} />
+            <VehicleOverviewCard
+              data={formData}
+              onEdit={() => setStep("fill")}
+            />
           </div>
 
           <div className="flex gap-3">

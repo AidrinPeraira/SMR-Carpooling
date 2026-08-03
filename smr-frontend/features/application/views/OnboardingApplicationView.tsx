@@ -1,22 +1,27 @@
 "use client";
 
+import { AdminReturnBanner } from "@/features/application/components/AdminReturnBanner";
+import { OnboardingApplicationForm } from "@/features/application/forms/OnboardingApplicationForm";
+import { mapApplicationPrefillData } from "@/features/application/utils/mapApplicationPrefillData";
 import { ApplicationDetailsResult } from "@sharemyride/shared";
-import { AdminReturnBanner } from "../components/AdminReturnBanner";
-import { OnboardingApplicationForm } from "../forms/OnboardingApplicationForm";
-import { mapApplicationPrefillData } from "../utils/mapApplicationPrefillData";
 
 interface Props {
   existingDetails?: ApplicationDetailsResult;
   onSubmitAction?: (data: any) => Promise<any>;
 }
 
-export function OnboardingApplicationView({ existingDetails, onSubmitAction }: Props) {
+export function OnboardingApplicationView({
+  existingDetails,
+  onSubmitAction,
+}: Props) {
   const initialValues = mapApplicationPrefillData(existingDetails);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Driver & Vehicle Onboarding</h1>
+        <h1 className="text-2xl font-bold text-content-primary">
+          Driver & Vehicle Onboarding
+        </h1>
         <p className="text-sm text-content-secondary mt-1">
           Submit your driver license and vehicle details for admin approval.
         </p>

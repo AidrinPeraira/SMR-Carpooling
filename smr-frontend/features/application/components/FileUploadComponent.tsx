@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { Button, Label, Loader, useToast } from "@sharemyride/ui";
 import { FileNames, ImageFileTypes } from "@sharemyride/shared";
-import { getFileUploadUrlRequest } from "../api/requests/getFileUploadUrlRequest";
+import { getFileUploadUrlRequest } from "@/features/application/api/requests/getFileUploadUrlRequest";
 
 const DEFAULT_MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
@@ -107,7 +107,8 @@ export function FileUploadComponent({
     } catch (err: any) {
       toast("Upload failed", {
         variant: "error",
-        description: err.message || "Something went wrong while uploading file.",
+        description:
+          err.message || "Something went wrong while uploading file.",
       });
       setSelectedFileName(null);
     } finally {
@@ -151,7 +152,10 @@ export function FileUploadComponent({
           <div className="flex items-center justify-between gap-3 p-3 rounded-md border border-border-strong bg-surface-secondary">
             <div className="flex items-center gap-2 overflow-hidden text-xs">
               <span className="font-semibold text-fg-success">✓ Uploaded</span>
-              <span className="truncate text-content-secondary font-mono" title={value}>
+              <span
+                className="truncate text-content-secondary font-mono"
+                title={value}
+              >
                 {selectedFileName ? `${selectedFileName} (${value})` : value}
               </span>
             </div>
@@ -210,7 +214,9 @@ export function FileUploadComponent({
 
       {error && (
         <>
-          <p className="text-xs font-semibold pl-1 text-fg-danger">Invalid Entry</p>
+          <p className="text-xs font-semibold pl-1 text-fg-danger">
+            Invalid Entry
+          </p>
           <p className="hidden absolute text-xs bg-surface-secondary group-hover:block border border-border-subtle max-w-3/4 right-0 top-3/4 rounded p-1 shadow text-fg-secondary font-semibold z-10">
             {error}
           </p>

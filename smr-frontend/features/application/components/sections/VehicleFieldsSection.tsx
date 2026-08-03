@@ -3,10 +3,19 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DropDown, Input, Label, Loader } from "@sharemyride/ui";
-import { VehicleListResult, VehicleTypes, FileNames } from "@sharemyride/shared";
-import { Controller, FieldErrors, UseFormRegister, useWatch } from "react-hook-form";
-import { getVehicleListRequest } from "../../api/requests/getVehicleListRequest";
-import { FileUploadComponent } from "../FileUploadComponent";
+import {
+  VehicleListResult,
+  VehicleTypes,
+  FileNames,
+} from "@sharemyride/shared";
+import {
+  Controller,
+  FieldErrors,
+  UseFormRegister,
+  useWatch,
+} from "react-hook-form";
+import { getVehicleListRequest } from "@/features/application/api/requests/getVehicleListRequest";
+import { FileUploadComponent } from "@/features/application/components/FileUploadComponent";
 
 interface Props {
   register: UseFormRegister<any>;
@@ -33,8 +42,11 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
   }, [data]);
 
   // Watch current selections for cascading dropdown options
-  const selectedVehicleType: string = useWatch({ control, name: "vehicle_type" }) || Object.values(VehicleTypes)[0];
-  const selectedVehicleMake: string = useWatch({ control, name: "vehicle_make" }) || "";
+  const selectedVehicleType: string =
+    useWatch({ control, name: "vehicle_type" }) ||
+    Object.values(VehicleTypes)[0];
+  const selectedVehicleMake: string =
+    useWatch({ control, name: "vehicle_make" }) || "";
 
   // Vehicle Type Options
   const vehicleTypeOptions = useMemo(() => {
@@ -44,7 +56,9 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         value: type as string,
       }));
     }
-    const typesSet = new Set<string>(vehicles.map((v: VehicleListResult) => v.vehicle_type));
+    const typesSet = new Set<string>(
+      vehicles.map((v: VehicleListResult) => v.vehicle_type),
+    );
     return Array.from(typesSet).map((type: string) => ({
       label: type.toUpperCase(),
       value: type,
@@ -53,8 +67,12 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
 
   // Vehicle Make Options (filtered by selected vehicle_type)
   const rawMakeOptions = useMemo(() => {
-    const filtered = vehicles.filter((v: VehicleListResult) => v.vehicle_type === selectedVehicleType);
-    const makesSet = new Set<string>(filtered.map((v: VehicleListResult) => v.vehicle_make));
+    const filtered = vehicles.filter(
+      (v: VehicleListResult) => v.vehicle_type === selectedVehicleType,
+    );
+    const makesSet = new Set<string>(
+      filtered.map((v: VehicleListResult) => v.vehicle_make),
+    );
     return Array.from(makesSet).map((make: string) => ({
       label: make,
       value: make,
@@ -72,9 +90,13 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
   const rawModelOptions = useMemo(() => {
     if (!selectedVehicleMake) return [];
     const filtered = vehicles.filter(
-      (v: VehicleListResult) => v.vehicle_type === selectedVehicleType && v.vehicle_make === selectedVehicleMake
+      (v: VehicleListResult) =>
+        v.vehicle_type === selectedVehicleType &&
+        v.vehicle_make === selectedVehicleMake,
     );
-    const modelsSet = new Set<string>(filtered.map((v: VehicleListResult) => v.vehicle_model));
+    const modelsSet = new Set<string>(
+      filtered.map((v: VehicleListResult) => v.vehicle_model),
+    );
     return Array.from(modelsSet).map((model: string) => ({
       label: model,
       value: model,
@@ -91,7 +113,9 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
   return (
     <div className="flex flex-col gap-4 rounded-md border border-border-strong bg-surface-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-content-primary">Vehicle Information</h2>
+        <h2 className="text-lg font-bold text-content-primary">
+          Vehicle Information
+        </h2>
         {isPending && (
           <div className="flex items-center gap-1 text-xs text-content-secondary">
             <Loader className="w-3 h-3" />
@@ -106,10 +130,16 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         <Controller
           name="vehicle_type"
           control={control}
-          defaultValue={vehicleTypeOptions[0]?.value || Object.values(VehicleTypes)[0]}
+          defaultValue={
+            vehicleTypeOptions[0]?.value || Object.values(VehicleTypes)[0]
+          }
           render={({ field }) => (
             <DropDown
-              defaultValue={field.value || vehicleTypeOptions[0]?.value || Object.values(VehicleTypes)[0]}
+              defaultValue={
+                field.value ||
+                vehicleTypeOptions[0]?.value ||
+                Object.values(VehicleTypes)[0]
+              }
               options={vehicleTypeOptions}
               onChange={(val) => {
                 field.onChange(val);
@@ -189,7 +219,10 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         />
         {errors.vehicle_capacity && (
           <p className="text-xs font-semibold pl-1 text-fg-danger">
-            {String(errors.vehicle_capacity.message || "Capacity between 1 and 10 required")}
+            {String(
+              errors.vehicle_capacity.message ||
+                "Capacity between 1 and 10 required",
+            )}
           </p>
         )}
       </div>
@@ -198,10 +231,16 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         {/* Registration Number */}
         <div className="flex flex-col gap-1 relative group">
           <Label>Registration Number</Label>
-          <Input placeholder="e.g. KA01AB1234" {...register("registration_number")} />
+          <Input
+            placeholder="e.g. KA01AB1234"
+            {...register("registration_number")}
+          />
           {errors.registration_number && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
-              {String(errors.registration_number.message || "Registration number required")}
+              {String(
+                errors.registration_number.message ||
+                  "Registration number required",
+              )}
             </p>
           )}
         </div>
@@ -212,7 +251,9 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           <Input type="date" {...register("registration_expiry")} />
           {errors.registration_expiry && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
-              {String(errors.registration_expiry.message || "Valid date required")}
+              {String(
+                errors.registration_expiry.message || "Valid date required",
+              )}
             </p>
           )}
         </div>
@@ -236,10 +277,16 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       ) : (
         <div className="flex flex-col gap-1 relative group">
           <Label>Registration Document (Upload)</Label>
-          <Input placeholder="Document file path or URL" {...register("registration_file")} />
+          <Input
+            placeholder="Document file path or URL"
+            {...register("registration_file")}
+          />
           {errors.registration_file && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
-              {String(errors.registration_file.message || "Registration file required")}
+              {String(
+                errors.registration_file.message ||
+                  "Registration file required",
+              )}
             </p>
           )}
         </div>
@@ -249,10 +296,16 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         {/* Insurance Number */}
         <div className="flex flex-col gap-1 relative group">
           <Label>Insurance Policy Number</Label>
-          <Input placeholder="e.g. INS-987654321" {...register("insurance_number")} />
+          <Input
+            placeholder="e.g. INS-987654321"
+            {...register("insurance_number")}
+          />
           {errors.insurance_number && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
-              {String(errors.insurance_number.message || "Insurance policy number required")}
+              {String(
+                errors.insurance_number.message ||
+                  "Insurance policy number required",
+              )}
             </p>
           )}
         </div>
@@ -287,10 +340,15 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       ) : (
         <div className="flex flex-col gap-1 relative group">
           <Label>Insurance Document (Upload)</Label>
-          <Input placeholder="Document file path or URL" {...register("insurance_file")} />
+          <Input
+            placeholder="Document file path or URL"
+            {...register("insurance_file")}
+          />
           {errors.insurance_file && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
-              {String(errors.insurance_file.message || "Insurance file required")}
+              {String(
+                errors.insurance_file.message || "Insurance file required",
+              )}
             </p>
           )}
         </div>
@@ -314,7 +372,10 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       ) : (
         <div className="flex flex-col gap-1 relative group">
           <Label>Vehicle Image (Upload)</Label>
-          <Input placeholder="Vehicle photo URL or file path" {...register("vehicle_image")} />
+          <Input
+            placeholder="Vehicle photo URL or file path"
+            {...register("vehicle_image")}
+          />
           {errors.vehicle_image && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
               {String(errors.vehicle_image.message || "Vehicle image required")}

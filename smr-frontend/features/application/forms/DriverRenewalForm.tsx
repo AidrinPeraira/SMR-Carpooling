@@ -9,9 +9,8 @@ import {
   RenewDriverApplicationSchemaType,
 } from "@sharemyride/shared";
 import { logger } from "@/lib/logger";
-
-import { DriverFieldsSection } from "../components/sections/DriverFieldsSection";
-import { DriverOverviewCard } from "../components/sections/DriverOverviewCard";
+import { DriverFieldsSection } from "@/features/application/components/sections/DriverFieldsSection";
+import { DriverOverviewCard } from "@/features/application/components/sections/DriverOverviewCard";
 
 interface Props {
   initialValues?: Partial<RenewDriverApplicationSchemaType>;
@@ -55,7 +54,8 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
 
         toast("Driver Renewal Submitted!", {
           variant: "success",
-          description: "Your driver renewal details have been logged successfully.",
+          description:
+            "Your driver renewal details have been logged successfully.",
         });
       } catch (error) {
         logger.error("Error submitting driver renewal form: ", error);
@@ -73,21 +73,34 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       {step === "fill" ? (
         <>
-          <DriverFieldsSection register={register} control={control} errors={errors} />
+          <DriverFieldsSection
+            register={register}
+            control={control}
+            errors={errors}
+          />
 
-          <Button type="button" onClick={handleProceedToReview} className="w-full">
+          <Button
+            type="button"
+            onClick={handleProceedToReview}
+            className="w-full"
+          >
             Review Driver Details
           </Button>
         </>
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-content-primary">Review Renewal Details</h2>
+            <h2 className="text-xl font-bold text-content-primary">
+              Review Renewal Details
+            </h2>
             <p className="text-xs text-content-secondary">
               Verify license information before final submission.
             </p>
 
-            <DriverOverviewCard data={formData} onEdit={() => setStep("fill")} />
+            <DriverOverviewCard
+              data={formData}
+              onEdit={() => setStep("fill")}
+            />
           </div>
 
           <div className="flex gap-3">

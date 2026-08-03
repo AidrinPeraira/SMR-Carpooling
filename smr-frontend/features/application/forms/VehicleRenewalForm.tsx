@@ -9,9 +9,8 @@ import {
   RenewVehicleApplicationSchemaType,
 } from "@sharemyride/shared";
 import { logger } from "@/lib/logger";
-
-import { VehicleFieldsSection } from "../components/sections/VehicleFieldsSection";
-import { VehicleOverviewCard } from "../components/sections/VehicleOverviewCard";
+import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
+import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
 interface Props {
   initialValues?: Partial<RenewVehicleApplicationSchemaType>;
@@ -55,7 +54,8 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
 
         toast("Vehicle Renewal Submitted!", {
           variant: "success",
-          description: "Your vehicle renewal details have been logged successfully.",
+          description:
+            "Your vehicle renewal details have been logged successfully.",
         });
       } catch (error) {
         logger.error("Error submitting vehicle renewal form: ", error);
@@ -73,21 +73,34 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
       {step === "fill" ? (
         <>
-          <VehicleFieldsSection register={register} control={control} errors={errors} />
+          <VehicleFieldsSection
+            register={register}
+            control={control}
+            errors={errors}
+          />
 
-          <Button type="button" onClick={handleProceedToReview} className="w-full">
+          <Button
+            type="button"
+            onClick={handleProceedToReview}
+            className="w-full"
+          >
             Review Vehicle Details
           </Button>
         </>
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-content-primary">Review Renewal Details</h2>
+            <h2 className="text-xl font-bold text-content-primary">
+              Review Renewal Details
+            </h2>
             <p className="text-xs text-content-secondary">
               Verify registration and insurance dates before final submission.
             </p>
 
-            <VehicleOverviewCard data={formData} onEdit={() => setStep("fill")} />
+            <VehicleOverviewCard
+              data={formData}
+              onEdit={() => setStep("fill")}
+            />
           </div>
 
           <div className="flex gap-3">
