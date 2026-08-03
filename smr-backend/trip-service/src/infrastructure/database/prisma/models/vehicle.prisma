@@ -12,7 +12,7 @@ model Vehicle {
   vehicleModel       String
   vehicleMake        String
   vehicleCapacity    Int
-  registrationNumber String
+  registrationNumber String        @unique
   vehicleImage       String
   vehicleStatus      VehicleStatus @default(active)
   createdAt          DateTime      @default(now())
