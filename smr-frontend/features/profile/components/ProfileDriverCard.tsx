@@ -1,6 +1,7 @@
 import { Button, Card, CardBody } from "@sharemyride/ui";
 import { GetUserResult } from "@sharemyride/shared";
-import { Check, Link } from "lucide-react";
+import { Check } from "lucide-react";
+import Link from "next/link";
 
 interface Props {
   user: GetUserResult | null;
@@ -21,7 +22,7 @@ export function ProfileDriverCard({ user }: Props) {
             Interested in earning? Join our community of verified drivers to
             start offering rides.
           </p>
-          <Link href="/application/onboard">
+          <Link href="/application/onboarding">
             <Button variant="primary">Get Started</Button>
           </Link>
         </CardBody>

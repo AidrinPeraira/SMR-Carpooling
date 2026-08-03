@@ -100,9 +100,13 @@ export default async function proxy(request: NextRequest) {
   //lets add the cases to check routes here
   const isPublicRoute = path === "/" || path.startsWith("/auth/");
   const isDriverRoute =
-    path.startsWith("/driver") || path.startsWith("/profile");
+    path.startsWith("/driver") ||
+    path.startsWith("/profile") ||
+    path.startsWith("/application");
   const isPassengerRoute =
-    path.startsWith("/passenger") || path.startsWith("/profile");
+    path.startsWith("/passenger") ||
+    path.startsWith("/profile") ||
+    path.startsWith("/application");
   const isAdminRoute = path.startsWith("/admin");
 
   let isRefreshed = false;
