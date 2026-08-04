@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1093.0",
     "@aws-sdk/s3-request-presigner": "^3.1093.0",
-    "@sharemyride/shared": "^0.0.3",
+    "@sharemyride/shared": "^0.0.4",
     "add": "^2.0.6",
     "amqplib": "^2.0.1",
     "cors": "^2.8.6",
