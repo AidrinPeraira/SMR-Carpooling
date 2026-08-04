@@ -48,7 +48,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
 
   return (
     <toastContext.Provider value={toast}>
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
+      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none">
         {toasts.map((toast) => {
           return (
             <div key={toast.id} className="pointer-events-auto">

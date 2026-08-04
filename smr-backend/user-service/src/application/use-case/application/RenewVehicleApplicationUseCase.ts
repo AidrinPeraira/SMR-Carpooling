@@ -18,7 +18,7 @@ import {
 
 /**
  * This class implements the use case to create a new renewal application
- * for expired vehicle records
+ * for expired vehicle records. Includes rollback handling on error.
  */
 export class RenewVehicleApplicationUseCase implements IRenewVehicleApplicationUseCase {
   constructor(
@@ -30,7 +30,7 @@ export class RenewVehicleApplicationUseCase implements IRenewVehicleApplicationU
 
   /**
    * This method takes the vehicle renewal data and creates a new
-   * vehicle application and record if existing vehicle records are expired.
+   * vehicle application and record if existing vehicle records are expired. Rolls back on error.
    *
    * @param data : Vehicle renewal details
    */
@@ -74,53 +74,80 @@ export class RenewVehicleApplicationUseCase implements IRenewVehicleApplicationU
 
     const baseRecord = existingRecords[existingRecords.length - 1]!;
 
-    const applicationId = this._uniqueIdGenerator.generateRandomId();
-    const now = new Date();
+    let applicationId: string | undefined;
+    let recordId: string | undefined;
+    const movedFiles: { from: string; to: string }[] = [];
 
-    const applicationData: Omit<ApplicationEntity, "id"> = {
-      applicationId,
-      userId: data.userId,
-      applicationType: ApplicationType.RENEW_VEHICLE,
-      applicationStatus: ApplicationStatus.PENDING,
-      createdAt: now,
-      updatedAt: now,
-    };
+    try {
+      applicationId = this._uniqueIdGenerator.generateRandomId();
+      const now = new Date();
 
-    await this._applicationRepository.save(applicationData);
+      const applicationData: Omit<ApplicationEntity, "id"> = {
+        applicationId,
+        userId: data.userId,
+        applicationType: ApplicationType.RENEW_VEHICLE,
+        applicationStatus: ApplicationStatus.PENDING,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-    const getDestinationPath = (filePath: string): string => {
-      return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
-    };
+      await this._applicationRepository.save(applicationData);
 
-    const finalRegistrationFile = getDestinationPath(data.registrationFile);
-    const finalInsuranceFile = getDestinationPath(data.insuranceFile);
+      const getDestinationPath = (filePath: string): string => {
+        return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
+      };
 
-    await this._storageService.moveFile(
-      data.registrationFile,
-      finalRegistrationFile,
-    );
-    await this._storageService.moveFile(data.insuranceFile, finalInsuranceFile);
+      const finalRegistrationFile = getDestinationPath(data.registrationFile);
+      if (finalRegistrationFile !== data.registrationFile) {
+        await this._storageService.moveFile(
+          data.registrationFile,
+          finalRegistrationFile,
+        );
+        movedFiles.push({ from: data.registrationFile, to: finalRegistrationFile });
+      }
 
-    const recordId = this._uniqueIdGenerator.generateRandomId();
+      const finalInsuranceFile = getDestinationPath(data.insuranceFile);
+      if (finalInsuranceFile !== data.insuranceFile) {
+        await this._storageService.moveFile(data.insuranceFile, finalInsuranceFile);
+        movedFiles.push({ from: data.insuranceFile, to: finalInsuranceFile });
+      }
 
-    const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {
-      recordId,
-      applicationId,
-      vehicleType: baseRecord.vehicleType,
-      vehicleModel: baseRecord.vehicleModel,
-      vehicleMake: baseRecord.vehicleMake,
-      vehicleImage: baseRecord.vehicleImage,
-      vehicleCapacity: baseRecord.vehicleCapacity,
-      registrationNumber: data.registrationNumber,
-      registrationExpiry: data.registrationExpiry,
-      registrationFile: finalRegistrationFile,
-      insuranceNumber: data.insuranceNumber || "",
-      insuranceExpiry: data.insuranceExpiry,
-      insuranceFile: finalInsuranceFile,
-      createdAt: now,
-      updatedAt: now,
-    };
+      recordId = this._uniqueIdGenerator.generateRandomId();
 
-    await this._vehicleRecordRepository.save(vehicleRecordData);
+      const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {
+        recordId,
+        applicationId,
+        vehicleType: baseRecord.vehicleType,
+        vehicleModel: baseRecord.vehicleModel,
+        vehicleMake: baseRecord.vehicleMake,
+        vehicleImage: baseRecord.vehicleImage,
+        vehicleCapacity: baseRecord.vehicleCapacity,
+        registrationNumber: data.registrationNumber,
+        registrationExpiry: data.registrationExpiry,
+        registrationFile: finalRegistrationFile,
+        insuranceNumber: data.insuranceNumber || "",
+        insuranceExpiry: data.insuranceExpiry,
+        insuranceFile: finalInsuranceFile,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      await this._vehicleRecordRepository.save(vehicleRecordData);
+    } catch (error) {
+      // Revert moved files back to temp
+      for (const file of movedFiles) {
+        await this._storageService.moveFile(file.to, file.from).catch(() => {});
+      }
+
+      // Rollback database records
+      if (applicationId) {
+        await this._applicationRepository.deleteByCustomId(applicationId).catch(() => {});
+      }
+      if (recordId) {
+        await this._vehicleRecordRepository.deleteByCustomId(recordId).catch(() => {});
+      }
+
+      throw error;
+    }
   }
 }

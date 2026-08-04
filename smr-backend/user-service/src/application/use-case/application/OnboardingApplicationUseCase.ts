@@ -21,6 +21,7 @@ import {
 /**
  * Implementation for the use case that handles creating a new
  * onboarding application. It creates both a new driver and vehicle record.
+ * Includes unified transaction rollback (both files and Mongo entities) on failure.
  */
 export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCase {
   constructor(
@@ -33,7 +34,7 @@ export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCa
 
   /**
    * Validates input data and creates a new onboarding application
-   * along with driver and vehicle records.
+   * along with driver and vehicle records. Rolls back all created entities and reverts moved files on failure.
    *
    * @param data Onboarding application data
    */
@@ -51,76 +52,113 @@ export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCa
       );
     }
 
-    const applicationId = this._uniqueIdGenerator.generateRandomId();
-    const now = new Date();
+    let applicationId: string | undefined;
+    let driverRecordId: string | undefined;
+    let vehicleRecordId: string | undefined;
+    const movedFiles: { from: string; to: string }[] = [];
 
-    const applicationData: Omit<ApplicationEntity, "id"> = {
-      applicationId,
-      userId: data.userId,
-      applicationType: ApplicationType.ONBOARDING,
-      applicationStatus: ApplicationStatus.PENDING,
-      createdAt: now,
-      updatedAt: now,
-    };
+    try {
+      applicationId = this._uniqueIdGenerator.generateRandomId();
+      const now = new Date();
 
-    await this._applicationRepository.save(applicationData);
+      const applicationData: Omit<ApplicationEntity, "id"> = {
+        applicationId,
+        userId: data.userId,
+        applicationType: ApplicationType.ONBOARDING,
+        applicationStatus: ApplicationStatus.PENDING,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-    //move files
-    const getDestinationPath = (filePath: string): string => {
-      return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
-    };
+      await this._applicationRepository.save(applicationData);
 
-    const driverRecordId = this._uniqueIdGenerator.generateRandomId();
+      const getDestinationPath = (filePath: string): string => {
+        return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
+      };
 
-    const finalLicenseFile = getDestinationPath(data.licenseFile);
-    await this._storageService.moveFile(data.licenseFile, finalLicenseFile);
+      driverRecordId = this._uniqueIdGenerator.generateRandomId();
 
-    //save driver record
-    const driverRecordData: Omit<DriverRecordEntity, "id"> = {
-      recordId: driverRecordId,
-      applicationId,
-      licenseNumber: data.licenseNumber,
-      licenseExpiry: data.licenseExpiry,
-      licenseFile: finalLicenseFile,
-      createdAt: now,
-      updatedAt: now,
-    };
+      const finalLicenseFile = getDestinationPath(data.licenseFile);
+      if (finalLicenseFile !== data.licenseFile) {
+        await this._storageService.moveFile(data.licenseFile, finalLicenseFile);
+        movedFiles.push({ from: data.licenseFile, to: finalLicenseFile });
+      }
 
-    await this._driverRecordRepository.save(driverRecordData);
+      // save driver record
+      const driverRecordData: Omit<DriverRecordEntity, "id"> = {
+        recordId: driverRecordId,
+        applicationId,
+        licenseNumber: data.licenseNumber,
+        licenseExpiry: data.licenseExpiry,
+        licenseFile: finalLicenseFile,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-    //move files
-    const finalVehicleImage = getDestinationPath(data.vehicleImage);
-    const finalRegistrationFile = getDestinationPath(data.registrationFile);
-    const finalInsuranceFile = getDestinationPath(data.insuranceFile);
+      await this._driverRecordRepository.save(driverRecordData);
 
-    await this._storageService.moveFile(data.vehicleImage, finalVehicleImage);
-    await this._storageService.moveFile(
-      data.registrationFile,
-      finalRegistrationFile,
-    );
-    await this._storageService.moveFile(data.insuranceFile, finalInsuranceFile);
+      // move vehicle files
+      const finalVehicleImage = getDestinationPath(data.vehicleImage);
+      if (finalVehicleImage !== data.vehicleImage) {
+        await this._storageService.moveFile(data.vehicleImage, finalVehicleImage);
+        movedFiles.push({ from: data.vehicleImage, to: finalVehicleImage });
+      }
 
-    const vehicleRecordId = this._uniqueIdGenerator.generateRandomId();
+      const finalRegistrationFile = getDestinationPath(data.registrationFile);
+      if (finalRegistrationFile !== data.registrationFile) {
+        await this._storageService.moveFile(
+          data.registrationFile,
+          finalRegistrationFile,
+        );
+        movedFiles.push({ from: data.registrationFile, to: finalRegistrationFile });
+      }
 
-    //save vehicle record;
-    const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {
-      recordId: vehicleRecordId,
-      applicationId,
-      vehicleType: data.vehicleType,
-      vehicleModel: data.vehicleModel,
-      vehicleMake: data.vehicleMake,
-      vehicleImage: finalVehicleImage,
-      vehicleCapacity: data.vehicleCapacity,
-      registrationNumber: data.registrationNumber,
-      registrationExpiry: data.registrationExpiry,
-      registrationFile: finalRegistrationFile,
-      insuranceNumber: data.insuranceNumber || "",
-      insuranceExpiry: data.insuranceExpiry,
-      insuranceFile: finalInsuranceFile,
-      createdAt: now,
-      updatedAt: now,
-    };
+      const finalInsuranceFile = getDestinationPath(data.insuranceFile);
+      if (finalInsuranceFile !== data.insuranceFile) {
+        await this._storageService.moveFile(data.insuranceFile, finalInsuranceFile);
+        movedFiles.push({ from: data.insuranceFile, to: finalInsuranceFile });
+      }
 
-    await this._vehicleRecordRepository.save(vehicleRecordData);
+      vehicleRecordId = this._uniqueIdGenerator.generateRandomId();
+
+      // save vehicle record
+      const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {
+        recordId: vehicleRecordId,
+        applicationId,
+        vehicleType: data.vehicleType,
+        vehicleModel: data.vehicleModel,
+        vehicleMake: data.vehicleMake,
+        vehicleImage: finalVehicleImage,
+        vehicleCapacity: data.vehicleCapacity,
+        registrationNumber: data.registrationNumber,
+        registrationExpiry: data.registrationExpiry,
+        registrationFile: finalRegistrationFile,
+        insuranceNumber: data.insuranceNumber || "",
+        insuranceExpiry: data.insuranceExpiry,
+        insuranceFile: finalInsuranceFile,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      await this._vehicleRecordRepository.save(vehicleRecordData);
+    } catch (error) {
+      // Revert moved files back to temp
+      for (const file of movedFiles) {
+        await this._storageService.moveFile(file.to, file.from).catch(() => {});
+      }
+
+      // Rollback database records
+      if (applicationId) {
+        await this._applicationRepository.deleteByCustomId(applicationId).catch(() => {});
+      }
+      if (driverRecordId) {
+        await this._driverRecordRepository.deleteByCustomId(driverRecordId).catch(() => {});
+      }
+      if (vehicleRecordId) {
+        await this._vehicleRecordRepository.deleteByCustomId(vehicleRecordId).catch(() => {});
+      }
+
+      throw error;
+    }
   }
 }

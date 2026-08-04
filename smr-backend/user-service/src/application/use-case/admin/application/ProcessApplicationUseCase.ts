@@ -7,19 +7,23 @@ import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import {
   ApplicationApprovedEvent,
   ApplicationApprovedEventPayload,
+  ApplicationError,
+  ApplicationErrorMessage,
   ApplicationRejectEvent,
   ApplicationRejectEventPayload,
   ApplicationReturnEvent,
   ApplicationReturnEventPayload,
   ApplicationStatus,
   ApplicationType,
+  ErrorCode,
+  ErrorDetails,
   EventName,
+  HttpStatusCodes,
 } from "@sharemyride/shared";
 
 /**
- * This is the implementation for the use case to update application status
- * by the admin. It updates the application status and publishes an event for the
- * trip and notification service
+ * Implementation for the use case to update application status by the admin.
+ * Only applications in PENDING status can be processed.
  */
 export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
   constructor(
@@ -29,14 +33,41 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
   ) {}
 
   /**
-   * This method takes updates applications and publishes events on status change
-   * as needed. If an onboarding application is approved it changes the driver status
-   * to true in driver repo
+   * Updates application status if PENDING and publishes events on status change
    *
-   * @param data : Data to proces application
+   * @param data : Data to process application
    */
   async execute(data: ProcessApplicationRequestDTO): Promise<void> {
     const { applicationId: id, adminComment, applicationStatus } = data;
+
+    const existingApplication =
+      await this._applicationRepository.findByCustomId(id);
+
+    if (!existingApplication) {
+      throw new ApplicationError(
+        ApplicationErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
+        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "ProcessApplicationUseCase - execute",
+          description: ApplicationErrorMessage.NOT_FOUND,
+        },
+      );
+    }
+
+    if (existingApplication.applicationStatus !== ApplicationStatus.PENDING) {
+      throw new ApplicationError(
+        ApplicationErrorMessage.INVALID_APPLICATION_STATUS,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.DOMAIN_CONFLICT,
+        ErrorDetails.DOMAIN_CONFLICT,
+        {
+          location: "ProcessApplicationUseCase - execute",
+          description: "Only pending applications can be processed by admin.",
+        },
+      );
+    }
 
     await this._applicationRepository.updateByCustomId(id, {
       applicationStatus,
@@ -46,7 +77,20 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
     const fullApplication =
       await this._applicationRepository.getFullApplicationDetails(id);
 
-    //returned event
+    if (!fullApplication) {
+      throw new ApplicationError(
+        ApplicationErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
+        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "ProcessApplicationUseCase",
+          description: "Application not found after status update",
+        },
+      );
+    }
+
+    // returned event
     if (applicationStatus === ApplicationStatus.RETURNED) {
       const eventPayload: ApplicationReturnEventPayload = {
         applicationId: fullApplication.applicationId,
@@ -68,7 +112,7 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
       await this._eventBus.publish(applicationReturnEvent);
     }
 
-    //rejection eventk
+    // rejection event
     if (applicationStatus === ApplicationStatus.REJECTED) {
       const eventPayload: ApplicationRejectEventPayload = {
         applicationId: fullApplication.applicationId,
@@ -90,13 +134,21 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
       await this._eventBus.publish(applicationRejectEvent);
     }
 
-    //approval event
+    // approval event
     if (applicationStatus === ApplicationStatus.APPROVED) {
       if (fullApplication.applicationType == ApplicationType.ONBOARDING) {
         await this._userRepository.updateByCustomId(fullApplication.userId, {
           isDriver: true,
         });
       }
+
+      const firstDriver = Array.isArray(fullApplication.driverRecord)
+        ? fullApplication.driverRecord[0]
+        : fullApplication.driverRecord;
+
+      const firstVehicle = Array.isArray(fullApplication.vehicleRecord)
+        ? fullApplication.vehicleRecord[0]
+        : fullApplication.vehicleRecord;
 
       const eventPayload: ApplicationApprovedEventPayload = {
         applicationId: fullApplication.applicationId,
@@ -107,23 +159,22 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
         emailId: fullApplication.emailId,
         comment: adminComment.comment,
         status: ApplicationStatus.APPROVED,
-        vehicleData: fullApplication.vehicleRecord
+        vehicleData: firstVehicle
           ? {
-              vehicleRecordId: fullApplication.vehicleRecord.recordId,
-              vehicleType: fullApplication.vehicleRecord.vehicleType,
-              vehicleModel: fullApplication.vehicleRecord.vehicleModel,
-              vehicleMake: fullApplication.vehicleRecord.vehicleMake,
-              vehicleImage: fullApplication.vehicleRecord.vehicleImage,
-              registrationNumber:
-                fullApplication.vehicleRecord.registrationNumber,
-              vehicleCapacity: fullApplication.vehicleRecord.vehicleCapacity,
+              vehicleRecordId: firstVehicle.recordId,
+              vehicleType: firstVehicle.vehicleType,
+              vehicleModel: firstVehicle.vehicleModel,
+              vehicleMake: firstVehicle.vehicleMake,
+              vehicleImage: firstVehicle.vehicleImage,
+              registrationNumber: firstVehicle.registrationNumber,
+              vehicleCapacity: firstVehicle.vehicleCapacity,
             }
           : undefined,
-        driverData: fullApplication.driverRecord
+        driverData: firstDriver
           ? {
-              driverRecordId: fullApplication.driverRecord.recordId,
-              licenseNumber: fullApplication.driverRecord.licenseNumber,
-              licenseImage: fullApplication.driverRecord.licenseFile,
+              driverRecordId: firstDriver.recordId,
+              licenseNumber: firstDriver.licenseNumber,
+              licenseImage: firstDriver.licenseFile,
             }
           : undefined,
       };

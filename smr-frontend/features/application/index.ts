@@ -14,6 +14,7 @@ export * from "./components/sections/DriverOverviewCard";
 export * from "./components/sections/VehicleOverviewCard";
 export * from "./components/AdminReturnBanner";
 export * from "./components/FileUploadComponent";
+export * from "./components/FilePreviewModal";
 
 export * from "./api/requests/getVehicleListRequest";
 export * from "./api/requests/getFileUploadUrlRequest";
@@ -24,4 +25,3 @@ export * from "./api/actions/submitDriverRenewalAction";
 export * from "./api/actions/submitVehicleRenewalAction";
 
 export * from "./utils/mapApplicationPrefillData";
-

@@ -12,7 +12,7 @@ export const vehicleRecordSchema = new mongoose.Schema({
   vehicleMake: { type: String, required: true },
   vehicleModel: { type: String, required: true },
   vehicleCapacity: { type: Number, required: true },
-  registrationNumber: { type: String, required: true },
+  registrationNumber: { type: String, required: true, unique: true },
   registrationExpiry: { type: Date, required: true },
   registrationFile: { type: String, required: true },
   insuranceNumber: { type: String },

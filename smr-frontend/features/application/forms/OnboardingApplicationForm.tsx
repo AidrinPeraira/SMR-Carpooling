@@ -59,7 +59,7 @@ export function OnboardingApplicationForm({
 
         if (onSubmitAction) {
           await onSubmitAction(data);
-          router.push("/profile/applications");
+          window.location.href = "/profile/applications";
           return;
         }
 
@@ -69,7 +69,7 @@ export function OnboardingApplicationForm({
             variant: "success",
             description: result.description || "Your application has been submitted successfully.",
           });
-          router.push("/profile/applications");
+          window.location.href = "/profile/applications";
         } else {
           toast(result.errorMessage || "Submission error", {
             variant: "error",

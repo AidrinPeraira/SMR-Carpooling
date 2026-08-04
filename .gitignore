@@ -48,3 +48,8 @@ pnpm-debug.log*
 # Prisma files
 generated/prisma
 **/generated/prisma
+
+
+
+000_specimen_images
+

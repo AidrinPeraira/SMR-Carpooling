@@ -6,10 +6,7 @@ import { GetApplicationDetailsResultDTO } from "#/application/dto/application/Ge
 import { IApplicationRepository } from "#/application/interfaces/repository/IApplicationRepository";
 import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { ApplicationDoc } from "#/infrastructure/database/models/MongoApplicationModel";
-import { DriverRecordModel } from "#/infrastructure/database/models/MongoDriverRecordModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
-import { UserModel } from "#/infrastructure/database/models/MongoUserModel";
-import { VehicleRecordModel } from "#/infrastructure/database/models/MongoVehicleRecordModel";
 import {
   ApplicationError,
   ApplicationErrorMessage,
@@ -91,7 +88,9 @@ export class MongoApplicationRepository
     const countResult = await this._applicationModel.aggregate(countPipeline);
     const totalItems = (countResult[0]?.total as number) || 0;
 
-    const sortField = query.sortField ? `$${String(query.sortField)}` : "$createdAt";
+    const sortField = query.sortField
+      ? `$${String(query.sortField)}`
+      : "$createdAt";
     const sortOrder = query.sortValue === SortOrder.DESC ? -1 : 1;
 
     aggregatePipeline.push(
@@ -130,70 +129,88 @@ export class MongoApplicationRepository
 
   async getFullApplicationDetails(
     applicationId: string,
-  ): Promise<GetApplicationDetailsResultDTO> {
-    const application = await this.findByCustomId(applicationId);
-    if (!application) {
-      throw new ApplicationError(
-        ApplicationErrorMessage.NOT_FOUND,
-        HttpStatusCodes.NotFound,
-        ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
-        {
-          location: "MongoApplicationRepository - getFullApplicationDetails",
-          description: "Application not found",
+  ): Promise<GetApplicationDetailsResultDTO | null> {
+    const aggregatePipeline: PipelineStage[] = [
+      {
+        $match: { applicationId },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "userId",
+          as: "userInfo",
         },
-      );
+      },
+      {
+        $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "driverrecords",
+          localField: "applicationId",
+          foreignField: "applicationId",
+          as: "driverRecord",
+        },
+      },
+      {
+        $lookup: {
+          from: "vehiclerecords",
+          localField: "applicationId",
+          foreignField: "applicationId",
+          as: "vehicleRecord",
+        },
+      },
+    ];
+
+    const results = await this._applicationModel.aggregate(aggregatePipeline);
+    if (!results || results.length === 0) {
+      return null;
     }
 
-    const user = await UserModel.findOne({ userId: application.userId });
-    const driverRecordDoc = await DriverRecordModel.findOne({
-      userId: application.userId,
-    }).sort({ createdAt: -1 });
-    const vehicleRecordDoc = await VehicleRecordModel.findOne({
-      userId: application.userId,
-    }).sort({ createdAt: -1 });
+    const doc = results[0];
 
     return {
-      applicationId: application.applicationId,
-      userId: application.userId,
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      emailId: user?.emailId || "",
-      applicationType: application.applicationType,
-      applicationStatus: application.applicationStatus,
-      createdAt: application.createdAt,
-      updatedAt: application.updatedAt,
-      adminComments: application.adminComments,
-      driverRecord: driverRecordDoc
-        ? {
-            recordId: driverRecordDoc.recordId,
-            applicationId: driverRecordDoc.applicationId,
-            licenseNumber: driverRecordDoc.licenseNumber,
-            licenseExpiry: driverRecordDoc.licenseExpiry,
-            licenseFile: driverRecordDoc.licenseFile,
-            createdAt: driverRecordDoc.createdAt,
-            updatedAt: driverRecordDoc.updatedAt,
-          }
-        : undefined,
-      vehicleRecord: vehicleRecordDoc
-        ? {
-            recordId: vehicleRecordDoc.recordId,
-            applicationId: vehicleRecordDoc.applicationId,
-            vehicleType: vehicleRecordDoc.vehicleType,
-            vehicleMake: vehicleRecordDoc.vehicleMake,
-            vehicleModel: vehicleRecordDoc.vehicleModel,
-            vehicleCapacity: vehicleRecordDoc.vehicleCapacity,
-            registrationNumber: vehicleRecordDoc.registrationNumber,
-            registrationExpiry: vehicleRecordDoc.registrationExpiry,
-            registrationFile: vehicleRecordDoc.registrationFile,
-            insuranceNumber: vehicleRecordDoc.insuranceNumber || "",
-            insuranceExpiry: vehicleRecordDoc.insuranceExpiry,
-            insuranceFile: vehicleRecordDoc.insuranceFile,
-            vehicleImage: vehicleRecordDoc.vehicleImage,
-            createdAt: vehicleRecordDoc.createdAt,
-            updatedAt: vehicleRecordDoc.updatedAt,
-          }
-        : undefined,
+      applicationId: doc.applicationId,
+      userId: doc.userId,
+      firstName: doc.userInfo?.firstName || "",
+      lastName: doc.userInfo?.lastName || "",
+      emailId: doc.userInfo?.emailId || "",
+      applicationType: doc.applicationType,
+      applicationStatus: doc.applicationStatus,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+      adminComments: doc.adminComments?.map((c: any) => ({
+        comment: c.comment,
+        adminId: c.adminId,
+        time: c.time,
+      })),
+      driverRecord: (doc.driverRecord || []).map((d: any) => ({
+        recordId: d.recordId,
+        applicationId: d.applicationId,
+        licenseNumber: d.licenseNumber,
+        licenseExpiry: d.licenseExpiry,
+        licenseFile: d.licenseFile,
+        createdAt: d.createdAt,
+        updatedAt: d.updatedAt,
+      })),
+      vehicleRecord: (doc.vehicleRecord || []).map((v: any) => ({
+        recordId: v.recordId,
+        applicationId: v.applicationId,
+        vehicleType: v.vehicleType,
+        vehicleMake: v.vehicleMake,
+        vehicleModel: v.vehicleModel,
+        vehicleCapacity: v.vehicleCapacity,
+        registrationNumber: v.registrationNumber,
+        registrationExpiry: v.registrationExpiry,
+        registrationFile: v.registrationFile,
+        insuranceNumber: v.insuranceNumber || "",
+        insuranceExpiry: v.insuranceExpiry,
+        insuranceFile: v.insuranceFile,
+        vehicleImage: v.vehicleImage,
+        createdAt: v.createdAt,
+        updatedAt: v.updatedAt,
+      })),
     };
   }
 }

@@ -14,6 +14,6 @@ export interface GetApplicationDetailsResultDTO {
   createdAt: Date;
   updatedAt: Date;
   adminComments?: AdminComment[];
-  driverRecord?: DriverRecordEntity;
-  vehicleRecord?: VehicleRecordEntity;
+  driverRecord: DriverRecordEntity[];
+  vehicleRecord: VehicleRecordEntity[];
 }

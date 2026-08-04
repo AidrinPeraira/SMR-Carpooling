@@ -31,5 +31,5 @@ export interface IApplicationRepository extends IBaseRepository<ApplicationEntit
    */
   getFullApplicationDetails(
     applicationId: string,
-  ): Promise<GetApplicationDetailsResultDTO>;
+  ): Promise<GetApplicationDetailsResultDTO | null>;
 }

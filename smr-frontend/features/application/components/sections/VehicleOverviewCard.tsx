@@ -11,10 +11,13 @@ interface Props {
     registration_number?: string;
     registration_expiry?: string | Date;
     registration_file?: string;
+    registration_file_preview?: string;
     insurance_number?: string;
     insurance_expiry?: string | Date;
     insurance_file?: string;
+    insurance_file_preview?: string;
     vehicle_image?: string;
+    vehicle_image_preview?: string;
   };
   onEdit?: () => void;
 }
@@ -25,9 +28,23 @@ function formatDate(value?: string | Date): string {
   return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
 }
 
+function isRenderableImageSrc(src?: string): boolean {
+  if (!src) return false;
+  return (
+    src.startsWith("blob:") ||
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("data:")
+  );
+}
+
 export function VehicleOverviewCard({ data, onEdit }: Props) {
   const regExpiry = formatDate(data.registration_expiry);
   const insExpiry = formatDate(data.insurance_expiry);
+
+  const regPreviewSrc = data.registration_file_preview || data.registration_file;
+  const insPreviewSrc = data.insurance_file_preview || data.insurance_file;
+  const imgPreviewSrc = data.vehicle_image_preview || data.vehicle_image;
 
   return (
     <Card className="w-full">
@@ -100,30 +117,60 @@ export function VehicleOverviewCard({ data, onEdit }: Props) {
         </div>
 
         <div>
-          <span className="text-xs uppercase font-bold text-content-secondary block">
-            Registration File
+          <span className="text-xs uppercase font-bold text-content-secondary block mb-1">
+            Registration Document
           </span>
-          <p className="text-sm font-medium text-content-secondary truncate">
-            {data.registration_file || "—"}
-          </p>
+          {isRenderableImageSrc(regPreviewSrc) ? (
+            <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted">
+              <img
+                src={regPreviewSrc}
+                alt="Registration Preview"
+                className="max-h-36 w-auto object-contain rounded"
+              />
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-content-secondary truncate font-mono">
+              {data.registration_file || "—"}
+            </p>
+          )}
         </div>
 
         <div>
-          <span className="text-xs uppercase font-bold text-content-secondary block">
-            Insurance File
+          <span className="text-xs uppercase font-bold text-content-secondary block mb-1">
+            Insurance Document
           </span>
-          <p className="text-sm font-medium text-content-secondary truncate">
-            {data.insurance_file || "—"}
-          </p>
+          {isRenderableImageSrc(insPreviewSrc) ? (
+            <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted">
+              <img
+                src={insPreviewSrc}
+                alt="Insurance Preview"
+                className="max-h-36 w-auto object-contain rounded"
+              />
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-content-secondary truncate font-mono">
+              {data.insurance_file || "—"}
+            </p>
+          )}
         </div>
 
         <div>
-          <span className="text-xs uppercase font-bold text-content-secondary block">
+          <span className="text-xs uppercase font-bold text-content-secondary block mb-1">
             Vehicle Image
           </span>
-          <p className="text-sm font-medium text-content-secondary truncate">
-            {data.vehicle_image || "—"}
-          </p>
+          {isRenderableImageSrc(imgPreviewSrc) ? (
+            <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted">
+              <img
+                src={imgPreviewSrc}
+                alt="Vehicle Preview"
+                className="max-h-36 w-auto object-contain rounded"
+              />
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-content-secondary truncate font-mono">
+              {data.vehicle_image || "—"}
+            </p>
+          )}
         </div>
       </CardBody>
     </Card>

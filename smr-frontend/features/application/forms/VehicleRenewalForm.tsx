@@ -54,7 +54,7 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
 
         if (onSubmitAction) {
           await onSubmitAction(data);
-          router.push("/profile/applications");
+          window.location.href = "/profile/applications";
           return;
         }
 
@@ -64,7 +64,7 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
             variant: "success",
             description: result.description || "Your vehicle renewal application has been submitted successfully.",
           });
-          router.push("/profile/applications");
+          window.location.href = "/profile/applications";
         } else {
           toast(result.errorMessage || "Submission error", {
             variant: "error",

@@ -123,17 +123,23 @@ export function toResubmitOnboardingApplicationRequestDTO(
   return {
     applicationId,
     licenseNumber: body.license_number,
-    licenseExpiry: body.license_expiry ? new Date(body.license_expiry) : undefined,
+    licenseExpiry: body.license_expiry
+      ? new Date(body.license_expiry)
+      : undefined,
     licenseFile: body.license_file,
     vehicleType: body.vehicle_type,
     vehicleMake: body.vehicle_make,
     vehicleModel: body.vehicle_model,
     vehicleCapacity: body.vehicle_capacity,
     registrationNumber: body.registration_number,
-    registrationExpiry: body.registration_expiry ? new Date(body.registration_expiry) : undefined,
+    registrationExpiry: body.registration_expiry
+      ? new Date(body.registration_expiry)
+      : undefined,
     registrationFile: body.registration_file,
     insuranceNumber: body.insurance_number,
-    insuranceExpiry: body.insurance_expiry ? new Date(body.insurance_expiry) : undefined,
+    insuranceExpiry: body.insurance_expiry
+      ? new Date(body.insurance_expiry)
+      : undefined,
     insuranceFile: body.insurance_file,
     vehicleImage: body.vehicle_image,
   };
@@ -150,10 +156,14 @@ export function toResubmitNewVehicleApplicationRequestDTO(
     vehicleModel: body.vehicle_model,
     vehicleCapacity: body.vehicle_capacity,
     registrationNumber: body.registration_number,
-    registrationExpiry: body.registration_expiry ? new Date(body.registration_expiry) : undefined,
+    registrationExpiry: body.registration_expiry
+      ? new Date(body.registration_expiry)
+      : undefined,
     registrationFile: body.registration_file,
     insuranceNumber: body.insurance_number,
-    insuranceExpiry: body.insurance_expiry ? new Date(body.insurance_expiry) : undefined,
+    insuranceExpiry: body.insurance_expiry
+      ? new Date(body.insurance_expiry)
+      : undefined,
     insuranceFile: body.insurance_file,
     vehicleImage: body.vehicle_image,
   };
@@ -166,7 +176,9 @@ export function toResubmitRenewDriverApplicationRequestDTO(
   return {
     applicationId,
     licenseNumber: body.license_number,
-    licenseExpiry: body.license_expiry ? new Date(body.license_expiry) : undefined,
+    licenseExpiry: body.license_expiry
+      ? new Date(body.license_expiry)
+      : undefined,
     licenseFile: body.license_file,
   };
 }
@@ -178,15 +190,21 @@ export function toResubmitRenewVehicleApplicationRequestDTO(
   return {
     applicationId,
     registrationNumber: body.registration_number,
-    registrationExpiry: body.registration_expiry ? new Date(body.registration_expiry) : undefined,
+    registrationExpiry: body.registration_expiry
+      ? new Date(body.registration_expiry)
+      : undefined,
     registrationFile: body.registration_file,
     insuranceNumber: body.insurance_number,
-    insuranceExpiry: body.insurance_expiry ? new Date(body.insurance_expiry) : undefined,
+    insuranceExpiry: body.insurance_expiry
+      ? new Date(body.insurance_expiry)
+      : undefined,
     insuranceFile: body.insurance_file,
   };
 }
 
-export function toApplicationResult(entity: ApplicationEntity): ApplicationResult {
+export function toApplicationResult(
+  entity: ApplicationEntity,
+): ApplicationResult {
   return {
     application_id: entity.applicationId,
     user_id: entity.userId,
@@ -234,31 +252,27 @@ export function toApplicationDetailsResult(
       admin_id: c.adminId,
       time: c.time,
     })),
-    driver_record: dto.driverRecord
-      ? {
-          record_id: dto.driverRecord.recordId,
-          user_id: dto.userId,
-          license_number: dto.driverRecord.licenseNumber,
-          license_expiry: dto.driverRecord.licenseExpiry,
-          license_file: dto.driverRecord.licenseFile,
-        }
-      : undefined,
-    vehicle_record: dto.vehicleRecord
-      ? {
-          record_id: dto.vehicleRecord.recordId,
-          user_id: dto.userId,
-          vehicle_type: dto.vehicleRecord.vehicleType,
-          vehicle_make: dto.vehicleRecord.vehicleMake,
-          vehicle_model: dto.vehicleRecord.vehicleModel,
-          vehicle_capacity: dto.vehicleRecord.vehicleCapacity,
-          registration_number: dto.vehicleRecord.registrationNumber,
-          registration_expiry: dto.vehicleRecord.registrationExpiry,
-          registration_file: dto.vehicleRecord.registrationFile,
-          insurance_number: dto.vehicleRecord.insuranceNumber,
-          insurance_expiry: dto.vehicleRecord.insuranceExpiry,
-          insurance_file: dto.vehicleRecord.insuranceFile,
-          vehicle_image: dto.vehicleRecord.vehicleImage,
-        }
-      : undefined,
+    driver_record: dto.driverRecord?.map((d) => ({
+      record_id: d.recordId,
+      user_id: dto.userId,
+      license_number: d.licenseNumber,
+      license_expiry: d.licenseExpiry,
+      license_file: d.licenseFile,
+    })),
+    vehicle_record: dto.vehicleRecord?.map((v) => ({
+      record_id: v.recordId,
+      user_id: dto.userId,
+      vehicle_type: v.vehicleType,
+      vehicle_make: v.vehicleMake,
+      vehicle_model: v.vehicleModel,
+      vehicle_capacity: v.vehicleCapacity,
+      registration_number: v.registrationNumber,
+      registration_expiry: v.registrationExpiry,
+      registration_file: v.registrationFile,
+      insurance_number: v.insuranceNumber || "",
+      insurance_expiry: v.insuranceExpiry,
+      insurance_file: v.insuranceFile,
+      vehicle_image: v.vehicleImage,
+    })),
   };
 }

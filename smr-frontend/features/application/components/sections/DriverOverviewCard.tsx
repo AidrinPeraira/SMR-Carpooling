@@ -7,6 +7,7 @@ interface Props {
     license_number?: string;
     license_expiry?: string | Date;
     license_file?: string;
+    license_file_preview?: string;
   };
   onEdit?: () => void;
 }
@@ -17,8 +18,20 @@ function formatDate(value?: string | Date): string {
   return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
 }
 
+function isRenderableImageSrc(src?: string): boolean {
+  if (!src) return false;
+  return (
+    src.startsWith("blob:") ||
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("data:")
+  );
+}
+
 export function DriverOverviewCard({ data, onEdit }: Props) {
   const expiryFormatted = formatDate(data.license_expiry);
+  const previewSrc = data.license_file_preview || data.license_file;
+  const canRenderImage = isRenderableImageSrc(previewSrc);
 
   return (
     <Card className="w-full">
@@ -55,12 +68,22 @@ export function DriverOverviewCard({ data, onEdit }: Props) {
           </p>
         </div>
         <div className="md:col-span-2">
-          <span className="text-xs uppercase font-bold text-content-secondary block">
-            License File
+          <span className="text-xs uppercase font-bold text-content-secondary block mb-1">
+            License Document
           </span>
-          <p className="text-sm font-medium text-content-secondary truncate">
-            {data.license_file || "—"}
-          </p>
+          {canRenderImage ? (
+            <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted max-w-sm">
+              <img
+                src={previewSrc}
+                alt="License Document Preview"
+                className="max-h-48 w-auto object-contain rounded"
+              />
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-content-secondary truncate font-mono">
+              {data.license_file || "—"}
+            </p>
+          )}
         </div>
       </CardBody>
     </Card>

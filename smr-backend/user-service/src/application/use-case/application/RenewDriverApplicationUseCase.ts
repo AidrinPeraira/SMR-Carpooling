@@ -18,7 +18,7 @@ import {
 
 /**
  * This is the implementation for the use case that creates a new application to
- * renew expired driver records.
+ * renew expired driver records. Includes rollback handling on error.
  */
 export class RenewDriverApplicationUseCase implements IRenewDriverApplicationUseCase {
   constructor(
@@ -30,7 +30,7 @@ export class RenewDriverApplicationUseCase implements IRenewDriverApplicationUse
 
   /**
    * This method creates a new driver application and a driver record
-   * if existing driver records are expired/invalid.
+   * if existing driver records are expired/invalid. Rolls back on error.
    *
    * @param data : Driver license details
    */
@@ -69,39 +69,63 @@ export class RenewDriverApplicationUseCase implements IRenewDriverApplicationUse
       );
     }
 
-    const applicationId = this._uniqueIdGenerator.generateRandomId();
-    const now = new Date();
+    let applicationId: string | undefined;
+    let driverRecordId: string | undefined;
+    const movedFiles: { from: string; to: string }[] = [];
 
-    const applicationData: Omit<ApplicationEntity, "id"> = {
-      applicationId,
-      userId: data.userId,
-      applicationType: ApplicationType.RENEW_DRIVER,
-      applicationStatus: ApplicationStatus.PENDING,
-      createdAt: now,
-      updatedAt: now,
-    };
+    try {
+      applicationId = this._uniqueIdGenerator.generateRandomId();
+      const now = new Date();
 
-    await this._applicationRepository.save(applicationData);
+      const applicationData: Omit<ApplicationEntity, "id"> = {
+        applicationId,
+        userId: data.userId,
+        applicationType: ApplicationType.RENEW_DRIVER,
+        applicationStatus: ApplicationStatus.PENDING,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-    const getDestinationPath = (filePath: string): string => {
-      return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
-    };
+      await this._applicationRepository.save(applicationData);
 
-    const finalLicenseFile = getDestinationPath(data.licenseFile);
-    await this._storageService.moveFile(data.licenseFile, finalLicenseFile);
+      const getDestinationPath = (filePath: string): string => {
+        return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
+      };
 
-    const driverRecordId = this._uniqueIdGenerator.generateRandomId();
+      const finalLicenseFile = getDestinationPath(data.licenseFile);
+      if (finalLicenseFile !== data.licenseFile) {
+        await this._storageService.moveFile(data.licenseFile, finalLicenseFile);
+        movedFiles.push({ from: data.licenseFile, to: finalLicenseFile });
+      }
 
-    const driverRecordData: Omit<DriverRecordEntity, "id"> = {
-      recordId: driverRecordId,
-      applicationId,
-      licenseNumber: data.licenseNumber,
-      licenseExpiry: data.licenseExpiry,
-      licenseFile: finalLicenseFile,
-      createdAt: now,
-      updatedAt: now,
-    };
+      driverRecordId = this._uniqueIdGenerator.generateRandomId();
 
-    await this._driverRecordRepository.save(driverRecordData);
+      const driverRecordData: Omit<DriverRecordEntity, "id"> = {
+        recordId: driverRecordId,
+        applicationId,
+        licenseNumber: data.licenseNumber,
+        licenseExpiry: data.licenseExpiry,
+        licenseFile: finalLicenseFile,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      await this._driverRecordRepository.save(driverRecordData);
+    } catch (error) {
+      // Revert moved files back to temp
+      for (const file of movedFiles) {
+        await this._storageService.moveFile(file.to, file.from).catch(() => {});
+      }
+
+      // Rollback database records
+      if (applicationId) {
+        await this._applicationRepository.deleteByCustomId(applicationId).catch(() => {});
+      }
+      if (driverRecordId) {
+        await this._driverRecordRepository.deleteByCustomId(driverRecordId).catch(() => {});
+      }
+
+      throw error;
+    }
   }
 }

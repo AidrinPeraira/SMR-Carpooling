@@ -17,6 +17,7 @@ async function getNewTokens(token: string): Promise<TokenRefreshResult> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-frontend-key": String(process.env.FRONTEND_KEY || ""),
         },
         body: JSON.stringify({ refresh_token: token }),
       },

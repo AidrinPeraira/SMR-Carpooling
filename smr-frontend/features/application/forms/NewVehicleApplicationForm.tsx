@@ -57,7 +57,7 @@ export function NewVehicleApplicationForm({
 
         if (onSubmitAction) {
           await onSubmitAction(data);
-          router.push("/profile/applications");
+          window.location.href = "/profile/applications";
           return;
         }
 
@@ -67,7 +67,7 @@ export function NewVehicleApplicationForm({
             variant: "success",
             description: result.description || "Your vehicle application has been submitted successfully.",
           });
-          router.push("/profile/applications");
+          window.location.href = "/profile/applications";
         } else {
           toast(result.errorMessage || "Submission error", {
             variant: "error",

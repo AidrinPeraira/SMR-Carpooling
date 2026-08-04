@@ -7,7 +7,7 @@ enum DriverStatus {
 model Driver {
   driverId      String       @id
   recordId      String
-  licenseNumber String       @default("")
+  licenseNumber String       @unique
   licenseImage  String       @default("")
   driverStatus  DriverStatus @default(active)
   createdAt     DateTime     @default(now())

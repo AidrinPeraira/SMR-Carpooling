@@ -269,7 +269,12 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
               fileName={FileNames.VEHICLE_REGISTRATION}
               label="Registration Document"
               value={field.value}
-              onChange={(path) => field.onChange(path)}
+              onChange={(path, localUrl) => {
+                field.onChange(path);
+                if (control && control._formValues) {
+                  control._formValues.registration_file_preview = localUrl || "";
+                }
+              }}
               error={errors.registration_file?.message as string}
             />
           )}
@@ -332,7 +337,12 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
               fileName={FileNames.VEHICLE_INSURANCE}
               label="Insurance Document"
               value={field.value}
-              onChange={(path) => field.onChange(path)}
+              onChange={(path, localUrl) => {
+                field.onChange(path);
+                if (control && control._formValues) {
+                  control._formValues.insurance_file_preview = localUrl || "";
+                }
+              }}
               error={errors.insurance_file?.message as string}
             />
           )}
@@ -364,7 +374,12 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
               fileName={FileNames.VEHICLE_IMAGE}
               label="Vehicle Image"
               value={field.value}
-              onChange={(path) => field.onChange(path)}
+              onChange={(path, localUrl) => {
+                field.onChange(path);
+                if (control && control._formValues) {
+                  control._formValues.vehicle_image_preview = localUrl || "";
+                }
+              }}
               error={errors.vehicle_image?.message as string}
             />
           )}

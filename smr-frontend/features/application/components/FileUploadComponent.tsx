@@ -11,7 +11,7 @@ interface FileUploadComponentProps {
   fileName: FileNames;
   label: string;
   value?: string;
-  onChange: (filePath: string) => void;
+  onChange: (filePath: string, localPreviewUrl?: string) => void;
   error?: string;
   disabled?: boolean;
   accept?: string;
@@ -31,6 +31,7 @@ export function FileUploadComponent({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
   const toast = useToast();
 
   const handleFileSelect = async (file: File) => {
@@ -55,6 +56,9 @@ export function FileUploadComponent({
       return;
     }
 
+    // Generate local blob URL for instant client-side preview
+    const previewUrl = URL.createObjectURL(file);
+    setLocalPreviewUrl(previewUrl);
     setIsUploading(true);
     setSelectedFileName(file.name);
 
@@ -98,8 +102,8 @@ export function FileUploadComponent({
         extractedPath = urlObj.pathname.replace(/^\//, "");
       }
 
-      // Step 4: Set field value in form
-      onChange(extractedPath);
+      // Step 4: Pass server path & local preview URL to parent form
+      onChange(extractedPath, previewUrl);
       toast("File uploaded!", {
         variant: "success",
         description: `${label} uploaded successfully.`,
@@ -111,6 +115,7 @@ export function FileUploadComponent({
           err.message || "Something went wrong while uploading file.",
       });
       setSelectedFileName(null);
+      setLocalPreviewUrl(null);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -127,8 +132,9 @@ export function FileUploadComponent({
   };
 
   const handleClear = () => {
-    onChange("");
+    onChange("", "");
     setSelectedFileName(null);
+    setLocalPreviewUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -149,36 +155,49 @@ export function FileUploadComponent({
 
       <div className="flex flex-col gap-2">
         {value ? (
-          <div className="flex items-center justify-between gap-3 p-3 rounded-md border border-border-strong bg-surface-secondary">
-            <div className="flex items-center gap-2 overflow-hidden text-xs">
-              <span className="font-semibold text-fg-success">✓ Uploaded</span>
-              <span
-                className="truncate text-content-secondary font-mono"
-                title={value}
-              >
-                {selectedFileName ? `${selectedFileName} (${value})` : value}
-              </span>
+          <div className="flex flex-col gap-2 p-3 rounded-md border border-border-strong bg-surface-secondary">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 overflow-hidden text-xs">
+                <span className="font-semibold text-fg-success">✓ Uploaded</span>
+                <span
+                  className="truncate text-content-secondary font-mono"
+                  title={value}
+                >
+                  {selectedFileName || value}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="px-2 py-1 text-xs"
+                  disabled={disabled || isUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Change
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="px-2 py-1 text-xs text-fg-danger hover:bg-surface-card"
+                  disabled={disabled || isUploading}
+                  onClick={handleClear}
+                >
+                  Remove
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button
-                type="button"
-                variant="secondary"
-                className="px-2 py-1 text-xs"
-                disabled={disabled || isUploading}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Change
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                className="px-2 py-1 text-xs text-fg-danger hover:bg-surface-card"
-                disabled={disabled || isUploading}
-                onClick={handleClear}
-              >
-                Remove
-              </Button>
-            </div>
+
+            {/* Local Preview Thumbnail */}
+            {localPreviewUrl && (
+              <div className="mt-1 border border-border-subtle rounded p-1.5 bg-surface-muted max-w-xs">
+                <img
+                  src={localPreviewUrl}
+                  alt="Local Preview"
+                  className="max-h-32 w-auto object-contain rounded"
+                />
+              </div>
+            )}
           </div>
         ) : (
           <div

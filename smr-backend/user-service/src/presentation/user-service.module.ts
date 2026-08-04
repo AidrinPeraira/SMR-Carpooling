@@ -304,6 +304,7 @@ const getApplicationsUseCase = new GetApplicationsUseCase(
 
 const getApplicationDetailsUseCase = new GetApplicationDetailsUseCase(
   mongoApplicationRepository,
+  s3StorageService,
 );
 
 const getFileUploadUrlUseCase = new GetFileUploadUrlUseCase(s3StorageService);

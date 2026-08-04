@@ -2,7 +2,7 @@
 
 import { Input, Label } from "@sharemyride/ui";
 import { FileNames } from "@sharemyride/shared";
-import { Controller, FieldErrors, UseFormRegister } from "react-hook-form";
+import { Controller, FieldErrors, UseFormRegister, useFormContext } from "react-hook-form";
 import { FileUploadComponent } from "@/features/application/components/FileUploadComponent";
 
 interface Props {
@@ -67,7 +67,12 @@ export function DriverFieldsSection({ register, control, errors }: Props) {
             fileName={FileNames.DRIVER_LICENSE}
             label="Driver License Document"
             value={field.value}
-            onChange={(path) => field.onChange(path)}
+            onChange={(path, localUrl) => {
+              field.onChange(path);
+              if (control && control._formValues) {
+                control._formValues.license_file_preview = localUrl || "";
+              }
+            }}
             error={errors.license_file?.message as string}
           />
         )}

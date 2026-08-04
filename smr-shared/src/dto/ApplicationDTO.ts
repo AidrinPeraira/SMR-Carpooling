@@ -146,6 +146,6 @@ export interface ApplicationDetailsResult extends ApplicationResult {
   first_name?: string;
   last_name?: string;
   email_id?: string;
-  driver_record?: DriverRecordResult;
-  vehicle_record?: VehicleRecordResult;
+  driver_record?: DriverRecordResult[];
+  vehicle_record?: VehicleRecordResult[];
 }
