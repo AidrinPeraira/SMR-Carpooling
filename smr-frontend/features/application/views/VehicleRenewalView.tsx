@@ -3,11 +3,11 @@
 import { AdminReturnBanner } from "@/features/application/components/AdminReturnBanner";
 import { VehicleRenewalForm } from "@/features/application/forms/VehicleRenewalForm";
 import { mapApplicationPrefillData } from "@/features/application/utils/mapApplicationPrefillData";
-import { ApplicationDetailsResult } from "@sharemyride/shared";
+import { ApplicationDetailsResult, RenewVehicleApplicationSchemaType } from "@sharemyride/shared";
 
 interface Props {
   existingDetails?: ApplicationDetailsResult;
-  onSubmitAction?: (data: any) => Promise<any>;
+  onSubmitAction?: (data: RenewVehicleApplicationSchemaType) => Promise<unknown>;
 }
 
 export function VehicleRenewalView({ existingDetails, onSubmitAction }: Props) {

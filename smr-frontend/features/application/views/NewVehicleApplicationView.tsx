@@ -3,11 +3,11 @@
 import { AdminReturnBanner } from "@/features/application/components/AdminReturnBanner";
 import { NewVehicleApplicationForm } from "@/features/application/forms/NewVehicleApplicationForm";
 import { mapApplicationPrefillData } from "@/features/application/utils/mapApplicationPrefillData";
-import { ApplicationDetailsResult } from "@sharemyride/shared";
+import { ApplicationDetailsResult, NewVehicleApplicationSchemaType } from "@sharemyride/shared";
 
 interface Props {
   existingDetails?: ApplicationDetailsResult;
-  onSubmitAction?: (data: any) => Promise<any>;
+  onSubmitAction?: (data: NewVehicleApplicationSchemaType) => Promise<unknown>;
 }
 
 export function NewVehicleApplicationView({

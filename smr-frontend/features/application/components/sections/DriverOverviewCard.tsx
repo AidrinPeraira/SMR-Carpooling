@@ -73,6 +73,7 @@ export function DriverOverviewCard({ data, onEdit }: Props) {
           </span>
           {canRenderImage ? (
             <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted max-w-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewSrc}
                 alt="License Document Preview"

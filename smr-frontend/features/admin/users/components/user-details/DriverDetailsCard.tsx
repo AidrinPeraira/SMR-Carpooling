@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, Card, CardBody, Tag } from "@sharemyride/ui";
-import { Eye, UserX } from "lucide-react";
+import { Card, CardBody, Tag } from "@sharemyride/ui";
+import { UserX } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getAdminDriverDetailsRequest } from "../../api/requests/getAdminDriverDetailsRequest";
+import { getAdminDriverDetailsRequest } from "@/features/admin/users/api/requests/getAdminDriverDetailsRequest";
 
 interface DriverDetailsCardProps {
   userId?: string;

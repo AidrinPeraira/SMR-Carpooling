@@ -4,8 +4,8 @@ import { useRef } from "react";
 import { Avatar, Loader, useToast } from "@sharemyride/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ImageFileTypes } from "@sharemyride/shared";
-import { getAvatarUploadUrlRequest } from "../api/requests/getAvatarUploadUrlRequest";
-import { updateAvatarRequest } from "../api/requests/updateAvatarRequest";
+import { getAvatarUploadUrlRequest } from "@/features/profile/api/requests/getAvatarUploadUrlRequest";
+import { updateAvatarRequest } from "@/features/profile/api/requests/updateAvatarRequest";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -13,11 +12,11 @@ import { logger } from "@/lib/logger";
 import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
 import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
-import { submitNewVehicleApplicationAction } from "../api/actions/submitNewVehicleApplicationAction";
+import { submitNewVehicleApplicationAction } from "@/features/application/api/actions/submitNewVehicleApplicationAction";
 
 interface Props {
   initialValues?: Partial<NewVehicleApplicationSchemaType>;
-  onSubmitAction?: (data: NewVehicleApplicationSchemaType) => Promise<any>;
+  onSubmitAction?: (data: NewVehicleApplicationSchemaType) => Promise<unknown>;
 }
 
 export function NewVehicleApplicationForm({
@@ -27,7 +26,6 @@ export function NewVehicleApplicationForm({
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
-  const router = useRouter();
 
   const {
     register,
@@ -37,7 +35,7 @@ export function NewVehicleApplicationForm({
     control,
     formState: { errors },
   } = useForm<NewVehicleApplicationSchemaType>({
-    resolver: zodResolver(NewVehicleApplicationSchema) as any,
+    resolver: zodResolver(NewVehicleApplicationSchema) as never,
     values: initialValues as NewVehicleApplicationSchemaType,
   });
 
@@ -61,7 +59,7 @@ export function NewVehicleApplicationForm({
           return;
         }
 
-        const result = await submitNewVehicleApplicationAction(data as any);
+        const result = await submitNewVehicleApplicationAction(data);
         if (result.success) {
           toast(result.message || "New Vehicle Application Submitted!", {
             variant: "success",

@@ -3,11 +3,11 @@
 import { AdminReturnBanner } from "@/features/application/components/AdminReturnBanner";
 import { DriverRenewalForm } from "@/features/application/forms/DriverRenewalForm";
 import { mapApplicationPrefillData } from "@/features/application/utils/mapApplicationPrefillData";
-import { ApplicationDetailsResult } from "@sharemyride/shared";
+import { ApplicationDetailsResult, RenewDriverApplicationSchemaType } from "@sharemyride/shared";
 
 interface Props {
   existingDetails?: ApplicationDetailsResult;
-  onSubmitAction?: (data: any) => Promise<any>;
+  onSubmitAction?: (data: RenewDriverApplicationSchemaType) => Promise<unknown>;
 }
 
 export function DriverRenewalView({ existingDetails, onSubmitAction }: Props) {

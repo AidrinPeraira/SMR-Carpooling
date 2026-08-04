@@ -108,11 +108,11 @@ export function FileUploadComponent({
         variant: "success",
         description: `${label} uploaded successfully.`,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong while uploading file.";
       toast("Upload failed", {
         variant: "error",
-        description:
-          err.message || "Something went wrong while uploading file.",
+        description: errorMessage,
       });
       setSelectedFileName(null);
       setLocalPreviewUrl(null);
@@ -191,6 +191,7 @@ export function FileUploadComponent({
             {/* Local Preview Thumbnail */}
             {localPreviewUrl && (
               <div className="mt-1 border border-border-subtle rounded p-1.5 bg-surface-muted max-w-xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={localPreviewUrl}
                   alt="Local Preview"

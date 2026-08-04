@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -13,18 +12,17 @@ import { logger } from "@/lib/logger";
 import { DriverFieldsSection } from "@/features/application/components/sections/DriverFieldsSection";
 import { DriverOverviewCard } from "@/features/application/components/sections/DriverOverviewCard";
 
-import { submitDriverRenewalAction } from "../api/actions/submitDriverRenewalAction";
+import { submitDriverRenewalAction } from "@/features/application/api/actions/submitDriverRenewalAction";
 
 interface Props {
   initialValues?: Partial<RenewDriverApplicationSchemaType>;
-  onSubmitAction?: (data: RenewDriverApplicationSchemaType) => Promise<any>;
+  onSubmitAction?: (data: RenewDriverApplicationSchemaType) => Promise<unknown>;
 }
 
 export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
-  const router = useRouter();
 
   const {
     register,
@@ -34,7 +32,7 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
     control,
     formState: { errors },
   } = useForm<RenewDriverApplicationSchemaType>({
-    resolver: zodResolver(RenewDriverApplicationSchema) as any,
+    resolver: zodResolver(RenewDriverApplicationSchema) as never,
     values: initialValues as RenewDriverApplicationSchemaType,
   });
 
@@ -58,7 +56,7 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
           return;
         }
 
-        const result = await submitDriverRenewalAction(data as any);
+        const result = await submitDriverRenewalAction(data);
         if (result.success) {
           toast(result.message || "Driver Renewal Submitted!", {
             variant: "success",

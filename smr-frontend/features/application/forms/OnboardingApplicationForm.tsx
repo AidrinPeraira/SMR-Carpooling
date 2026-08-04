@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -15,11 +14,11 @@ import { VehicleFieldsSection } from "@/features/application/components/sections
 import { DriverOverviewCard } from "@/features/application/components/sections/DriverOverviewCard";
 import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
-import { submitOnboardingApplicationAction } from "../api/actions/submitOnboardingApplicationAction";
+import { submitOnboardingApplicationAction } from "@/features/application/api/actions/submitOnboardingApplicationAction";
 
 interface Props {
   initialValues?: Partial<OnboardingApplicationSchemaType>;
-  onSubmitAction?: (data: OnboardingApplicationSchemaType) => Promise<any>;
+  onSubmitAction?: (data: OnboardingApplicationSchemaType) => Promise<unknown>;
 }
 
 export function OnboardingApplicationForm({
@@ -29,7 +28,6 @@ export function OnboardingApplicationForm({
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
-  const router = useRouter();
 
   const {
     register,
@@ -39,7 +37,7 @@ export function OnboardingApplicationForm({
     control,
     formState: { errors },
   } = useForm<OnboardingApplicationSchemaType>({
-    resolver: zodResolver(OnboardingApplicationSchema) as any,
+    resolver: zodResolver(OnboardingApplicationSchema) as never,
     values: initialValues as OnboardingApplicationSchemaType,
   });
 
@@ -63,7 +61,7 @@ export function OnboardingApplicationForm({
           return;
         }
 
-        const result = await submitOnboardingApplicationAction(data as any);
+        const result = await submitOnboardingApplicationAction(data);
         if (result.success) {
           toast(result.message || "Onboarding Application Submitted!", {
             variant: "success",

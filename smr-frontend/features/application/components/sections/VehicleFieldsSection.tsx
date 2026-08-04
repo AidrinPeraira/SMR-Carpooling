@@ -9,21 +9,28 @@ import {
   FileNames,
 } from "@sharemyride/shared";
 import {
+  Control,
   Controller,
   FieldErrors,
+  FieldValues,
+  Path,
   UseFormRegister,
   useWatch,
 } from "react-hook-form";
 import { getVehicleListRequest } from "@/features/application/api/requests/getVehicleListRequest";
 import { FileUploadComponent } from "@/features/application/components/FileUploadComponent";
 
-interface Props {
-  register: UseFormRegister<any>;
-  control: any;
-  errors: FieldErrors<any>;
+interface Props<TFieldValues extends FieldValues = FieldValues> {
+  register: UseFormRegister<TFieldValues>;
+  control: Control<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
 }
 
-export function VehicleFieldsSection({ register, control, errors }: Props) {
+export function VehicleFieldsSection<TFieldValues extends FieldValues = FieldValues>({
+  register,
+  control,
+  errors,
+}: Props<TFieldValues>) {
   // Fetch predefined vehicles from Trip Service with 1-day (24h) cache
   const { data, isPending } = useQuery({
     queryKey: ["predefinedVehiclesList"],
@@ -41,12 +48,24 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
     return [];
   }, [data]);
 
+  const vehicleTypePath = "vehicle_type" as Path<TFieldValues>;
+  const vehicleMakePath = "vehicle_make" as Path<TFieldValues>;
+  const vehicleModelPath = "vehicle_model" as Path<TFieldValues>;
+  const vehicleCapacityPath = "vehicle_capacity" as Path<TFieldValues>;
+  const registrationNumberPath = "registration_number" as Path<TFieldValues>;
+  const registrationExpiryPath = "registration_expiry" as Path<TFieldValues>;
+  const registrationFilePath = "registration_file" as Path<TFieldValues>;
+  const insuranceNumberPath = "insurance_number" as Path<TFieldValues>;
+  const insuranceExpiryPath = "insurance_expiry" as Path<TFieldValues>;
+  const insuranceFilePath = "insurance_file" as Path<TFieldValues>;
+  const vehicleImagePath = "vehicle_image" as Path<TFieldValues>;
+
   // Watch current selections for cascading dropdown options
   const selectedVehicleType: string =
-    useWatch({ control, name: "vehicle_type" }) ||
+    useWatch({ control, name: vehicleTypePath }) ||
     Object.values(VehicleTypes)[0];
   const selectedVehicleMake: string =
-    useWatch({ control, name: "vehicle_make" }) || "";
+    useWatch({ control, name: vehicleMakePath }) || "";
 
   // Vehicle Type Options
   const vehicleTypeOptions = useMemo(() => {
@@ -110,6 +129,8 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
     return [{ label: "-- Select Model --", value: "" }, ...rawModelOptions];
   }, [selectedVehicleMake, rawModelOptions]);
 
+  const formControl = control as unknown as { _formValues?: Record<string, string> };
+
   return (
     <div className="flex flex-col gap-4 rounded-md border border-border-strong bg-surface-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
@@ -128,10 +149,10 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       <div className="flex flex-col gap-1 relative group">
         <Label>Vehicle Type</Label>
         <Controller
-          name="vehicle_type"
+          name={vehicleTypePath}
           control={control}
           defaultValue={
-            vehicleTypeOptions[0]?.value || Object.values(VehicleTypes)[0]
+            (vehicleTypeOptions[0]?.value || Object.values(VehicleTypes)[0]) as never
           }
           render={({ field }) => (
             <DropDown
@@ -159,9 +180,9 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         <div className="flex flex-col gap-1 relative group">
           <Label>Vehicle Make</Label>
           <Controller
-            name="vehicle_make"
+            name={vehicleMakePath}
             control={control}
-            defaultValue=""
+            defaultValue={"" as never}
             render={({ field }) => (
               <DropDown
                 value={field.value || ""}
@@ -184,9 +205,9 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         <div className="flex flex-col gap-1 relative group">
           <Label>Vehicle Model</Label>
           <Controller
-            name="vehicle_model"
+            name={vehicleModelPath}
             control={control}
-            defaultValue=""
+            defaultValue={"" as never}
             render={({ field }) => (
               <DropDown
                 value={field.value || ""}
@@ -215,7 +236,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           min={1}
           max={10}
           placeholder="4"
-          {...register("vehicle_capacity", { valueAsNumber: true })}
+          {...register(vehicleCapacityPath, { valueAsNumber: true })}
         />
         {errors.vehicle_capacity && (
           <p className="text-xs font-semibold pl-1 text-fg-danger">
@@ -233,7 +254,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           <Label>Registration Number</Label>
           <Input
             placeholder="e.g. KA01AB1234"
-            {...register("registration_number")}
+            {...register(registrationNumberPath)}
           />
           {errors.registration_number && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
@@ -248,7 +269,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         {/* Registration Expiry */}
         <div className="flex flex-col gap-1 relative group">
           <Label>Registration Expiry</Label>
-          <Input type="date" {...register("registration_expiry")} />
+          <Input type="date" {...register(registrationExpiryPath)} />
           {errors.registration_expiry && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
               {String(
@@ -262,7 +283,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       {/* Registration File Upload */}
       {control ? (
         <Controller
-          name="registration_file"
+          name={registrationFilePath}
           control={control}
           render={({ field }) => (
             <FileUploadComponent
@@ -271,8 +292,8 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
               value={field.value}
               onChange={(path, localUrl) => {
                 field.onChange(path);
-                if (control && control._formValues) {
-                  control._formValues.registration_file_preview = localUrl || "";
+                if (formControl._formValues) {
+                  formControl._formValues.registration_file_preview = localUrl || "";
                 }
               }}
               error={errors.registration_file?.message as string}
@@ -284,7 +305,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           <Label>Registration Document (Upload)</Label>
           <Input
             placeholder="Document file path or URL"
-            {...register("registration_file")}
+            {...register(registrationFilePath)}
           />
           {errors.registration_file && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
@@ -303,7 +324,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           <Label>Insurance Policy Number</Label>
           <Input
             placeholder="e.g. INS-987654321"
-            {...register("insurance_number")}
+            {...register(insuranceNumberPath)}
           />
           {errors.insurance_number && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
@@ -318,7 +339,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
         {/* Insurance Expiry */}
         <div className="flex flex-col gap-1 relative group">
           <Label>Insurance Expiry</Label>
-          <Input type="date" {...register("insurance_expiry")} />
+          <Input type="date" {...register(insuranceExpiryPath)} />
           {errors.insurance_expiry && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
               {String(errors.insurance_expiry.message || "Valid date required")}
@@ -330,7 +351,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       {/* Insurance File Upload */}
       {control ? (
         <Controller
-          name="insurance_file"
+          name={insuranceFilePath}
           control={control}
           render={({ field }) => (
             <FileUploadComponent
@@ -339,8 +360,8 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
               value={field.value}
               onChange={(path, localUrl) => {
                 field.onChange(path);
-                if (control && control._formValues) {
-                  control._formValues.insurance_file_preview = localUrl || "";
+                if (formControl._formValues) {
+                  formControl._formValues.insurance_file_preview = localUrl || "";
                 }
               }}
               error={errors.insurance_file?.message as string}
@@ -352,7 +373,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           <Label>Insurance Document (Upload)</Label>
           <Input
             placeholder="Document file path or URL"
-            {...register("insurance_file")}
+            {...register(insuranceFilePath)}
           />
           {errors.insurance_file && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">
@@ -367,7 +388,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
       {/* Vehicle Image Upload */}
       {control ? (
         <Controller
-          name="vehicle_image"
+          name={vehicleImagePath}
           control={control}
           render={({ field }) => (
             <FileUploadComponent
@@ -376,8 +397,8 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
               value={field.value}
               onChange={(path, localUrl) => {
                 field.onChange(path);
-                if (control && control._formValues) {
-                  control._formValues.vehicle_image_preview = localUrl || "";
+                if (formControl._formValues) {
+                  formControl._formValues.vehicle_image_preview = localUrl || "";
                 }
               }}
               error={errors.vehicle_image?.message as string}
@@ -389,7 +410,7 @@ export function VehicleFieldsSection({ register, control, errors }: Props) {
           <Label>Vehicle Image (Upload)</Label>
           <Input
             placeholder="Vehicle photo URL or file path"
-            {...register("vehicle_image")}
+            {...register(vehicleImagePath)}
           />
           {errors.vehicle_image && (
             <p className="text-xs font-semibold pl-1 text-fg-danger">

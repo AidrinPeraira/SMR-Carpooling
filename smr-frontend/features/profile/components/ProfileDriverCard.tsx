@@ -2,10 +2,10 @@
 
 import { Button, Card, CardBody } from "@sharemyride/ui";
 import { GetUserResult } from "@sharemyride/shared";
-import { Check, ShieldCheck } from "lucide-react";
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { getDriverDetailsRequest } from "../api/requests/getDriverDetailsRequest";
+import { getDriverDetailsRequest } from "@/features/profile/api/requests/getDriverDetailsRequest";
 
 interface Props {
   user: GetUserResult | null;

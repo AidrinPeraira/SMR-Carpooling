@@ -3,7 +3,7 @@
 import { Card, CardBody, Tag } from "@sharemyride/ui";
 import { Car } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getAdminDriverVehiclesRequest } from "../../api/requests/getAdminDriverVehiclesRequest";
+import { getAdminDriverVehiclesRequest } from "@/features/admin/users/api/requests/getAdminDriverVehiclesRequest";
 
 interface VehicleDetailsCardProps {
   userId?: string;
@@ -72,6 +72,7 @@ export function VehicleDetailsCard({ userId }: VehicleDetailsCardProps) {
                 <div>
                   <div className="aspect-video rounded-lg overflow-hidden border border-border-strong bg-surface-muted flex items-center justify-center mb-4 relative">
                     {vehicle.vehicle_image ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
                       <img
                         src={vehicle.vehicle_image}
                         alt={`${vehicle.vehicle_make} ${vehicle.vehicle_model}`}

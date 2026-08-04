@@ -3,11 +3,11 @@
 import { AdminReturnBanner } from "@/features/application/components/AdminReturnBanner";
 import { OnboardingApplicationForm } from "@/features/application/forms/OnboardingApplicationForm";
 import { mapApplicationPrefillData } from "@/features/application/utils/mapApplicationPrefillData";
-import { ApplicationDetailsResult } from "@sharemyride/shared";
+import { ApplicationDetailsResult, OnboardingApplicationSchemaType } from "@sharemyride/shared";
 
 interface Props {
   existingDetails?: ApplicationDetailsResult;
-  onSubmitAction?: (data: any) => Promise<any>;
+  onSubmitAction?: (data: OnboardingApplicationSchemaType) => Promise<unknown>;
 }
 
 export function OnboardingApplicationView({

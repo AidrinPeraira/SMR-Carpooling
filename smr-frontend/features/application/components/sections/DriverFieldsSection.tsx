@@ -2,16 +2,24 @@
 
 import { Input, Label } from "@sharemyride/ui";
 import { FileNames } from "@sharemyride/shared";
-import { Controller, FieldErrors, UseFormRegister, useFormContext } from "react-hook-form";
+import { Control, Controller, FieldErrors, FieldValues, Path, UseFormRegister } from "react-hook-form";
 import { FileUploadComponent } from "@/features/application/components/FileUploadComponent";
 
-interface Props {
-  register: UseFormRegister<any>;
-  control: any;
-  errors: FieldErrors<any>;
+interface Props<TFieldValues extends FieldValues = FieldValues> {
+  register: UseFormRegister<TFieldValues>;
+  control: Control<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
 }
 
-export function DriverFieldsSection({ register, control, errors }: Props) {
+export function DriverFieldsSection<TFieldValues extends FieldValues = FieldValues>({
+  register,
+  control,
+  errors,
+}: Props<TFieldValues>) {
+  const licenseNumberPath = "license_number" as Path<TFieldValues>;
+  const licenseExpiryPath = "license_expiry" as Path<TFieldValues>;
+  const licenseFilePath = "license_file" as Path<TFieldValues>;
+
   return (
     <div className="flex flex-col gap-4 rounded-md border border-border-strong bg-surface-card p-5 shadow-sm">
       <h2 className="text-lg font-bold text-content-primary">
@@ -23,7 +31,7 @@ export function DriverFieldsSection({ register, control, errors }: Props) {
         <Label>License Number</Label>
         <Input
           placeholder="e.g. DL-1420110012345"
-          {...register("license_number")}
+          {...register(licenseNumberPath)}
         />
         {errors.license_number && (
           <>
@@ -42,7 +50,7 @@ export function DriverFieldsSection({ register, control, errors }: Props) {
       {/* License Expiry */}
       <div className="flex flex-col gap-1 relative group">
         <Label>License Expiry Date</Label>
-        <Input type="date" {...register("license_expiry")} />
+        <Input type="date" {...register(licenseExpiryPath)} />
         {errors.license_expiry && (
           <>
             <p className="text-xs font-semibold pl-1 text-fg-danger">
@@ -60,7 +68,7 @@ export function DriverFieldsSection({ register, control, errors }: Props) {
 
       {/* Driver License Document Upload */}
       <Controller
-        name="license_file"
+        name={licenseFilePath}
         control={control}
         render={({ field }) => (
           <FileUploadComponent
@@ -69,8 +77,9 @@ export function DriverFieldsSection({ register, control, errors }: Props) {
             value={field.value}
             onChange={(path, localUrl) => {
               field.onChange(path);
-              if (control && control._formValues) {
-                control._formValues.license_file_preview = localUrl || "";
+              const formControl = control as unknown as { _formValues?: Record<string, string> };
+              if (formControl._formValues) {
+                formControl._formValues.license_file_preview = localUrl || "";
               }
             }}
             error={errors.license_file?.message as string}

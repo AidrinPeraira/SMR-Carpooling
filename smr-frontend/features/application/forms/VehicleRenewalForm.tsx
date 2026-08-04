@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Loader, useToast } from "@sharemyride/ui";
@@ -13,18 +12,17 @@ import { logger } from "@/lib/logger";
 import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
 import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
 
-import { submitVehicleRenewalAction } from "../api/actions/submitVehicleRenewalAction";
+import { submitVehicleRenewalAction } from "@/features/application/api/actions/submitVehicleRenewalAction";
 
 interface Props {
   initialValues?: Partial<RenewVehicleApplicationSchemaType>;
-  onSubmitAction?: (data: RenewVehicleApplicationSchemaType) => Promise<any>;
+  onSubmitAction?: (data: RenewVehicleApplicationSchemaType) => Promise<unknown>;
 }
 
 export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
   const [step, setStep] = useState<"fill" | "review">("fill");
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
-  const router = useRouter();
 
   const {
     register,
@@ -34,7 +32,7 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
     control,
     formState: { errors },
   } = useForm<RenewVehicleApplicationSchemaType>({
-    resolver: zodResolver(RenewVehicleApplicationSchema) as any,
+    resolver: zodResolver(RenewVehicleApplicationSchema) as never,
     values: initialValues as RenewVehicleApplicationSchemaType,
   });
 
@@ -58,7 +56,7 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
           return;
         }
 
-        const result = await submitVehicleRenewalAction(data as any);
+        const result = await submitVehicleRenewalAction(data);
         if (result.success) {
           toast(result.message || "Vehicle Renewal Submitted!", {
             variant: "success",

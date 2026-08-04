@@ -122,6 +122,7 @@ export function VehicleOverviewCard({ data, onEdit }: Props) {
           </span>
           {isRenderableImageSrc(regPreviewSrc) ? (
             <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={regPreviewSrc}
                 alt="Registration Preview"
@@ -141,6 +142,7 @@ export function VehicleOverviewCard({ data, onEdit }: Props) {
           </span>
           {isRenderableImageSrc(insPreviewSrc) ? (
             <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={insPreviewSrc}
                 alt="Insurance Preview"
@@ -160,6 +162,7 @@ export function VehicleOverviewCard({ data, onEdit }: Props) {
           </span>
           {isRenderableImageSrc(imgPreviewSrc) ? (
             <div className="mt-1 border border-border-strong rounded p-2 bg-surface-muted">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={imgPreviewSrc}
                 alt="Vehicle Preview"

@@ -45,6 +45,7 @@ export function FilePreviewModal({
           {fileUrl ? (
             fileUrl.match(/\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i) ||
             !fileUrl.includes(".pdf") ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={fileUrl}
                 alt={title}

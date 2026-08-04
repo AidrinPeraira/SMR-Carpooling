@@ -8,13 +8,9 @@ import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { ApplicationDoc } from "#/infrastructure/database/models/MongoApplicationModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
 import {
-  ApplicationError,
-  ApplicationErrorMessage,
-  ErrorCode,
-  ErrorDetails,
-  HttpStatusCodes,
   PaginatedPayload,
   SortOrder,
+  VehicleTypes,
 } from "@sharemyride/shared";
 import { Model, PipelineStage } from "mongoose";
 
@@ -180,37 +176,43 @@ export class MongoApplicationRepository
       applicationStatus: doc.applicationStatus,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
-      adminComments: doc.adminComments?.map((c: any) => ({
-        comment: c.comment,
-        adminId: c.adminId,
-        time: c.time,
-      })),
-      driverRecord: (doc.driverRecord || []).map((d: any) => ({
-        recordId: d.recordId,
-        applicationId: d.applicationId,
-        licenseNumber: d.licenseNumber,
-        licenseExpiry: d.licenseExpiry,
-        licenseFile: d.licenseFile,
-        createdAt: d.createdAt,
-        updatedAt: d.updatedAt,
-      })),
-      vehicleRecord: (doc.vehicleRecord || []).map((v: any) => ({
-        recordId: v.recordId,
-        applicationId: v.applicationId,
-        vehicleType: v.vehicleType,
-        vehicleMake: v.vehicleMake,
-        vehicleModel: v.vehicleModel,
-        vehicleCapacity: v.vehicleCapacity,
-        registrationNumber: v.registrationNumber,
-        registrationExpiry: v.registrationExpiry,
-        registrationFile: v.registrationFile,
-        insuranceNumber: v.insuranceNumber || "",
-        insuranceExpiry: v.insuranceExpiry,
-        insuranceFile: v.insuranceFile,
-        vehicleImage: v.vehicleImage,
-        createdAt: v.createdAt,
-        updatedAt: v.updatedAt,
-      })),
+      adminComments: Array.isArray((doc as unknown as { adminComments?: Array<Record<string, string>> }).adminComments)
+        ? (doc as unknown as { adminComments: Array<Record<string, string>> }).adminComments.map((c) => ({
+            comment: c.comment ?? "",
+            adminId: c.adminId ?? "",
+            time: c.time as unknown as Date,
+          }))
+        : undefined,
+      driverRecord: Array.isArray((doc as unknown as { driverRecord?: Array<Record<string, string>> }).driverRecord)
+        ? (doc as unknown as { driverRecord: Array<Record<string, string>> }).driverRecord.map((d) => ({
+            recordId: d.recordId ?? "",
+            applicationId: d.applicationId ?? "",
+            licenseNumber: d.licenseNumber ?? "",
+            licenseExpiry: d.licenseExpiry as unknown as Date,
+            licenseFile: d.licenseFile ?? "",
+            createdAt: d.createdAt as unknown as Date,
+            updatedAt: d.updatedAt as unknown as Date,
+          }))
+        : [],
+      vehicleRecord: Array.isArray((doc as unknown as { vehicleRecord?: Array<Record<string, string | number>> }).vehicleRecord)
+        ? (doc as unknown as { vehicleRecord: Array<Record<string, string | number>> }).vehicleRecord.map((v) => ({
+            recordId: (v.recordId as string) ?? "",
+            applicationId: (v.applicationId as string) ?? "",
+            vehicleType: (v.vehicleType as unknown as VehicleTypes) ?? ("CAR" as VehicleTypes),
+            vehicleMake: (v.vehicleMake as string) ?? "",
+            vehicleModel: (v.vehicleModel as string) ?? "",
+            vehicleCapacity: (v.vehicleCapacity as number) ?? 0,
+            registrationNumber: (v.registrationNumber as string) ?? "",
+            registrationExpiry: v.registrationExpiry as unknown as Date,
+            registrationFile: (v.registrationFile as string) ?? "",
+            insuranceNumber: (v.insuranceNumber as string) ?? "",
+            insuranceExpiry: v.insuranceExpiry as unknown as Date,
+            insuranceFile: (v.insuranceFile as string) ?? "",
+            vehicleImage: (v.vehicleImage as string) ?? "",
+            createdAt: v.createdAt as unknown as Date,
+            updatedAt: v.updatedAt as unknown as Date,
+          }))
+        : [],
     };
   }
 }

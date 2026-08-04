@@ -3,7 +3,7 @@
 import { Button, Card, CardBody } from "@sharemyride/ui";
 import { GetUserResult } from "@sharemyride/shared";
 import { useQuery } from "@tanstack/react-query";
-import { getDriverVehiclesRequest } from "../api/requests/getDriverVehiclesRequest";
+import { getDriverVehiclesRequest } from "@/features/profile/api/requests/getDriverVehiclesRequest";
 import Link from "next/link";
 import { Car, CheckCircle } from "lucide-react";
 
@@ -94,6 +94,7 @@ export function ProfileVehiclesCard({ user }: Props) {
               >
                 <div className="w-full md:w-1/3 aspect-video rounded-lg overflow-hidden border border-border-strong bg-surface-muted flex items-center justify-center relative">
                   {vehicle.vehicle_image ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={vehicle.vehicle_image}
                       alt={`${vehicle.vehicle_make} ${vehicle.vehicle_model}`}
