@@ -30,6 +30,7 @@ import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUse
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { ChangeUserStatusUseCase } from "#/application/use-case/admin/users/ChangeUserStatusUseCase";
 import { GetFullUserProfileUseCase } from "#/application/use-case/admin/users/GetFullUserProfileUseCase";
+import { SwitchUserRoleUseCase } from "#/application/use-case/profile/SwitchUserRoleUseCase";
 import { redisClient } from "#/infrastructure/database/connect-redis";
 import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
 import { MongoVehicleListRepository } from "#/infrastructure/repository/MongoVehicleListRepostirory";
@@ -211,6 +212,10 @@ const updateAvatarUseCase = new UpdateAvatarUseCase(
   s3StorageService,
   consolaLogger,
 );
+const switchUserRoleUseCase = new SwitchUserRoleUseCase(
+  mongoUserRepository,
+  jwtTokenService,
+);
 
 const profileControllerV1 = new ProfileControllerV1(
   consolaLogger,
@@ -218,6 +223,7 @@ const profileControllerV1 = new ProfileControllerV1(
   updateUserUseCase,
   getAvatarUploadUrlUseCase,
   updateAvatarUseCase,
+  switchUserRoleUseCase,
 );
 
 //admin user controller

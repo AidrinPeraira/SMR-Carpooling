@@ -3,6 +3,7 @@ import { DomainEvent } from "./DomainEvent";
 
 export interface UserBlockEventPayload {
   userId: string;
+  isDriver: boolean;
   status: AccountStatus.BLOCKED;
 }
 
@@ -10,7 +11,8 @@ export type UserBlockedEvent = DomainEvent<UserBlockEventPayload>;
 
 export interface UserUnblockEventPayload {
   userId: string;
-  status: AccountStatus.BLOCKED;
+  isDriver: boolean;
+  status: AccountStatus.ACTIVE;
 }
 
-export type UserUnblockedEvent = DomainEvent<UserBlockEventPayload>;
+export type UserUnblockedEvent = DomainEvent<UserUnblockEventPayload>;

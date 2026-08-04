@@ -91,7 +91,11 @@ export class EventBus implements IEventBus {
 
       this._logger.info("Rabbit MQ exchange and dead letter asserted.");
 
-      await this.subscribe([EventName.ADMIN_APPROVE_APPLICTION]);
+      await this.subscribe([
+        EventName.ADMIN_APPROVE_APPLICTION,
+        EventName.ADMIN_USER_BLOCKED,
+        EventName.ADMIN_USER_UNBLOCKED,
+      ]);
 
       this._logger.info("RabbitMQ initialised successfully");
       await this.consume();

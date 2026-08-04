@@ -1,0 +1,20 @@
+info:
+  name: switch-user-role
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: http://localhost:4000/api/v1/profile/role
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

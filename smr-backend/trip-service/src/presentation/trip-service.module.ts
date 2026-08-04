@@ -6,6 +6,7 @@ import { GetConfigurationUseCase } from "#/application/use-case/admin/configurat
 import { UpdatePricingUseCase } from "#/application/use-case/admin/configurations/UpdatePricingUseCase";
 import { UpdateVehicleUseCase } from "#/application/use-case/admin/configurations/UpdateVehicleUseCase";
 import { AddDriverUseCase } from "#/application/use-case/driver/AddDriverUseCase";
+import { ChangeDriverStatusUseCase } from "#/application/use-case/driver/ChangeDriverStatusUseCase";
 import { GetDriverDetailsUseCase } from "#/application/use-case/driver/GetDriverDetailsUseCase";
 import { UpdateDriverUseCase } from "#/application/use-case/driver/UpdateDriverUseCase";
 import { AddVehicleUseCase as AddUserVehicleUseCase } from "#/application/use-case/vehicle/AddVehicleUseCase";
@@ -24,6 +25,8 @@ import { AdminVehicleControllerV1 } from "#/presentation/v1/controllers/admin/Ad
 import { DriverControllerV1 } from "#/presentation/v1/controllers/driver/DriverControllerV1";
 import { VehicleControllerV1 } from "#/presentation/v1/controllers/vehicle/VehicleControllerV1";
 import { ApplicationApprovedHandler } from "#/presentation/v1/event-handlers/ApplicationApprovedEventHandler";
+import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
+import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { createAdminConfigurationRouterV1 } from "#/presentation/v1/routes/admin/AdminConfigurationRouterV1";
 import { createAdminDriverRouterV1 } from "#/presentation/v1/routes/admin/AdminDriverRouterV1";
@@ -50,13 +53,20 @@ const configurationStore = new ConfigurationStore(redisClient);
 // Driver & User Vehicle Use Cases
 const addDriverUseCase = new AddDriverUseCase(driverRepository);
 const updateDriverUseCase = new UpdateDriverUseCase(driverRepository);
+const changeDriverStatusUseCase = new ChangeDriverStatusUseCase(
+  driverRepository,
+);
 const getDriverDetailsUseCase = new GetDriverDetailsUseCase(driverRepository);
 
 const addUserVehicleUseCase = new AddUserVehicleUseCase(vehicleRepository);
-const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(vehicleRepository);
-const getDriverVehiclesUseCase = new GetDriverVehiclesUseCase(vehicleRepository);
+const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(
+  vehicleRepository,
+);
+const getDriverVehiclesUseCase = new GetDriverVehiclesUseCase(
+  vehicleRepository,
+);
 
-// Application Approved Event Handler
+// Application Event Handlers
 const applicationApprovedHandler = new ApplicationApprovedHandler(
   consolaLogger,
   addUserVehicleUseCase,
@@ -65,11 +75,29 @@ const applicationApprovedHandler = new ApplicationApprovedHandler(
   updateDriverUseCase,
 );
 
+const userBlockedHandler = new UserBlockedEventHandler(
+  consolaLogger,
+  changeDriverStatusUseCase,
+);
+
+const userUnblockedHandler = new UserUnblockedEventHandler(
+  consolaLogger,
+  changeDriverStatusUseCase,
+);
+
 // Event Dispatcher & Message Consumer
 const eventDispatcher = new EventDispatcher(consolaLogger);
 await eventDispatcher.register(
   EventName.ADMIN_APPROVE_APPLICTION,
   applicationApprovedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_USER_BLOCKED,
+  userBlockedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_USER_UNBLOCKED,
+  userUnblockedHandler,
 );
 
 const eventBusInstance = new EventBus(
@@ -143,7 +171,9 @@ const adminConfigurationRoutesV1 = createAdminConfigurationRouterV1(
   adminConfigurationControllerV1,
 );
 const adminDriverRoutesV1 = createAdminDriverRouterV1(adminDriverControllerV1);
-const adminVehicleRoutesV1 = createAdminVehicleRouterV1(adminVehicleControllerV1);
+const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
+  adminVehicleControllerV1,
+);
 
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
