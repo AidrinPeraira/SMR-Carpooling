@@ -29,14 +29,6 @@ export function DropDown({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (value !== undefined) {
-      setSelected(value);
-    } else if (defaultValue !== undefined) {
-      setSelected(defaultValue);
-    }
-  }, [value, defaultValue]);
-
   // Handle closing the dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
