@@ -101,13 +101,11 @@ export class GetApplicationDetailsUseCase implements IGetApplicationDetailsUseCa
 
         if (v.vehicleImage) {
           try {
-            signedVehicleImage =
-              await this._storageService.generateSignedDownloadURL(
-                v.vehicleImage,
-                SIGNED_URL_TTL_SECONDS,
-              );
+            signedVehicleImage = v.vehicleImage.startsWith("http")
+              ? v.vehicleImage
+              : await this._storageService.getPublicURL(v.vehicleImage);
           } catch {
-            // Keep original value if presigned URL generation fails
+            // Keep original value if URL resolution fails
           }
         }
 

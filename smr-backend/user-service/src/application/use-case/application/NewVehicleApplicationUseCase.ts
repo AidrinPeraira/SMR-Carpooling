@@ -78,6 +78,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
         await this._storageService.moveFile(data.vehicleImage, finalVehicleImage);
         movedFiles.push({ from: data.vehicleImage, to: finalVehicleImage });
       }
+      const publicVehicleImage = await this._storageService.getPublicURL(finalVehicleImage);
 
       const finalRegistrationFile = getDestinationPath(data.registrationFile);
       if (finalRegistrationFile !== data.registrationFile) {
@@ -103,7 +104,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
         vehicleType: data.vehicleType,
         vehicleModel: data.vehicleModel,
         vehicleMake: data.vehicleMake,
-        vehicleImage: finalVehicleImage,
+        vehicleImage: publicVehicleImage,
         vehicleCapacity: data.vehicleCapacity,
         registrationNumber: data.registrationNumber,
         registrationExpiry: data.registrationExpiry,

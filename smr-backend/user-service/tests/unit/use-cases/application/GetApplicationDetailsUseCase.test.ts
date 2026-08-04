@@ -49,10 +49,10 @@ describe("GetApplicationDetailsUseCase", () => {
       "temp/reg.png",
       3600,
     );
-    expect(result.driverRecord[0].licenseFile).toBe(
+    expect(result.driverRecord![0]!.licenseFile).toBe(
       "https://signed.url/temp/license.png",
     );
-    expect(result.vehicleRecord[0].registrationFile).toBe(
+    expect(result.vehicleRecord![0]!.registrationFile).toBe(
       "https://signed.url/temp/reg.png",
     );
   });

@@ -61,6 +61,7 @@ describe("OnboardingApplicationUseCase", () => {
 
   it("should move all uploaded temp files and save application, driver, and vehicle records", async () => {
     vi.mocked(mockStorageService.moveFile).mockResolvedValue(undefined);
+    vi.mocked(mockStorageService.getPublicURL).mockImplementation(async (path) => `https://public.domain/${path}`);
 
     const dto = {
       userId: "user-1",
@@ -107,7 +108,7 @@ describe("OnboardingApplicationUseCase", () => {
     );
     expect(mockVehicleRecordRepo.save).toHaveBeenCalledWith(
       expect.objectContaining({
-        vehicleImage: "user-files/user-1/vehicle_image-123.jpg",
+        vehicleImage: "https://public.domain/user-files/user-1/vehicle_image-123.jpg",
         registrationFile: "user-files/user-1/vehicle_registration-123.jpg",
         insuranceFile: "user-files/user-1/vehicle_insurance-123.jpg",
       }),

@@ -2,6 +2,8 @@ import { ProcessApplicationRequestDTO } from "#/application/dto/admin/applicatio
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IApplicationRepository } from "#/application/interfaces/repository/IApplicationRepository";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
+import { IVehicleRecordRepository } from "#/application/interfaces/repository/IVehicleRecordRepository";
+import { IStorageService } from "#/application/interfaces/services/IStorageService";
 import { IPocessApplicationUseCase } from "#/application/interfaces/use-case/admin/application/IProcessApplicationUseCase";
 import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import {
@@ -24,11 +26,14 @@ import {
 /**
  * Implementation for the use case to update application status by the admin.
  * Only applications in PENDING status can be processed.
+ * Updates MongoDB records with public URLs upon approval.
  */
 export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
   constructor(
     private readonly _applicationRepository: IApplicationRepository,
     private readonly _userRepository: IUserRepository,
+    private readonly _vehicleRecordRepository: IVehicleRecordRepository,
+    private readonly _storageService: IStorageService,
     private readonly _eventBus: IEventBus,
   ) {}
 
@@ -150,6 +155,25 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
         ? fullApplication.vehicleRecord[0]
         : fullApplication.vehicleRecord;
 
+      let publicVehicleImage: string | undefined;
+      if (firstVehicle?.vehicleImage) {
+        publicVehicleImage = firstVehicle.vehicleImage.startsWith("http")
+          ? firstVehicle.vehicleImage
+          : await this._storageService.getPublicURL(firstVehicle.vehicleImage);
+
+        // Update MongoDB VehicleRecord with the public URL
+        await this._vehicleRecordRepository.updateByCustomId(firstVehicle.recordId, {
+          vehicleImage: publicVehicleImage,
+        });
+      }
+
+      let publicLicenseImage: string | undefined;
+      if (firstDriver?.licenseFile) {
+        publicLicenseImage = firstDriver.licenseFile.startsWith("http")
+          ? firstDriver.licenseFile
+          : await this._storageService.getPublicURL(firstDriver.licenseFile);
+      }
+
       const eventPayload: ApplicationApprovedEventPayload = {
         applicationId: fullApplication.applicationId,
         applicationType: fullApplication.applicationType,
@@ -165,7 +189,7 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
               vehicleType: firstVehicle.vehicleType,
               vehicleModel: firstVehicle.vehicleModel,
               vehicleMake: firstVehicle.vehicleMake,
-              vehicleImage: firstVehicle.vehicleImage,
+              vehicleImage: publicVehicleImage || firstVehicle.vehicleImage,
               registrationNumber: firstVehicle.registrationNumber,
               vehicleCapacity: firstVehicle.vehicleCapacity,
             }
@@ -174,7 +198,7 @@ export class ProcessApplicationUseCase implements IPocessApplicationUseCase {
           ? {
               driverRecordId: firstDriver.recordId,
               licenseNumber: firstDriver.licenseNumber,
-              licenseImage: firstDriver.licenseFile,
+              licenseImage: publicLicenseImage || firstDriver.licenseFile,
             }
           : undefined,
       };

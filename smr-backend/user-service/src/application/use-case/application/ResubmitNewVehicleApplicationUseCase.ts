@@ -98,7 +98,7 @@ export class ResubmitNewVehicleApplicationUseCase implements IResubmitNewVehicle
       if (vehicleRecord.vehicleImage) {
         await this._storageService.deleteFile(vehicleRecord.vehicleImage);
       }
-      vehicleUpdate.vehicleImage = finalVehicleImage;
+      vehicleUpdate.vehicleImage = await this._storageService.getPublicURL(finalVehicleImage);
     }
     if (data.registrationNumber !== undefined) {
       vehicleUpdate.registrationNumber = data.registrationNumber;

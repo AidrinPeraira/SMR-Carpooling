@@ -17,7 +17,7 @@ describe("ProcessApplicationUseCase", () => {
       lastName: "Doe",
       emailId: "john@example.com",
       driverRecord: [{ recordId: "dr-1", licenseNumber: "DL123", licenseFile: "file.png" }],
-      vehicleRecord: [{ recordId: "vr-1", vehicleType: "sedan", vehicleModel: "Civic", vehicleMake: "Honda", registrationNumber: "REG123", vehicleCapacity: 4 }],
+      vehicleRecord: [{ recordId: "vr-1", vehicleType: "sedan", vehicleModel: "Civic", vehicleMake: "Honda", vehicleImage: "user-files/v1.png", registrationNumber: "REG123", vehicleCapacity: 4 }],
     };
 
     const mockAppRepo = {
@@ -30,6 +30,14 @@ describe("ProcessApplicationUseCase", () => {
       updateByCustomId: vi.fn().mockResolvedValue(undefined),
     };
 
+    const mockVehicleRecordRepo = {
+      updateByCustomId: vi.fn().mockResolvedValue(undefined),
+    };
+
+    const mockStorageService = {
+      getPublicURL: vi.fn().mockImplementation(async (path) => `https://public.domain/${path}`),
+    };
+
     const mockEventBus = {
       publish: vi.fn().mockResolvedValue(undefined),
     };
@@ -37,6 +45,8 @@ describe("ProcessApplicationUseCase", () => {
     const useCase = new ProcessApplicationUseCase(
       mockAppRepo as any,
       mockUserRepo as any,
+      mockVehicleRecordRepo as any,
+      mockStorageService as any,
       mockEventBus as any,
     );
 
@@ -55,6 +65,9 @@ describe("ProcessApplicationUseCase", () => {
     );
     expect(mockUserRepo.updateByCustomId).toHaveBeenCalledWith("user-1", {
       isDriver: true,
+    });
+    expect(mockVehicleRecordRepo.updateByCustomId).toHaveBeenCalledWith("vr-1", {
+      vehicleImage: "https://public.domain/user-files/v1.png",
     });
     expect(mockEventBus.publish).toHaveBeenCalledTimes(1);
   });
@@ -75,6 +88,14 @@ describe("ProcessApplicationUseCase", () => {
       updateByCustomId: vi.fn(),
     };
 
+    const mockVehicleRecordRepo = {
+      updateByCustomId: vi.fn(),
+    };
+
+    const mockStorageService = {
+      getPublicURL: vi.fn(),
+    };
+
     const mockEventBus = {
       publish: vi.fn(),
     };
@@ -82,6 +103,8 @@ describe("ProcessApplicationUseCase", () => {
     const useCase = new ProcessApplicationUseCase(
       mockAppRepo as any,
       mockUserRepo as any,
+      mockVehicleRecordRepo as any,
+      mockStorageService as any,
       mockEventBus as any,
     );
 

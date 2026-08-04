@@ -69,4 +69,26 @@ export class VehicleRepository implements IVehicleRepository {
       updatedAt: updated.updatedAt,
     };
   }
+
+  async findByDriverId(driverId: string): Promise<VehicleEntity[]> {
+    const vehicles = await this._model.findMany({
+      where: { driverId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return vehicles.map((v) => ({
+      vehicleId: v.vehicleId,
+      driverId: v.driverId,
+      recordId: v.recordId,
+      vehicleType: v.vehicleType as VehicleTypes,
+      vehicleModel: v.vehicleModel,
+      vehicleMake: v.vehicleMake,
+      vehicleCapacity: v.vehicleCapacity,
+      registrationNumber: v.registrationNumber,
+      vehicleImage: v.vehicleImage,
+      vehicleStatus: v.vehicleStatus as VehicleStatus,
+      createdAt: v.createdAt,
+      updatedAt: v.updatedAt,
+    }));
+  }
 }

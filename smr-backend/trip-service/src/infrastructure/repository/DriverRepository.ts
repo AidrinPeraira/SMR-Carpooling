@@ -60,4 +60,22 @@ export class DriverRepository implements IDriverRepository {
       updatedAt: updated.updatedAt,
     };
   }
+
+  async findByDriverId(driverId: string): Promise<DriverEntity | null> {
+    const driver = await this._model.findUnique({
+      where: { driverId },
+    });
+
+    if (!driver) return null;
+
+    return {
+      driverId: driver.driverId,
+      recordId: driver.recordId,
+      licenseNumber: driver.licenseNumber,
+      licenseImage: driver.licenseImage,
+      driverStatus: driver.driverStatus as DriverStatus,
+      createdAt: driver.createdAt,
+      updatedAt: driver.updatedAt,
+    };
+  }
 }

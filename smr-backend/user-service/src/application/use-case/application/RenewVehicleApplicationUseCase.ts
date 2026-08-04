@@ -114,13 +114,17 @@ export class RenewVehicleApplicationUseCase implements IRenewVehicleApplicationU
 
       recordId = this._uniqueIdGenerator.generateRandomId();
 
+      const publicVehicleImage = baseRecord.vehicleImage.startsWith("http")
+        ? baseRecord.vehicleImage
+        : await this._storageService.getPublicURL(baseRecord.vehicleImage);
+
       const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {
         recordId,
         applicationId,
         vehicleType: baseRecord.vehicleType,
         vehicleModel: baseRecord.vehicleModel,
         vehicleMake: baseRecord.vehicleMake,
-        vehicleImage: baseRecord.vehicleImage,
+        vehicleImage: publicVehicleImage,
         vehicleCapacity: baseRecord.vehicleCapacity,
         registrationNumber: data.registrationNumber,
         registrationExpiry: data.registrationExpiry,

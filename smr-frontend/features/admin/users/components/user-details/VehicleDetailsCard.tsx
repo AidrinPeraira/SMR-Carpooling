@@ -1,48 +1,36 @@
+"use client";
+
 import { Card, CardBody, Tag } from "@sharemyride/ui";
 import { Car } from "lucide-react";
-
-interface Vehicle {
-  name: string;
-  licensePlate: string;
-  status: string;
-  rc: string;
-  insurance: string;
-}
+import { useQuery } from "@tanstack/react-query";
+import { getAdminDriverVehiclesRequest } from "../../api/requests/getAdminDriverVehiclesRequest";
 
 interface VehicleDetailsCardProps {
-  vehicles?: Vehicle[] | null;
+  userId?: string;
 }
 
-const MOCK_VEHICLES = null;
+export function VehicleDetailsCard({ userId }: VehicleDetailsCardProps) {
+  const { data: vehicles, isLoading } = useQuery({
+    queryKey: ["adminDriverVehicles", userId],
+    queryFn: () => getAdminDriverVehiclesRequest(userId!),
+    enabled: Boolean(userId),
+  });
 
-// const MOCK_VEHICLES: Vehicle[] = [
-//   {
-//     name: "Tesla Model 3 (Midnight Grey)",
-//     licensePlate: "ABC-1234",
-//     status: "Active",
-//     rc: "ABC-RC-99281 (Exp: 10/2028)",
-//     insurance: "INS-8821 (Exp: 05/2024)",
-//   },
-//   {
-//     name: "Chevrolet Bolt EV (Summit White)",
-//     licensePlate: "XYZ-5678",
-//     status: "Active",
-//     rc: "XYZ-RC-44120 (Exp: 04/2029)",
-//     insurance: "INS-9901 (Exp: 08/2025)",
-//   },
-//   {
-//     name: "Nissan Leaf (Deep Blue)",
-//     licensePlate: "MNO-9012",
-//     status: "Inactive",
-//     rc: "MNO-RC-33291 (Exp: 11/2027)",
-//     insurance: "INS-4452 (Exp: 02/2024)",
-//   },
-// ];
-//
-export function VehicleDetailsCard({
-  vehicles = MOCK_VEHICLES,
-}: VehicleDetailsCardProps) {
-  if (!vehicles || vehicles.length === 0) {
+  if (isLoading) {
+    return (
+      <Card className="p-6 animate-pulse">
+        <CardBody className="mb-0">
+          <div className="h-6 w-48 bg-surface-muted rounded mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="h-36 bg-surface-muted rounded" />
+            <div className="h-36 bg-surface-muted rounded" />
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
+
+  if (!vehicles || !Array.isArray(vehicles) || vehicles.length === 0) {
     return (
       <Card className="p-6">
         <CardBody className="flex flex-col items-center text-center py-8 mb-0">
@@ -64,57 +52,68 @@ export function VehicleDetailsCard({
     <Card className="p-6">
       <CardBody className="mb-0">
         <h3 className="text-lg font-bold text-content-primary mb-6">
-          Registered Vehicles
+          Registered Vehicles ({vehicles.length})
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {vehicles.map((vehicle, index) => (
-            <div
-              key={index}
-              className="p-4 border border-border-subtle rounded-lg bg-surface-muted/30 flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <p className="font-bold text-sm text-content-primary">
-                      {vehicle.name}
-                    </p>
-                    <p className="text-xs text-content-secondary font-medium mt-0.5">
-                      {vehicle.licensePlate}
-                    </p>
-                  </div>
-                  <Tag
-                    variant={vehicle.status === "Active" ? "accent" : "muted"}
-                    className={
-                      vehicle.status === "Active"
-                        ? "bg-accent text-accent-fg uppercase tracking-wider"
-                        : "uppercase tracking-wider"
-                    }
-                  >
-                    {vehicle.status}
-                  </Tag>
-                </div>
+          {vehicles.map((vehicle) => {
+            const registeredDate = vehicle.created_at
+              ? new Date(vehicle.created_at).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "N/A";
 
-                <div className="grid grid-cols-1 gap-2 text-xs text-content-secondary mb-4 border-t border-border-subtle pt-4">
-                  <div>
-                    <span className="text-content-tertiary font-bold uppercase tracking-wider">
-                      RC:
-                    </span>{" "}
-                    {vehicle.rc}
+            return (
+              <div
+                key={vehicle.vehicle_id}
+                className="p-4 border border-border-subtle rounded-lg bg-surface-muted/30 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="aspect-video rounded-lg overflow-hidden border border-border-strong bg-surface-muted flex items-center justify-center mb-4 relative">
+                    {vehicle.vehicle_image ? (
+                      <img
+                        src={vehicle.vehicle_image}
+                        alt={`${vehicle.vehicle_make} ${vehicle.vehicle_model}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Car className="w-8 h-8 text-content-tertiary" />
+                    )}
                   </div>
-                  <div>
-                    <span className="text-content-tertiary font-bold uppercase tracking-wider">
-                      Insurance:
-                    </span>{" "}
-                    {vehicle.insurance}
+
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <p className="font-bold text-sm text-content-primary">
+                        {vehicle.vehicle_make} {vehicle.vehicle_model}
+                      </p>
+                      <p className="text-xs text-content-secondary font-medium mt-0.5">
+                        {vehicle.registration_number}
+                      </p>
+                    </div>
+                    <Tag variant="accent" className="uppercase tracking-wider">
+                      {vehicle.vehicle_status}
+                    </Tag>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-1 text-xs text-content-secondary mb-2 border-t border-border-subtle pt-3">
+                    <div>
+                      <span className="text-content-tertiary font-bold uppercase tracking-wider">
+                        Type:
+                      </span>{" "}
+                      {vehicle.vehicle_type} ({vehicle.vehicle_capacity} Seats)
+                    </div>
+                    <div>
+                      <span className="text-content-tertiary font-bold uppercase tracking-wider">
+                        Registered:
+                      </span>{" "}
+                      {registeredDate}
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <button className="text-accent font-bold text-xs hover:underline uppercase tracking-wider cursor-pointer text-left w-fit">
-                View Files
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardBody>
     </Card>

@@ -334,6 +334,8 @@ const getAllApplicationsUseCase = new GetAllApplicationsUseCase(
 const processApplicationUseCase = new ProcessApplicationUseCase(
   mongoApplicationRepository,
   mongoUserRepository,
+  mongoVehicleRecordRepository,
+  s3StorageService,
   rabbitMQEventBus,
 );
 

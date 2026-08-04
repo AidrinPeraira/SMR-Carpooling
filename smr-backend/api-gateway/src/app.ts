@@ -78,7 +78,7 @@ export function createApp(logger: ILogger) {
   const tripServiceProxy = createProxyMiddleware<Request, Response>({
     target: AppConfig.TRIP_SERVICE_URL,
     changeOrigin: true,
-    pathFilter: ["/api/*/admin/trip/**"],
+    pathFilter: ["/api/*/admin/trip/**", "/api/*/driver/**", "/api/*/vehicles/**"],
     pathRewrite: {
       "^/api": "",
     },

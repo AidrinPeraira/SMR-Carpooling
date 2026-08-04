@@ -1,8 +1,7 @@
 import { DriverEntity } from "#/domain/entities/DriverEntity";
 
 /**
- * This is the repository that handles the crud operations for driver
- * entity
+ * Repository interface that handles CRUD operations for driver entity
  */
 export interface IDriverRepository {
   save(driver: DriverEntity): Promise<DriverEntity>;
@@ -10,4 +9,5 @@ export interface IDriverRepository {
     driverId: string,
     driver: Partial<DriverEntity>,
   ): Promise<DriverEntity>;
+  findByDriverId(driverId: string): Promise<DriverEntity | null>;
 }
