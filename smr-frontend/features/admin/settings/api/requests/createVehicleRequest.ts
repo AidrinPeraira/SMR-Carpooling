@@ -1,11 +1,11 @@
 import { apiClientFetch } from "@/lib/api-client";
 import {
-  CreateVehicleRequestAPI,
-  VehicleListResponseAPI,
+  CreateVehicleRequest,
+  VehicleListResult,
 } from "@sharemyride/shared";
 
-export async function createVehicleRequest(data: CreateVehicleRequestAPI) {
-  return await apiClientFetch<VehicleListResponseAPI>(
+export async function createVehicleRequest(data: CreateVehicleRequest) {
+  return await apiClientFetch<VehicleListResult>(
     "/api/v1/admin/trip/config/vehicles",
     {
       method: "POST",

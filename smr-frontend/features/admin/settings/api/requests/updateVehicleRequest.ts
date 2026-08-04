@@ -1,14 +1,14 @@
 import { apiClientFetch } from "@/lib/api-client";
 import {
-  UpdateVehicleRequestAPI,
-  VehicleListResponseAPI,
+  UpdateVehicleRequest,
+  VehicleListResult,
 } from "@sharemyride/shared";
 
 export async function updateVehicleRequest(
   id: string,
-  data: UpdateVehicleRequestAPI,
+  data: UpdateVehicleRequest,
 ) {
-  return await apiClientFetch<VehicleListResponseAPI>(
+  return await apiClientFetch<VehicleListResult>(
     `/api/v1/admin/trip/config/vehicles/${id}`,
     {
       method: "PATCH",

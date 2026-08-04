@@ -5,15 +5,35 @@ import { CreateNewVehicleUseCase } from "#/application/use-case/admin/configurat
 import { GetConfigurationUseCase } from "#/application/use-case/admin/configurations/GetConfigurationsUseCase";
 import { UpdatePricingUseCase } from "#/application/use-case/admin/configurations/UpdatePricingUseCase";
 import { UpdateVehicleUseCase } from "#/application/use-case/admin/configurations/UpdateVehicleUseCase";
+import { AddDriverUseCase } from "#/application/use-case/driver/AddDriverUseCase";
+import { ChangeDriverStatusUseCase } from "#/application/use-case/driver/ChangeDriverStatusUseCase";
+import { GetDriverDetailsUseCase } from "#/application/use-case/driver/GetDriverDetailsUseCase";
+import { UpdateDriverUseCase } from "#/application/use-case/driver/UpdateDriverUseCase";
+import { AddVehicleUseCase as AddUserVehicleUseCase } from "#/application/use-case/vehicle/AddVehicleUseCase";
+import { GetDriverVehiclesUseCase } from "#/application/use-case/vehicle/GetDriverVehiclesUseCase";
+import { UpdateVehicleUseCase as UpdateUserVehicleUseCase } from "#/application/use-case/vehicle/UpdateVehicleUseCase";
+import { DriverRepository } from "#/infrastructure/repository/DriverRepository";
+import { VehicleRepository } from "#/infrastructure/repository/VehicleRepository";
 import { PricingRulesRepository } from "#/infrastructure/repository/admin/PricingRulesRepository";
 import { VehicleListRepository } from "#/infrastructure/repository/admin/VehicleListRepository";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { ConfigurationStore } from "#/infrastructure/store/ConfigurationsStore";
 import { redisClient } from "#/infrastructure/store/connect-redis";
 import { AdminConfigurationControllerV1 } from "#/presentation/v1/controllers/admin/AdminConfigurationControllerV1";
+import { AdminDriverControllerV1 } from "#/presentation/v1/controllers/admin/AdminDriverControllerV1";
+import { AdminVehicleControllerV1 } from "#/presentation/v1/controllers/admin/AdminVehicleControllerV1";
+import { DriverControllerV1 } from "#/presentation/v1/controllers/driver/DriverControllerV1";
+import { VehicleControllerV1 } from "#/presentation/v1/controllers/vehicle/VehicleControllerV1";
+import { ApplicationApprovedHandler } from "#/presentation/v1/event-handlers/ApplicationApprovedEventHandler";
+import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
+import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
+import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { createAdminConfigurationRouterV1 } from "#/presentation/v1/routes/admin/AdminConfigurationRouterV1";
-import { AuthMiddleware } from "#/presentation/v1/middlewares/AuthMiddleware";
-import { ConsolaLogger, UserRole } from "@sharemyride/shared";
+import { createAdminDriverRouterV1 } from "#/presentation/v1/routes/admin/AdminDriverRouterV1";
+import { createAdminVehicleRouterV1 } from "#/presentation/v1/routes/admin/AdminVehicleRouterV1";
+import { createDriverRouterV1 } from "#/presentation/v1/routes/driver/DriverRouterV1";
+import { createVehicleRouterV1 } from "#/presentation/v1/routes/vehicle/VehicleRouterV1";
+import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
 /**
  * Composition Root for the Trip Service.
@@ -26,18 +46,65 @@ const consolaLogger = new ConsolaLogger();
 // Infrastructure Services & Repositories
 const pricingRulesRepository = new PricingRulesRepository();
 const vehicleListRepository = new VehicleListRepository();
+const driverRepository = new DriverRepository();
+const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
 
-const dummyEventDispatcher = {
-  register: async () => {},
-  dispatch: async () => {},
-};
+// Driver & User Vehicle Use Cases
+const addDriverUseCase = new AddDriverUseCase(driverRepository);
+const updateDriverUseCase = new UpdateDriverUseCase(driverRepository);
+const changeDriverStatusUseCase = new ChangeDriverStatusUseCase(
+  driverRepository,
+);
+const getDriverDetailsUseCase = new GetDriverDetailsUseCase(driverRepository);
+
+const addUserVehicleUseCase = new AddUserVehicleUseCase(vehicleRepository);
+const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(
+  vehicleRepository,
+);
+const getDriverVehiclesUseCase = new GetDriverVehiclesUseCase(
+  vehicleRepository,
+);
+
+// Application Event Handlers
+const applicationApprovedHandler = new ApplicationApprovedHandler(
+  consolaLogger,
+  addUserVehicleUseCase,
+  addDriverUseCase,
+  updateUserVehicleUseCase,
+  updateDriverUseCase,
+);
+
+const userBlockedHandler = new UserBlockedEventHandler(
+  consolaLogger,
+  changeDriverStatusUseCase,
+);
+
+const userUnblockedHandler = new UserUnblockedEventHandler(
+  consolaLogger,
+  changeDriverStatusUseCase,
+);
+
+// Event Dispatcher & Message Consumer
+const eventDispatcher = new EventDispatcher(consolaLogger);
+await eventDispatcher.register(
+  EventName.ADMIN_APPROVE_APPLICTION,
+  applicationApprovedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_USER_BLOCKED,
+  userBlockedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_USER_UNBLOCKED,
+  userUnblockedHandler,
+);
 
 const eventBusInstance = new EventBus(
   consolaLogger,
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
-  dummyEventDispatcher,
+  eventDispatcher,
 );
 
 // Admin Configuration Use Cases
@@ -69,7 +136,7 @@ const updateVehicleUseCase = new UpdateVehicleUseCase(
   eventBusInstance,
 );
 
-// Controller
+// Controllers
 const adminConfigurationControllerV1 = new AdminConfigurationControllerV1(
   consolaLogger,
   getConfigurationsUseCase,
@@ -79,17 +146,45 @@ const adminConfigurationControllerV1 = new AdminConfigurationControllerV1(
   updateVehicleUseCase,
 );
 
+const adminDriverControllerV1 = new AdminDriverControllerV1(
+  consolaLogger,
+  getDriverDetailsUseCase,
+);
+
+const adminVehicleControllerV1 = new AdminVehicleControllerV1(
+  consolaLogger,
+  getDriverVehiclesUseCase,
+);
+
+const driverControllerV1 = new DriverControllerV1(
+  consolaLogger,
+  getDriverDetailsUseCase,
+);
+
+const vehicleControllerV1 = new VehicleControllerV1(
+  consolaLogger,
+  getDriverVehiclesUseCase,
+);
+
 // Routers
 const adminConfigurationRoutesV1 = createAdminConfigurationRouterV1(
   adminConfigurationControllerV1,
 );
+const adminDriverRoutesV1 = createAdminDriverRouterV1(adminDriverControllerV1);
+const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
+  adminVehicleControllerV1,
+);
+
+const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
+const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
 
 const v1Router = express.Router();
-v1Router.use(
-  "/admin/trip/config",
-  AuthMiddleware(UserRole.ADMIN),
-  adminConfigurationRoutesV1,
-);
+v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
+v1Router.use("/admin/trip/driver", adminDriverRoutesV1);
+v1Router.use("/admin/trip/vehicles", adminVehicleRoutesV1);
+
+v1Router.use("/driver", driverRoutesV1);
+v1Router.use("/vehicles", vehicleRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,

@@ -1,0 +1,22 @@
+enum VehicleStatus {
+  active
+  inactive
+  blocked
+}
+
+model Vehicle {
+  vehicleId          String        @id @default(uuid())
+  driverId           String
+  recordId           String
+  vehicleType        VehicleTypes
+  vehicleModel       String
+  vehicleMake        String
+  vehicleCapacity    Int
+  registrationNumber String        @unique
+  vehicleImage       String
+  vehicleStatus      VehicleStatus @default(active)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  driver Driver @relation(fields: [driverId], references: [driverId])
+}

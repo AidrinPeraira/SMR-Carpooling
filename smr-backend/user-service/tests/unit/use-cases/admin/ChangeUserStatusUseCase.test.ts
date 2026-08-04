@@ -6,7 +6,6 @@ import { mockEventBus } from "&#/mocks/MockEventBus";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 import {
   AccountStatus,
-  AuthSessionNames,
   EventName,
 } from "@sharemyride/shared";
 
@@ -19,6 +18,7 @@ describe("ChangeUserStatusUseCase", () => {
 
   const mockUser = createMockUserData({
     userId: "user-123",
+    isDriver: true,
     accountStatus: AccountStatus.ACTIVE,
   });
 
@@ -53,6 +53,7 @@ describe("ChangeUserStatusUseCase", () => {
         eventName: EventName.ADMIN_USER_BLOCKED,
         payload: {
           userId: "user-123",
+          isDriver: true,
           status: AccountStatus.BLOCKED,
         },
       }),
@@ -88,7 +89,8 @@ describe("ChangeUserStatusUseCase", () => {
         eventName: EventName.ADMIN_USER_UNBLOCKED,
         payload: {
           userId: "user-123",
-          status: AccountStatus.BLOCKED,
+          isDriver: true,
+          status: AccountStatus.ACTIVE,
         },
       }),
     );

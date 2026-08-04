@@ -1,13 +1,13 @@
 import { apiClientFetch } from "@/lib/api-client";
 import {
-  CreatePricingRequestAPI,
-  PricingRuleResponseAPI,
+  CreatePricingRequest,
+  PricingRuleResult,
 } from "@sharemyride/shared";
 
 export async function createPricingRuleRequest(
-  data: CreatePricingRequestAPI,
+  data: CreatePricingRequest,
 ) {
-  return await apiClientFetch<PricingRuleResponseAPI>(
+  return await apiClientFetch<PricingRuleResult>(
     "/api/v1/admin/trip/config/pricing",
     {
       method: "POST",

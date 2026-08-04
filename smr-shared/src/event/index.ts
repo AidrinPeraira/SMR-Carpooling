@@ -3,3 +3,4 @@ export * from "./EventEnums";
 export * from "./AuthEvents";
 export * from "./AdminUserEvents";
 export * from "./VehicleListEvents";
+export * from "./ApplicationEvents";

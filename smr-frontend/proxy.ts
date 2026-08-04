@@ -17,6 +17,7 @@ async function getNewTokens(token: string): Promise<TokenRefreshResult> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-frontend-key": String(process.env.FRONTEND_KEY || ""),
         },
         body: JSON.stringify({ refresh_token: token }),
       },
@@ -100,9 +101,13 @@ export default async function proxy(request: NextRequest) {
   //lets add the cases to check routes here
   const isPublicRoute = path === "/" || path.startsWith("/auth/");
   const isDriverRoute =
-    path.startsWith("/driver") || path.startsWith("/profile");
+    path.startsWith("/driver") ||
+    path.startsWith("/profile") ||
+    path.startsWith("/application");
   const isPassengerRoute =
-    path.startsWith("/passenger") || path.startsWith("/profile");
+    path.startsWith("/passenger") ||
+    path.startsWith("/profile") ||
+    path.startsWith("/application");
   const isAdminRoute = path.startsWith("/admin");
 
   let isRefreshed = false;

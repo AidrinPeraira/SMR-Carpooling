@@ -1,0 +1,27 @@
+info:
+  name: get-file-upload-url
+  type: http
+  seq: 12
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/applications/upload-url
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTczMDE3NiwiZXhwIjoxNzg1NzMxMDc2fQ.5EMz9Tdx_6yy_z1flF2qzbfLDn2LJYn_foQ0Kub71nY
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "file_type": "image/png",
+          "file_name": "driver_license"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

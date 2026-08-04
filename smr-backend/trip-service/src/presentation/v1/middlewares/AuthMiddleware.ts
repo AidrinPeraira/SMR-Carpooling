@@ -25,7 +25,7 @@ export function AuthMiddleware(...allowedRoles: UserRole[]) {
       );
     }
 
-    if (!allowedRoles.includes(reqRole as UserRole)) {
+    if (allowedRoles.length > 0 && !allowedRoles.includes(reqRole as UserRole)) {
       throw new ApplicationError(
         GenericErrorMessage.UNAUTHORIZED,
         HttpStatusCodes.Forbidden,

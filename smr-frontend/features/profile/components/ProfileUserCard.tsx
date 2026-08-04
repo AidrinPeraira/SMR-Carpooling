@@ -1,26 +1,56 @@
-import { Card, CardHeader, CardBody } from "@sharemyride/ui";
-import { GetUserResult } from "@sharemyride/shared";
-import { Edit, User } from "lucide-react";
+"use client";
+
+import { Button, Card, CardHeader, CardBody, Loader, useToast } from "@sharemyride/ui";
+import { GetUserResult, UserRole } from "@sharemyride/shared";
+import { Edit, RefreshCw, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTransition } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { changeRoleAction } from "../api/actions/ChangeRoleAction";
 
 interface Props {
   user: GetUserResult | null;
 }
 
 export function ProfileUserCard({ user }: Props) {
+  const [isPending, startTransition] = useTransition();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
   if (!user) {
     return <Card>No user data fetched</Card>;
   }
 
   const memberSince = new Date(user.created_at).toLocaleDateString();
-
   const avatarUrl = user?.profile_image || "";
+  const targetRole =
+    user.user_role === UserRole.DRIVER ? UserRole.PASSENGER : UserRole.DRIVER;
+
+  const handleSwitchRole = () => {
+    startTransition(async () => {
+      const response = await changeRoleAction();
+
+      if (response.success) {
+        toast(`Switched role to ${targetRole}`, {
+          description: "Your active role has been updated.",
+        });
+        await queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+        router.refresh();
+      } else {
+        toast("Role switch failed", {
+          description: response.description || "Failed to switch user role",
+        });
+      }
+    });
+  };
 
   return (
     <>
       <Card className="p-6">
-        <CardHeader className="flex justify-between items-start mb-6">
+        <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-full overflow-hidden border border-accent shadow-sm bg-surface-muted flex items-center justify-center">
               {avatarUrl ? (
@@ -44,9 +74,26 @@ export function ProfileUserCard({ user }: Props) {
               </span>
             </div>
           </div>
-          <Link href="/profile/update-profile">
-            <Edit className="w-5 h-5 text-content-tertiary cursor-pointer hover:text-primary transition-colors" />
-          </Link>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <Button
+              variant="secondary"
+              onClick={handleSwitchRole}
+              disabled={isPending}
+              className="flex items-center gap-1.5 text-xs py-1.5"
+            >
+              {isPending ? (
+                <Loader className="w-4 h-4" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              Switch to {targetRole}
+            </Button>
+
+            <Link href="/profile/update-profile">
+              <Edit className="w-5 h-5 text-content-tertiary cursor-pointer hover:text-primary transition-colors" />
+            </Link>
+          </div>
         </CardHeader>
 
         <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0 border-t border-border-subtle pt-6">

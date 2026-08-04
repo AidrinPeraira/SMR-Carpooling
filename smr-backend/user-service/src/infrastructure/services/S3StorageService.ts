@@ -7,8 +7,10 @@ import {
   HttpStatusCodes,
 } from "@sharemyride/shared";
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -25,9 +27,7 @@ const client = new S3Client({
 });
 
 /**
- * THis is the implemntation for the storage service usin S3.
- * Currently it uses the aws-sdk for s3.
- * The service provider is but S3 compatible cloudflare R2
+ * Implementation for the storage service using S3 compatible storage.
  */
 export class S3StorageService implements IStorageService {
   private readonly client: S3Client = client;
@@ -116,11 +116,58 @@ export class S3StorageService implements IStorageService {
     return `${cleanDomain}/${cleanPath}`;
   }
 
+  async moveFile(fromPath: string, toPath: string): Promise<void> {
+    const cleanFrom = fromPath.replace(/^\//, "");
+    const cleanTo = toPath.replace(/^\//, "");
+
+    if (cleanFrom === cleanTo) {
+      return;
+    }
+
+    try {
+      const copyCommand = new CopyObjectCommand({
+        Bucket: this.bucketName,
+        CopySource: encodeURI(`${this.bucketName}/${cleanFrom}`),
+        Key: cleanTo,
+      });
+
+      await this.client.send(copyCommand);
+      await this.deleteFile(cleanFrom);
+    } catch (error: any) {
+      // Check if file is already present at destination
+      try {
+        await this.client.send(
+          new HeadObjectCommand({
+            Bucket: this.bucketName,
+            Key: cleanTo,
+          }),
+        );
+        return;
+      } catch {
+        // Destination does not exist either, throw ApplicationError
+      }
+
+      throw new ApplicationError(
+        GenericErrorMessage.INTERNAL_SERVER_ERROR,
+        HttpStatusCodes.InternalServerError,
+        ErrorCode.SYSTEM_INTERNAL_ERROR,
+        {
+          location: "S3StorageService.moveFile",
+          description: "Failed to move file in S3 storage",
+          fromPath,
+          toPath,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      );
+    }
+  }
+
   async deleteFile(filePath: string): Promise<void> {
     try {
+      const cleanPath = filePath.replace(/^\//, "");
       const command = new DeleteObjectCommand({
         Bucket: this.bucketName,
-        Key: filePath,
+        Key: cleanPath,
       });
 
       await this.client.send(command);
@@ -139,4 +186,3 @@ export class S3StorageService implements IStorageService {
     }
   }
 }
-

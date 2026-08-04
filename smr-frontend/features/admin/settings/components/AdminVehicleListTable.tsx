@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { VehicleListResponseAPI, VehicleTypes } from "@sharemyride/shared";
+import { VehicleListResult, VehicleTypes } from "@sharemyride/shared";
 import {
   Button,
   Card,
@@ -19,7 +19,7 @@ import { createVehicleRequest } from "../api/requests/createVehicleRequest";
 import { updateVehicleRequest } from "../api/requests/updateVehicleRequest";
 
 interface AdminVehicleListTableProps {
-  vehicles: VehicleListResponseAPI[];
+  vehicles: VehicleListResult[];
 }
 
 export function AdminVehicleListTable({ vehicles }: AdminVehicleListTableProps) {
@@ -91,7 +91,7 @@ export function AdminVehicleListTable({ vehicles }: AdminVehicleListTableProps) 
     value: vt,
   }));
 
-  const tableData: TableProps<VehicleListResponseAPI> = {
+  const tableData: TableProps<VehicleListResult> = {
     data: vehicles,
     columnNames: [
       {

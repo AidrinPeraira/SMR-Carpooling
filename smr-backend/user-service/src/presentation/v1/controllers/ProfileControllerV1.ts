@@ -1,8 +1,10 @@
 import { IGetAvatarUploadUrlUseCase } from "#/application/interfaces/use-case/profile/IGetAvatarUploadUrlUseCase";
 import { IGetUserUseCase } from "#/application/interfaces/use-case/profile/IGetUserUseCase";
+import { ISwitchUserRoleUseCase } from "#/application/interfaces/use-case/profile/ISwitchUserRoleUseCase";
 import { IUpdateAvatarUseCase } from "#/application/interfaces/use-case/profile/IUpdateAvatarUseCase";
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
 import { IProfileControllerV1 } from "#/presentation/v1/interfaces/IProfileControllerV1";
+import { toLoginResult } from "#/presentation/v1/mapper/AuthMapper";
 import {
   toGetAvatarUploadUrlRequestDTO,
   toGetAvatarUploadUrlResult,
@@ -20,6 +22,7 @@ import {
   GetUserResult,
   HttpStatusCodes,
   ILogger,
+  LoginResult,
   makeSuccessResponse,
   UpdateAvatarResult,
   UserSuccessMessage,
@@ -33,6 +36,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
     private readonly _updateUserUseCase: IUpdateUserUseCase,
     private readonly _getAvatarUploadUrlUseCase: IGetAvatarUploadUrlUseCase,
     private readonly _updateAvatarUseCase: IUpdateAvatarUseCase,
+    private readonly _switchUserRoleUseCase: ISwitchUserRoleUseCase,
   ) {}
 
   async getUser(req: Request, res: Response): Promise<void> {
@@ -118,5 +122,22 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
         ),
       );
   }
-}
 
+  async switchUserRole(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+
+    this._logger.info("Switching user role for ID: ", userId);
+
+    const result = await this._switchUserRoleUseCase.execute(userId);
+    const mappedResult = toLoginResult(result);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<LoginResult>(
+          UserSuccessMessage.PROFILE_UPDATED,
+          mappedResult,
+        ),
+      );
+  }
+}

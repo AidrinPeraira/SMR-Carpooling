@@ -1,0 +1,17 @@
+enum DriverStatus {
+  active
+  inactive
+  blocked
+}
+
+model Driver {
+  driverId      String       @id
+  recordId      String
+  licenseNumber String       @unique
+  licenseImage  String       @default("")
+  driverStatus  DriverStatus @default(active)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  vehicles Vehicle[]
+}

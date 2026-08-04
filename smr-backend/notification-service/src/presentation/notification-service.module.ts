@@ -1,16 +1,22 @@
 /*
- * This si the composition file for notification service
+ * This is the composition file for notification service
  */
 
 import { AppConfig } from "#/application.config";
-import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSignupVerificationMailUseCase";
+import { SendApplicationApprovedMailUseCase } from "#/application/use-case/SendApplicationApprovedMailUseCase";
+import { SendApplicationRejectedMailUseCase } from "#/application/use-case/SendApplicationRejectedMailUseCase";
+import { SendApplicationReturnedMailUseCase } from "#/application/use-case/SendApplicationReturnedMailUseCase";
 import { SendPasswordChangeRequestMailUseCase } from "#/application/use-case/SendPasswordChangeRequestMailUseCase";
 import { SendPasswordChangedMailUseCase } from "#/application/use-case/SendPasswordChangedMailUseCase";
+import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSignupVerificationMailUseCase";
 import { RabbitMQConsumer } from "#/infrastructure/services/RabbitMQConsumer";
 import { ResendEmailService } from "#/infrastructure/services/ResendEMailService";
-import { UserSignupHandler } from "#/presentation/event-handlers/UserSignupHandler";
+import { ApplicationApprovedHandler } from "#/presentation/event-handlers/ApplicationApprovedHandler";
+import { ApplicationRejectedHandler } from "#/presentation/event-handlers/ApplicationRejectedHandler";
+import { ApplicationReturnedHandler } from "#/presentation/event-handlers/ApplicationReturnedHandler";
 import { PasswordChangeRequestHandler } from "#/presentation/event-handlers/PasswordChangeRequestHandler";
 import { PasswordChangedHandler } from "#/presentation/event-handlers/PasswordChangedHandler";
+import { UserSignupHandler } from "#/presentation/event-handlers/UserSignupHandler";
 import { EventDispatcher } from "#/presentation/messaging/EventDispatcher";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
@@ -28,6 +34,15 @@ const sendPasswordChangedMailUseCase = new SendPasswordChangedMailUseCase(
   resendMailService,
 );
 
+const sendApplicationApprovedMailUseCase =
+  new SendApplicationApprovedMailUseCase(resendMailService);
+
+const sendApplicationRejectedMailUseCase =
+  new SendApplicationRejectedMailUseCase(resendMailService);
+
+const sendApplicationReturnedMailUseCase =
+  new SendApplicationReturnedMailUseCase(resendMailService);
+
 const userSignupHandler = new UserSignupHandler(
   consolaLogger,
   sendSignUpVerificationEmailUseCase,
@@ -43,6 +58,21 @@ const passwordChangedHandler = new PasswordChangedHandler(
   sendPasswordChangedMailUseCase,
 );
 
+const applicationApprovedHandler = new ApplicationApprovedHandler(
+  consolaLogger,
+  sendApplicationApprovedMailUseCase,
+);
+
+const applicationRejectedHandler = new ApplicationRejectedHandler(
+  consolaLogger,
+  sendApplicationRejectedMailUseCase,
+);
+
+const applicationReturnedHandler = new ApplicationReturnedHandler(
+  consolaLogger,
+  sendApplicationReturnedMailUseCase,
+);
+
 const eventDispatcher = new EventDispatcher(consolaLogger);
 await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, userSignupHandler);
 await eventDispatcher.register(
@@ -52,6 +82,18 @@ await eventDispatcher.register(
 await eventDispatcher.register(
   EventName.AUTH_USER_CHANGE_PASSWORD_CHANGED,
   passwordChangedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_APPROVE_APPLICTION,
+  applicationApprovedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_REJECT_APPLICATION,
+  applicationRejectedHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_RETURN_APPLICTION,
+  applicationReturnedHandler,
 );
 
 const rabbitMqConsumer = new RabbitMQConsumer(

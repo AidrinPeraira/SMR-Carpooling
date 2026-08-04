@@ -3,3 +3,8 @@ export enum VehicleTypes {
   SEDAN = "sedan",
   HATCHBACK = "hatchback",
 }
+
+export enum VehicleStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+}

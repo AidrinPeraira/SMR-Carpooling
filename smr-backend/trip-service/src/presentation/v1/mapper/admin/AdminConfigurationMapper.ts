@@ -12,11 +12,11 @@ import {
 import {
   CreatePricingSchemaType,
   CreateVehicleSchemaType,
-  GetConfigurationsResponseAPI,
-  PricingRuleResponseAPI,
+  GetConfigurationsResult,
+  PricingRuleResult,
   UpdatePricingSchemaType,
   UpdateVehicleSchemaType,
-  VehicleListResponseAPI,
+  VehicleListResult,
 } from "@sharemyride/shared";
 
 export function toCreatePricingRequestDTO(
@@ -68,7 +68,7 @@ export function toUpdateVehicleRequestDTO(
 
 export function toPricingRuleResponse(
   entity: PricingRules,
-): PricingRuleResponseAPI {
+): PricingRuleResult {
   return {
     id: entity.id,
     vehicle_type: entity.vehicleType,
@@ -80,7 +80,7 @@ export function toPricingRuleResponse(
 
 export function toVehicleListResponse(
   entity: VehicleList,
-): VehicleListResponseAPI {
+): VehicleListResult {
   return {
     id: entity.id,
     vehicle_type: entity.vehicleType,
@@ -92,7 +92,7 @@ export function toVehicleListResponse(
 
 export function toGetConfigurationsResponse(
   result: GetConfigurationsResultDTO,
-): GetConfigurationsResponseAPI {
+): GetConfigurationsResult {
   return {
     vehicles: result.vehicles.map(toVehicleListResponse),
     pricing_rules: result.pricingRules.map(toPricingRuleResponse),

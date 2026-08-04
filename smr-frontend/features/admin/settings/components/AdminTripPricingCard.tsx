@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PricingRuleResponseAPI, VehicleTypes } from "@sharemyride/shared";
+import { PricingRuleResult, VehicleTypes } from "@sharemyride/shared";
 import { Button, Card, CardBody, Input, Label, Tag, useToast } from "@sharemyride/ui";
 import { updatePricingRuleRequest } from "../api/requests/updatePricingRuleRequest";
 import { createPricingRuleRequest } from "../api/requests/createPricingRuleRequest";
 
 interface AdminTripPricingCardProps {
-  pricingRules: PricingRuleResponseAPI[];
+  pricingRules: PricingRuleResult[];
 }
 
 const VEHICLE_TYPE_LABELS: Record<VehicleTypes, { label: string; defaultBase: number; defaultRate: number }> = {

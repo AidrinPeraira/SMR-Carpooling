@@ -1,3 +1,4 @@
+import { GetAllApplicationsQueryDTO } from "#/application/dto/admin/application/AdminApplicationsDTO";
 import {
   GetAllUsersRequestQueryDTO,
   GetAllUsersResponseDTO,
@@ -32,6 +33,16 @@ export function toGetAllUsersRequestQuery(
       ? searchFields.map((v) => userQueryFieldMapper(v))
       : undefined,
   };
+}
+
+export function toGetAllApplicationsRequestQuery(
+  query: unknown,
+): GetAllApplicationsQueryDTO {
+  const validatedQuery = zodParser<GetAllApplicationsQueryDTO>(
+    QuerySchema,
+    query,
+  );
+  return validatedQuery;
 }
 
 /**

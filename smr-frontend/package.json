@@ -13,8 +13,8 @@
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@react-oauth/google": "^0.13.5",
-    "@sharemyride/shared": "^0.0.3",
-    "@sharemyride/ui": "^0.0.1",
+    "@sharemyride/shared": "^0.0.4",
+    "@sharemyride/ui": "^0.0.2",
     "@tanstack/react-query": "^5.101.2",
     "add": "^2.0.6",
     "clsx": "^2.1.1",

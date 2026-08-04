@@ -1,0 +1,39 @@
+info:
+  name: onboarding
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/applications/onboarding
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTczMDE3NiwiZXhwIjoxNzg1NzMxMDc2fQ.5EMz9Tdx_6yy_z1flF2qzbfLDn2LJYn_foQ0Kub71nY
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "license_number": "DL1234567890",
+          "license_expiry": "2030-12-31T00:00:00.000Z",
+          "license_file": "temp/license_doc.pdf",
+          "vehicle_type": "sedan",
+          "vehicle_make": "Toyota",
+          "vehicle_model": "Camry",
+          "vehicle_capacity": 4,
+          "registration_number": "KA01AB1234",
+          "registration_expiry": "2030-12-31T00:00:00.000Z",
+          "registration_file": "temp/reg_doc.pdf",
+          "insurance_number": "INS-12345678",
+          "insurance_expiry": "2030-12-31T00:00:00.000Z",
+          "insurance_file": "temp/insurance_doc.pdf",
+          "vehicle_image": "temp/vehicle_img.jpg"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

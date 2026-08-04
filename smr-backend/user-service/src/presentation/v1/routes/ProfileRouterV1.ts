@@ -23,6 +23,10 @@ export function createProfileRouterV1(
     "/avatar",
     profileControllerV1.updateAvatar.bind(profileControllerV1),
   );
+  router.patch(
+    "/role",
+    profileControllerV1.switchUserRole.bind(profileControllerV1),
+  );
 
   return router;
 }

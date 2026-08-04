@@ -1,7 +1,7 @@
 export interface PaginationMetaData {
   currentPage: number;
   limit: number;
-  totatlItems: number;
+  totalItems: number;
   totalPages: number;
 }
 
