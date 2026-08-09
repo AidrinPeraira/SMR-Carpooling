@@ -9,3 +9,4 @@ export * from "./VehicleEnums";
 export * from "./ConfigEnums";
 export * from "./ApplicationEnums";
 export * from "./DriverEnums";
+export * from "./TripEnums";

@@ -4,4 +4,6 @@ model Places {
   placeLat     Float
   placeLng     Float
   placeAddress String
+
+  tripPlaces TripPlaces[]
 }
