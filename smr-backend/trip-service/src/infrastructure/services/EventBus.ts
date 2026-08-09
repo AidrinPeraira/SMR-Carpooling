@@ -95,6 +95,7 @@ export class EventBus implements IEventBus {
         EventName.ADMIN_APPROVE_APPLICTION,
         EventName.ADMIN_USER_BLOCKED,
         EventName.ADMIN_USER_UNBLOCKED,
+        EventName.AUTH_USER_SIGNUP,
       ]);
 
       this._logger.info("RabbitMQ initialised successfully");
