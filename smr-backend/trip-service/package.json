@@ -24,7 +24,8 @@
     "docker:build": "docker build --target trip-service-prod -t aidrinperaira/trip-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/trip-service:latest",
     "docker:publish": "pnpm run docker:build && pnpm run docker:push",
-    "update:shared": "pnpm add @sharemyride/shared@latest"
+    "update:shared": "pnpm add @sharemyride/shared@latest",
+    "seed:places": "tsx src/infrastructure/database/prisma/seed.ts"
   },
   "prisma": {
     "schema": "./src/infrastructure/database/prisma/"
@@ -41,6 +42,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "h3-js": "^4.5.0",
     "helmet": "^8.1.0",
     "morgan": "^1.11.0",
     "pg": "^8.22.0",

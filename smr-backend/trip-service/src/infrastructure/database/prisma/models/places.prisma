@@ -1,0 +1,7 @@
+model Places {
+  placeIndex   BigInt @id @unique
+  placeName    String
+  placeLat     Float
+  placeLng     Float
+  placeAddress String
+}
