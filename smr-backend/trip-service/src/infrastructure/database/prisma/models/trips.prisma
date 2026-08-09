@@ -35,7 +35,7 @@ model Trip {
 }
 
 model TripPlaces {
-  placeIndex BigInt
+  placeIndex String
   tripId     String
   tripDate   DateTime
 

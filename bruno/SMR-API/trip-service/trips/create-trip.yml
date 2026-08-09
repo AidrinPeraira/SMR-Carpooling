@@ -1,0 +1,64 @@
+info:
+  name: create-trip
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/trips
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "vehicle_id": "vh_12345",
+          "trip_origin": {
+            "stop_lat": 9.9312,
+            "stop_lng": 76.2673,
+            "stop_name": "Kochi",
+            "stop_address": "Kochi, Kerala, India"
+          },
+          "trip_destination": {
+            "stop_lat": 8.5241,
+            "stop_lng": 76.9366,
+            "stop_name": "Trivandrum",
+            "stop_address": "Trivandrum, Kerala, India"
+          },
+          "trip_stops": [
+            {
+              "stop_lat": 9.9312,
+              "stop_lng": 76.2673,
+              "stop_name": "Kochi",
+              "stop_address": "Kochi, Kerala, India"
+            },
+            {
+              "stop_lat": 8.5241,
+              "stop_lng": 76.9366,
+              "stop_name": "Trivandrum",
+              "stop_address": "Trivandrum, Kerala, India"
+            }
+          ],
+          "trip_route": [
+            [76.2673, 9.9312],
+            [76.9366, 8.5241]
+          ],
+          "trip_distance": 200,
+          "available_seats": 3,
+          "trip_tags": [
+            "AC",
+            "Non-smoking"
+          ],
+          "start_time": "2026-08-15T08:00:00.000Z",
+          "total_seats": 3
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

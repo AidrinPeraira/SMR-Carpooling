@@ -1,4 +1,4 @@
-import { cellToLatLng, latLngToCell } from "h3-js";
+import { cellToLatLng, gridDisk, latLngToCell } from "h3-js";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 
 /**
@@ -8,9 +8,13 @@ export class H3GeoIndexingService implements IGeoIndexingService {
   /**
    * Constructs the H3GeoIndexingService.
    *
-   * @param _resolution - The H3 resolution level (defaults to 7 for ~1.2 km2 hexagon cell area)
+   * @param _resolution - The H3 resolution level (default 8)
+   * @param _radiusSteps - The number of index rings to match around a point when buffered
    */
-  constructor(private readonly _resolution: number = 7) {}
+  constructor(
+    private readonly _resolution: number = 8,
+    private readonly _radiusSteps = 3,
+  ) {}
 
   /**
    * Converts latitude and longitude to a BigInt H3 spatial index.
@@ -19,20 +23,23 @@ export class H3GeoIndexingService implements IGeoIndexingService {
    * @param lng - Longitude coordinate
    * @returns BigInt representation of the H3 index
    */
-  async locationToIndex(lat: number, lng: number): Promise<bigint> {
-    const hexIndex = latLngToCell(lat, lng, this._resolution);
-    return BigInt(`0x${hexIndex}`);
+  async locationToIndex(lat: number, lng: number): Promise<string> {
+    return latLngToCell(lat, lng, this._resolution);
+  }
+
+  async locationToAreaIndices(lat: number, lng: number): Promise<string[]> {
+    const index = latLngToCell(lat, lng, this._resolution);
+    return gridDisk(index, this._radiusSteps);
   }
 
   /**
-   * Converts a BigInt H3 spatial index back into latitude and longitude coordinates.
+   * Converts an H3 spatial index back into latitude and longitude coordinates.
    *
-   * @param index - BigInt representation of the H3 index
+   * @param index - H3 index string
    * @returns Object containing latitude and longitude coordinates
    */
-  async indexToLocation(index: bigint): Promise<{ lat: number; lng: number }> {
-    const hexIndex = index.toString(16);
-    const [lat, lng] = cellToLatLng(hexIndex);
+  async indexToLocation(index: string): Promise<{ lat: number; lng: number }> {
+    const [lat, lng] = cellToLatLng(index);
     return { lat, lng };
   }
 }

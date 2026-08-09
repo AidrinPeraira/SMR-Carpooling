@@ -1,5 +1,6 @@
 import { IPlacesRepository } from "#/application/interfaces/repository/IPlacesRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
+import { IPlacesCacheStore } from "#/application/interfaces/store/IPlacesCacheStore";
 import { PlacesEntity } from "#/domain/entities/PlacesEntity";
 import { prisma } from "#/infrastructure/database/prisma";
 
@@ -13,8 +14,12 @@ export class PlacesRepository implements IPlacesRepository {
    * Constructs the PlacesRepository.
    *
    * @param _geoIndexingService - Service for computing spatial indices for locations
+   * @param _placesCacheStore - Store for caching spatial indices in Redis
    */
-  constructor(private readonly _geoIndexingService: IGeoIndexingService) {}
+  constructor(
+    private readonly _geoIndexingService: IGeoIndexingService,
+    private readonly _placesCacheStore: IPlacesCacheStore,
+  ) {}
 
   /**
    * Computes spatial indices for a list of places and persists them in bulk
@@ -36,5 +41,10 @@ export class PlacesRepository implements IPlacesRepository {
       data: mappedPlaces,
       skipDuplicates: true,
     });
+
+    const indexStrings = mappedPlaces.map((p) => p.placeIndex);
+    if (indexStrings.length > 0 && this._placesCacheStore) {
+      await this._placesCacheStore.addPlaceIndices(indexStrings);
+    }
   }
 }

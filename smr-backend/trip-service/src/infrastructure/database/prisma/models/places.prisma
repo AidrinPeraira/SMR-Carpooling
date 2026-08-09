@@ -1,5 +1,5 @@
 model Places {
-  placeIndex   BigInt @id @unique
+  placeIndex   String @id @unique
   placeName    String
   placeLat     Float
   placeLng     Float

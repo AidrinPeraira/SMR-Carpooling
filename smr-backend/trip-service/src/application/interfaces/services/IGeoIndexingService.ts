@@ -10,13 +10,22 @@ export interface IGeoIndexingService {
    * @param lng - Longitude coordinate
    * @returns BigInt spatial index
    */
-  locationToIndex(lat: number, lng: number): Promise<bigint>;
+  locationToIndex(lat: number, lng: number): Promise<string>;
 
   /**
-   * Converts a BigInt spatial index back into latitude and longitude coordinates.
+   * Convert a given point to an array of indieces. the point and its neighbour
    *
-   * @param index - BigInt spatial index
+   * @param lat - Latitude coordinate
+   * @param lng - Longitude coordinate
+   * @returns Spatial index array
+   */
+  locationToAreaIndices(lat: number, lng: number): Promise<string[]>;
+
+  /**
+   * Converts a spatial index back into latitude and longitude coordinates.
+   *
+   * @param index - Spatial index string
    * @returns Object containing latitude and longitude
    */
-  indexToLocation(index: bigint): Promise<{ lat: number; lng: number }>;
+  indexToLocation(index: string): Promise<{ lat: number; lng: number }>;
 }
