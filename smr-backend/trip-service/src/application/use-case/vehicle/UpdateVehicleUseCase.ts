@@ -1,6 +1,6 @@
 import { UpdateVehicleRequestDTO } from "#/application/dto/vehicle/UpdateVehicleRequestDTO";
 import { IVehicleRepository } from "#/application/interfaces/repository/IVehicleRepository";
-import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/vehicles/IUpdateVehicleUseCase";
+import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/vehicle/IUpdateVehicleUseCase";
 
 /**
  * This is the implementation for the use case that handles
