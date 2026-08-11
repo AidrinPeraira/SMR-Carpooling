@@ -7,3 +7,11 @@ export type Place = {
   lat: number;
   lng: number;
 };
+
+export type Route = {
+  origin: MapPoint;
+  destination: MapPoint;
+  totalLengthKm: number;
+  totalTimeMin: number;
+  route: MapPoint[];
+};

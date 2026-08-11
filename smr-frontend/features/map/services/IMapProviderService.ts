@@ -1,5 +1,5 @@
 "use client";
-import { MapPoint, Place } from "@/features/map/types/MapTypes";
+import { MapPoint, Place, Route } from "@/features/map/types/MapTypes";
 
 /**
  * This interface defines the methods needed for any
@@ -39,4 +39,18 @@ export interface IMapProviderService {
    * @returns Array of search suggestions
    */
   searchLocation(place: string): Promise<Place[]>;
+
+  addMarker(point: MapPoint): Promise<void>;
+
+  removeMarker(point: MapPoint): Promise<void>;
+
+  clearAllMarkers(): Promise<void>;
+
+  getRoute(waypoints: MapPoint[]): Promise<Route>;
+
+  drawRoute(route: MapPoint[]): Promise<void>;
+
+  removeRoute(): Promise<void>;
+
+  fitBounds(points: MapPoint[]): Promise<void>;
 }
