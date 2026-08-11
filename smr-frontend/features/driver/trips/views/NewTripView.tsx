@@ -39,7 +39,7 @@ export function NewTripView() {
         </button>
 
         {/* Scrollable Form Container */}
-        <div className="overflow-y-auto p-4 lg:p-6 flex-1">
+        <div className="overflow-y-auto p-2 lg:p-2 bg-transparent flex-1">
           <CreateTripForm />
         </div>
       </div>

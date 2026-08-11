@@ -95,7 +95,7 @@ export function MapSearchInput({
 
   return (
     <div
-      className={`relative flex flex-col w-full max-w-sm m-auto ${className || ""}`}
+      className={`relative flex flex-col w-full max-w-sm ${className || ""}`}
     >
       <Input
         value={searchString}
