@@ -1,5 +1,5 @@
 "use client";
-import { MapPoint, Place, Route } from "@/features/map/types/MapTypes";
+import { MapPoint, Place, Route, SearchSuggestion } from "@/features/map/types/MapTypes";
 
 /**
  * This interface defines the methods needed for any
@@ -33,12 +33,20 @@ export interface IMapProviderService {
   stopLocationTracking(): Promise<void>;
 
   /**
-   * This method should searches for a place and returns suggestions
+   * This method searches for a place and returns suggestions
    *
    * @param place : Searched place as a string
    * @returns Array of search suggestions
    */
-  searchLocation(place: string): Promise<Place[]>;
+  searchSuggestions(place: string): Promise<SearchSuggestion[]>;
+
+  /**
+   * This method retrieves full place details including coordinates for a given suggestion
+   *
+   * @param suggestion : SearchSuggestion item
+   * @returns Place object containing coordinates
+   */
+  getPlaceDetails(suggestion: SearchSuggestion): Promise<Place>;
 
   addMarker(point: MapPoint): Promise<void>;
 

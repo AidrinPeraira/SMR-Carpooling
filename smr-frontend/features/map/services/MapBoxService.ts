@@ -1,7 +1,16 @@
 import { IMapProviderService } from "@/features/map/services/IMapProviderService";
-import { MapPoint, Place, Route } from "@/features/map/types/MapTypes";
-import { GeocodingCore } from "@mapbox/search-js-core";
-import mapboxgl, { GeolocateControl, Map as MapboxMap, Marker } from "mapbox-gl";
+import {
+  MapPoint,
+  Place,
+  Route,
+  SearchSuggestion,
+} from "@/features/map/types/MapTypes";
+import { SearchBoxCore, SearchSession } from "@mapbox/search-js-core";
+import mapboxgl, {
+  GeolocateControl,
+  Map as MapboxMap,
+  Marker,
+} from "mapbox-gl";
 
 const MAP_BOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 mapboxgl.accessToken = MAP_BOX_API_KEY;
@@ -14,13 +23,15 @@ export class MapBoxService implements IMapProviderService {
   private _map: MapboxMap | null = null;
   private _styleUrl = "mapbox://styles/mapbox/dark-v11";
   private _geolocationControl: GeolocateControl | null = null;
-  private _geocode: GeocodingCore;
+  private _searchBox: SearchBoxCore;
+  private _searchSession: SearchSession<any, any, any, any>;
   private _markers: Map<string, Marker> = new Map();
 
   constructor() {
-    this._geocode = new GeocodingCore({
+    this._searchBox = new SearchBoxCore({
       accessToken: MAP_BOX_API_KEY,
     });
+    this._searchSession = new SearchSession(this._searchBox);
   }
 
   /**
@@ -141,31 +152,70 @@ export class MapBoxService implements IMapProviderService {
   }
 
   /**
-   * This method takes the search string and calls the map box
-   * search api and maps the result of sugeested places and returns
-   * the array
+   * This method takes the search string and calls the Mapbox Search Box API
+   * and maps the result of suggested places into SearchSuggestion objects
    *
-   * @param place : Place name as string
-   * @returns Array of suggested places
+   * @param place : Place name or query as string
+   * @returns Array of search suggestions
    */
-  async searchLocation(place: string): Promise<Place[]> {
-    const response = await this._geocode.forward(place);
+  async searchSuggestions(place: string): Promise<SearchSuggestion[]> {
+    const response = await this._searchSession.suggest(place);
 
-    const result: Place[] = response.features.map((feature) => {
-      const [lng, lat] = feature.geometry.coordinates;
+    const result: SearchSuggestion[] = response.suggestions.map(
+      (suggestion: any) => {
+        return {
+          id: suggestion.mapbox_id,
+          title: suggestion.name,
+          address:
+            suggestion.full_address ||
+            suggestion.place_formatted ||
+            suggestion.name,
+        };
+      },
+    );
+
+    return result;
+  }
+
+  /**
+   * Retrieves full details including coordinates for a given search suggestion
+   *
+   * @param suggestion : SearchSuggestion object
+   * @returns Full Place object containing lat & lng
+   */
+  async getPlaceDetails(suggestion: SearchSuggestion): Promise<Place> {
+    if (suggestion.point) {
+      const [lng, lat] = suggestion.point;
       return {
-        id: feature.properties.mapbox_id || feature.id,
-        title: feature.properties.name,
-        address:
-          feature.properties.full_address ||
-          feature.properties.place_formatted ||
-          feature.properties.name,
+        id: suggestion.id,
+        title: suggestion.title,
+        address: suggestion.address,
         lat,
         lng,
       };
-    });
+    }
 
-    return result;
+    const response = await this._searchSession.retrieve({
+      mapbox_id: suggestion.id,
+      name: suggestion.title,
+      full_address: suggestion.address,
+    } as any);
+
+    const feature = response.features?.[0];
+    if (!feature) {
+      throw new Error(
+        `Failed to retrieve details for place: ${suggestion.title}`,
+      );
+    }
+
+    const [lng, lat] = feature.geometry.coordinates;
+    return {
+      id: suggestion.id,
+      title: suggestion.title,
+      address: suggestion.address,
+      lat,
+      lng,
+    };
   }
 
   /**
@@ -232,9 +282,10 @@ export class MapBoxService implements IMapProviderService {
       return;
     }
 
+    //we use reduce with bounds object as accumulatot
     const bounds = points.reduce(
-      (b, pt) => b.extend(pt as [number, number]),
-      new mapboxgl.LngLatBounds(points[0] as [number, number], points[0] as [number, number]),
+      (b, pt) => b.extend(pt),
+      new mapboxgl.LngLatBounds(points[0], points[0]),
     );
 
     this._map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
@@ -248,7 +299,9 @@ export class MapBoxService implements IMapProviderService {
    */
   async getRoute(waypoints: MapPoint[]): Promise<Route> {
     if (waypoints.length < 2) {
-      throw new Error("At least origin and destination points are required to get a route");
+      throw new Error(
+        "At least origin and destination points are required to get a route",
+      );
     }
 
     const coords = waypoints.map(([lng, lat]) => `${lng},${lat}`).join(";");
@@ -295,7 +348,9 @@ export class MapBoxService implements IMapProviderService {
       },
     };
 
-    const existingSource = this._map.getSource(routeSourceId) as mapboxgl.GeoJSONSource;
+    const existingSource = this._map.getSource(
+      routeSourceId,
+    ) as mapboxgl.GeoJSONSource;
     if (existingSource) {
       existingSource.setData(feature);
     } else {

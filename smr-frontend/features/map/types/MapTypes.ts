@@ -1,5 +1,12 @@
 export type MapPoint = [number, number];
 
+export type SearchSuggestion = {
+  id: string;
+  title: string;
+  address: string;
+  point?: MapPoint;
+};
+
 export type Place = {
   id: string;
   title: string;
