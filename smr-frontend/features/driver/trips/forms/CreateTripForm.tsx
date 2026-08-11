@@ -1,7 +1,11 @@
 "use client";
 
 import { MapSearchInput } from "@/features/map/components/MapSearchInput";
+import { useMap } from "@/features/map/hooks/useMap";
+import { MapPoint, Place } from "@/features/map/types/MapTypes";
 import { getDriverVehiclesRequest } from "@/features/profile/api/requests/getDriverVehiclesRequest";
+import { apiClientFetch } from "@/lib/api-client";
+import { CreateTripSchema } from "@sharemyride/shared";
 import {
   Button,
   Card,
@@ -12,9 +16,11 @@ import {
   Label,
   Loader,
   Tag,
+  useToast,
 } from "@sharemyride/ui";
 import { useQuery } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const AVAILABLE_TAGS = [
@@ -30,6 +36,10 @@ export function CreateTripForm() {
     timeZone: "Asia/Kolkata",
   });
 
+  const map = useMap();
+  const toast = useToast();
+  const router = useRouter();
+
   const [stopId, setStopId] = useState<number[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<{
     vehicleId: string;
@@ -42,6 +52,11 @@ export function CreateTripForm() {
     "AC",
     "Non-smoking",
   ]);
+  const [tripStops, setTripStops] = useState<(Place | undefined)[]>([]);
+  const [tripOrigin, setTripOrigin] = useState<Place>();
+  const [tripDestination, setTripDestination] = useState<Place>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   //get vehicle details from user profile
   const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
@@ -61,6 +76,31 @@ export function CreateTripForm() {
     }
   }, [vehicles, selectedVehicle.vehicleId]);
 
+  // Recalculate route on map whenever origin, destination, or intermediate stops change
+  useEffect(() => {
+    async function updateRoute() {
+      if (tripOrigin && tripDestination) {
+        const validStops = tripStops.filter((s): s is Place => Boolean(s));
+        const waypoints: MapPoint[] = [
+          [tripOrigin.lng, tripOrigin.lat],
+          ...validStops.map((s) => [s.lng, s.lat] as MapPoint),
+          [tripDestination.lng, tripDestination.lat],
+        ];
+
+        try {
+          const routeData = await map.getRoute(waypoints);
+          if (routeData?.route) {
+            await map.drawRoute(routeData.route);
+            await map.fitBounds(waypoints);
+          }
+        } catch (err) {
+          console.error("Failed to update route on map:", err);
+        }
+      }
+    }
+    updateRoute();
+  }, [tripOrigin, tripDestination, tripStops, map]);
+
   function handleVehicleChange(id: string) {
     const v = vehicles?.find((car) => car.vehicle_id === id);
     if (v) {
@@ -70,11 +110,8 @@ export function CreateTripForm() {
         maxAvailableSeats: maxSeats,
       });
       setAvailableSeats((prev) => Math.min(prev, maxSeats));
+      setErrors((prev) => ({ ...prev, vehicle_id: "" }));
     }
-  }
-
-  function handleDeleteStop(index: number) {
-    setStopId((p) => p.filter((_v, i) => i !== index));
   }
 
   function toggleTag(tag: string) {
@@ -83,7 +120,200 @@ export function CreateTripForm() {
     );
   }
 
-  if (vehiclesLoading) return <Loader />;
+  async function handleSelectOrigin(place: Place) {
+    if (tripOrigin) {
+      await map.removeMarker([tripOrigin.lng, tripOrigin.lat]);
+    }
+    await map.addMarker([place.lng, place.lat]);
+
+    //craft an array of all points
+    const validStops = tripStops.filter((s): s is Place => Boolean(s));
+    const allPoints: MapPoint[] = [
+      [place.lng, place.lat],
+      ...validStops.map((s) => [s.lng, s.lat] as MapPoint),
+      ...(tripDestination
+        ? [[tripDestination.lng, tripDestination.lat] as MapPoint]
+        : []),
+    ];
+
+    await map.fitBounds(allPoints);
+    setTripOrigin(place);
+    setErrors((prev) => ({ ...prev, trip_origin: "" }));
+  }
+
+  async function handleSelectDestination(place: Place) {
+    if (tripDestination) {
+      await map.removeMarker([tripDestination.lng, tripDestination.lat]);
+    }
+    await map.addMarker([place.lng, place.lat]);
+
+    //craft an array of all points
+    const validStops = tripStops.filter((s): s is Place => Boolean(s));
+    const allPoints: MapPoint[] = [
+      [place.lng, place.lat],
+      ...validStops.map((s) => [s.lng, s.lat] as MapPoint),
+      ...(tripOrigin ? [[tripOrigin.lng, tripOrigin.lat] as MapPoint] : []),
+    ];
+
+    await map.fitBounds(allPoints);
+
+    setTripDestination(place);
+    setErrors((prev) => ({ ...prev, trip_destination: "" }));
+  }
+
+  async function handleAddStop(index: number, place: Place) {
+    const existingStop = tripStops[index];
+    if (existingStop) {
+      await map.removeMarker([existingStop.lng, existingStop.lat]);
+    }
+    await map.addMarker([place.lng, place.lat]);
+
+    const updatedStops = [...tripStops];
+    updatedStops[index] = place;
+    setTripStops(updatedStops);
+
+    const validStops = updatedStops.filter((s): s is Place => Boolean(s));
+    const allPoints: MapPoint[] = [
+      ...(tripOrigin ? [[tripOrigin.lng, tripOrigin.lat] as MapPoint] : []),
+      ...validStops.map((s) => [s.lng, s.lat] as MapPoint),
+      ...(tripDestination
+        ? [[tripDestination.lng, tripDestination.lat] as MapPoint]
+        : []),
+    ];
+
+    if (allPoints.length > 0) {
+      await map.fitBounds(allPoints);
+    }
+  }
+
+  async function handleDeleteStop(index: number) {
+    const stopToRemove = tripStops[index];
+    if (stopToRemove) {
+      await map.removeMarker([stopToRemove.lng, stopToRemove.lat]);
+    }
+
+    setStopId((p) => p.filter((_v, i) => i !== index));
+
+    const updatedStops = tripStops.filter((_, i) => i !== index);
+    setTripStops(updatedStops);
+
+    const validStops = updatedStops.filter((s): s is Place => Boolean(s));
+    const allPoints: MapPoint[] = [
+      ...(tripOrigin ? [[tripOrigin.lng, tripOrigin.lat] as MapPoint] : []),
+      ...validStops.map((s) => [s.lng, s.lat] as MapPoint),
+      ...(tripDestination
+        ? [[tripDestination.lng, tripDestination.lat] as MapPoint]
+        : []),
+    ];
+
+    if (allPoints.length > 0) {
+      await map.fitBounds(allPoints);
+    }
+  }
+
+  async function handleSubmit() {
+    setErrors({});
+
+    const newErrors: Record<string, string> = {};
+    if (!tripOrigin) newErrors.trip_origin = "Origin is required";
+    if (!tripDestination)
+      newErrors.trip_destination = "Destination is required";
+    if (!selectedVehicle.vehicleId)
+      newErrors.vehicle_id = "Vehicle is required";
+    if (!selectedDate || !selectedTime)
+      newErrors.start_time = "Departure date and time are required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast("Please fill in all required fields", { variant: "warn" });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const validStops = tripStops.filter((s): s is Place => Boolean(s));
+      const waypoints: MapPoint[] = [
+        [tripOrigin!.lng, tripOrigin!.lat],
+        ...validStops.map((s) => [s.lng, s.lat] as MapPoint),
+        [tripDestination!.lng, tripDestination!.lat],
+      ];
+
+      const routeData = await map.getRoute(waypoints);
+
+      const originStop = {
+        stop_name: tripOrigin!.title,
+        stop_address: tripOrigin!.address,
+        stop_lat: tripOrigin!.lat,
+        stop_lng: tripOrigin!.lng,
+      };
+
+      const destinationStop = {
+        stop_name: tripDestination!.title,
+        stop_address: tripDestination!.address,
+        stop_lat: tripDestination!.lat,
+        stop_lng: tripDestination!.lng,
+      };
+
+      const intermediateStops = validStops.map((s) => ({
+        stop_name: s.title,
+        stop_address: s.address,
+        stop_lat: s.lat,
+        stop_lng: s.lng,
+      }));
+
+      const startTime = new Date(`${selectedDate}T${selectedTime}`);
+
+      const rawPayload = {
+        vehicle_id: selectedVehicle.vehicleId,
+        trip_origin: originStop,
+        trip_destination: destinationStop,
+        trip_stops: [originStop, ...intermediateStops, destinationStop],
+        trip_route: routeData.route,
+        trip_distance: routeData.totalLengthKm,
+        available_seats: availableSeats,
+        total_seats: selectedVehicle.maxAvailableSeats + 1,
+        trip_tags: selectedTags,
+        start_time: startTime,
+      };
+
+      const validationResult = CreateTripSchema.safeParse(rawPayload);
+
+      if (!validationResult.success) {
+        const errMap: Record<string, string> = {};
+        for (const issue of validationResult.error.issues) {
+          const field = String(issue.path[0]);
+          if (field && !errMap[field]) {
+            errMap[field] = issue.message;
+          }
+        }
+        setErrors(errMap);
+        toast("Please fix form errors before submitting", { variant: "warn" });
+        return;
+      }
+
+      await apiClientFetch("/api/v1/trips", {
+        method: "POST",
+        body: JSON.stringify(validationResult.data),
+      });
+
+      toast("Trip created successfully!", { variant: "success" });
+      router.push("/driver/trips");
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error ? err.message : "Failed to create trip";
+      toast(errorMsg, { variant: "error" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (vehiclesLoading)
+    return (
+      <div className="m-auto">
+        <Loader />
+      </div>
+    );
 
   return (
     <Card className="w-full min-h-full">
@@ -97,7 +327,10 @@ export function CreateTripForm() {
         {/*set origin*/}
         <div className="flex flex-col gap-2 mt-2">
           <Label>Select Origin</Label>
-          <MapSearchInput />
+          <MapSearchInput onSelectPlace={handleSelectOrigin} />
+          {errors.trip_origin && (
+            <span className="text-xs text-red-500">{errors.trip_origin}</span>
+          )}
         </div>
 
         {/*These are dynamically added stops*/}
@@ -106,7 +339,9 @@ export function CreateTripForm() {
             <Label>Intermediate Stops </Label>
             {stopId.map((id, index) => (
               <div className="flex" key={id}>
-                <MapSearchInput />
+                <MapSearchInput
+                  onSelectPlace={(place) => handleAddStop(index, place)}
+                />
                 <Button
                   className="flex"
                   variant="ghost"
@@ -124,7 +359,8 @@ export function CreateTripForm() {
           <Button
             variant="ghost"
             onClick={() => {
-              setStopId((p) => [Date.now(), ...p]);
+              setStopId((p) => [...p, Date.now()]);
+              setTripStops((p) => [...p, undefined]);
             }}
           >
             Add Stops +
@@ -134,7 +370,12 @@ export function CreateTripForm() {
         {/*set destination*/}
         <div className="flex flex-col gap-2 mt-2">
           <Label>Select Destination</Label>
-          <MapSearchInput />
+          <MapSearchInput onSelectPlace={handleSelectDestination} />
+          {errors.trip_destination && (
+            <span className="text-xs text-red-500">
+              {errors.trip_destination}
+            </span>
+          )}
         </div>
 
         {/*set vehicel*/}
@@ -152,6 +393,9 @@ export function CreateTripForm() {
               }
               onChange={handleVehicleChange}
             />
+            {errors.vehicle_id && (
+              <span className="text-xs text-red-500">{errors.vehicle_id}</span>
+            )}
           </div>
 
           {/*select seats*/}
@@ -177,7 +421,10 @@ export function CreateTripForm() {
               type="date"
               min={today}
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                setErrors((prev) => ({ ...prev, start_time: "" }));
+              }}
             />
           </div>
           <div className="flex flex-col gap-2 flex-1">
@@ -185,10 +432,16 @@ export function CreateTripForm() {
             <Input
               type="time"
               value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
+              onChange={(e) => {
+                setSelectedTime(e.target.value);
+                setErrors((prev) => ({ ...prev, start_time: "" }));
+              }}
             />
           </div>
         </div>
+        {errors.start_time && (
+          <span className="text-xs text-red-500">{errors.start_time}</span>
+        )}
 
         {/*Tags*/}
         <div className="flex flex-col gap-2 mt-2">
@@ -212,7 +465,9 @@ export function CreateTripForm() {
           </div>
         </div>
 
-        <Button className="mt-4">Create Trip</Button>
+        <Button className="mt-4" onClick={handleSubmit} disabled={isSubmitting}>
+          {isSubmitting ? "Creating Trip..." : "Create Trip"}
+        </Button>
       </CardBody>
     </Card>
   );
