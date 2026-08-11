@@ -8,9 +8,13 @@ http:
   url: http://localhost:4000/api/v1/admin/trip/driver/details/:driverId
   headers:
     - name: Authorization
-      value: Bearer {{ACCESS_TOKEN}}
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjQ2NzQ1OSwiZXhwIjoxNzg2NDY4MzU5fQ.YfgpFYUyG7gYttJNv0J7EGdIOyLbbOXahL5udvNRouM
     - name: x-frontend-key
       value: "{{FRONTEND_KEY}}"
+  params:
+    - name: driverId
+      value: 4378c2d1604b9a0fa330bd561486a02d
+      type: path
   auth: inherit
 
 settings:
@@ -18,3 +22,76 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/admin/trip/driver/details/:driverId
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjQ2NzQ1OSwiZXhwIjoxNzg2NDY4MzU5fQ.YfgpFYUyG7gYttJNv0J7EGdIOyLbbOXahL5udvNRouM
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      params:
+        - name: driverId
+          value: 4378c2d1604b9a0fa330bd561486a02d
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "405"
+        - name: etag
+          value: W/"195-u2Aj6g5COBBLKw4YXo1NuzkNFhM"
+        - name: date
+          value: Tue, 11 Aug 2026 17:01:38 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Driver details retrieved successfully",
+            "payload": {
+              "driver_id": "4378c2d1604b9a0fa330bd561486a02d",
+              "record_id": "faae1a274d0146a2d6f7fc7561c82e20",
+              "license_number": "DL12345678900",
+              "license_image": "user-files/4378c2d1604b9a0fa330bd561486a02d/driver_license-1785825475794.png",
+              "driver_status": "active",
+              "created_at": "2026-08-04T06:08:06.087Z",
+              "updated_at": "2026-08-04T17:02:23.182Z"
+            }
+          }
