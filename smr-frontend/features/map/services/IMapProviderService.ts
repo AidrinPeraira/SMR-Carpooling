@@ -1,5 +1,5 @@
 "use client";
-import { MapPoint } from "@/features/map/types/MapTypes";
+import { MapPoint, Place } from "@/features/map/types/MapTypes";
 
 /**
  * This interface defines the methods needed for any
@@ -12,7 +12,7 @@ export interface IMapProviderService {
       center?: MapPoint;
       zoom?: number;
     },
-  ): Promise<void>;
+  ): void;
 
   destroy(): Promise<void>;
 
@@ -32,5 +32,11 @@ export interface IMapProviderService {
    */
   stopLocationTracking(): Promise<void>;
 
-  // searchLocation(place: string): Promise<Waypoint[]>;
+  /**
+   * This method should searches for a place and returns suggestions
+   *
+   * @param place : Searched place as a string
+   * @returns Array of search suggestions
+   */
+  searchLocation(place: string): Promise<Place[]>;
 }

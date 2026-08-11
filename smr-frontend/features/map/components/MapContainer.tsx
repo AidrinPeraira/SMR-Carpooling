@@ -14,7 +14,7 @@ export function MapContainer({ className }: Props) {
   useEffect(() => {
     async function setupMap() {
       if (mapRef.current) {
-        await mapService.initialise(mapRef.current);
+        mapService.initialise(mapRef.current);
         await mapService.startLocationTracking();
       }
     }

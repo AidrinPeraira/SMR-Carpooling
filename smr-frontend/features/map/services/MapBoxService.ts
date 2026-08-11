@@ -1,5 +1,6 @@
 import { IMapProviderService } from "@/features/map/services/IMapProviderService";
-import { MapPoint } from "@/features/map/types/MapTypes";
+import { MapPoint, Place } from "@/features/map/types/MapTypes";
+import { GeocodingCore } from "@mapbox/search-js-core";
 import mapboxgl, { GeolocateControl, Map } from "mapbox-gl";
 
 const MAP_BOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
@@ -13,6 +14,13 @@ export class MapBoxService implements IMapProviderService {
   private _map: Map | null = null;
   private _styleUrl = "mapbox://styles/mapbox/dark-v11";
   private _geolocationControl: GeolocateControl | null = null;
+  private _geocode: GeocodingCore;
+
+  constructor() {
+    this._geocode = new GeocodingCore({
+      accessToken: MAP_BOX_API_KEY,
+    });
+  }
 
   /**
    * Creates a new map instance and sets the center and zoom, resolving when the map style loads
@@ -20,26 +28,18 @@ export class MapBoxService implements IMapProviderService {
    * @param element : Reference to html element that renders map
    * @param options : optional config for center and zoom
    */
-  async initialise(
+  initialise(
     element: HTMLDivElement,
     options?: {
       center?: MapPoint;
       zoom?: number;
     },
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      this._map = new Map({
-        container: element,
-        style: this._styleUrl,
-        center: options?.center || [75.2711, 10.8505],
-        zoom: options?.zoom || 12,
-      });
-
-      if (this._map.loaded()) {
-        resolve();
-      } else {
-        this._map.once("load", () => resolve());
-      }
+  ): void {
+    this._map = new Map({
+      container: element,
+      style: this._styleUrl,
+      center: options?.center || [75.2711, 10.8505],
+      zoom: options?.zoom || 12,
     });
   }
 
@@ -135,5 +135,33 @@ export class MapBoxService implements IMapProviderService {
       this._map.removeControl(this._geolocationControl);
       this._geolocationControl = null;
     }
+  }
+
+  /**
+   * This method takes the search string and calls the map box
+   * search api and maps the result of sugeested places and returns
+   * the array
+   *
+   * @param place : Place name as string
+   * @returns Array of suggested places
+   */
+  async searchLocation(place: string): Promise<Place[]> {
+    const response = await this._geocode.forward(place);
+
+    const result: Place[] = response.features.map((feature) => {
+      const [lng, lat] = feature.geometry.coordinates;
+      return {
+        id: feature.properties.mapbox_id || feature.id,
+        title: feature.properties.name,
+        address:
+          feature.properties.full_address ||
+          feature.properties.place_formatted ||
+          feature.properties.name,
+        lat,
+        lng,
+      };
+    });
+
+    return result;
   }
 }

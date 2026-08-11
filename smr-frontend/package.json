@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "@mapbox/search-js-core": "^1.6.0",
     "@react-oauth/google": "^0.13.5",
     "@sharemyride/shared": "^0.0.4",
     "@sharemyride/ui": "^0.0.2",

@@ -1,6 +1,6 @@
 export type MapPoint = [number, number];
 
-export type Waypoint = {
+export type Place = {
   id: string;
   title: string;
   address: string;

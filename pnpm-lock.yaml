@@ -443,6 +443,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.79.0(react@19.2.4))
+      '@mapbox/search-js-core':
+        specifier: ^1.6.0
+        version: 1.6.0
       '@react-oauth/google':
         specifier: ^0.13.5
         version: 0.13.5(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1290,6 +1293,10 @@ packages:
 
   '@kwsites/file-exists@1.1.1':
     resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
+
+  '@mapbox/search-js-core@1.6.0':
+    resolution: {integrity: sha512-MEr1scUV6H8ZdkP0XRA4q07gim5XDdjdO6Jp7pV5kSA35s7xvpN5E3ywkHm6Wif6+nRsRA45KwlXH8MiD9I8Bw==}
+    engines: {node: '>=12.20.1'}
 
   '@mdx-js/react@3.1.1':
     resolution: {integrity: sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==}
@@ -6748,6 +6755,10 @@ snapshots:
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
+
+  '@mapbox/search-js-core@1.6.0':
+    dependencies:
+      '@types/geojson': 7946.0.16
 
   '@mdx-js/react@3.1.1(@types/react@19.2.14)(react@19.2.6)':
     dependencies:
