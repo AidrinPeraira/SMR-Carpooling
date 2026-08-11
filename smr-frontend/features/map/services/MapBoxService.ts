@@ -1,6 +1,6 @@
 import { IMapProviderService } from "@/features/map/services/IMapProviderService";
 import { MapPoint } from "@/features/map/types/MapTypes";
-import mapboxgl, { Map } from "mapbox-gl";
+import mapboxgl, { GeolocateControl, Map } from "mapbox-gl";
 
 const MAP_BOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 mapboxgl.accessToken = MAP_BOX_API_KEY;
@@ -12,31 +12,44 @@ mapboxgl.accessToken = MAP_BOX_API_KEY;
 export class MapBoxService implements IMapProviderService {
   private _map: Map | null = null;
   private _styleUrl = "mapbox://styles/mapbox/dark-v11";
+  private _geolocationControl: GeolocateControl | null = null;
+
   /**
-   * Creates a new map instace and sets the center and zoom
+   * Creates a new map instance and sets the center and zoom, resolving when the map style loads
    *
    * @param element : Reference to html element that renders map
-   * @options : optional config for center and zoom
+   * @param options : optional config for center and zoom
    */
-  initialise(
+  async initialise(
     element: HTMLDivElement,
     options?: {
       center?: MapPoint;
       zoom?: number;
     },
-  ) {
-    this._map = new Map({
-      container: element,
-      style: this._styleUrl,
-      center: options?.center || [75.2711, 10.8505],
-      zoom: options?.zoom || 12,
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      this._map = new Map({
+        container: element,
+        style: this._styleUrl,
+        center: options?.center || [75.2711, 10.8505],
+        zoom: options?.zoom || 12,
+      });
+
+      if (this._map.loaded()) {
+        resolve();
+      } else {
+        this._map.once("load", () => resolve());
+      }
     });
   }
 
   /**
    * This function clears the map instance
    */
-  destroy(): void {
+  async destroy(): Promise<void> {
+    // remove any location tracking first
+    await this.stopLocationTracking();
+
     this._map?.remove();
     this._map = null;
   }
@@ -46,7 +59,7 @@ export class MapBoxService implements IMapProviderService {
    *
    * @param point : coordinates as MapPoint ([lng, lat])
    */
-  setCenter(point: MapPoint): void {
+  async setCenter(point: MapPoint): Promise<void> {
     if (!this._map) {
       throw Error("No map initialise");
     }
@@ -59,7 +72,7 @@ export class MapBoxService implements IMapProviderService {
   /**
    * Fetches user's current GPS location via browser Geolocation API
    */
-  getCurrentLocation(): Promise<MapPoint> {
+  async getCurrentLocation(): Promise<MapPoint> {
     return new Promise((resolve, reject) => {
       if (typeof window === "undefined" || !navigator.geolocation) {
         reject(new Error("Geolocation is not supported by this browser."));
@@ -78,17 +91,49 @@ export class MapBoxService implements IMapProviderService {
   }
 
   /**
-   * Attempts to fly the map to the user's current location
+   * This method renders the default Mapbox marker to show the current
+   * user location and also start live tracking
+   *
+   * @param options : optional config
    */
-  async centerOnUserLocation(): Promise<void> {
-    try {
-      const coords = await this.getCurrentLocation();
-      this.setCenter(coords);
-    } catch (error) {
-      console.warn(
-        "Could not retrieve user location, using default center.",
-        error,
-      );
+  async startLocationTracking(): Promise<void> {
+    if (!this._map) throw new Error("Map not initialised");
+
+    // create location control if it doesn't exist
+    if (!this._geolocationControl) {
+      const geoControl = new GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+        showUserHeading: true,
+        showUserLocation: true,
+      });
+
+      this._geolocationControl = geoControl;
+      // add the location control to the current map instance
+      this._map.addControl(this._geolocationControl);
+
+      this._geolocationControl.on("error", (error: any) => {
+        console.error("GeolocateControl error:", error);
+      });
+
+      this._geolocationControl.on("ready", () => {
+        geoControl.trigger();
+      });
+    } else {
+      // trigger location tracking
+      this._geolocationControl.trigger();
+    }
+  }
+
+  /**
+   * This method clears any active location tracking listeners
+   */
+  async stopLocationTracking(): Promise<void> {
+    if (this._geolocationControl && this._map) {
+      this._map.removeControl(this._geolocationControl);
+      this._geolocationControl = null;
     }
   }
 }

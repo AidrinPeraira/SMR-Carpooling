@@ -74,6 +74,8 @@ function setCookiesInResponse(
 }
 
 export default async function proxy(request: NextRequest) {
+  return NextResponse.next();
+
   const path = request.nextUrl.pathname;
   console.log("Next middleware running on path: ", path);
 

@@ -12,13 +12,25 @@ export interface IMapProviderService {
       center?: MapPoint;
       zoom?: number;
     },
-  ): void;
+  ): Promise<void>;
 
-  destroy(): void;
+  destroy(): Promise<void>;
 
-  setCenter(point: MapPoint): void;
+  setCenter(point: MapPoint): Promise<void>;
 
   getCurrentLocation(): Promise<MapPoint>;
 
-  centerOnUserLocation(): Promise<void>;
+  /**
+   * This method gets the current location of the user
+   * and starts listner for updating map marker
+   * with live location
+   */
+  startLocationTracking(): Promise<void>;
+
+  /**
+   * This method clears any active live location listners
+   */
+  stopLocationTracking(): Promise<void>;
+
+  // searchLocation(place: string): Promise<Waypoint[]>;
 }

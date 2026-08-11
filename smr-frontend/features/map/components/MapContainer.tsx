@@ -9,17 +9,22 @@ type Props = {
 
 export function MapContainer({ className }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
-
   const mapService = useMap();
 
   useEffect(() => {
-    if (mapRef.current) {
-      mapService.initialise(mapRef.current);
-      mapService.centerOnUserLocation();
+    async function setupMap() {
+      if (mapRef.current) {
+        await mapService.initialise(mapRef.current);
+        await mapService.startLocationTracking();
+      }
     }
 
-    //add cleanup function
-    return () => mapService.destroy();
+    setupMap();
+
+    // add cleanup function
+    return () => {
+      mapService.destroy();
+    };
   }, [mapService]);
 
   const defaultMapStyles = "h-full w-full";
