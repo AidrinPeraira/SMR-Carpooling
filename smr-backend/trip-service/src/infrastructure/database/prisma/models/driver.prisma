@@ -6,6 +6,9 @@ enum DriverStatus {
 
 model Driver {
   driverId      String       @id
+  firstName     String       @default("")
+  lastName      String       @default("")
+  emailId       String       @default("")
   recordId      String
   licenseNumber String       @unique
   licenseImage  String       @default("")

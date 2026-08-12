@@ -8,12 +8,12 @@ http:
   url: http://localhost:4000/api/v1/admin/applications/:applicationId
   headers:
     - name: Authorization
-      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTczMDE3MCwiZXhwIjoxNzg1NzMxMDcwfQ.w64LEWZzCde0z3sDzlBhev_O2crTLTKg3vsz4vNyscM
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjQ2NzQ1OSwiZXhwIjoxNzg2NDY4MzU5fQ.YfgpFYUyG7gYttJNv0J7EGdIOyLbbOXahL5udvNRouM
     - name: x-frontend-key
       value: "{{FRONTEND_KEY}}"
   params:
     - name: applicationId
-      value: APP123456
+      value: 8d52e6004dfd231a6c9ed7446ed0ba9f
       type: path
   auth: inherit
 
@@ -22,3 +22,111 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/admin/applications/:applicationId
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjQ2NzQ1OSwiZXhwIjoxNzg2NDY4MzU5fQ.YfgpFYUyG7gYttJNv0J7EGdIOyLbbOXahL5udvNRouM
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      params:
+        - name: applicationId
+          value: 8d52e6004dfd231a6c9ed7446ed0ba9f
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "2868"
+        - name: etag
+          value: W/"b34-hxYjnxMtx34TRuaayjxbVpntbtk"
+        - name: date
+          value: Tue, 11 Aug 2026 16:59:05 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": {
+              "application_id": "8d52e6004dfd231a6c9ed7446ed0ba9f",
+              "user_id": "4378c2d1604b9a0fa330bd561486a02d",
+              "application_type": "onboarding",
+              "application_status": "approved",
+              "created_at": "2026-08-04T06:39:03.443Z",
+              "updated_at": "2026-08-04T06:39:03.443Z",
+              "first_name": "Aidrin",
+              "last_name": "Peraira",
+              "email_id": "aidrin.peraira@gmail.com",
+              "admin_comments": [
+                {
+                  "comment": "Documents verified. Approved.",
+                  "admin_id": "e1c978f5daa1c3552fa124b3873ab27a",
+                  "time": "2026-08-04T06:40:25.471Z"
+                }
+              ],
+              "driver_record": [
+                {
+                  "record_id": "faae1a274d0146a2d6f7fc7561c82e20",
+                  "user_id": "4378c2d1604b9a0fa330bd561486a02d",
+                  "license_number": "DL12345678900",
+                  "license_expiry": "2222-02-02T00:00:00.000Z",
+                  "license_file": "https://sharemyride-bucket.8a6e9db9bea151975ecddf8d13d10421.r2.cloudflarestorage.com/user-files/4378c2d1604b9a0fa330bd561486a02d/driver_license-1785825475794.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=a38f3d0f11393d3528aa94d4a2892142%2F20260811%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260811T165905Z&X-Amz-Expires=3600&X-Amz-Signature=f7f77b580d94042b29d0734b9e62b5dc1b3e6f0cad06dbe0568ad1bc867d2ca4&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+                }
+              ],
+              "vehicle_record": [
+                {
+                  "record_id": "967394806d553951c7f86eff578ffc88",
+                  "user_id": "4378c2d1604b9a0fa330bd561486a02d",
+                  "vehicle_type": "suv",
+                  "vehicle_make": "Toyota",
+                  "vehicle_model": "Innova Crysta",
+                  "vehicle_capacity": 9,
+                  "registration_number": "KL12AB1234",
+                  "registration_expiry": "2222-02-02T00:00:00.000Z",
+                  "registration_file": "https://sharemyride-bucket.8a6e9db9bea151975ecddf8d13d10421.r2.cloudflarestorage.com/user-files/4378c2d1604b9a0fa330bd561486a02d/vehicle_registration-1785825507862.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=a38f3d0f11393d3528aa94d4a2892142%2F20260811%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260811T165905Z&X-Amz-Expires=3600&X-Amz-Signature=b4af9fdcd9e35225ffe0c9ed5054524039da56a46740ae3b253c75c503802ed1&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+                  "insurance_number": "ABC123123123",
+                  "insurance_expiry": "2222-02-02T00:00:00.000Z",
+                  "insurance_file": "https://sharemyride-bucket.8a6e9db9bea151975ecddf8d13d10421.r2.cloudflarestorage.com/user-files/4378c2d1604b9a0fa330bd561486a02d/vehicle_insurance-1785825523329.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=a38f3d0f11393d3528aa94d4a2892142%2F20260811%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260811T165905Z&X-Amz-Expires=3600&X-Amz-Signature=20c323ff69f5a167c9e3f816ba7a1e4d16c8fe624486a0f1933783c9dbc0467c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+                  "vehicle_image": "https://pub-a770e4f20081446d8915b1fdd3a1c49a.r2.dev/user-files/4378c2d1604b9a0fa330bd561486a02d/vehicle_image-1785828963654.png"
+                }
+              ]
+            }
+          }

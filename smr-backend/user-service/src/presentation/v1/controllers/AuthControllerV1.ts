@@ -42,7 +42,6 @@ export class AuthControllerV1 implements IAuthControllerV1 {
   ) {}
 
   async signup(req: Request, res: Response): Promise<void> {
-    console.debug("This is the body: ", req.body);
     const userData = toSignUpDTO(req.body);
 
     this._logger.info("Signing up new user: ", {

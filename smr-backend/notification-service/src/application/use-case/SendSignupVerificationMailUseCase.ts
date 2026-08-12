@@ -27,6 +27,14 @@ export class SendSignupVerificationMailUseCase implements ISendSignupVerificatio
       `,
     };
 
+    //delete this for production
+    if (AppConfig.NODE_ENV !== "production") {
+      console.log(
+        "Use this link to verify email: " +
+          `${AppConfig.FRONTEND_URL}/auth/signup/verify?token=${data.verificationToken}`,
+      );
+    }
+
     await this._mailService.send(notification);
   }
 }

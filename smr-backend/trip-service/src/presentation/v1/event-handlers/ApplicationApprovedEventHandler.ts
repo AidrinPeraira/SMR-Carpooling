@@ -1,8 +1,8 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { IAddDriverUseCase } from "#/application/interfaces/use-case/driver/IAddDriverUseCase";
 import { IUpdateDriverUseCase } from "#/application/interfaces/use-case/driver/IUpdateDriverUseCase";
-import { IAddVehicleUseCase } from "#/application/interfaces/use-case/vehicles/IAddVehicleUseCase";
-import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/vehicles/IUpdateVehicleUseCase";
+import { IAddVehicleUseCase } from "#/application/interfaces/use-case/vehicle/IAddVehicleUseCase";
+import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/vehicle/IUpdateVehicleUseCase";
 import {
   ApplicationApprovedEvent,
   ApplicationType,

@@ -52,6 +52,10 @@ export default function PortalNavbar({
     if (href === "/profile") {
       return pathname.startsWith("/profile");
     }
+    if (href === `/${detectedRole}/trips`) {
+      return pathname.startsWith(`/${detectedRole}/trips`);
+    }
+
     return pathname === href;
   };
 

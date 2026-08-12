@@ -24,8 +24,8 @@ export function createApp(logger: ILogger) {
 
   app.use(cors());
   app.use(helmet());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50md", extended: true }));
 
   app.use(
     morgan("dev", {
@@ -78,7 +78,12 @@ export function createApp(logger: ILogger) {
   const tripServiceProxy = createProxyMiddleware<Request, Response>({
     target: AppConfig.TRIP_SERVICE_URL,
     changeOrigin: true,
-    pathFilter: ["/api/*/admin/trip/**", "/api/*/driver/**", "/api/*/vehicles/**"],
+    pathFilter: [
+      "/api/*/admin/trip/**",
+      "/api/*/driver/**",
+      "/api/*/vehicles/**",
+      "/api/*/trips/**",
+    ],
     pathRewrite: {
       "^/api": "",
     },

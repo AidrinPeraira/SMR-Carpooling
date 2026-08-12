@@ -11,6 +11,9 @@ export class DriverRepository implements IDriverRepository {
       where: { driverId: driver.driverId },
       create: {
         driverId: driver.driverId,
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        emailId: driver.emailId,
         recordId: driver.recordId,
         licenseNumber: driver.licenseNumber,
         licenseImage: driver.licenseImage,
@@ -19,6 +22,9 @@ export class DriverRepository implements IDriverRepository {
         updatedAt: driver.updatedAt,
       },
       update: {
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        emailId: driver.emailId,
         recordId: driver.recordId,
         licenseNumber: driver.licenseNumber,
         licenseImage: driver.licenseImage,
@@ -29,6 +35,9 @@ export class DriverRepository implements IDriverRepository {
 
     return {
       driverId: created.driverId,
+      firstName: created.firstName,
+      lastName: created.lastName,
+      emailId: created.emailId,
       recordId: created.recordId,
       licenseNumber: created.licenseNumber,
       licenseImage: created.licenseImage,
@@ -52,6 +61,9 @@ export class DriverRepository implements IDriverRepository {
 
     return {
       driverId: updated.driverId,
+      firstName: updated.firstName,
+      lastName: updated.lastName,
+      emailId: updated.emailId,
       recordId: updated.recordId,
       licenseNumber: updated.licenseNumber,
       licenseImage: updated.licenseImage,
@@ -70,6 +82,9 @@ export class DriverRepository implements IDriverRepository {
 
     return {
       driverId: driver.driverId,
+      firstName: driver.firstName,
+      lastName: driver.lastName,
+      emailId: driver.emailId,
       recordId: driver.recordId,
       licenseNumber: driver.licenseNumber,
       licenseImage: driver.licenseImage,

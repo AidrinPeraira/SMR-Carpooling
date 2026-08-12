@@ -34,6 +34,17 @@ import { createAdminVehicleRouterV1 } from "#/presentation/v1/routes/admin/Admin
 import { createDriverRouterV1 } from "#/presentation/v1/routes/driver/DriverRouterV1";
 import { createVehicleRouterV1 } from "#/presentation/v1/routes/vehicle/VehicleRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
+import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
+import { CreateNewPassengerUseCase } from "#/application/use-case/passenger/CreateNewPassengerUseCase";
+import { PassengerRepository } from "#/infrastructure/repository/PassengerRepository";
+
+import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
+import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingService";
+import { TripsRepository } from "#/infrastructure/repository/TripsRepository";
+import { CreateTripUseCase } from "#/application/use-case/trip/CreateTripUseCase";
+import { ListTripsUseCase } from "#/application/use-case/trip/ListTripsUseCase";
+import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
+import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
 
 /**
  * Composition Root for the Trip Service.
@@ -49,9 +60,20 @@ const vehicleListRepository = new VehicleListRepository();
 const driverRepository = new DriverRepository();
 const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
+const placesCacheStore = new PlacesCacheStore(redisClient);
+const passengerRepository = new PassengerRepository();
+
+const geoIndexingService = new H3GeoIndexingService();
+const tripsRepository = new TripsRepository(
+  geoIndexingService,
+  placesCacheStore,
+);
 
 // Driver & User Vehicle Use Cases
-const addDriverUseCase = new AddDriverUseCase(driverRepository);
+const addDriverUseCase = new AddDriverUseCase(
+  driverRepository,
+  passengerRepository,
+);
 const updateDriverUseCase = new UpdateDriverUseCase(driverRepository);
 const changeDriverStatusUseCase = new ChangeDriverStatusUseCase(
   driverRepository,
@@ -65,8 +87,18 @@ const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(
 const getDriverVehiclesUseCase = new GetDriverVehiclesUseCase(
   vehicleRepository,
 );
+const createNewPassengerUseCase = new CreateNewPassengerUseCase(
+  passengerRepository,
+);
+
+const createTripUseCase = new CreateTripUseCase(tripsRepository);
+const listTripsUseCase = new ListTripsUseCase(tripsRepository);
 
 // Application Event Handlers
+const newUserEventHandler = new NewUserEventHandler(
+  consolaLogger,
+  createNewPassengerUseCase,
+);
 const applicationApprovedHandler = new ApplicationApprovedHandler(
   consolaLogger,
   addUserVehicleUseCase,
@@ -87,6 +119,7 @@ const userUnblockedHandler = new UserUnblockedEventHandler(
 
 // Event Dispatcher & Message Consumer
 const eventDispatcher = new EventDispatcher(consolaLogger);
+await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, newUserEventHandler);
 await eventDispatcher.register(
   EventName.ADMIN_APPROVE_APPLICTION,
   applicationApprovedHandler,
@@ -166,6 +199,12 @@ const vehicleControllerV1 = new VehicleControllerV1(
   getDriverVehiclesUseCase,
 );
 
+const tripControllerV1 = new TripControllerV1(
+  consolaLogger,
+  createTripUseCase,
+  listTripsUseCase,
+);
+
 // Routers
 const adminConfigurationRoutesV1 = createAdminConfigurationRouterV1(
   adminConfigurationControllerV1,
@@ -177,6 +216,7 @@ const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
 
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
+const tripRoutesV1 = createTripRouterV1(tripControllerV1);
 
 const v1Router = express.Router();
 v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
@@ -185,6 +225,7 @@ v1Router.use("/admin/trip/vehicles", adminVehicleRoutesV1);
 
 v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
+v1Router.use("/trips", tripRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,

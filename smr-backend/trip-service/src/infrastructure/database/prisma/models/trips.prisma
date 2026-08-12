@@ -1,0 +1,54 @@
+enum TripStatus {
+  scheduled
+  fully_booked
+  cancelled
+  ongoing
+  completed
+}
+
+model Trip {
+  tripId    String @id
+  driverId  String
+  vehicleId String
+
+  //TripStop as json 
+  tripOrigin      Json
+  tripDestination Json
+
+  //TripStop[] as json
+  tripStops Json
+
+  //[number, number][] as Json
+  tripRoute Json
+
+  tripDistance   Int
+  availableSeats Int
+  vacantSeats    Int
+  tripTags       String[]
+  startTime      DateTime
+  totalSeats     Int
+  tripStatus     TripStatus @default(scheduled)
+  createdAt      DateTime
+  updatedAt      DateTime
+
+  tripPlaces TripPlaces[]
+}
+
+model TripPlaces {
+  placeIndex String
+  tripId     String
+  tripDate   DateTime
+
+  seqNumber   Int
+  isCompleted Boolean @default(false)
+
+  trip Trip @relation(fields: [tripId], references: [tripId])
+  place Places @relation(fields: [placeIndex], references: [placeIndex])
+
+  // Composite primary key ensures a trip cannot have duplicate sequence numbers for the same place
+  @@id([tripId, placeIndex, seqNumber])
+  //index to help matching
+  @@index([placeIndex, tripDate])
+  //index to quickly find all places touched by a trip
+  @@index([tripId])
+}

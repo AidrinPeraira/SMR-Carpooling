@@ -1,0 +1,9 @@
+model Passenger {
+  passengerId String   @id @unique
+  firstName   String
+  lastName    String
+  emailId     String
+  isActive    Boolean
+  createdAt   DateTime
+  updatedAt   DateTime
+}

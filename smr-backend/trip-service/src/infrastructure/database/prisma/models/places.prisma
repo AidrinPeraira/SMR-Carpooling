@@ -1,0 +1,9 @@
+model Places {
+  placeIndex   String @id @unique
+  placeName    String
+  placeLat     Float
+  placeLng     Float
+  placeAddress String
+
+  tripPlaces TripPlaces[]
+}

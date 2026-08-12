@@ -1,6 +1,6 @@
 import { AddVehicleRequestDTO } from "#/application/dto/vehicle/AddVehicleRequestDTO";
 import { IVehicleRepository } from "#/application/interfaces/repository/IVehicleRepository";
-import { IAddVehicleUseCase } from "#/application/interfaces/use-case/vehicles/IAddVehicleUseCase";
+import { IAddVehicleUseCase } from "#/application/interfaces/use-case/vehicle/IAddVehicleUseCase";
 import { VehicleEntity } from "#/domain/entities/VehicleEntity";
 import { VehicleStatus } from "@sharemyride/shared";
 
