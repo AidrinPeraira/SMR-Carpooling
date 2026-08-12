@@ -13,8 +13,10 @@ export function MapContainer({ className }: Props) {
 
   useEffect(() => {
     async function setupMap() {
-      mapService.initialise(mapRef.current);
-      await mapService.startLocationTracking();
+      if (mapRef.current) {
+        await mapService.initialise(mapRef.current);
+        await mapService.startLocationTracking();
+      }
     }
 
     setupMap();

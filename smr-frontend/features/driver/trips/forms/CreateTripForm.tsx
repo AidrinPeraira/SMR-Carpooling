@@ -74,11 +74,13 @@ export function CreateTripForm() {
     if (vehicles && vehicles.length > 0 && !selectedVehicle.vehicleId) {
       const v = vehicles[0];
       const maxSeats = Math.max(1, v.vehicle_capacity - 1);
-      setSelectedVehicle({
-        vehicleId: v.vehicle_id,
-        maxAvailableSeats: maxSeats,
+      queueMicrotask(() => {
+        setSelectedVehicle({
+          vehicleId: v.vehicle_id,
+          maxAvailableSeats: maxSeats,
+        });
+        setAvailableSeats((prev) => Math.min(prev, maxSeats));
       });
-      setAvailableSeats((prev) => Math.min(prev, maxSeats));
     }
   }, [vehicles, selectedVehicle.vehicleId]);
 

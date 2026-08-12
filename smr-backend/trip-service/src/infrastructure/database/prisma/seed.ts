@@ -5,6 +5,8 @@ import { AddPlacesRequestDTO } from "#/application/dto/trip/AddPlacesRequestDTO"
 import { AddPlacesUseCase } from "#/application/use-case/trip/AddPlacesUseCase";
 import { PlacesRepository } from "#/infrastructure/repository/PlacesRepository";
 import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingService";
+import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
+import { redisClient } from "#/infrastructure/store/connect-redis";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,8 +40,13 @@ async function seedPlaces(): Promise<void> {
 
   console.log(`Found ${features.length} POI features.`);
 
+  await redisClient.connect();
+  const placesCacheStore = new PlacesCacheStore(redisClient);
   const geoIndexingService = new H3GeoIndexingService(8);
-  const placesRepository = new PlacesRepository(geoIndexingService);
+  const placesRepository = new PlacesRepository(
+    geoIndexingService,
+    placesCacheStore,
+  );
   const addPlacesUseCase = new AddPlacesUseCase(placesRepository);
 
   const batchSize = 2000;
@@ -83,6 +90,7 @@ async function seedPlaces(): Promise<void> {
   console.log(
     `Seeding complete! Successfully processed ${processedCount} places.`,
   );
+  await redisClient.disconnect();
 }
 
 seedPlaces().catch((err) => {

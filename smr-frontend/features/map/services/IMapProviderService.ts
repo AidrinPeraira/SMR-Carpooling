@@ -1,5 +1,10 @@
 "use client";
-import { MapPoint, Place, Route, SearchSuggestion } from "@/features/map/types/MapTypes";
+import {
+  MapPoint,
+  Place,
+  Route,
+  SearchSuggestion,
+} from "@/features/map/types/MapTypes";
 
 /**
  * This interface defines the methods needed for any
@@ -12,7 +17,7 @@ export interface IMapProviderService {
       center?: MapPoint;
       zoom?: number;
     },
-  ): void;
+  ): Promise<void>;
 
   destroy(): Promise<void>;
 

@@ -20,7 +20,7 @@ export async function apiClientFetch<PayloadType = unknown>(
     });
 
     if (!response.ok) {
-      let failedResponse = await response.json();
+      const failedResponse = await response.json();
 
       //handle failed request
       throw new Error(

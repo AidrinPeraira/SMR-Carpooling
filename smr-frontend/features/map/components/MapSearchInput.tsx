@@ -63,9 +63,11 @@ export function MapSearchInput({
 
     const trimmed = searchString.trim();
     if (!trimmed) {
-      setSearchSuggestions([]);
-      setIsOpen(false);
-      setIsPending(false);
+      queueMicrotask(() => {
+        setSearchSuggestions([]);
+        setIsOpen(false);
+        setIsPending(false);
+      });
       return;
     }
 

@@ -21,7 +21,7 @@ export function ActiveTripCard({ activeTrip, onStartTrip }: ActiveTripCardProps)
     <Card className="p-5 flex flex-col gap-4 shadow-xs">
       <div>
         <h2 className="text-lg font-semibold text-content-primary">
-          Today's Trip
+          Today&apos;s Trip
         </h2>
         <p className="text-xs text-content-secondary mt-1">
           Your next scheduled ride.
@@ -35,7 +35,7 @@ export function ActiveTripCard({ activeTrip, onStartTrip }: ActiveTripCardProps)
             No Active Trip Today
           </p>
           <p className="text-xs text-content-secondary">
-            You don't have any scheduled rides remaining for today.
+            You don&apos;t have any scheduled rides remaining for today.
           </p>
         </div>
       ) : (

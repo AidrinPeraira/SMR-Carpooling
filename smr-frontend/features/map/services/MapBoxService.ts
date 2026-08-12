@@ -24,6 +24,7 @@ export class MapBoxService implements IMapProviderService {
   private _styleUrl = "mapbox://styles/mapbox/dark-v11";
   private _geolocationControl: GeolocateControl | null = null;
   private _searchBox: SearchBoxCore;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _searchSession: SearchSession<any, any, any, any>;
   private _markers: Map<string, Marker> = new Map();
 
@@ -40,17 +41,22 @@ export class MapBoxService implements IMapProviderService {
    * @param element : Reference to html element that renders map
    * @param options : optional config for center and zoom
    */
-  initialise(
+  async initialise(
     element: HTMLDivElement,
     options?: {
       center?: MapPoint;
       zoom?: number;
     },
-  ): void {
+  ): Promise<void> {
+    if (this._map) {
+      this.destroy();
+    }
+
+    const currentLocation = await this.getCurrentLocation();
     this._map = new MapboxMap({
       container: element,
       style: this._styleUrl,
-      center: options?.center || [75.2711, 10.8505],
+      center: currentLocation || [75.2711, 10.8505],
       zoom: options?.zoom || 12,
     });
   }
@@ -131,7 +137,7 @@ export class MapBoxService implements IMapProviderService {
     // add the location control to the current map instance
     this._map.addControl(this._geolocationControl);
 
-    this._geolocationControl.on("error", (error: any) => {
+    this._geolocationControl.on("error", (error: unknown) => {
       console.error("GeolocateControl error:", error);
     });
 
@@ -167,7 +173,7 @@ export class MapBoxService implements IMapProviderService {
     const response = await this._searchSession.suggest(place);
 
     const result: SearchSuggestion[] = response.suggestions.map(
-      (suggestion: any) => {
+      (suggestion: Record<string, string>) => {
         return {
           id: suggestion.mapbox_id,
           title: suggestion.name,
@@ -204,7 +210,7 @@ export class MapBoxService implements IMapProviderService {
       mapbox_id: suggestion.id,
       name: suggestion.title,
       full_address: suggestion.address,
-    } as any);
+    } as Parameters<typeof this._searchSession.retrieve>[0]);
 
     const feature = response.features?.[0];
     if (!feature) {

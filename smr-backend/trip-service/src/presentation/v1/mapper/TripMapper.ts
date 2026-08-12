@@ -62,10 +62,16 @@ export class TripMapper {
             page: body.query.page,
             limit: body.query.limit,
             search: body.query.search,
-            searchFields: body.query.searchFields,
+            searchFields: body.query.searchFields as
+              | (keyof ListTripsResultDTO)[]
+              | undefined,
             sortValue: body.query.sortValue,
-            sortField: body.query.sortField,
-            filterField: body.query.filterField,
+            sortField: body.query.sortField as
+              | keyof ListTripsResultDTO
+              | undefined,
+            filterField: body.query.filterField as
+              | keyof ListTripsResultDTO
+              | undefined,
             filterValue: body.query.filterValue,
           }
         : undefined,

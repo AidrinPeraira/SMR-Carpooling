@@ -1,11 +1,11 @@
 "use client";
 
 import { OfferTripCard } from "../components/OfferTripCard";
-import { ActiveTripCard, ActiveTrip } from "../components/ActiveTripCard";
-import { DriverTripsCard, DisplayTrip } from "../components/DriverTripsCard";
-import { TripStatus } from "@sharemyride/shared";
+import { ActiveTripCard } from "../components/ActiveTripCard";
+import { DriverTripsCard } from "../components/DriverTripsCard";
 
-const MOCK_ACTIVE_TRIP: ActiveTrip = {
+/*
+const MOCK_ACTIVE_TRIP = {
   tripId: "trip-101",
   origin: "San Jose, CA",
   destination: "San Francisco, CA",
@@ -13,7 +13,7 @@ const MOCK_ACTIVE_TRIP: ActiveTrip = {
   passengersCount: 3,
 };
 
-const MOCK_PAST_TRIPS: DisplayTrip[] = [
+const MOCK_PAST_TRIPS = [
   {
     tripId: "trip-001",
     origin: "San Francisco, CA",
@@ -52,6 +52,7 @@ const MOCK_PAST_TRIPS: DisplayTrip[] = [
     status: TripStatus.CANCELLED,
   },
 ];
+*/
 
 export function DriverTripsView() {
   return (
