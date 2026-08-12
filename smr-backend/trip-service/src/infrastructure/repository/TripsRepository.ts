@@ -24,6 +24,9 @@ export class TripsRepository implements ITripRepository {
 
   async save(trip: TripEntity): Promise<void> {
     //create indexed data
+
+    /*
+    //without buffering
     const placesWithIndex = await Promise.all(
       trip.tripRoute.map(async (point, i) => {
         const placeIndex = await this._geoIndexingService.locationToIndex(
@@ -40,8 +43,8 @@ export class TripsRepository implements ITripRepository {
       }),
     );
 
-    /*
-     //with buffer for corridor
+    */
+    //with buffer for corridor
     const placesWithIndex = (
       await Promise.all(
         trip.tripRoute.map(async (point, i) => {
@@ -60,7 +63,6 @@ export class TripsRepository implements ITripRepository {
         }),
       )
     ).flat();
-    */
 
     //filter to remove duplicate cells for points
     const visited = new Set<string>();
@@ -79,10 +81,6 @@ export class TripsRepository implements ITripRepository {
       validIndicesSet.has(place.placeIndex),
     );
 
-    console.log("-------- Filtered Places ------------");
-    console.log("size: ", tripIndices.length);
-    console.log("valid indices", validIndicesSet);
-    console.log(filteredTripPlaces);
     //create db entries
     await prisma.$transaction([
       this._tripModel.create({

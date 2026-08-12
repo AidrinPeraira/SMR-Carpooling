@@ -59,6 +59,11 @@ export function CreateTripForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  useEffect(() => {
+    console.log("Dest: ", tripDestination);
+    console.log("Origin: ", tripOrigin);
+  }, [tripOrigin, tripDestination]);
+
   //get vehicle details from user profile
   const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
     queryKey: ["driverVehicles"],
@@ -299,7 +304,7 @@ export function CreateTripForm() {
       });
 
       toast("Trip created successfully!", { variant: "success" });
-      // router.push("/driver/trips");
+      router.push("/driver/trips");
     } catch (err: unknown) {
       logger.error("Failed to submit create trip form: ", err);
       const errorMsg =
