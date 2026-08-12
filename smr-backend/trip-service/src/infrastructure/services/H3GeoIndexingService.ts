@@ -12,7 +12,7 @@ export class H3GeoIndexingService implements IGeoIndexingService {
    * @param _radiusSteps - The number of index rings to match around a point when buffered
    */
   constructor(
-    private readonly _resolution: number = 8,
+    private readonly _resolution: number = 7,
     private readonly _radiusSteps = 3,
   ) {}
 

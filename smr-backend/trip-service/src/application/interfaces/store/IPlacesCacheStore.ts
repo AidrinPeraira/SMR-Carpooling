@@ -17,4 +17,12 @@ export interface IPlacesCacheStore {
    * @returns Array of numbers (1 if cached, 0 if not cached)
    */
   checkPlaceIndices(indices: string[]): Promise<number[]>;
+
+  /**
+   * Checks whether the places cache set exists in Redis.
+   *
+   * @returns Boolean indicating if the cache key exists
+   */
+  hasCache(): Promise<boolean>;
 }
+

@@ -113,32 +113,31 @@ export class MapBoxService implements IMapProviderService {
   async startLocationTracking(): Promise<void> {
     if (!this._map) throw new Error("Map not initialised");
 
-    // create location control if it doesn't exist
-    if (!this._geolocationControl) {
-      const geoControl = new GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        trackUserLocation: true,
-        showUserHeading: true,
-        showUserLocation: true,
-      });
-
-      this._geolocationControl = geoControl;
-      // add the location control to the current map instance
-      this._map.addControl(this._geolocationControl);
-
-      this._geolocationControl.on("error", (error: any) => {
-        console.error("GeolocateControl error:", error);
-      });
-
-      this._geolocationControl.on("ready", () => {
-        geoControl.trigger();
-      });
-    } else {
-      // trigger location tracking
-      this._geolocationControl.trigger();
+    // Always stop and clean up any existing geolocation control attached to an old map
+    if (this._geolocationControl) {
+      await this.stopLocationTracking();
     }
+
+    const geoControl = new GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+      showUserLocation: true,
+    });
+
+    this._geolocationControl = geoControl;
+    // add the location control to the current map instance
+    this._map.addControl(this._geolocationControl);
+
+    this._geolocationControl.on("error", (error: any) => {
+      console.error("GeolocateControl error:", error);
+    });
+
+    this._geolocationControl.on("ready", () => {
+      geoControl.trigger();
+    });
   }
 
   /**
@@ -146,9 +145,15 @@ export class MapBoxService implements IMapProviderService {
    */
   async stopLocationTracking(): Promise<void> {
     if (this._geolocationControl && this._map) {
-      this._map.removeControl(this._geolocationControl);
-      this._geolocationControl = null;
+      try {
+        if (this._map.hasControl(this._geolocationControl)) {
+          this._map.removeControl(this._geolocationControl);
+        }
+      } catch (error) {
+        console.warn("GeolocateControl removal skipped:", error);
+      }
     }
+    this._geolocationControl = null;
   }
 
   /**

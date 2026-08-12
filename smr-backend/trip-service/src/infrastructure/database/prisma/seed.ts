@@ -38,7 +38,7 @@ async function seedPlaces(): Promise<void> {
 
   console.log(`Found ${features.length} POI features.`);
 
-  const geoIndexingService = new H3GeoIndexingService(7);
+  const geoIndexingService = new H3GeoIndexingService(8);
   const placesRepository = new PlacesRepository(geoIndexingService);
   const addPlacesUseCase = new AddPlacesUseCase(placesRepository);
 

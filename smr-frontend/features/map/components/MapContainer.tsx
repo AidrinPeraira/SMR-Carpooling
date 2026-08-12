@@ -12,10 +12,14 @@ export function MapContainer({ className }: Props) {
   const mapService = useMap();
 
   useEffect(() => {
+    let isMounted = true;
+
     async function setupMap() {
       if (mapRef.current) {
         mapService.initialise(mapRef.current);
-        await mapService.startLocationTracking();
+        if (isMounted) {
+          await mapService.startLocationTracking();
+        }
       }
     }
 
@@ -23,6 +27,7 @@ export function MapContainer({ className }: Props) {
 
     // add cleanup function
     return () => {
+      isMounted = false;
       mapService.destroy();
     };
   }, [mapService]);

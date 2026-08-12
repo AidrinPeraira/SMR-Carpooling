@@ -28,4 +28,14 @@ export class PlacesCacheStore implements IPlacesCacheStore {
       return indices.map(() => 0);
     }
   }
+
+  async hasCache(): Promise<boolean> {
+    try {
+      const exists = await this._redisClient.exists(this._cacheKey);
+      return exists > 0;
+    } catch {
+      return false;
+    }
+  }
 }
+

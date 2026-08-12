@@ -40,6 +40,28 @@ export class TripsRepository implements ITripRepository {
       }),
     );
 
+    /*
+     //with buffer for corridor
+    const placesWithIndex = (
+      await Promise.all(
+        trip.tripRoute.map(async (point, i) => {
+          const areaIndices =
+            await this._geoIndexingService.locationToAreaIndices(
+              point[1],
+              point[0],
+            );
+          return areaIndices.map((placeIndex) => ({
+            placeIndex,
+            tripId: trip.tripId,
+            tripDate: trip.startTime,
+            seqNumber: i,
+            isCompleted: false,
+          }));
+        }),
+      )
+    ).flat();
+    */
+
     //filter to remove duplicate cells for points
     const visited = new Set<string>();
     const uniqueTripPlaces = placesWithIndex.filter((v) => {
@@ -51,13 +73,16 @@ export class TripsRepository implements ITripRepository {
 
     //filter this according to places data in cache
     const tripIndices = uniqueTripPlaces.map((v) => v.placeIndex);
-    const filteredTripIndices =
-      await this._placesCacheStore.checkPlaceIndices(tripIndices);
+    const validIndicesSet = await this._getValidPlaceIndices(tripIndices);
 
-    const filteredTripPlaces = uniqueTripPlaces.filter(
-      (_place, i) => filteredTripIndices[i] == 1,
+    const filteredTripPlaces = uniqueTripPlaces.filter((place) =>
+      validIndicesSet.has(place.placeIndex),
     );
 
+    console.log("-------- Filtered Places ------------");
+    console.log("size: ", tripIndices.length);
+    console.log("valid indices", validIndicesSet);
+    console.log(filteredTripPlaces);
     //create db entries
     await prisma.$transaction([
       this._tripModel.create({
@@ -104,16 +129,16 @@ export class TripsRepository implements ITripRepository {
       dto.destination.stopLng,
     );
 
-    //filter iindices with known places in
-    const originCheck =
-      await this._placesCacheStore.checkPlaceIndices(rawOriginIndices);
-    const destCheck =
-      await this._placesCacheStore.checkPlaceIndices(rawDestIndices);
+    //filter indices with known places in cache/db
+    const validOriginSet = await this._getValidPlaceIndices(rawOriginIndices);
+    const validDestSet = await this._getValidPlaceIndices(rawDestIndices);
 
-    const validOriginIndices = rawOriginIndices.filter(
-      (_, i) => originCheck[i] == 1,
+    const validOriginIndices = rawOriginIndices.filter((idx) =>
+      validOriginSet.has(idx),
     );
-    const validDestIndices = rawDestIndices.filter((_, i) => destCheck[i] == 1);
+    const validDestIndices = rawDestIndices.filter((idx) =>
+      validDestSet.has(idx),
+    );
 
     //quickly return if there is no matches
     if (validOriginIndices.length === 0 || validDestIndices.length === 0) {
@@ -229,5 +254,34 @@ export class TripsRepository implements ITripRepository {
         totalPages,
       },
     };
+  }
+
+  /**
+   * Checks Redis for valid place indices.
+   * If the Redis cache key does not exist yet, fetches all place rows from the database,
+   * caches them in Redis via `addPlaceIndices`, and then performs the index check.
+   */
+  private async _getValidPlaceIndices(indices: string[]): Promise<Set<string>> {
+    if (indices.length === 0) return new Set();
+
+    const cacheExists = await this._placesCacheStore.hasCache();
+
+    if (!cacheExists) {
+      const allPlaces = await prisma.places.findMany({
+        select: {
+          placeIndex: true,
+        },
+      });
+
+      if (allPlaces.length > 0) {
+        const allIndices = allPlaces.map((p) => p.placeIndex);
+        await this._placesCacheStore.addPlaceIndices(allIndices);
+      }
+    }
+
+    const cachedStatus =
+      await this._placesCacheStore.checkPlaceIndices(indices);
+
+    return new Set(indices.filter((_, i) => cachedStatus[i] === 1));
   }
 }

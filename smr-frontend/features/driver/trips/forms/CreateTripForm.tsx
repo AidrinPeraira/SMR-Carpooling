@@ -5,6 +5,7 @@ import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint, Place } from "@/features/map/types/MapTypes";
 import { getDriverVehiclesRequest } from "@/features/profile/api/requests/getDriverVehiclesRequest";
 import { apiClientFetch } from "@/lib/api-client";
+import { logger } from "@/lib/logger";
 import { CreateTripSchema } from "@sharemyride/shared";
 import {
   Button,
@@ -298,8 +299,9 @@ export function CreateTripForm() {
       });
 
       toast("Trip created successfully!", { variant: "success" });
-      router.push("/driver/trips");
+      // router.push("/driver/trips");
     } catch (err: unknown) {
+      logger.error("Failed to submit create trip form: ", err);
       const errorMsg =
         err instanceof Error ? err.message : "Failed to create trip";
       toast(errorMsg, { variant: "error" });
