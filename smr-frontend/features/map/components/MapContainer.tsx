@@ -1,4 +1,5 @@
 "use client";
+
 import { useMap } from "@/features/map/hooks/useMap";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
@@ -14,8 +15,12 @@ export function MapContainer({ className }: Props) {
   useEffect(() => {
     async function setupMap() {
       if (mapRef.current) {
-        await mapService.initialise(mapRef.current);
-        await mapService.startLocationTracking();
+        try {
+          await mapService.initialise(mapRef.current);
+          await mapService.startLocationTracking();
+        } catch (err) {
+          console.warn("Map setup or location tracking warning:", err);
+        }
       }
     }
 

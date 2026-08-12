@@ -63,6 +63,15 @@ export interface IMapProviderService {
 
   drawRoute(route: MapPoint[]): Promise<void>;
 
+  /**
+   * Renders a route line given an array of lat/long objects or coordinate tuples
+   *
+   * @param coordinates Array of { lat, lng } objects or [number, number] tuples
+   */
+  drawRouteFromCoordinates(
+    coordinates: { lat: number; lng: number }[] | [number, number][],
+  ): Promise<void>;
+
   removeRoute(): Promise<void>;
 
   fitBounds(points: MapPoint[]): Promise<void>;

@@ -39,19 +39,22 @@ export class TripsRepository implements ITripRepository {
   ): Promise<JourneyDetailsPayload | null> {
     const trip = await this._tripModel.findUnique({
       where: { tripId },
-      include: {
-        tripPlaces: {
-          include: {
-            place: true,
-          },
-          orderBy: {
-            seqNumber: "asc",
-          },
-        },
-      },
     });
 
     if (!trip) return null;
+
+    const tripPlaces = await this._tripPlacesModel.findMany({
+      where: {
+        tripId: trip.tripId,
+        tripDate: trip.startTime,
+      },
+      include: {
+        place: true,
+      },
+      orderBy: {
+        seqNumber: "asc",
+      },
+    });
 
     const vehicle = await prisma.vehicle.findUnique({
       where: { vehicleId: trip.vehicleId },
@@ -59,7 +62,14 @@ export class TripsRepository implements ITripRepository {
 
     const vehicleType = (vehicle?.vehicleType || "car") as VehicleTypes;
 
-    const availableStops: Route = trip.tripPlaces.map((tp) => [
+    const tripStops: TripStop[] = tripPlaces.map((tp) => ({
+      stopLat: tp.place.placeLat,
+      stopLng: tp.place.placeLng,
+      stopName: tp.place.placeName,
+      stopAddress: tp.place.placeAddress,
+    }));
+
+    const availableStops: Route = tripPlaces.map((tp) => [
       tp.place.placeLng,
       tp.place.placeLat,
     ]);
@@ -70,7 +80,7 @@ export class TripsRepository implements ITripRepository {
       vehicleId: trip.vehicleId,
       tripOrigin: trip.tripOrigin as unknown as TripStop,
       tripDestination: trip.tripDestination as unknown as TripStop,
-      tripStops: trip.tripStops as unknown as TripStop[],
+      tripStops,
       tripRoute: trip.tripRoute as unknown as Route,
       tripDistance: trip.tripDistance,
       availableSeats: trip.availableSeats,
@@ -92,26 +102,6 @@ export class TripsRepository implements ITripRepository {
 
   async save(trip: TripEntity): Promise<void> {
     //create indexed data
-
-    /*
-    //without buffering
-    const placesWithIndex = await Promise.all(
-      trip.tripRoute.map(async (point, i) => {
-        const placeIndex = await this._geoIndexingService.locationToIndex(
-          point[1],
-          point[0],
-        );
-        return {
-          placeIndex,
-          tripId: trip.tripId,
-          tripDate: trip.startTime,
-          seqNumber: i,
-          isCompleted: false,
-        };
-      }),
-    );
-
-    */
     //with buffer for corridor
     const placesWithIndex = (
       await Promise.all(
@@ -223,7 +213,12 @@ export class TripsRepository implements ITripRepository {
     const originPlaces = await this._tripPlacesModel.findMany({
       where: {
         placeIndex: { in: validOriginIndices },
-        tripDate: { gte: dto.time },
+        tripDate: {
+          gte: dto.time,
+          lt: new Date(
+            new Date(dto.time).setDate(new Date(dto.time).getDate() + 1),
+          ),
+        },
       },
       select: { tripId: true, seqNumber: true },
     });

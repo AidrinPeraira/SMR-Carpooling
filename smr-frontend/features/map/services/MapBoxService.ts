@@ -93,9 +93,11 @@ export class MapBoxService implements IMapProviderService {
    * Fetches user's current GPS location via browser Geolocation API
    */
   async getCurrentLocation(): Promise<MapPoint> {
-    return new Promise((resolve, reject) => {
+    const DEFAULT_FALLBACK: MapPoint = [76.95272651, 8.48706726];
+
+    return new Promise((resolve) => {
       if (typeof window === "undefined" || !navigator.geolocation) {
-        reject(new Error("Geolocation is not supported by this browser."));
+        resolve(DEFAULT_FALLBACK);
         return;
       }
 
@@ -104,8 +106,14 @@ export class MapBoxService implements IMapProviderService {
           const { longitude, latitude } = position.coords;
           resolve([longitude, latitude]);
         },
-        (error) => reject(error),
-        { enableHighAccuracy: true, timeout: 10000 },
+        (error) => {
+          console.warn(
+            "Geolocation positioning failed or timed out, using fallback location:",
+            error,
+          );
+          resolve(DEFAULT_FALLBACK);
+        },
+        { enableHighAccuracy: true, timeout: 20000 },
       );
     });
   }
@@ -403,4 +411,25 @@ export class MapBoxService implements IMapProviderService {
       this._map.removeSource(routeSourceId);
     }
   }
+
+  /**
+   * Renders a route line on the map using an array of latitude/longitude objects or coordinate tuples
+   *
+   * @param coordinates Array of { lat, lng } objects or [number, number] tuples
+   */
+  async drawRouteFromCoordinates(
+    coordinates: { lat: number; lng: number }[] | [number, number][],
+  ): Promise<void> {
+    if (!coordinates || coordinates.length === 0) return;
+
+    const points: MapPoint[] = coordinates.map((coord) => {
+      if (Array.isArray(coord)) {
+        return [coord[0], coord[1]];
+      }
+      return [coord.lng, coord.lat];
+    });
+
+    await this.drawRoute(points);
+  }
 }
+

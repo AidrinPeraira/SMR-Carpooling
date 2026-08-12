@@ -22,6 +22,7 @@ export class ListTripsUseCase implements IListTripsUseCase {
   async execute(
     query: ListTripsRequestDTO,
   ): Promise<PaginatedPayload<ListTripsResultDTO[]>> {
+    console.log("Searching for trips: ", query);
     return this._tripRepository.findMatchingTrips(query);
   }
 }
