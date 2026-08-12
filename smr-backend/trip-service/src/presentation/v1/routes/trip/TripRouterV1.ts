@@ -22,5 +22,12 @@ export function createTripRouterV1(
     (req, res, next) => tripController.listMatchingTrips(req, res, next),
   );
 
+  // Get journey details for a trip (Passenger only)
+  router.post(
+    "/journey-details",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => tripController.getJourneyDetails(req, res, next),
+  );
+
   return router;
 }

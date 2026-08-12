@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICreateTripUseCase";
+import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
@@ -7,6 +8,8 @@ import {
   CreateTripSchema,
   CreateTripSchemaType,
   GenericSuccessMessage,
+  GetJourneyDetailsSchema,
+  GetJourneyDetailsSchemaType,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
@@ -20,6 +23,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _logger: ILogger,
     private readonly _createTripUseCase: ICreateTripUseCase,
     private readonly _listTripsUseCase: IListTripsUseCase,
+    private readonly _getJourneyDetailsUseCase: IGetJourneyDetailsUseCase,
   ) {}
 
   async createTrip(
@@ -86,4 +90,41 @@ export class TripControllerV1 implements ITripControllerV1 {
       next(error);
     }
   }
+
+  async getJourneyDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const passengerUserId = req.headers["x-user-id"] as string;
+
+      const validatedBody = zodParser<GetJourneyDetailsSchemaType>(
+        GetJourneyDetailsSchema,
+        req.body,
+      );
+
+      this._logger.info("Getting journey details for trip:", {
+        passengerUserId,
+        tripId: validatedBody.trip_id,
+      });
+
+      const result = await this._getJourneyDetailsUseCase.execute(
+        validatedBody.trip_id,
+      );
+      const mappedResponse = TripMapper.toGetJourneyDetailsResponse(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            GenericSuccessMessage.OPERATION_SUCCESSFUL,
+            mappedResponse,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
+

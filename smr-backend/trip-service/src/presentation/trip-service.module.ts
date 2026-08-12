@@ -43,6 +43,7 @@ import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingSer
 import { TripsRepository } from "#/infrastructure/repository/TripsRepository";
 import { CreateTripUseCase } from "#/application/use-case/trip/CreateTripUseCase";
 import { ListTripsUseCase } from "#/application/use-case/trip/ListTripsUseCase";
+import { GetJourneyDetailsUseCase } from "#/application/use-case/trip/GetJourneyDetailsUseCase";
 import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
 import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
 
@@ -93,6 +94,11 @@ const createNewPassengerUseCase = new CreateNewPassengerUseCase(
 
 const createTripUseCase = new CreateTripUseCase(tripsRepository);
 const listTripsUseCase = new ListTripsUseCase(tripsRepository);
+const getJourneyDetailsUseCase = new GetJourneyDetailsUseCase(
+  tripsRepository,
+  pricingRulesRepository,
+  configurationStore,
+);
 
 // Application Event Handlers
 const newUserEventHandler = new NewUserEventHandler(
@@ -203,6 +209,7 @@ const tripControllerV1 = new TripControllerV1(
   consolaLogger,
   createTripUseCase,
   listTripsUseCase,
+  getJourneyDetailsUseCase,
 );
 
 // Routers

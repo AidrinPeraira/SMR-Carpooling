@@ -2,12 +2,21 @@ import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
 } from "#/application/dto/trip/ListTripsDTO";
-import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
+import {
+  ITripRepository,
+  JourneyDetailsPayload,
+} from "#/application/interfaces/repository/ITripRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { IPlacesCacheStore } from "#/application/interfaces/store/IPlacesCacheStore";
 import { TripEntity } from "#/domain/entities/TripEntity";
 import { prisma } from "#/infrastructure/database/prisma";
-import { PaginatedPayload, TripStop, VehicleTypes } from "@sharemyride/shared";
+import {
+  PaginatedPayload,
+  Route,
+  TripStatus,
+  TripStop,
+  VehicleTypes,
+} from "@sharemyride/shared";
 
 /**
  * Implementation for the trip repository.
@@ -21,6 +30,65 @@ export class TripsRepository implements ITripRepository {
     private readonly _geoIndexingService: IGeoIndexingService,
     private readonly _placesCacheStore: IPlacesCacheStore,
   ) {}
+
+  /**
+   * gets route details for the trip service
+   */
+  async findJourneyDetails(
+    tripId: string,
+  ): Promise<JourneyDetailsPayload | null> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+      include: {
+        tripPlaces: {
+          include: {
+            place: true,
+          },
+          orderBy: {
+            seqNumber: "asc",
+          },
+        },
+      },
+    });
+
+    if (!trip) return null;
+
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { vehicleId: trip.vehicleId },
+    });
+
+    const vehicleType = (vehicle?.vehicleType || "car") as VehicleTypes;
+
+    const availableStops: Route = trip.tripPlaces.map((tp) => [
+      tp.place.placeLng,
+      tp.place.placeLat,
+    ]);
+
+    const tripEntity: TripEntity = {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      tripStops: trip.tripStops as unknown as TripStop[],
+      tripRoute: trip.tripRoute as unknown as Route,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as TripStatus,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+
+    return {
+      trip: tripEntity,
+      availableStops,
+      vehicleType,
+    };
+  }
 
   async save(trip: TripEntity): Promise<void> {
     //create indexed data
@@ -225,11 +293,22 @@ export class TripsRepository implements ITripRepository {
     });
 
     const vehicleIds = [...new Set(trips.map((t) => t.vehicleId))];
-    const vehicles = await prisma.vehicle.findMany({
-      where: { vehicleId: { in: vehicleIds } },
-    });
+    const driverIds = [...new Set(trips.map((t) => t.driverId))];
+
+    const [vehicles, drivers] = await Promise.all([
+      prisma.vehicle.findMany({
+        where: { vehicleId: { in: vehicleIds } },
+      }),
+      prisma.driver.findMany({
+        where: { driverId: { in: driverIds } },
+      }),
+    ]);
+
     const vehicleTypeMap = new Map(
       vehicles.map((v) => [v.vehicleId, v.vehicleType]),
+    );
+    const driverNameMap = new Map(
+      drivers.map((d) => [d.driverId, `${d.firstName} ${d.lastName}`.trim()]),
     );
 
     const data: ListTripsResultDTO[] = trips.map((trip) => ({
@@ -237,6 +316,7 @@ export class TripsRepository implements ITripRepository {
       tripOrigin: trip.tripOrigin as unknown as TripStop,
       tripDestination: trip.tripDestination as unknown as TripStop,
       tripDistance: trip.tripDistance,
+      driverName: driverNameMap.get(trip.driverId) || "",
       seatsAvailable: trip.vacantSeats,
       time: trip.startTime,
       vehicleType: (vehicleTypeMap.get(trip.vehicleId) ||

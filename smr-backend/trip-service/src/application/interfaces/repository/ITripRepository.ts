@@ -3,7 +3,13 @@ import {
   ListTripsResultDTO,
 } from "#/application/dto/trip/ListTripsDTO";
 import { TripEntity } from "#/domain/entities/TripEntity";
-import { PaginatedPayload } from "@sharemyride/shared";
+import { PaginatedPayload, Route, VehicleTypes } from "@sharemyride/shared";
+
+export interface JourneyDetailsPayload {
+  trip: TripEntity;
+  availableStops: Route;
+  vehicleType: VehicleTypes;
+}
 
 /**
  * This repository handles creating trip records and the matching
@@ -27,4 +33,13 @@ export interface ITripRepository {
   findMatchingTrips(
     dto: ListTripsRequestDTO,
   ): Promise<PaginatedPayload<ListTripsResultDTO[]>>;
+
+  /**
+   * Finds trip details with joined places coordinates from Places table
+   *
+   * @param tripId Trip ID
+   * @return Journey details payload or null if not found
+   */
+  findJourneyDetails(tripId: string): Promise<JourneyDetailsPayload | null>;
 }
+

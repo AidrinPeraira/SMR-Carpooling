@@ -1,5 +1,6 @@
 import { CreateTripRequestDTO } from "#/application/dto/trip/CreateTripRequestDTO";
 import {
+  GetJourneyDetailsResponseDTO,
   ListTripsRequestDTO,
   ListTripsResultDTO,
 } from "#/application/dto/trip/ListTripsDTO";
@@ -94,6 +95,17 @@ export class TripMapper {
     return {
       data,
       paginationMeta: payload.paginationMeta,
+    };
+  }
+
+  static toGetJourneyDetailsResponse(dto: GetJourneyDetailsResponseDTO) {
+    return {
+      trip_id: dto.tripId,
+      trip_stops: dto.tripStops.map((stop) => this.toTripStopDTO(stop)),
+      trip_route: dto.tripRoute,
+      available_stops: dto.availableStops,
+      base_price: dto.basePrice,
+      price_per_km: dto.pricePerKm,
     };
   }
 }

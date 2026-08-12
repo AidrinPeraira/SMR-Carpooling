@@ -33,3 +33,12 @@ export const SearchTripSchema = z.object({
 });
 
 export type SearchTripSchemaType = z.infer<typeof SearchTripSchema>;
+
+export const GetJourneyDetailsSchema = z.object({
+  trip_id: z.string().min(1),
+});
+
+export type GetJourneyDetailsSchemaType = z.infer<
+  typeof GetJourneyDetailsSchema
+>;
+
