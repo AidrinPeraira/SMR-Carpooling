@@ -13,8 +13,12 @@ import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
   BookingStatus,
   CreateBookingSchemaType,
+  DriverBookingDetailsDTO,
+  DriverBookingItemDTO,
   DriverGetBookingsQuerySchemaType,
   PaginatedPayload,
+  PassengerBookingDetailsDTO,
+  PassengerBookingItemDTO,
   PassengerGetBookingsQuerySchemaType,
 } from "@sharemyride/shared";
 
@@ -47,12 +51,12 @@ export class BookingMapper {
 
   static toDriverGetAllBookingsResponse(
     payload: PaginatedPayload<DriverGetAllBookingsResultDTO[]>,
-  ): PaginatedPayload<any[]> {
+  ): PaginatedPayload<DriverBookingItemDTO[]> {
     return {
       data: payload.data.map((item) => ({
         booking_id: item.bookingId,
         passenger_name: item.passngerName,
-        trip_date: item.tripDate,
+        trip_date: item.tripDate instanceof Date ? item.tripDate.toISOString() : String(item.tripDate),
         trip_vehicle: item.tripVehicle,
         pickup_point_name: item.pickupPointName,
         pickup_point_address: item.pickupPointAddress,
@@ -69,11 +73,11 @@ export class BookingMapper {
 
   static toDriverGetBookingDetailsResponse(
     dto: GetBookingDetailsResultDTO,
-  ): Record<string, any> {
+  ): DriverBookingDetailsDTO {
     return {
       booking_id: dto.bookingId,
       passenger_name: dto.passngerName,
-      trip_date: dto.tripDate,
+      trip_date: dto.tripDate instanceof Date ? dto.tripDate.toISOString() : String(dto.tripDate),
       trip_vehicle: dto.tripVehicle,
       trip_route: dto.tripRoute,
       pickup_point: TripMapper.toTripStopDTO(dto.pickupPoint),
@@ -97,12 +101,12 @@ export class BookingMapper {
 
   static toPassengerGetAllBookingsResponse(
     payload: PaginatedPayload<PassengerGetAllBookingsResultDTO[]>,
-  ): PaginatedPayload<any[]> {
+  ): PaginatedPayload<PassengerBookingItemDTO[]> {
     return {
       data: payload.data.map((item) => ({
         booking_id: item.bookingId,
         driver_name: item.driverName,
-        trip_date: item.tripDate,
+        trip_date: item.tripDate instanceof Date ? item.tripDate.toISOString() : String(item.tripDate),
         trip_vehicle: item.tripVehicle,
         pickup_point_name: item.pickupPointName,
         pickup_point_address: item.pickupPointAddress,
@@ -119,11 +123,11 @@ export class BookingMapper {
 
   static toPassengerGetBookingDetailsResponse(
     dto: GetPassengerBookingDetailsResultDTO,
-  ): Record<string, any> {
+  ): PassengerBookingDetailsDTO {
     return {
       booking_id: dto.bookingId,
       driver_name: dto.driverName,
-      trip_date: dto.tripDate,
+      trip_date: dto.tripDate instanceof Date ? dto.tripDate.toISOString() : String(dto.tripDate),
       trip_vehicle: dto.tripVehicle,
       trip_vehicle_image: dto.tirpVehicleImage,
       trip_route: dto.tripRoute,

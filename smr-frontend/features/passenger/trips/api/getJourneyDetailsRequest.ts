@@ -1,19 +1,12 @@
 import { apiClientFetch } from "@/lib/api-client";
-import { Route, TripStopDTO } from "@sharemyride/shared";
+import { GetJourneyDetailsResult } from "@sharemyride/shared";
 
-export interface GetJourneyDetailsResponse {
-  trip_id: string;
-  trip_stops: TripStopDTO[];
-  trip_route: Route[];
-  available_stops: Route[];
-  base_price: number;
-  price_per_km: number;
-}
+export type GetJourneyDetailsResponse = GetJourneyDetailsResult;
 
 export async function getJourneyDetailsRequest(
   tripId: string,
-): Promise<GetJourneyDetailsResponse> {
-  const response = await apiClientFetch<GetJourneyDetailsResponse>(
+): Promise<GetJourneyDetailsResult> {
+  const response = await apiClientFetch<GetJourneyDetailsResult>(
     "/api/v1/trips/journey-details",
     {
       method: "POST",

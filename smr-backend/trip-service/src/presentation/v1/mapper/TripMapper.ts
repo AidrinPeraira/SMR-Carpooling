@@ -6,6 +6,7 @@ import {
 } from "#/application/dto/trip/ListTripsDTO";
 import {
   CreateTripSchemaType,
+  GetJourneyDetailsResult,
   ListTripsResult,
   PaginatedPayload,
   SearchTripSchemaType,
@@ -98,7 +99,9 @@ export class TripMapper {
     };
   }
 
-  static toGetJourneyDetailsResponse(dto: GetJourneyDetailsResponseDTO) {
+  static toGetJourneyDetailsResponse(
+    dto: GetJourneyDetailsResponseDTO,
+  ): GetJourneyDetailsResult {
     return {
       trip_id: dto.tripId,
       trip_stops: dto.tripStops.map((stop) => this.toTripStopDTO(stop)),

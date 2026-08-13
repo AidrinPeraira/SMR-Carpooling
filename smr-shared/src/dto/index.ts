@@ -8,3 +8,4 @@ export * from "./admin/AdminUsersDTO";
 export * from "./admin/AdminConfigurationsDTO";
 export * from "./admin/AdminApplicationsDTO";
 export * from "./TripDTO";
+export * from "./BookingDTO";

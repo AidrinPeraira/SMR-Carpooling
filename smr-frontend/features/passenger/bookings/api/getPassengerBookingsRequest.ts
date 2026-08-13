@@ -1,26 +1,13 @@
 import { apiClientFetch } from "@/lib/api-client";
-import { PaginatedPayload } from "@sharemyride/shared";
+import { PaginatedPayload, PassengerBookingItemDTO } from "@sharemyride/shared";
 
-export interface PassengerBookingItem {
-  booking_id: string;
-  driver_name: string;
-  trip_date: string;
-  trip_vehicle: string;
-  pickup_point_name: string;
-  pickup_point_address: string;
-  drop_off_point_name: string;
-  drop_off_point_address: string;
-  booking_distance: number;
-  seat_count: number;
-  status: string;
-  total_price: number;
-}
+export type PassengerBookingItem = PassengerBookingItemDTO;
 
 export async function getPassengerBookingsRequest(params?: {
   booking_status?: string;
   page?: number;
   limit?: number;
-}): Promise<PaginatedPayload<PassengerBookingItem[]>> {
+}): Promise<PaginatedPayload<PassengerBookingItemDTO[]>> {
   const queryParams = new URLSearchParams();
 
   if (params?.booking_status && params.booking_status !== "all") {
@@ -37,7 +24,7 @@ export async function getPassengerBookingsRequest(params?: {
   const endpoint = `/api/v1/bookings/passenger${queryString ? `?${queryString}` : ""}`;
 
   const response = await apiClientFetch<
-    PaginatedPayload<PassengerBookingItem[]>
+    PaginatedPayload<PassengerBookingItemDTO[]>
   >(endpoint, {
     method: "GET",
   });
