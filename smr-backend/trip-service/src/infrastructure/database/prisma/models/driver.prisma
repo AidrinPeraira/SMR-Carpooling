@@ -17,4 +17,5 @@ model Driver {
   updatedAt     DateTime     @updatedAt
 
   vehicles Vehicle[]
+  trips    Trip[]
 }

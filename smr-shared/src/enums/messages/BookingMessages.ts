@@ -13,5 +13,6 @@ export enum BookingErrorMessage {
   INSUFFICIENT_SEATS = "Requested seats exceed available vacant seats.",
   DRIVER_CANNOT_BOOK_OWN_TRIP = "Drivers cannot book seats on their own trips.",
   UNAUTHORIZED_DRIVER = "This booking does not belong to your trip.",
+  UNAUTHORIZED_PASSENGER = "This booking does not belong to your account.",
   INVALID_STATUS_TRANSITION = "Booking status does not allow this operation.",
 }

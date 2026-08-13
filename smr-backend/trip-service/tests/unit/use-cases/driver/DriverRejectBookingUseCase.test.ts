@@ -56,6 +56,7 @@ describe("DriverRejectBookingUseCase", () => {
       updateStatus: vi.fn().mockResolvedValue(undefined),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
+      findBookingsByPassengerId: vi.fn(),
     };
 
     mockTripRepository = {

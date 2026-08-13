@@ -88,6 +88,7 @@ describe("DriverGetBookingDetailsUseCase", () => {
       updateStatus: vi.fn(),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
+      findBookingsByPassengerId: vi.fn(),
     };
 
     mockTripRepository = {

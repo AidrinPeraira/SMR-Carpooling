@@ -14,4 +14,14 @@ export interface IBookingControllerV1 {
   ): Promise<void>;
   acceptBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
   rejectBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getPassengerBookings(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
+  getPassengerBookingDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

@@ -44,5 +44,20 @@ export function createBookingRouterV1(
     (req, res, next) => bookingController.rejectBooking(req, res, next),
   );
 
+  // Passenger: List all bookings
+  router.get(
+    "/passenger",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => bookingController.getPassengerBookings(req, res, next),
+  );
+
+  // Passenger: Get booking details
+  router.get(
+    "/passenger/:bookingId",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) =>
+      bookingController.getPassengerBookingDetails(req, res, next),
+  );
+
   return router;
 }

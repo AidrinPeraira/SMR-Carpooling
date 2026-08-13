@@ -2,6 +2,10 @@ import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
 } from "#/application/dto/driver/BookingDetailsDTO";
+import {
+  PassengerGetAllBookingsQueryDTO,
+  PassengerGetAllBookingsResultDTO,
+} from "#/application/dto/passenger/BookingDetailsDTO";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { BookingStatus, PaginatedPayload } from "@sharemyride/shared";
 
@@ -22,4 +26,9 @@ export interface IBookingRepository {
     driverId: string,
     query?: DriverGetAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<DriverGetAllBookingsResultDTO[]>>;
+
+  findBookingsByPassengerId(
+    passengerId: string,
+    query?: PassengerGetAllBookingsQueryDTO,
+  ): Promise<PaginatedPayload<PassengerGetAllBookingsResultDTO[]>>;
 }

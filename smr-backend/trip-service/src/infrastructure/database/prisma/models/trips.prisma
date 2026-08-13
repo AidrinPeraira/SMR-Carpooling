@@ -9,6 +9,7 @@ enum TripStatus {
 model Trip {
   tripId    String @id
   driverId  String
+  driver    Driver @relation(fields: [driverId], references: [driverId])
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [vehicleId])
 

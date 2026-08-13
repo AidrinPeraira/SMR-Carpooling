@@ -121,6 +121,15 @@ describe("NewBookingUseCase", () => {
           totalPages: 1,
         },
       }),
+      findBookingsByPassengerId: vi.fn().mockResolvedValue({
+        data: [],
+        paginationMeta: {
+          currentPage: 1,
+          limit: 10,
+          totalItems: 0,
+          totalPages: 0,
+        },
+      }),
     };
 
     mockConfigStore = {

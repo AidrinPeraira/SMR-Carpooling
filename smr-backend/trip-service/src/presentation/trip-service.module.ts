@@ -154,6 +154,8 @@ import { DriverAcceptBookingUseCase } from "#/application/use-case/driver/Driver
 import { DriverGetBookingDetailsUseCase } from "#/application/use-case/driver/DriverGetBookingDetailsUseCase";
 import { DriverListAllBookingsUseCase } from "#/application/use-case/driver/DriverListAllBookingUseCase";
 import { DriverRejectBookingUseCase } from "#/application/use-case/driver/DriverRejectBookingUseCase";
+import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/passenger/GetPassngerBookingDetailsUseCase";
+import { PassengerListBookingsUseCase } from "#/application/use-case/passenger/PassengerListBookingsUseCase";
 
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,
@@ -181,6 +183,16 @@ const driverAcceptBookingUseCase = new DriverAcceptBookingUseCase(
 const driverRejectBookingUseCase = new DriverRejectBookingUseCase(
   bookingsRepository,
   tripsRepository,
+);
+
+const passengerListBookingsUseCase = new PassengerListBookingsUseCase(
+  bookingsRepository,
+);
+const getPassengerBookingDetailsUseCase = new GetPassengerBookingDetailsUseCase(
+  bookingsRepository,
+  tripsRepository,
+  driverRepository,
+  vehicleRepository,
 );
 
 // Admin Configuration Use Cases
@@ -256,6 +268,8 @@ const bookingControllerV1 = new BookingControllerV1(
   driverGetBookingDetailsUseCase,
   driverAcceptBookingUseCase,
   driverRejectBookingUseCase,
+  passengerListBookingsUseCase,
+  getPassengerBookingDetailsUseCase,
 );
 
 // Routers

@@ -2,6 +2,10 @@ import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
 } from "#/application/dto/driver/BookingDetailsDTO";
+import {
+  PassengerGetAllBookingsQueryDTO,
+  PassengerGetAllBookingsResultDTO,
+} from "#/application/dto/passenger/BookingDetailsDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
@@ -108,22 +112,10 @@ export class BookingsRepository implements IBookingRepository {
       tripDate: b.trip.startTime,
       tripVehicle:
         `${b.trip.vehicle.vehicleMake} ${b.trip.vehicle.vehicleModel}`.trim(),
-      pickupPointName:
-        (b.pickupPoint as any)?.stopName ||
-        (b.pickupPoint as any)?.stop_name ||
-        "",
-      pickupPointAddress:
-        (b.pickupPoint as any)?.stopAddress ||
-        (b.pickupPoint as any)?.stop_address ||
-        "",
-      dropOffPointName:
-        (b.dropOffPoint as any)?.stopName ||
-        (b.dropOffPoint as any)?.stop_name ||
-        "",
-      dropOffPointAddress:
-        (b.dropOffPoint as any)?.stopAddress ||
-        (b.dropOffPoint as any)?.stop_address ||
-        "",
+      pickupPointName: (b.pickupPoint as any)?.stopName || "",
+      pickupPointAddress: (b.pickupPoint as any)?.stopAddress || "",
+      dropOffPointName: (b.dropOffPoint as any)?.stopName || "",
+      dropOffPointAddress: (b.dropOffPoint as any)?.stopAddress || "",
       bookingDistance: b.distanceKm,
       seatCount: b.seatCount,
       status: b.status as BookingStatus,
@@ -194,6 +186,80 @@ export class BookingsRepository implements IBookingRepository {
       status: updated.status as any,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
+    };
+  }
+
+  /**
+   * Finds all bookings belonging to a passenger
+   */
+  async findBookingsByPassengerId(
+    passengerId: string,
+    query?: PassengerGetAllBookingsQueryDTO,
+  ): Promise<PaginatedPayload<PassengerGetAllBookingsResultDTO[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      passengerId,
+    };
+
+    if (query?.bookingStatus && query.bookingStatus.toLowerCase() !== "all") {
+      where.status = query.bookingStatus;
+    }
+
+    const [totalItems, records] = await Promise.all([
+      this._bookingsModel.count({ where }),
+      this._bookingsModel.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          trip: {
+            include: {
+              driver: true,
+              vehicle: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    const data: PassengerGetAllBookingsResultDTO[] = records.map((b) => {
+      const trip = (b as any).trip;
+      const driver = trip?.driver;
+      const vehicle = trip?.vehicle;
+      return {
+        bookingId: b.bookingId,
+        driverName: driver
+          ? `${driver.firstName} ${driver.lastName}`.trim()
+          : "Driver",
+        tripDate: trip?.startTime || b.createdAt,
+        tripVehicle: vehicle
+          ? `${vehicle.vehicleMake} ${vehicle.vehicleModel}`.trim()
+          : "Vehicle",
+        pickupPointName: (b.pickupPoint as any)?.stopName || "",
+        pickupPointAddress: (b.pickupPoint as any)?.stopAddress || "",
+        dropOffPointName: (b.dropOffPoint as any)?.stopName || "",
+        dropOffPointAddress: (b.dropOffPoint as any)?.stopAddress || "",
+        bookingDistance: b.distanceKm,
+        seatCount: b.seatCount,
+        status: b.status as BookingStatus,
+        totalPrice: b.totalPrice,
+      };
+    });
+
+    return {
+      data,
+      paginationMeta: {
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
+      },
     };
   }
 }

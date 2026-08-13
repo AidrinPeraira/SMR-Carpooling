@@ -3,7 +3,9 @@ import { IDriverAcceptBookingUseCase } from "#/application/interfaces/use-case/d
 import { IDriverGetBookingDetailsUseCase } from "#/application/interfaces/use-case/driver/IDriverGetBookingDetailsUseCase";
 import { IDriverListAllBookingsUseCase } from "#/application/interfaces/use-case/driver/IDriverListAllBookingsUseCase";
 import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverRejectBookingUseCase";
+import { IGetPassngerBookingDetailsUseCase } from "#/application/interfaces/use-case/passenger/IGetPassengerBookingDetailsUseCase";
 import { INewBookingUseCase } from "#/application/interfaces/use-case/passenger/INewBookingUseCase";
+import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case/passenger/IPassengerListBookingsUseCase";
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
 import { BookingMapper } from "#/presentation/v1/mapper/BookingMapper";
 import {
@@ -15,6 +17,8 @@ import {
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  PassengerGetBookingsQuerySchema,
+  PassengerGetBookingsQuerySchemaType,
   zodParser,
 } from "@sharemyride/shared";
 
@@ -26,6 +30,8 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     private readonly _driverGetBookingDetailsUseCase: IDriverGetBookingDetailsUseCase,
     private readonly _driverAcceptBookingUseCase: IDriverAcceptBookingUseCase,
     private readonly _driverRejectBookingUseCase: IDriverRejectBookingUseCase,
+    private readonly _passengerListBookingsUseCase: IPassengerListBookingsUseCase,
+    private readonly _getPassengerBookingDetailsUseCase: IGetPassngerBookingDetailsUseCase,
   ) {}
 
   async createBooking(
@@ -171,6 +177,69 @@ export class BookingControllerV1 implements IBookingControllerV1 {
           makeSuccessResponse(
             "Booking request rejected successfully",
             null,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getPassengerBookings(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const passengerId = req.headers["x-user-id"] as string;
+
+      const validatedQuery = zodParser<PassengerGetBookingsQuerySchemaType>(
+        PassengerGetBookingsQuerySchema,
+        req.query,
+      );
+
+      this._logger.info("Fetching passenger bookings:", { passengerId });
+
+      const dto = BookingMapper.toPassengerGetAllBookingsQueryDTO(validatedQuery);
+      const result = await this._passengerListBookingsUseCase.execute(
+        passengerId,
+        dto,
+      );
+      const mapped = BookingMapper.toPassengerGetAllBookingsResponse(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(makeSuccessResponse("Passenger bookings retrieved successfully", mapped));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getPassengerBookingDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const passengerId = req.headers["x-user-id"] as string;
+      const { bookingId } = req.params;
+
+      this._logger.info("Fetching passenger booking details:", {
+        passengerId,
+        bookingId,
+      });
+
+      const result = await this._getPassengerBookingDetailsUseCase.execute(
+        bookingId as string,
+        passengerId,
+      );
+      const mapped = BookingMapper.toPassengerGetBookingDetailsResponse(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Passenger booking details retrieved successfully",
+            mapped,
           ),
         );
     } catch (error) {
