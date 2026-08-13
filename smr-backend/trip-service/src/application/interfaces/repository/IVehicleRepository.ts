@@ -13,4 +13,6 @@ export interface IVehicleRepository {
   ): Promise<VehicleEntity>;
 
   findByDriverId(driverId: string): Promise<VehicleEntity[]>;
+
+  findByVehicleId(vehicleId: string): Promise<VehicleEntity | null>;
 }

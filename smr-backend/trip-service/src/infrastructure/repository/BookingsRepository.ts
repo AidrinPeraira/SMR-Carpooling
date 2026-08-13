@@ -1,11 +1,16 @@
+import {
+  DriverGetAllBookingsQueryDTO,
+  DriverGetAllBookingsResultDTO,
+} from "#/application/dto/driver/BookingDetailsDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { prisma } from "#/infrastructure/database/prisma";
+import { Prisma } from "#/infrastructure/database/generated/prisma/client";
+import { BookingStatus, PaginatedPayload } from "@sharemyride/shared";
 
 export class BookingsRepository implements IBookingRepository {
   private readonly _bookingsModel = prisma.bookings;
-  private readonly _placesModel = prisma.places;
 
   constructor(private readonly _geoIndexingService: IGeoIndexingService) {}
 
@@ -13,7 +18,9 @@ export class BookingsRepository implements IBookingRepository {
    * Saves a new booking to the database
    * @param booking Booking details excluding bookingId
    */
-  async save(booking: Omit<BookingEntity, "bookingId">): Promise<BookingEntity> {
+  async save(
+    booking: Omit<BookingEntity, "bookingId">,
+  ): Promise<BookingEntity> {
     const pickupPlaceIndex = await this._geoIndexingService.locationToIndex(
       booking.pickupPoint.stopLat,
       booking.pickupPoint.stopLng,
@@ -23,27 +30,6 @@ export class BookingsRepository implements IBookingRepository {
       booking.dropOffPoint.stopLat,
       booking.dropOffPoint.stopLng,
     );
-
-    // Ensure Places entries exist in database to satisfy foreign key constraints
-    await this._placesModel.createMany({
-      data: [
-        {
-          placeIndex: pickupPlaceIndex,
-          placeName: booking.pickupPoint.stopName,
-          placeLat: booking.pickupPoint.stopLat,
-          placeLng: booking.pickupPoint.stopLng,
-          placeAddress: booking.pickupPoint.stopAddress,
-        },
-        {
-          placeIndex: dropOffPlaceIndex,
-          placeName: booking.dropOffPoint.stopName,
-          placeLat: booking.dropOffPoint.stopLat,
-          placeLng: booking.dropOffPoint.stopLng,
-          placeAddress: booking.dropOffPoint.stopAddress,
-        },
-      ],
-      skipDuplicates: true,
-    });
 
     const created = await this._bookingsModel.create({
       data: {
@@ -74,6 +60,132 @@ export class BookingsRepository implements IBookingRepository {
       status: created.status as any,
       createdAt: created.createdAt,
       updatedAt: created.updatedAt,
+    };
+  }
+
+  /**
+   * Finds all bookings for trips driven by a specific driver, filtered and paginated.
+   * Joins Passenger, Trip, and Vehicle tables.
+   */
+  async findBookingsByDriverId(
+    driverId: string,
+    query?: DriverGetAllBookingsQueryDTO,
+  ): Promise<PaginatedPayload<DriverGetAllBookingsResultDTO[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.BookingsWhereInput = {
+      trip: {
+        driverId,
+      },
+      ...(query?.bookingStatus ? { status: query.bookingStatus } : {}),
+    };
+
+    const [totalItems, records] = await Promise.all([
+      this._bookingsModel.count({ where }),
+      this._bookingsModel.findMany({
+        where,
+        include: {
+          passenger: true,
+          trip: {
+            include: {
+              vehicle: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    const data: DriverGetAllBookingsResultDTO[] = records.map((b) => ({
+      bookingId: b.bookingId,
+      passngerName: `${b.passenger.firstName} ${b.passenger.lastName}`.trim(),
+      tripDate: b.trip.startTime,
+      tripVehicle:
+        `${b.trip.vehicle.vehicleMake} ${b.trip.vehicle.vehicleModel}`.trim(),
+      pickupPointName:
+        (b.pickupPoint as any)?.stopName ||
+        (b.pickupPoint as any)?.stop_name ||
+        "",
+      dropOffPointName:
+        (b.dropOffPoint as any)?.stopName ||
+        (b.dropOffPoint as any)?.stop_name ||
+        "",
+      bookingDistance: b.distanceKm,
+      seatCount: b.seatCount,
+      status: b.status as BookingStatus,
+      totalPrice: b.totalPrice,
+    }));
+
+    return {
+      data,
+      paginationMeta: {
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Finds a single booking by bookingId
+   */
+  async findByBookingId(bookingId: string): Promise<BookingEntity | null> {
+    const booking = await this._bookingsModel.findUnique({
+      where: { bookingId },
+    });
+
+    if (!booking) return null;
+
+    return {
+      bookingId: booking.bookingId,
+      passengerId: booking.passengerId,
+      tripId: booking.tripId,
+      pickupPoint: booking.pickupPoint as any,
+      dropOffPoint: booking.dropOffPoint as any,
+      pickupPlaceId: booking.pickupPlaceId,
+      dropOffPlaceId: booking.dropOffPlaceId,
+      distanceKm: booking.distanceKm,
+      seatCount: booking.seatCount,
+      totalPrice: booking.totalPrice,
+      status: booking.status as any,
+      createdAt: booking.createdAt,
+      updatedAt: booking.updatedAt,
+    };
+  }
+
+  /**
+   * Updates the status of a booking
+   */
+  async updateStatus(
+    bookingId: string,
+    newStatus: BookingStatus,
+  ): Promise<BookingEntity> {
+    const updated = await this._bookingsModel.update({
+      where: { bookingId },
+      data: { status: newStatus as any },
+    });
+
+    return {
+      bookingId: updated.bookingId,
+      passengerId: updated.passengerId,
+      tripId: updated.tripId,
+      pickupPoint: updated.pickupPoint as any,
+      dropOffPoint: updated.dropOffPoint as any,
+      pickupPlaceId: updated.pickupPlaceId,
+      dropOffPlaceId: updated.dropOffPlaceId,
+      distanceKm: updated.distanceKm,
+      seatCount: updated.seatCount,
+      totalPrice: updated.totalPrice,
+      status: updated.status as any,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
     };
   }
 }

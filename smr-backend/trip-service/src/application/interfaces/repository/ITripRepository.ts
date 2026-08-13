@@ -56,4 +56,11 @@ export interface ITripRepository {
    * @return Journey details payload or null if not found
    */
   findJourneyDetails(tripId: string): Promise<JourneyDetailsPayload | null>;
+
+  /**
+   * Finds a single trip entity by tripId
+   *
+   * @param tripId Trip ID
+   */
+  findByTripId(tripId: string): Promise<TripEntity | null>;
 }

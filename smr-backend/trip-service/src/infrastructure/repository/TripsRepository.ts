@@ -439,4 +439,34 @@ export class TripsRepository implements ITripRepository {
 
     return new Set(indices.filter((_, i) => cachedStatus[i] === 1));
   }
+
+  /**
+   * Finds a single trip entity by tripId
+   */
+  async findByTripId(tripId: string): Promise<TripEntity | null> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+    });
+
+    if (!trip) return null;
+
+    return {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as any,
+      tripDestination: trip.tripDestination as any,
+      tripStops: trip.tripStops as any,
+      tripRoute: trip.tripRoute as any,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as any,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+  }
 }

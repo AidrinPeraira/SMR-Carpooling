@@ -91,4 +91,27 @@ export class VehicleRepository implements IVehicleRepository {
       updatedAt: v.updatedAt,
     }));
   }
+
+  async findByVehicleId(vehicleId: string): Promise<VehicleEntity | null> {
+    const v = await this._model.findUnique({
+      where: { vehicleId },
+    });
+
+    if (!v) return null;
+
+    return {
+      vehicleId: v.vehicleId,
+      driverId: v.driverId,
+      recordId: v.recordId,
+      vehicleType: v.vehicleType as VehicleTypes,
+      vehicleModel: v.vehicleModel,
+      vehicleMake: v.vehicleMake,
+      vehicleCapacity: v.vehicleCapacity,
+      registrationNumber: v.registrationNumber,
+      vehicleImage: v.vehicleImage,
+      vehicleStatus: v.vehicleStatus as VehicleStatus,
+      createdAt: v.createdAt,
+      updatedAt: v.updatedAt,
+    };
+  }
 }

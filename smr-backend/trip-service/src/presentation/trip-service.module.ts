@@ -150,6 +150,11 @@ const eventBusInstance = new EventBus(
   eventDispatcher,
 );
 
+import { DriverAcceptBookingUseCase } from "#/application/use-case/driver/DriverAcceptBookingUseCase";
+import { DriverGetBookingDetailsUseCase } from "#/application/use-case/driver/DriverGetBookingDetailsUseCase";
+import { DriverListAllBookingsUseCase } from "#/application/use-case/driver/DriverListAllBookingUseCase";
+import { DriverRejectBookingUseCase } from "#/application/use-case/driver/DriverRejectBookingUseCase";
+
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,
   configurationStore,
@@ -158,6 +163,24 @@ const newBookingUseCase = new NewBookingUseCase(
   eventBusInstance,
   passengerRepository,
   driverRepository,
+);
+
+const driverListAllBookingsUseCase = new DriverListAllBookingsUseCase(
+  bookingsRepository,
+);
+const driverGetBookingDetailsUseCase = new DriverGetBookingDetailsUseCase(
+  bookingsRepository,
+  tripsRepository,
+  passengerRepository,
+  vehicleRepository,
+);
+const driverAcceptBookingUseCase = new DriverAcceptBookingUseCase(
+  bookingsRepository,
+  tripsRepository,
+);
+const driverRejectBookingUseCase = new DriverRejectBookingUseCase(
+  bookingsRepository,
+  tripsRepository,
 );
 
 // Admin Configuration Use Cases

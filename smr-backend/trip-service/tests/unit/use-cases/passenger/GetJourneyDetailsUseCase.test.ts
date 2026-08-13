@@ -60,6 +60,7 @@ describe("GetJourneyDetailsUseCase", () => {
       findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
+      findByTripId: vi.fn(),
     };
 
     useCase = new GetJourneyDetailsUseCase(

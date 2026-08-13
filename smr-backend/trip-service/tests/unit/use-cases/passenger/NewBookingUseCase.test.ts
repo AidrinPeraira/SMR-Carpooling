@@ -110,6 +110,17 @@ describe("NewBookingUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn().mockResolvedValue(mockSavedBooking),
+      updateStatus: vi.fn().mockResolvedValue(mockSavedBooking),
+      findByBookingId: vi.fn().mockResolvedValue(mockSavedBooking),
+      findBookingsByDriverId: vi.fn().mockResolvedValue({
+        data: [],
+        paginationMeta: {
+          currentPage: 1,
+          limit: 10,
+          totalItems: 0,
+          totalPages: 1,
+        },
+      }),
     };
 
     mockConfigStore = {
@@ -132,6 +143,7 @@ describe("NewBookingUseCase", () => {
       findTripDetails: vi.fn().mockResolvedValue(mockTripPayload),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
+      findByTripId: vi.fn().mockResolvedValue(mockTripPayload.tripDetails),
     };
 
     mockEventBus = {
