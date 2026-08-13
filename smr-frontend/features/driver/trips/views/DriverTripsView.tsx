@@ -1,72 +1,266 @@
 "use client";
 
-import { OfferTripCard } from "../components/OfferTripCard";
-import { ActiveTripCard } from "../components/ActiveTripCard";
-import { DriverTripsCard } from "../components/DriverTripsCard";
+import { useState } from "react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { getDriverTripsRequest, DriverTripItem } from "../api/getDriverTripsRequest";
+import { Button, Card, DropDown, Loader, Tag } from "@sharemyride/ui";
+import { Calendar, Car, ArrowRight, PlusCircle } from "lucide-react";
 
-/*
-const MOCK_ACTIVE_TRIP = {
-  tripId: "trip-101",
-  origin: "San Jose, CA",
-  destination: "San Francisco, CA",
-  startTime: "05:30 PM",
-  passengersCount: 3,
-};
-
-const MOCK_PAST_TRIPS = [
-  {
-    tripId: "trip-001",
-    origin: "San Francisco, CA",
-    destination: "San Jose, CA",
-    departureTime: "Oct 24, 08:00 AM",
-    arrivalTime: "Oct 24, 09:15 AM",
-    passengersCount: 2,
-    passengerAvatars: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuA7OWlIszHf9Yq7-4xX0mVsJOIHvu9zDtUbMqzt5CV4yqVGiH3ze_cb365ngtkrtwEa1BFwieAnoDSlkFW8vYQqJZ53javutMdm2blY52QVCQeBv8JoPPX2r3zVEXrJLuLvngRy6GyIOHOkWg-LaTKThDSXyBeyAwqdfBZuMYV_uKSEiM6hfDboDyWuo5H2h9wt145BQpOCHtCbl2DAGItteZpJAUm9w2OW8oWJO5SqCcutiZSK9puu5A",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBQ2ytjFhnhIF30aPJg5_M3_1UWEb5eoB8eqimIUjd3GYYHGnAAeAUAeVUMPDC5Fk9BGkaxp3xbZJIst9wSIw0GHSXTAI4curDMKjFABSxaX6FOg1_wC_D73TOMnAPaoc64dumTu05DzDTBE2ic03OGLO7GDjJq3eYOHAuPQPo-M70PcQ0E7onJAMWDz1NEAeUqmNtUCXAcp0Mxb6w2s67fZZHdevcMgQxwhyQGDrF05TBML69UTHOIVg",
-    ],
-    earnings: 34.0,
-    status: TripStatus.COMPLETED,
-  },
-  {
-    tripId: "trip-002",
-    origin: "Oakland, CA",
-    destination: "Palo Alto, CA",
-    departureTime: "Oct 20, 05:30 PM",
-    arrivalTime: "Oct 20, 06:45 PM",
-    passengersCount: 1,
-    passengerAvatars: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB_W39OznKd5GXiKTEWPTpPg7QGYQA0S0dBCElDumy6O5S_EFO5mnXdtrBAT5NC5aXNjPu1BXp9SRMsSca2jvfk81JOYIFNhz6VNhfQLb68dkAWLljTVNStGzDpJ3JH46tk8oE1tAJlsc5ICtXXa4A_nav7Yn5DDFHpAve7IXMHOa8A9ZNLowEhuVezt3v04OQElqxmTC_L7g-WxL19VEqWeAqiqdMiRYhXTtlVdeZm-EnUmfx-5j2z9Q",
-    ],
-    earnings: 22.5,
-    status: TripStatus.COMPLETED,
-  },
-  {
-    tripId: "trip-003",
-    origin: "Berkeley, CA",
-    destination: "San Francisco, CA",
-    departureTime: "Oct 18, 10:00 AM",
-    arrivalTime: "Oct 18, 11:00 AM",
-    passengersCount: 0,
-    earnings: 0.0,
-    status: TripStatus.CANCELLED,
-  },
+const STATUS_OPTIONS = [
+  { label: "All Statuses", value: "all" },
+  { label: "Scheduled", value: "scheduled" },
+  { label: "Ongoing", value: "ongoing" },
+  { label: "Completed", value: "completed" },
+  { label: "Cancelled", value: "cancelled" },
 ];
-*/
 
 export function DriverTripsView() {
-  return (
-    <div className="w-full max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-      {/* Sidebar / Quick Actions */}
-      <aside className="lg:col-span-3 flex flex-col gap-6">
-        <OfferTripCard />
-        <ActiveTripCard activeTrip={null} />
-      </aside>
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [page, setPage] = useState<number>(1);
+  const limit = 10;
 
-      {/* Main Content Area */}
-      <section className="lg:col-span-9 flex flex-col gap-6">
-        <DriverTripsCard trips={[]} />
-      </section>
+  const handleStatusChange = (newStatus: string) => {
+    setStatusFilter(newStatus);
+    setPage(1);
+  };
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["driverTrips", statusFilter, page, limit],
+    queryFn: () =>
+      getDriverTripsRequest({
+        trip_status: statusFilter,
+        page,
+        limit,
+      }),
+  });
+
+  const trips = data?.data || [];
+  const paginationMeta = data?.paginationMeta;
+  const totalPages = paginationMeta?.totalPages || 1;
+  const totalItems = paginationMeta?.totalItems || 0;
+
+  const renderStatusTag = (status: string) => {
+    const s = status.toLowerCase();
+    switch (s) {
+      case "scheduled":
+        return (
+          <Tag
+            variant="accent"
+            className="bg-accent/15 text-accent border-accent/30"
+          >
+            SCHEDULED
+          </Tag>
+        );
+      case "ongoing":
+        return (
+          <Tag
+            variant="muted"
+            className="bg-warning-surface text-warning-content border-warning-border"
+          >
+            ONGOING
+          </Tag>
+        );
+      case "completed":
+        return (
+          <Tag
+            variant="accent"
+            className="bg-success-surface text-success-content border-success-border"
+          >
+            COMPLETED
+          </Tag>
+        );
+      case "cancelled":
+        return (
+          <Tag
+            variant="muted"
+            className="bg-error-surface text-error-content border-error-border"
+          >
+            CANCELLED
+          </Tag>
+        );
+      default:
+        return <Tag variant="muted">{status.toUpperCase()}</Tag>;
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-7xl space-y-6">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-subtle">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-content-primary">
+            My Created Trips
+          </h1>
+          <p className="text-sm text-content-secondary mt-1 flex items-center gap-2">
+            Manage and track all carpool trips you are driving.
+            {typeof totalItems === "number" && (
+              <span className="inline-flex items-center rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-medium text-accent">
+                {totalItems} total
+              </span>
+            )}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link href="/driver/trips/new">
+            <Button variant="primary" className="text-xs py-2 px-3 flex items-center gap-1.5">
+              <PlusCircle className="w-4 h-4" />
+              Offer New Trip
+            </Button>
+          </Link>
+          <div className="w-44">
+            <DropDown
+              defaultValue={statusFilter}
+              options={STATUS_OPTIONS}
+              onChange={(value) => handleStatusChange(value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <Loader />
+          <p className="text-sm text-content-secondary animate-pulse">
+            Fetching driver trips...
+          </p>
+        </div>
+      )}
+
+      {isError && (
+        <div className="rounded-xl border border-error-border bg-error-surface p-6 text-center text-error-content space-y-3">
+          <h3 className="font-semibold text-lg">Error Loading Trips</h3>
+          <p className="text-sm">
+            {(error as Error)?.message || "Failed to load trips."}
+          </p>
+          <Button
+            variant="secondary"
+            className="text-xs py-1.5 px-3"
+            onClick={() => refetch()}
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+
+      {!isLoading && !isError && trips.length === 0 && (
+        <Card className="p-12 text-center my-6 border border-border-subtle bg-surface-card">
+          <div className="w-12 h-12 rounded-full bg-surface-muted flex items-center justify-center mx-auto mb-4">
+            <Car className="w-6 h-6 text-content-secondary" />
+          </div>
+          <h3 className="font-semibold text-lg text-content-primary">
+            No Trips Found
+          </h3>
+          <p className="text-sm text-content-secondary mt-1 max-w-sm mx-auto">
+            {statusFilter !== "all"
+              ? `No trips found matching status '${statusFilter}'.`
+              : "You haven't offered any carpool trips yet."}
+          </p>
+          <Link href="/driver/trips/new" className="inline-block mt-4">
+            <Button variant="secondary" className="text-xs py-2 px-4">
+              Offer a Trip Now
+            </Button>
+          </Link>
+        </Card>
+      )}
+
+      {!isLoading && !isError && trips.length > 0 && (
+        <>
+          <Card className="border border-border-subtle bg-surface-card overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-border-subtle bg-surface-muted/60 text-xs uppercase tracking-wider text-content-secondary">
+                    <th className="py-3.5 px-4 font-semibold">Route</th>
+                    <th className="py-3.5 px-4 font-semibold">Vehicle</th>
+                    <th className="py-3.5 px-4 font-semibold">Departure Time</th>
+                    <th className="py-3.5 px-4 font-semibold text-center">Vacant / Seats</th>
+                    <th className="py-3.5 px-4 font-semibold text-center">Status</th>
+                    <th className="py-3.5 px-4 font-semibold text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border-subtle text-content-primary text-xs">
+                  {trips.map((trip: DriverTripItem) => {
+                    const formattedDate = trip.start_time
+                      ? new Date(trip.start_time).toLocaleString(undefined, {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : "N/A";
+
+                    return (
+                      <tr key={trip.trip_id} className="hover:bg-surface-muted/40 transition-colors">
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2 font-bold text-sm text-content-primary">
+                            <span>{trip.trip_origin}</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+                            <span>{trip.trip_destination}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 font-medium">
+                          {trip.vehicle_make} {trip.vehicle_model}
+                        </td>
+                        <td className="py-4 px-4 text-content-secondary">
+                          <span className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-accent" />
+                            {formattedDate}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-center font-semibold">
+                          <span className="text-accent">{trip.vacant_seats}</span> / {trip.available_seats}
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          {renderStatusTag(trip.trip_status)}
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <Link href={`/driver/trips/${trip.trip_id}`}>
+                            <Button variant="secondary" className="text-xs py-1 px-3">
+                              View Details →
+                            </Button>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-border-subtle pt-6">
+              <p className="text-xs text-content-secondary">
+                Showing Page <span className="font-semibold text-content-primary">{page}</span> of{" "}
+                <span className="font-semibold text-content-primary">{totalPages}</span> ({totalItems} total trips)
+              </p>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  className="text-xs py-1 px-3"
+                  disabled={page <= 1}
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                >
+                  Previous
+                </Button>
+                <span className="text-xs px-2 font-medium text-content-primary">
+                  {page} / {totalPages}
+                </span>
+                <Button
+                  variant="secondary"
+                  className="text-xs py-1 px-3"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

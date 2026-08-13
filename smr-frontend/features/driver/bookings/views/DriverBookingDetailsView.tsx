@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import * as turf from "@turf/turf";
 import { getDriverBookingDetailsRequest } from "../api/getDriverBookingDetailsRequest";
@@ -27,6 +28,7 @@ interface DriverBookingDetailsViewProps {
 export function DriverBookingDetailsView({
   bookingId,
 }: DriverBookingDetailsViewProps) {
+  const router = useRouter();
   const map = useMap();
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(true);
@@ -288,13 +290,14 @@ export function DriverBookingDetailsView({
         {/* Details Scrollable Container */}
         <div className="overflow-y-auto p-4 lg:p-6 flex-1 space-y-5">
           {/* Back Navigation */}
-          <Link
-            href="/driver/bookings"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-content-secondary hover:text-accent transition-colors"
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-content-secondary hover:text-accent transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Bookings
-          </Link>
+            Back
+          </button>
 
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
