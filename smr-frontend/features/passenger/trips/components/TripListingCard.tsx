@@ -77,6 +77,7 @@ export function TripListingCard({
     useState<TripStopDTO | null>(null);
 
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
+  const [seatCount, setSeatCount] = useState<number>(1);
 
   async function handleBookingSubmit(e: React.MouseEvent) {
     e.stopPropagation();
@@ -116,7 +117,7 @@ export function TripListingCard({
         drop_off_point: dropoffStop,
         pickup_place_id: pickupStop.stop_name,
         drop_off_place_id: dropoffStop.stop_name,
-        seat_count: 1,
+        seat_count: seatCount,
         distance_km: distanceKm,
       });
 
@@ -311,6 +312,12 @@ export function TripListingCard({
     // Sort by distance to passenger origin, take top 5, then re-sort by route index
     stopsWithDist.sort((a, b) => a.dist - b.dist);
     const closest5 = stopsWithDist.slice(0, 5);
+    if (pickupIndex >= 0) {
+      const selectedItem = stopsWithDist.find((s) => s.index === pickupIndex);
+      if (selectedItem && !closest5.some((s) => s.index === pickupIndex)) {
+        closest5.push(selectedItem);
+      }
+    }
     closest5.sort((a, b) => a.index - b.index);
 
     return closest5.map(({ stop, index }) => ({
@@ -318,6 +325,16 @@ export function TripListingCard({
       value: String(index),
     }));
   })();
+
+  // Calculate current drop-off index in trip_stops
+  const dropoffIndex =
+    selectedDropoffStop && journeyDetails
+      ? journeyDetails.trip_stops.findIndex(
+          (s) =>
+            s.stop_lat === selectedDropoffStop.stop_lat &&
+            s.stop_lng === selectedDropoffStop.stop_lng,
+        )
+      : -1;
 
   // Drop-off point options: closest 5 stops to passenger's searched destination (or trip destination)
   const availableDropoffStopOptions = (() => {
@@ -346,6 +363,14 @@ export function TripListingCard({
     // Sort by distance to passenger destination, take top 5, then re-sort by route index
     downstreamStops.sort((a, b) => a.dist - b.dist);
     const closest5 = downstreamStops.slice(0, 5);
+    if (dropoffIndex > currentPickupIdx) {
+      const selectedItem = downstreamStops.find(
+        (s) => s.index === dropoffIndex,
+      );
+      if (selectedItem && !closest5.some((s) => s.index === dropoffIndex)) {
+        closest5.push(selectedItem);
+      }
+    }
     closest5.sort((a, b) => a.index - b.index);
 
     return closest5.map(({ stop, index }) => ({
@@ -506,15 +531,58 @@ export function TripListingCard({
                     </div>
                   )}
                 </div>
+
+                <div>
+                  <label className="font-label-md text-[11px] text-content-secondary block mb-1">
+                    Seats Needed
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSeatCount((prev) => Math.max(1, prev - 1));
+                      }}
+                      disabled={seatCount <= 1}
+                      className="w-7 h-7 flex items-center justify-center rounded border border-border-strong bg-surface-card text-fg-primary disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-muted transition-colors font-bold text-sm"
+                    >
+                      -
+                    </button>
+                    <span className="w-6 text-center text-xs font-semibold text-fg-primary">
+                      {seatCount}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSeatCount((prev) =>
+                          Math.min(trip.seats_available, prev + 1),
+                        );
+                      }}
+                      disabled={seatCount >= trip.seats_available}
+                      className="w-7 h-7 flex items-center justify-center rounded border border-border-strong bg-surface-card text-fg-primary disabled:opacity-40 disabled:cursor-not-allowed hover:bg-surface-muted transition-colors font-bold text-sm"
+                    >
+                      +
+                    </button>
+                    <span className="text-[10px] text-fg-secondary ml-1">
+                      (Max {trip.seats_available} seat{trip.seats_available === 1 ? "" : "s"})
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-between items-center pt-2 border-t border-border-subtle">
                 <div>
                   <div className="font-headline-md text-base text-fg-primary font-bold">
-                    ₹{estimatedPrice !== null ? estimatedPrice : "--"}
+                    ₹
+                    {estimatedPrice !== null
+                      ? estimatedPrice * seatCount
+                      : "--"}
                   </div>
                   <div className="text-[10px] text-fg-secondary">
-                    Estimated Price (INR)
+                    {estimatedPrice !== null && seatCount > 1
+                      ? `Total Price (₹${estimatedPrice} × ${seatCount} seats)`
+                      : "Estimated Price (INR)"}
                   </div>
                 </div>
                 <Button
