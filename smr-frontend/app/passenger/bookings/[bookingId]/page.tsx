@@ -1,9 +1,14 @@
 import { PassengerBookingDetailsView } from "@/features/passenger/bookings/views/PassengerBookingDetailsView";
 
-export default function PassengerBookingDetailsPage() {
-  return (
-    <div>
-      <PassengerBookingDetailsView />
-    </div>
-  );
+interface PassengerBookingDetailsPageProps {
+  params: Promise<{
+    bookingId: string;
+  }>;
+}
+
+export default async function PassengerBookingDetailsPage({
+  params,
+}: PassengerBookingDetailsPageProps) {
+  const { bookingId } = await params;
+  return <PassengerBookingDetailsView bookingId={bookingId} />;
 }

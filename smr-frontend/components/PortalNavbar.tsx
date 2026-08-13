@@ -57,7 +57,7 @@ export default function PortalNavbar({
     }
 
     if (href === `/${detectedRole}/bookings`) {
-      return pathname.startsWith(`/${detectedRole}/bookigs`);
+      return pathname.startsWith(`/${detectedRole}/bookings`);
     }
 
     return pathname === href;

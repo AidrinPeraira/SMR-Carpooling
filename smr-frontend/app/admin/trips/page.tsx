@@ -1,6 +1,7 @@
-import { DriverTripsView } from "@/features/driver/trips/views/DriverTripsView";
-
 export default function AdminTripsPage() {
-  return <DriverTripsView />;
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl font-bold text-content-primary">Trips</h1>
+    </div>
+  );
 }
-
