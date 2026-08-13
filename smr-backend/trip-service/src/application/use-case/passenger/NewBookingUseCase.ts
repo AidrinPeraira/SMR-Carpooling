@@ -1,6 +1,8 @@
 import { NewBookingRequestDTO } from "#/application/dto/trip/BookingDTO";
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
+import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
+import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
 import { IPricingRulesRepository } from "#/application/interfaces/repository/IPricingRulesRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IConfigurationStore } from "#/application/interfaces/store/IConfigurationsStore";
@@ -11,6 +13,7 @@ import {
   BookingStatus,
   ErrorCode,
   ErrorDetails,
+  EventName,
   HttpStatusCodes,
   NewBookingEvent,
   TripErrorMessage,
@@ -24,12 +27,14 @@ export class NewBookingUseCase implements INewBookingUseCase {
     private readonly _configRepository: IPricingRulesRepository,
     private readonly _tripRepository: ITripRepository,
     private readonly _eventBus: IEventBus,
+    private readonly _passengerRepository: IPassengerRepository,
+    private readonly _driverRepository: IDriverRepository,
   ) {}
 
   /**
    * This method gets the trip and vehicle details, verifies the data,
    * calculates pricing, and creates a new booking.
-   * It also publishes new booking event for other services
+   * It also publishes new booking event for other services.
    *
    * @param dto : Booking details from user
    */
@@ -133,10 +138,39 @@ export class NewBookingUseCase implements INewBookingUseCase {
       updatedAt: new Date(),
     };
 
-    await this._bookingRepository.save(newBooking);
+    const savedBooking = await this._bookingRepository.save(newBooking);
 
-    const newBookingEvent: NewBookingEvent = {};
+    const passenger = await this._passengerRepository.findByPassengerId(
+      dto.passengerId,
+    );
+    const driver = await this._driverRepository.findByDriverId(
+      existingTrip.tripDetails.driverId,
+    );
 
-    this._eventBus.publish(newBookingEvent);
+    const newBookingEvent: NewBookingEvent = {
+      eventName: EventName.BOOKING_NEW_BOOKING,
+      timestamp: new Date(),
+      payload: {
+        bookingId: savedBooking.bookingId,
+        passengerId: dto.passengerId,
+        passengerName: passenger
+          ? `${passenger.firstName} ${passenger.lastName}`.trim()
+          : "Passenger",
+        passengerEmail: passenger ? passenger.emailId : "",
+        passengerOrigin: dto.pickupPoint,
+        passengerDestination: dto.dropOffPoint,
+        seatCount: dto.seatCount,
+        bookingAmount: totalPrice,
+        driverId: existingTrip.tripDetails.driverId,
+        driverName: driver
+          ? `${driver.firstName} ${driver.lastName}`.trim()
+          : "Driver",
+        driverEmail: driver ? driver.emailId : "",
+        tripId: dto.tripId,
+        tripDate: existingTrip.tripDetails.startTime,
+      },
+    };
+
+    await this._eventBus.publish(newBookingEvent);
   }
 }

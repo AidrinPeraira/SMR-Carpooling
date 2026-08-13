@@ -1,9 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   getJourneyDetailsRequest,
   GetJourneyDetailsResponse,
 } from "@/features/passenger/trips/api/getJourneyDetailsRequest";
+import { createBookingRequest } from "@/features/passenger/trips/api/createBookingRequest";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint, Place } from "@/features/map/types/MapTypes";
 import { ListTripsResult, TripStopDTO } from "@sharemyride/shared";
@@ -60,12 +62,14 @@ export function TripListingCard({
   passengerOrigin,
   passengerDestination,
 }: TripListingCardProps) {
+  const router = useRouter();
   const map = useMap();
   const toast = useToast();
 
   const [journeyDetails, setJourneyDetails] =
     useState<GetJourneyDetailsResponse | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState<boolean>(false);
+  const [isBooking, setIsBooking] = useState<boolean>(false);
 
   const [selectedPickupStop, setSelectedPickupStop] =
     useState<TripStopDTO | null>(null);
@@ -73,6 +77,66 @@ export function TripListingCard({
     useState<TripStopDTO | null>(null);
 
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
+
+  async function handleBookingSubmit(e: React.MouseEvent) {
+    e.stopPropagation();
+
+    const pickupStop =
+      selectedPickupStop ||
+      (journeyDetails?.trip_stops && journeyDetails.trip_stops.length > 0
+        ? journeyDetails.trip_stops[0]
+        : trip.trip_origin);
+
+    const dropoffStop =
+      selectedDropoffStop ||
+      (journeyDetails?.trip_stops && journeyDetails.trip_stops.length > 0
+        ? journeyDetails.trip_stops[journeyDetails.trip_stops.length - 1]
+        : trip.trip_destination);
+
+    const flatRoute: [number, number][] =
+      journeyDetails?.trip_route && journeyDetails.trip_route.length > 0
+        ? Array.isArray(journeyDetails.trip_route[0])
+          ? (journeyDetails.trip_route.flat(1) as unknown as [number, number][])
+          : (journeyDetails.trip_route as unknown as [number, number][])
+        : [];
+
+    const distanceKm =
+      getDistanceAlongRoute(
+        flatRoute,
+        [pickupStop.stop_lng, pickupStop.stop_lat],
+        [dropoffStop.stop_lng, dropoffStop.stop_lat],
+      ) || trip.trip_distance;
+
+    setIsBooking(true);
+
+    try {
+      await createBookingRequest({
+        trip_id: trip.trip_id,
+        pickup_point: pickupStop,
+        drop_off_point: dropoffStop,
+        pickup_place_id: pickupStop.stop_name,
+        drop_off_place_id: dropoffStop.stop_name,
+        seat_count: 1,
+        distance_km: distanceKm,
+      });
+
+      toast("Booking Requested", {
+        variant: "success",
+        description: "Your request to join this ride has been submitted.",
+      });
+
+      router.push("/passenger/requests");
+    } catch (err: any) {
+      console.error("Failed to submit booking request:", err);
+      toast("Booking Failed", {
+        variant: "error",
+        description:
+          err?.message || "Failed to submit booking request. Please try again.",
+      });
+    } finally {
+      setIsBooking(false);
+    }
+  }
 
   // Fetch journey details when card is selected and render route on map
   useEffect(() => {
@@ -455,16 +519,17 @@ export function TripListingCard({
                 </div>
                 <Button
                   variant="primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toast("Request Sent", {
-                      variant: "success",
-                      description:
-                        "Your request to join this ride has been submitted.",
-                    });
-                  }}
+                  disabled={isBooking || isLoadingDetails}
+                  onClick={handleBookingSubmit}
                 >
-                  Request to Join
+                  {isBooking ? (
+                    <div className="flex items-center gap-2">
+                      <Loader className="h-4 w-4 text-accent-fg animate-spin" />
+                      <span>Submitting...</span>
+                    </div>
+                  ) : (
+                    "Request to Join"
+                  )}
                 </Button>
               </div>
             </>

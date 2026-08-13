@@ -67,9 +67,8 @@ const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
 const placesCacheStore = new PlacesCacheStore(redisClient);
 const passengerRepository = new PassengerRepository();
-const bookingsRepository = new BookingsRepository();
-
 const geoIndexingService = new H3GeoIndexingService();
+const bookingsRepository = new BookingsRepository(geoIndexingService);
 const tripsRepository = new TripsRepository(
   geoIndexingService,
   placesCacheStore,
@@ -103,12 +102,6 @@ const getJourneyDetailsUseCase = new GetJourneyDetailsUseCase(
   tripsRepository,
   pricingRulesRepository,
   configurationStore,
-);
-const newBookingUseCase = new NewBookingUseCase(
-  bookingsRepository,
-  configurationStore,
-  pricingRulesRepository,
-  tripsRepository,
 );
 
 // Application Event Handlers
@@ -155,6 +148,16 @@ const eventBusInstance = new EventBus(
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
   eventDispatcher,
+);
+
+const newBookingUseCase = new NewBookingUseCase(
+  bookingsRepository,
+  configurationStore,
+  pricingRulesRepository,
+  tripsRepository,
+  eventBusInstance,
+  passengerRepository,
+  driverRepository,
 );
 
 // Admin Configuration Use Cases

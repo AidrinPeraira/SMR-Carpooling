@@ -97,6 +97,10 @@ export class RabbitMQConsumer implements IMessageConsumer {
         EventName.AUTH_USER_SIGNUP,
         EventName.AUTH_USER_CHANGE_PASSWORD_REQUEST,
         EventName.AUTH_USER_CHANGE_PASSWORD_CHANGED,
+        EventName.BOOKING_NEW_BOOKING,
+        EventName.ADMIN_APPROVE_APPLICTION,
+        EventName.ADMIN_REJECT_APPLICATION,
+        EventName.ADMIN_RETURN_APPLICTION,
       ];
       for (const routingKey of evnetsToListenTo) {
         await this._channel.bindQueue(

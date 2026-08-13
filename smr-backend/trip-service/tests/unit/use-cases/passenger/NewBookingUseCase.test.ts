@@ -15,12 +15,19 @@ import {
   VehicleTypes,
 } from "@sharemyride/shared";
 
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
+import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
+import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
+
 describe("NewBookingUseCase", () => {
   let useCase: NewBookingUseCase;
   let mockBookingRepository: IBookingRepository;
   let mockConfigStore: IConfigurationStore;
   let mockPricingRepository: IPricingRulesRepository;
   let mockTripRepository: ITripRepository;
+  let mockEventBus: IEventBus;
+  let mockPassengerRepository: IPassengerRepository;
+  let mockDriverRepository: IDriverRepository;
 
   const validDto: NewBookingRequestDTO = {
     passengerId: "passenger-123",
@@ -31,6 +38,22 @@ describe("NewBookingUseCase", () => {
     dropOffPlaceId: "place-2",
     seatCount: 2,
     distanceKm: 10,
+  };
+
+  const mockSavedBooking = {
+    bookingId: "b-999",
+    passengerId: validDto.passengerId,
+    tripId: validDto.tripId,
+    pickupPoint: validDto.pickupPoint,
+    dropOffPoint: validDto.dropOffPoint,
+    pickupPlaceId: validDto.pickupPlaceId,
+    dropOffPlaceId: validDto.dropOffPlaceId,
+    distanceKm: validDto.distanceKm,
+    seatCount: validDto.seatCount,
+    totalPrice: 300,
+    status: BookingStatus.REQUESTED,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   const mockTripPayload = {
@@ -86,7 +109,7 @@ describe("NewBookingUseCase", () => {
     vi.clearAllMocks();
 
     mockBookingRepository = {
-      save: vi.fn(),
+      save: vi.fn().mockResolvedValue(mockSavedBooking),
     };
 
     mockConfigStore = {
@@ -111,11 +134,51 @@ describe("NewBookingUseCase", () => {
       findJourneyDetails: vi.fn(),
     };
 
+    mockEventBus = {
+      connect: vi.fn().mockResolvedValue(undefined),
+      subscribe: vi.fn().mockResolvedValue(undefined),
+      consume: vi.fn().mockResolvedValue(undefined),
+      publish: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockPassengerRepository = {
+      save: vi.fn(),
+      findByPassengerId: vi.fn().mockResolvedValue({
+        passengerId: "passenger-123",
+        firstName: "John",
+        lastName: "Doe",
+        emailId: "john@example.com",
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    };
+
+    mockDriverRepository = {
+      save: vi.fn(),
+      update: vi.fn(),
+      findByDriverId: vi.fn().mockResolvedValue({
+        driverId: "driver-1",
+        firstName: "Jane",
+        lastName: "Smith",
+        emailId: "jane@example.com",
+        recordId: "r-1",
+        licenseNumber: "LIC123",
+        licenseImage: "",
+        driverStatus: "active" as any,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    };
+
     useCase = new NewBookingUseCase(
       mockBookingRepository,
       mockConfigStore,
       mockPricingRepository,
       mockTripRepository,
+      mockEventBus,
+      mockPassengerRepository,
+      mockDriverRepository,
     );
   });
 
