@@ -127,12 +127,13 @@ export function TripListingCard({
       });
 
       router.push("/passenger/requests");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to submit booking request:", err);
       toast("Booking Failed", {
         variant: "error",
         description:
-          err?.message || "Failed to submit booking request. Please try again.",
+          (err as Error)?.message ||
+          "Failed to submit booking request. Please try again.",
       });
     } finally {
       setIsBooking(false);
@@ -141,21 +142,19 @@ export function TripListingCard({
 
   // Fetch journey details when card is selected and render route on map
   useEffect(() => {
-    if (!isSelected) {
-      setJourneyDetails(null);
-      setSelectedPickupStop(null);
-      setSelectedDropoffStop(null);
-      setEstimatedPrice(null);
-      return;
-    }
+    async function loadDetails() {
+      if (!isSelected) {
+        setJourneyDetails(null);
+        setSelectedPickupStop(null);
+        setSelectedDropoffStop(null);
+        setEstimatedPrice(null);
+        return;
+      }
 
-    let isMounted = true;
-    setIsLoadingDetails(true);
+      setIsLoadingDetails(true);
 
-    getJourneyDetailsRequest(trip.trip_id)
-      .then(async (data) => {
-        if (!isMounted) return;
-
+      try {
+        const data = await getJourneyDetailsRequest(trip.trip_id);
         setJourneyDetails(data);
 
         // Keep stops unselected initially so placeholder displays cleanly
@@ -183,21 +182,18 @@ export function TripListingCard({
           ]);
           await map.fitBounds(allPoints);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Failed to load journey details:", err);
         toast("Failed to load journey details", {
           variant: "error",
           description: "Could not retrieve details for this trip.",
         });
-      })
-      .finally(() => {
-        if (isMounted) setIsLoadingDetails(false);
-      });
+      } finally {
+        setIsLoadingDetails(false);
+      }
+    }
 
-    return () => {
-      isMounted = false;
-    };
+    loadDetails();
   }, [isSelected, trip.trip_id, toast, map]);
 
   // Update map markers when boarding/drop-off stop selection changes
@@ -239,33 +235,37 @@ export function TripListingCard({
 
   // Calculate pricing along actual route polyline using Turf.js
   useEffect(() => {
-    if (!journeyDetails) {
-      setEstimatedPrice(null);
-      return;
+    async function calculatePrice() {
+      if (!journeyDetails) {
+        setEstimatedPrice(null);
+        return;
+      }
+
+      const { base_price, price_per_km, trip_route } = journeyDetails;
+
+      if (selectedPickupStop && selectedDropoffStop) {
+        const flatRoute: [number, number][] =
+          trip_route && trip_route.length > 0
+            ? Array.isArray(trip_route[0])
+              ? (trip_route.flat(1) as unknown as [number, number][])
+              : (trip_route as unknown as [number, number][])
+            : [];
+
+        const routeDistanceKm = getDistanceAlongRoute(
+          flatRoute,
+          [selectedPickupStop.stop_lng, selectedPickupStop.stop_lat],
+          [selectedDropoffStop.stop_lng, selectedDropoffStop.stop_lat],
+        );
+
+        const price = base_price + routeDistanceKm * price_per_km;
+        setEstimatedPrice(Math.max(base_price, Math.round(price)));
+      } else {
+        const price = base_price + trip.trip_distance * price_per_km;
+        setEstimatedPrice(Math.max(base_price, Math.round(price)));
+      }
     }
 
-    const { base_price, price_per_km, trip_route } = journeyDetails;
-
-    if (selectedPickupStop && selectedDropoffStop) {
-      const flatRoute: [number, number][] =
-        trip_route && trip_route.length > 0
-          ? Array.isArray(trip_route[0])
-            ? (trip_route.flat(1) as unknown as [number, number][])
-            : (trip_route as unknown as [number, number][])
-          : [];
-
-      const routeDistanceKm = getDistanceAlongRoute(
-        flatRoute,
-        [selectedPickupStop.stop_lng, selectedPickupStop.stop_lat],
-        [selectedDropoffStop.stop_lng, selectedDropoffStop.stop_lat],
-      );
-
-      const price = base_price + routeDistanceKm * price_per_km;
-      setEstimatedPrice(Math.max(base_price, Math.round(price)));
-    } else {
-      const price = base_price + trip.trip_distance * price_per_km;
-      setEstimatedPrice(Math.max(base_price, Math.round(price)));
-    }
+    calculatePrice();
   }, [
     journeyDetails,
     selectedPickupStop,

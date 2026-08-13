@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import * as turf from "@turf/turf";
@@ -227,10 +226,11 @@ export function DriverBookingDetailsView({
         description: `Accepted booking request for ${booking.passenger_name}.`,
       });
       refetch();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast("Accept Failed", {
         variant: "error",
-        description: err.message || "Could not accept booking request.",
+        description:
+          (err as Error).message || "Could not accept booking request.",
       });
     } finally {
       setIsAccepting(false);
@@ -247,10 +247,11 @@ export function DriverBookingDetailsView({
         description: `Rejected booking request for ${booking.passenger_name}.`,
       });
       refetch();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast("Reject Failed", {
         variant: "error",
-        description: err.message || "Could not reject booking request.",
+        description:
+          (err as Error).message || "Could not reject booking request.",
       });
     } finally {
       setIsRejecting(false);

@@ -24,5 +24,12 @@ export interface IPlacesCacheStore {
    * @returns Boolean indicating if the cache key exists
    */
   hasCache(): Promise<boolean>;
-}
 
+  /**
+   * Optional method to get a cached place record by place name.
+   */
+  get?(placeName: string): Promise<{
+    placeId: string;
+    location: { coordinates: [number, number] };
+  } | null>;
+}

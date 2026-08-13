@@ -148,10 +148,11 @@ export function PassengerBookingDetailsView({
         description: "Your booking request has been successfully withdrawn.",
       });
       refetch();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast("Withdraw Failed", {
         variant: "error",
-        description: err.message || "Could not withdraw booking request.",
+        description:
+          (err as Error).message || "Could not withdraw booking request.",
       });
     } finally {
       setIsWithdrawing(false);
