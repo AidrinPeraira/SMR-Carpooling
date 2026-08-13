@@ -20,9 +20,14 @@
 
 ## API & Application DTO Casing Convention
 
-- **API/External DTOs (`@sharemyride/shared`)**: Use `snake_case` for all property names in public API request/response types and Zod schemas.
+- **API/External DTOs (`@sharemyride/shared`)**: Use `snake_case` for all property names in public API request/response types and Zod schemas. Group domain DTOs in dedicated files (e.g. `BookingDTO.ts`, `TripDTO.ts`) and suffix interface names with `DTO` or `Result` (e.g. `DriverBookingItemDTO`, `GetJourneyDetailsResult`).
 - **Application DTOs (`src/application/dto/`)**: Use `camelCase` for all internal application DTO property names.
-- **Mappers (`src/presentation/v1/mapper/`)**: Always map between `snake_case` API DTOs (validated via Zod) and `camelCase` internal Application DTOs.
+- **Mappers (`src/presentation/v1/mapper/`)**: Always map between `snake_case` API DTOs (validated via Zod) and `camelCase` internal Application DTOs. Explicitly annotate mapper return types with shared DTO interfaces from `@sharemyride/shared`.
+- **Frontend Compatibility**: In frontend request helpers (`features/*/api/`), import shared DTOs and export backwards-compatible type aliases (`export type DriverBookingItem = DriverBookingItemDTO;`) to maintain clean component prop types during refactors.
+
+## Database & Prisma Modeling
+
+- **Explicit Foreign Key Relations**: Always define two-way `@relation` attributes in Prisma models (e.g. `driver Driver @relation(...)` on `Trip` and `trips Trip[]` on `Driver`) to enable safe nested `include` queries without runtime errors.
 
 
 

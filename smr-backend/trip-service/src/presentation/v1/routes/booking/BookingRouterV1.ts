@@ -59,5 +59,12 @@ export function createBookingRouterV1(
       bookingController.getPassengerBookingDetails(req, res, next),
   );
 
+  // Passenger: Withdraw booking request
+  router.patch(
+    "/:bookingId/withdraw",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => bookingController.withdrawBooking(req, res, next),
+  );
+
   return router;
 }

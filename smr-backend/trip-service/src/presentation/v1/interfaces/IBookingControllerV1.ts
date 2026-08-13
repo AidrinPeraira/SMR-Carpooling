@@ -24,4 +24,9 @@ export interface IBookingControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+  withdrawBooking(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

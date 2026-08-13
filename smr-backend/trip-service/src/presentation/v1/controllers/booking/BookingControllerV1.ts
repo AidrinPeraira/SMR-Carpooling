@@ -6,6 +6,7 @@ import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/d
 import { IGetPassngerBookingDetailsUseCase } from "#/application/interfaces/use-case/passenger/IGetPassengerBookingDetailsUseCase";
 import { INewBookingUseCase } from "#/application/interfaces/use-case/passenger/INewBookingUseCase";
 import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case/passenger/IPassengerListBookingsUseCase";
+import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/passenger/IWithdrawBookingUseCase";
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
 import { BookingMapper } from "#/presentation/v1/mapper/BookingMapper";
 import {
@@ -32,6 +33,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     private readonly _driverRejectBookingUseCase: IDriverRejectBookingUseCase,
     private readonly _passengerListBookingsUseCase: IPassengerListBookingsUseCase,
     private readonly _getPassengerBookingDetailsUseCase: IGetPassngerBookingDetailsUseCase,
+    private readonly _withdrawBookingUseCase: IWithdrawBookingUseCase,
   ) {}
 
   async createBooking(
@@ -240,6 +242,38 @@ export class BookingControllerV1 implements IBookingControllerV1 {
           makeSuccessResponse(
             "Passenger booking details retrieved successfully",
             mapped,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async withdrawBooking(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const passengerId = req.headers["x-user-id"] as string;
+      const { bookingId } = req.params;
+
+      this._logger.info("Withdrawing booking request:", {
+        passengerId,
+        bookingId,
+      });
+
+      await this._withdrawBookingUseCase.execute(
+        bookingId as string,
+        passengerId,
+      );
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Booking request withdrawn successfully",
+            null,
           ),
         );
     } catch (error) {
