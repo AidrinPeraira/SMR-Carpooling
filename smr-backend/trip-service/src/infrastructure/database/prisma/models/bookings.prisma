@@ -1,0 +1,35 @@
+enum BookingStatus {
+  requested
+  payment_pending
+  confirmed
+  rejected
+  withdrawn
+  cancelled
+}
+
+model Bookings {
+  bookingId String @id @default(uuid())
+
+  passengerId String
+  passenger   Passenger @relation(fields: [passengerId], references: [passengerId])
+
+  tripId String
+  trip   Trip   @relation(fields: [tripId], references: [tripId])
+
+  pickupPlaceId String
+  pickupPlace   Places @relation("PickupBookings", fields: [pickupPlaceId], references: [placeIndex])
+
+  dropOffPlaceId String
+  dropOffPlace   Places @relation("DropOffBookings", fields: [dropOffPlaceId], references: [placeIndex])
+
+  pickupPoint  Json
+  dropOffPoint Json
+  distanceKm   Int
+  seatCount    Int
+  totalPrice   Int
+
+  status BookingStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

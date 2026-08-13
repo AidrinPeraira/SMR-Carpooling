@@ -41,11 +41,15 @@ import { PassengerRepository } from "#/infrastructure/repository/PassengerReposi
 import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
 import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingService";
 import { TripsRepository } from "#/infrastructure/repository/TripsRepository";
+import { BookingsRepository } from "#/infrastructure/repository/BookingsRepository";
 import { CreateTripUseCase } from "#/application/use-case/trip/CreateTripUseCase";
 import { ListTripsUseCase } from "#/application/use-case/trip/ListTripsUseCase";
 import { GetJourneyDetailsUseCase } from "#/application/use-case/trip/GetJourneyDetailsUseCase";
+import { NewBookingUseCase } from "#/application/use-case/passenger/NewBookingUseCase";
 import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
+import { BookingControllerV1 } from "#/presentation/v1/controllers/booking/BookingControllerV1";
 import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
+import { createBookingRouterV1 } from "#/presentation/v1/routes/booking/BookingRouterV1";
 
 /**
  * Composition Root for the Trip Service.
@@ -63,6 +67,7 @@ const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
 const placesCacheStore = new PlacesCacheStore(redisClient);
 const passengerRepository = new PassengerRepository();
+const bookingsRepository = new BookingsRepository();
 
 const geoIndexingService = new H3GeoIndexingService();
 const tripsRepository = new TripsRepository(
@@ -98,6 +103,12 @@ const getJourneyDetailsUseCase = new GetJourneyDetailsUseCase(
   tripsRepository,
   pricingRulesRepository,
   configurationStore,
+);
+const newBookingUseCase = new NewBookingUseCase(
+  bookingsRepository,
+  configurationStore,
+  pricingRulesRepository,
+  tripsRepository,
 );
 
 // Application Event Handlers
@@ -212,6 +223,11 @@ const tripControllerV1 = new TripControllerV1(
   getJourneyDetailsUseCase,
 );
 
+const bookingControllerV1 = new BookingControllerV1(
+  consolaLogger,
+  newBookingUseCase,
+);
+
 // Routers
 const adminConfigurationRoutesV1 = createAdminConfigurationRouterV1(
   adminConfigurationControllerV1,
@@ -224,6 +240,7 @@ const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
 const tripRoutesV1 = createTripRouterV1(tripControllerV1);
+const bookingRoutesV1 = createBookingRouterV1(bookingControllerV1);
 
 const v1Router = express.Router();
 v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
@@ -233,6 +250,7 @@ v1Router.use("/admin/trip/vehicles", adminVehicleRoutesV1);
 v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
 v1Router.use("/trips", tripRoutesV1);
+v1Router.use("/bookings", bookingRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,

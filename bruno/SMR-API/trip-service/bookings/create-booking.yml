@@ -1,0 +1,42 @@
+info:
+  name: create-booking
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/bookings
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjgzNWU1NjJjYTgzYTgzN2Q2ZDkzMzk3ZmRjMzU0NWM2IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJOYXZhbSIsImxhc3ROYW1lIjoiQXJjaGl0ZWN0dXJlIiwiZW1haWxJZCI6Im5hdmFtYXJjaGl0ZWN0dXJlQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY1NTc3ODcsImV4cCI6MTc4NjU1ODY4N30.F4FJdHmHFJMKm-Lu4yv13CWXXNcpGgEwQVkf_3glNEM
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "trip_id": "trip_id_here",
+          "pickup_point": {
+            "stop_lat": 9.00041556,
+            "stop_lng": 76.76572195,
+            "stop_name": "Kottarakara",
+            "stop_address": "National Highway 208, Kottarakkara, 691506, India"
+          },
+          "drop_off_point": {
+            "stop_lat": 9.500566,
+            "stop_lng": 76.34208,
+            "stop_name": "Alapuzha",
+            "stop_address": "Kerala, India"
+          },
+          "pickup_place_id": "place_index_1",
+          "drop_off_place_id": "place_index_2",
+          "seat_count": 1,
+          "distance_km": 65
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

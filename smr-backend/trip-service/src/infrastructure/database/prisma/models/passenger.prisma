@@ -6,4 +6,6 @@ model Passenger {
   isActive    Boolean
   createdAt   DateTime
   updatedAt   DateTime
+
+  bookings Bookings[]
 }

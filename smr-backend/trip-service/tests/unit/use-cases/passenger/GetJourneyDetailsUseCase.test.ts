@@ -57,6 +57,7 @@ describe("GetJourneyDetailsUseCase", () => {
 
     mockTripRepository = {
       save: vi.fn(),
+      findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
     };

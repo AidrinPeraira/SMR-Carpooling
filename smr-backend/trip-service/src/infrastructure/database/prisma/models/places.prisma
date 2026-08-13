@@ -5,5 +5,7 @@ model Places {
   placeLng     Float
   placeAddress String
 
-  tripPlaces TripPlaces[]
+  tripPlaces      TripPlaces[]
+  pickupBookings  Bookings[]   @relation("PickupBookings")
+  dropOffBookings Bookings[]   @relation("DropOffBookings")
 }

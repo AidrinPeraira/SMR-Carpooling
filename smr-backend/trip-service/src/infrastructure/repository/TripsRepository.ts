@@ -5,16 +5,21 @@ import {
 import {
   ITripRepository,
   JourneyDetailsPayload,
+  TripResultPayload,
 } from "#/application/interfaces/repository/ITripRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { IPlacesCacheStore } from "#/application/interfaces/store/IPlacesCacheStore";
+import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { TripEntity } from "#/domain/entities/TripEntity";
+import { VehicleEntity } from "#/domain/entities/VehicleEntity";
 import { prisma } from "#/infrastructure/database/prisma";
 import {
+  BookingStatus,
   PaginatedPayload,
   Route,
   TripStatus,
   TripStop,
+  VehicleStatus,
   VehicleTypes,
 } from "@sharemyride/shared";
 
@@ -30,6 +35,80 @@ export class TripsRepository implements ITripRepository {
     private readonly _geoIndexingService: IGeoIndexingService,
     private readonly _placesCacheStore: IPlacesCacheStore,
   ) {}
+
+  /**
+   * Finds trip details with joined vehicle and booking details
+   * @param tripId Trip ID
+   */
+  async findTripDetails(tripId: string): Promise<TripResultPayload> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+      include: {
+        bookings: true,
+        vehicle: true,
+      },
+    });
+
+    if (!trip || !trip.vehicle) return null as unknown as TripResultPayload;
+
+    const vehicle = trip.vehicle;
+
+    const tripDetails: TripEntity = {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      tripStops: trip.tripStops as unknown as TripStop[],
+      tripRoute: trip.tripRoute as unknown as Route,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as TripStatus,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+
+    const vehicleDetails: VehicleEntity = {
+      vehicleId: vehicle.vehicleId,
+      driverId: vehicle.driverId,
+      recordId: vehicle.recordId,
+      vehicleType: vehicle.vehicleType as VehicleTypes,
+      vehicleModel: vehicle.vehicleModel,
+      vehicleMake: vehicle.vehicleMake,
+      vehicleCapacity: vehicle.vehicleCapacity,
+      registrationNumber: vehicle.registrationNumber,
+      vehicleImage: vehicle.vehicleImage,
+      vehicleStatus: vehicle.vehicleStatus as VehicleStatus,
+      createdAt: vehicle.createdAt,
+      updatedAt: vehicle.updatedAt,
+    };
+
+    const bookingDetails: BookingEntity[] = trip.bookings.map((b) => ({
+      bookingId: b.bookingId,
+      passengerId: b.passengerId,
+      tripId: b.tripId,
+      pickupPoint: b.pickupPoint as unknown as TripStop,
+      dropOffPoint: b.dropOffPoint as unknown as TripStop,
+      pickupPlaceId: b.pickupPlaceId,
+      dropOffPlaceId: b.dropOffPlaceId,
+      distanceKm: b.distanceKm,
+      seatCount: b.seatCount,
+      totalPrice: b.totalPrice,
+      status: b.status as BookingStatus,
+      createdAt: b.createdAt,
+      updatedAt: b.updatedAt,
+    }));
+
+    return {
+      tripDetails,
+      vehicleDetails,
+      bookingDetails,
+    };
+  }
 
   /**
    * gets route details for the trip service
@@ -284,7 +363,10 @@ export class TripsRepository implements ITripRepository {
     const paginatedTripIds = matchingTripIds.slice(skip, skip + limit);
 
     const trips = await this._tripModel.findMany({
-      where: { tripId: { in: paginatedTripIds } },
+      where: {
+        tripId: { in: paginatedTripIds },
+        tripStatus: TripStatus.SCHEDULED,
+      },
     });
 
     const vehicleIds = [...new Set(trips.map((t) => t.vehicleId))];
