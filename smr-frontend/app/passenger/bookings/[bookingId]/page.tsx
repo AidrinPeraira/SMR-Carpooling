@@ -1,3 +1,9 @@
+import { PassengerBookingDetailsView } from "@/features/passenger/bookings/views/PassengerBookingDetailsView";
+
 export default function PassengerBookingDetailsPage() {
-  return <div>BookignDetails</div>;
+  return (
+    <div>
+      <PassengerBookingDetailsView />
+    </div>
+  );
 }
