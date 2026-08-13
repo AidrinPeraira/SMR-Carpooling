@@ -43,7 +43,7 @@ export default function PortalNavbar({
   const navLinks = [
     { name: "Home", href: `/${detectedRole}` },
     { name: "Trips", href: `/${detectedRole}/trips` },
-    { name: "Requests", href: `/${detectedRole}/requests` },
+    { name: "Bookings", href: `/${detectedRole}/bookings` },
     { name: "Profile", href: "/profile" },
   ];
 
@@ -54,6 +54,10 @@ export default function PortalNavbar({
     }
     if (href === `/${detectedRole}/trips`) {
       return pathname.startsWith(`/${detectedRole}/trips`);
+    }
+
+    if (href === `/${detectedRole}/bookings`) {
+      return pathname.startsWith(`/${detectedRole}/bookigs`);
     }
 
     return pathname === href;

@@ -112,9 +112,17 @@ export class BookingsRepository implements IBookingRepository {
         (b.pickupPoint as any)?.stopName ||
         (b.pickupPoint as any)?.stop_name ||
         "",
+      pickupPointAddress:
+        (b.pickupPoint as any)?.stopAddress ||
+        (b.pickupPoint as any)?.stop_address ||
+        "",
       dropOffPointName:
         (b.dropOffPoint as any)?.stopName ||
         (b.dropOffPoint as any)?.stop_name ||
+        "",
+      dropOffPointAddress:
+        (b.dropOffPoint as any)?.stopAddress ||
+        (b.dropOffPoint as any)?.stop_address ||
         "",
       bookingDistance: b.distanceKm,
       seatCount: b.seatCount,
