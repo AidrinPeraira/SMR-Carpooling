@@ -6,6 +6,13 @@ import {
   SearchSuggestion,
 } from "@/features/map/types/MapTypes";
 
+export interface RouteDrawOptions {
+  id?: string;
+  color?: string;
+  width?: number;
+  opacity?: number;
+}
+
 /**
  * This interface defines the methods needed for any
  * map service that is used to render the map component
@@ -61,18 +68,22 @@ export interface IMapProviderService {
 
   getRoute(waypoints: MapPoint[]): Promise<Route>;
 
-  drawRoute(route: MapPoint[]): Promise<void>;
+  drawRoute(route: MapPoint[], options?: RouteDrawOptions): Promise<void>;
 
   /**
    * Renders a route line given an array of lat/long objects or coordinate tuples
    *
    * @param coordinates Array of { lat, lng } objects or [number, number] tuples
+   * @param options Optional route drawing styling and ID
    */
   drawRouteFromCoordinates(
     coordinates: { lat: number; lng: number }[] | [number, number][],
+    options?: RouteDrawOptions,
   ): Promise<void>;
 
-  removeRoute(): Promise<void>;
+  removeRoute(id?: string): Promise<void>;
+
+  clearAllRoutes(): Promise<void>;
 
   fitBounds(points: MapPoint[]): Promise<void>;
 }
