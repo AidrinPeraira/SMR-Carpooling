@@ -3,11 +3,11 @@ import { ITripRepository } from "#/application/interfaces/repository/ITripReposi
 import { IDriverAcceptBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverAcceptBookingUseCase";
 import {
   ApplicationError,
+  BookingErrorMessage,
   BookingStatus,
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
-  TripErrorMessage,
 } from "@sharemyride/shared";
 
 /**
@@ -27,7 +27,7 @@ export class DriverAcceptBookingUseCase
 
     if (!booking) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
+        BookingErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
@@ -40,7 +40,7 @@ export class DriverAcceptBookingUseCase
 
     if (booking.status !== BookingStatus.REQUESTED) {
       throw new ApplicationError(
-        TripErrorMessage.CANNOT_JOIN,
+        BookingErrorMessage.INVALID_STATUS_TRANSITION,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
@@ -55,10 +55,10 @@ export class DriverAcceptBookingUseCase
 
     if (!trip || trip.driverId !== driverId) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
-        HttpStatusCodes.NotFound,
-        ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
+        BookingErrorMessage.UNAUTHORIZED_DRIVER,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
         {
           location: "DriverAcceptBookingUseCase",
           description: `Trip not found or does not belong to driver: ${driverId}`,
@@ -68,7 +68,7 @@ export class DriverAcceptBookingUseCase
 
     if (trip.vacantSeats < booking.seatCount) {
       throw new ApplicationError(
-        TripErrorMessage.TRIP_FULL,
+        BookingErrorMessage.INSUFFICIENT_SEATS,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,

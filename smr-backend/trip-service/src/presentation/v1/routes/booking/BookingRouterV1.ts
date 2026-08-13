@@ -15,5 +15,34 @@ export function createBookingRouterV1(
     (req, res, next) => bookingController.createBooking(req, res, next),
   );
 
+  // Driver: List all bookings
+  router.get(
+    "/driver",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => bookingController.getDriverBookings(req, res, next),
+  );
+
+  // Driver: Get booking details
+  router.get(
+    "/driver/:bookingId",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) =>
+      bookingController.getDriverBookingDetails(req, res, next),
+  );
+
+  // Driver: Accept booking
+  router.patch(
+    "/:bookingId/accept",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => bookingController.acceptBooking(req, res, next),
+  );
+
+  // Driver: Reject booking
+  router.patch(
+    "/:bookingId/reject",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => bookingController.rejectBooking(req, res, next),
+  );
+
   return router;
 }

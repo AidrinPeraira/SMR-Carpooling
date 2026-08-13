@@ -10,13 +10,13 @@ import { INewBookingUseCase } from "#/application/interfaces/use-case/passenger/
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import {
   ApplicationError,
+  BookingErrorMessage,
   BookingStatus,
   ErrorCode,
   ErrorDetails,
   EventName,
   HttpStatusCodes,
   NewBookingEvent,
-  TripErrorMessage,
   TripStatus,
 } from "@sharemyride/shared";
 
@@ -43,7 +43,7 @@ export class NewBookingUseCase implements INewBookingUseCase {
 
     if (!existingTrip || !existingTrip.tripDetails) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
+        BookingErrorMessage.TRIP_NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
@@ -56,7 +56,7 @@ export class NewBookingUseCase implements INewBookingUseCase {
 
     if (existingTrip.tripDetails.tripStatus !== TripStatus.SCHEDULED) {
       throw new ApplicationError(
-        TripErrorMessage.CANNOT_JOIN,
+        BookingErrorMessage.CANNOT_BOOK_STATUS,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
@@ -78,7 +78,7 @@ export class NewBookingUseCase implements INewBookingUseCase {
 
     if (alreadyBooked) {
       throw new ApplicationError(
-        TripErrorMessage.ALREADY_JOINED,
+        BookingErrorMessage.ALREADY_BOOKED,
         HttpStatusCodes.BadRequest,
         ErrorCode.DOMAIN_CONFLICT,
         ErrorDetails.DOMAIN_CONFLICT,
@@ -92,7 +92,7 @@ export class NewBookingUseCase implements INewBookingUseCase {
     // Check seat availability
     if (dto.seatCount > existingTrip.tripDetails.vacantSeats) {
       throw new ApplicationError(
-        TripErrorMessage.TRIP_FULL,
+        BookingErrorMessage.INSUFFICIENT_SEATS,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,

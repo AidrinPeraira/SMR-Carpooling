@@ -6,10 +6,10 @@ import { IVehicleRepository } from "#/application/interfaces/repository/IVehicle
 import { IDriverGetBookingDetailsUseCase } from "#/application/interfaces/use-case/driver/IDriverGetBookingDetailsUseCase";
 import {
   ApplicationError,
+  BookingErrorMessage,
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
-  TripErrorMessage,
 } from "@sharemyride/shared";
 
 /**
@@ -33,7 +33,7 @@ export class DriverGetBookingDetailsUseCase
 
     if (!booking) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
+        BookingErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
@@ -48,10 +48,10 @@ export class DriverGetBookingDetailsUseCase
 
     if (!trip || trip.driverId !== driverId) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
-        HttpStatusCodes.NotFound,
-        ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
+        BookingErrorMessage.UNAUTHORIZED_DRIVER,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
         {
           location: "DriverGetBookingDetailsUseCase",
           description: `Booking does not belong to driver: ${driverId}`,

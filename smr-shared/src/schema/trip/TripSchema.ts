@@ -54,4 +54,14 @@ export const CreateBookingSchema = z.object({
 
 export type CreateBookingSchemaType = z.infer<typeof CreateBookingSchema>;
 
+export const DriverGetBookingsQuerySchema = z.object({
+  booking_status: z.string().optional(),
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+});
+
+export type DriverGetBookingsQuerySchemaType = z.infer<
+  typeof DriverGetBookingsQuerySchema
+>;
+
 

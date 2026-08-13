@@ -3,20 +3,18 @@ import { ITripRepository } from "#/application/interfaces/repository/ITripReposi
 import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverRejectBookingUseCase";
 import {
   ApplicationError,
+  BookingErrorMessage,
   BookingStatus,
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
-  TripErrorMessage,
 } from "@sharemyride/shared";
 
 /**
  * This use case rejects a passenger's booking request to join a trip.
  * Verifies booking existence, driver ownership, and updates status to REJECTED.
  */
-export class DriverRejectBookingUseCase
-  implements IDriverRejectBookingUseCase
-{
+export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
   constructor(
     private readonly _bookingRepository: IBookingRepository,
     private readonly _tripRepository: ITripRepository,
@@ -27,7 +25,7 @@ export class DriverRejectBookingUseCase
 
     if (!booking) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
+        BookingErrorMessage.NOT_FOUND,
         HttpStatusCodes.NotFound,
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
@@ -38,14 +36,27 @@ export class DriverRejectBookingUseCase
       );
     }
 
+    if (booking.status !== BookingStatus.REQUESTED) {
+      throw new ApplicationError(
+        BookingErrorMessage.INVALID_STATUS_TRANSITION,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "DriverRejectBookingUseCase",
+          description: `Booking status is '${booking.status}', expected '${BookingStatus.REQUESTED}'`,
+        },
+      );
+    }
+
     const trip = await this._tripRepository.findByTripId(booking.tripId);
 
     if (!trip || trip.driverId !== driverId) {
       throw new ApplicationError(
-        TripErrorMessage.NOT_FOUND,
-        HttpStatusCodes.NotFound,
-        ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
+        BookingErrorMessage.UNAUTHORIZED_DRIVER,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
         {
           location: "DriverRejectBookingUseCase",
           description: `Trip not found or does not belong to driver: ${driverId}`,

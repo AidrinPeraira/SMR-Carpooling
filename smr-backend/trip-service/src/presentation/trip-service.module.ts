@@ -252,6 +252,10 @@ const tripControllerV1 = new TripControllerV1(
 const bookingControllerV1 = new BookingControllerV1(
   consolaLogger,
   newBookingUseCase,
+  driverListAllBookingsUseCase,
+  driverGetBookingDetailsUseCase,
+  driverAcceptBookingUseCase,
+  driverRejectBookingUseCase,
 );
 
 // Routers
