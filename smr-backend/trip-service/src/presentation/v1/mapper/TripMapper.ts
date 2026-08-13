@@ -1,3 +1,8 @@
+import {
+  DriverGetAllTripsQueryDTO,
+  DriverGetTripDetailsResponseDTO,
+  DriverListTripsResponseDTO,
+} from "#/application/dto/driver/DriverTripsDTO";
 import { CreateTripRequestDTO } from "#/application/dto/trip/CreateTripRequestDTO";
 import {
   GetJourneyDetailsResponseDTO,
@@ -6,10 +11,14 @@ import {
 } from "#/application/dto/trip/ListTripsDTO";
 import {
   CreateTripSchemaType,
+  DriverGetTripsQuerySchemaType,
+  DriverTripDetailsDTO,
+  DriverTripItemDTO,
   GetJourneyDetailsResult,
   ListTripsResult,
   PaginatedPayload,
   SearchTripSchemaType,
+  TripStatus,
   TripStop,
   TripStopDTO,
 } from "@sharemyride/shared";
@@ -109,6 +118,67 @@ export class TripMapper {
       available_stops: dto.availableStops,
       base_price: dto.basePrice,
       price_per_km: dto.pricePerKm,
+    };
+  }
+
+  static toDriverGetAllTripsQueryDTO(
+    query: DriverGetTripsQuerySchemaType,
+  ): DriverGetAllTripsQueryDTO {
+    return {
+      tripStatus: query.trip_status as TripStatus,
+      page: query.page,
+      limit: query.limit,
+    };
+  }
+
+  static toDriverListTripsResponse(
+    payload: PaginatedPayload<DriverListTripsResponseDTO[]>,
+  ): PaginatedPayload<DriverTripItemDTO[]> {
+    return {
+      data: payload.data.map((item) => ({
+        trip_id: item.tripId,
+        trip_origin: item.tripOrigin,
+        trip_destination: item.tripDestination,
+        vehicle_make: item.vehicleMake,
+        vehicle_model: item.vehicleModel,
+        available_seats: item.availableSeats,
+        vacant_seats: item.vacantSeats,
+        start_time:
+          item.startTime instanceof Date
+            ? item.startTime.toISOString()
+            : String(item.startTime),
+        trip_status: item.tripStatus,
+      })),
+      paginationMeta: payload.paginationMeta,
+    };
+  }
+
+  static toDriverGetTripDetailsResponse(
+    dto: DriverGetTripDetailsResponseDTO,
+  ): DriverTripDetailsDTO {
+    return {
+      trip_id: "",
+      trip_date:
+        dto.tripDate instanceof Date
+          ? dto.tripDate.toISOString()
+          : String(dto.tripDate),
+      trip_vehicle: dto.tripVehicle,
+      trip_vehicle_image: dto.tirpVehicleImage,
+      trip_route: dto.tripRoute,
+      trip_origin: this.toTripStopDTO(dto.tripOrigin),
+      trip_destination: this.toTripStopDTO(dto.tripDestination),
+      trip_stops: dto.tripStops.map((s) => this.toTripStopDTO(s)),
+      start_time:
+        dto.startTime instanceof Date
+          ? dto.startTime.toISOString()
+          : String(dto.startTime),
+      trip_status: dto.tripStatus,
+      trip_bookings: dto.tripBookings.map((b) => ({
+        booking_id: b.bookingId,
+        passenger_name: b.passengerName,
+        booking_status: b.bookingStatus,
+        seat_count: b.seatCount,
+      })),
     };
   }
 }

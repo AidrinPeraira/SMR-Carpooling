@@ -1,3 +1,4 @@
+import { DriverGetAllTripsQueryDTO } from "#/application/dto/driver/DriverTripsDTO";
 import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
@@ -13,10 +14,14 @@ export interface JourneyDetailsPayload {
   vehicleType: VehicleTypes;
 }
 
+export interface BookingEntityWithPassenger extends BookingEntity {
+  passengerName?: string;
+}
+
 export interface TripResultPayload {
   tripDetails: TripEntity;
   vehicleDetails: VehicleEntity;
-  bookingDetails: BookingEntity[];
+  bookingDetails: BookingEntityWithPassenger[];
 }
 
 /**
@@ -33,11 +38,22 @@ export interface ITripRepository {
   save(trip: TripEntity): Promise<void>;
 
   /**
-   * This method gets all the tirp details with necessary joins
+   * This method gets all the trip details with necessary joins
    *
    * @param tripId : id of trip as string
    */
-  findTripDetails(tripId: string): Promise<TripResultPayload>;
+  findTripDetails(tripId: string): Promise<TripResultPayload | null>;
+
+  /**
+   * Finds all trips created by a specific driver with pagination and status filtering
+   *
+   * @param driverId Driver ID
+   * @param query Optional filtering and pagination params
+   */
+  findTripsByDriverId?(
+    driverId: string,
+    query?: DriverGetAllTripsQueryDTO,
+  ): Promise<PaginatedPayload<TripResultPayload[]>>;
 
   /**
    * Match data with trips that match using the indexed tables

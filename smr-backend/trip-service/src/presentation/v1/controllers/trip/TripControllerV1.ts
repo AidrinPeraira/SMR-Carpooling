@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { IDriverListTripsUseCase } from "#/application/interfaces/use-case/driver/IDriverListTripsUseCase";
+import { IDriverGetTripDetailsUseCase } from "#/application/interfaces/use-case/driver/IDriverTripDetailsUseCase";
 import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICreateTripUseCase";
 import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
@@ -7,6 +9,8 @@ import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
   CreateTripSchema,
   CreateTripSchemaType,
+  DriverGetTripsQuerySchema,
+  DriverGetTripsQuerySchemaType,
   GenericSuccessMessage,
   GetJourneyDetailsSchema,
   GetJourneyDetailsSchemaType,
@@ -24,6 +28,8 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _createTripUseCase: ICreateTripUseCase,
     private readonly _listTripsUseCase: IListTripsUseCase,
     private readonly _getJourneyDetailsUseCase: IGetJourneyDetailsUseCase,
+    private readonly _driverListTripsUseCase: IDriverListTripsUseCase,
+    private readonly _driverGetTripDetailsUseCase: IDriverGetTripDetailsUseCase,
   ) {}
 
   async createTrip(
@@ -126,5 +132,73 @@ export class TripControllerV1 implements ITripControllerV1 {
       next(error);
     }
   }
-}
 
+  async getDriverTrips(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+
+      const validatedQuery = zodParser<DriverGetTripsQuerySchemaType>(
+        DriverGetTripsQuerySchema,
+        req.query,
+      );
+
+      this._logger.info("Fetching driver trips:", {
+        driverId,
+        query: validatedQuery,
+      });
+
+      const queryDto = TripMapper.toDriverGetAllTripsQueryDTO(validatedQuery);
+      const result = await this._driverListTripsUseCase.execute(
+        driverId,
+        queryDto,
+      );
+      const mapped = TripMapper.toDriverListTripsResponse(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Driver trips fetched successfully",
+            mapped,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getDriverTripDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+      const { tripId } = req.params;
+
+      this._logger.info("Fetching driver trip details:", { driverId, tripId });
+
+      const result = await this._driverGetTripDetailsUseCase.execute(
+        tripId as string,
+        driverId,
+      );
+      const mapped = TripMapper.toDriverGetTripDetailsResponse(result);
+      mapped.trip_id = tripId as string;
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Driver trip details fetched successfully",
+            mapped,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+}

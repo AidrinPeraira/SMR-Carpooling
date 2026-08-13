@@ -1,8 +1,10 @@
+import { DriverGetAllTripsQueryDTO } from "#/application/dto/driver/DriverTripsDTO";
 import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
 } from "#/application/dto/trip/ListTripsDTO";
 import {
+  BookingEntityWithPassenger,
   ITripRepository,
   JourneyDetailsPayload,
   TripResultPayload,
@@ -44,7 +46,11 @@ export class TripsRepository implements ITripRepository {
     const trip = await this._tripModel.findUnique({
       where: { tripId },
       include: {
-        bookings: true,
+        bookings: {
+          include: {
+            passenger: true,
+          },
+        },
         vehicle: true,
       },
     });
@@ -87,7 +93,7 @@ export class TripsRepository implements ITripRepository {
       updatedAt: vehicle.updatedAt,
     };
 
-    const bookingDetails: BookingEntity[] = trip.bookings.map((b) => ({
+    const bookingDetails: BookingEntityWithPassenger[] = trip.bookings.map((b: any) => ({
       bookingId: b.bookingId,
       passengerId: b.passengerId,
       tripId: b.tripId,
@@ -99,6 +105,7 @@ export class TripsRepository implements ITripRepository {
       seatCount: b.seatCount,
       totalPrice: b.totalPrice,
       status: b.status as BookingStatus,
+      passengerName: b.passenger ? `${b.passenger.firstName} ${b.passenger.lastName}` : undefined,
       createdAt: b.createdAt,
       updatedAt: b.updatedAt,
     }));
@@ -107,6 +114,110 @@ export class TripsRepository implements ITripRepository {
       tripDetails,
       vehicleDetails,
       bookingDetails,
+    };
+  }
+
+  async findTripsByDriverId(
+    driverId: string,
+    query?: DriverGetAllTripsQueryDTO,
+  ): Promise<PaginatedPayload<TripResultPayload[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = { driverId };
+    if (query?.tripStatus && (query.tripStatus as string) !== "all") {
+      where.tripStatus = query.tripStatus;
+    }
+
+    const [totalItems, records] = await Promise.all([
+      this._tripModel.count({ where }),
+      this._tripModel.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          vehicle: true,
+          bookings: {
+            include: {
+              passenger: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const data: TripResultPayload[] = records.map((trip: any) => {
+      const vehicle = trip.vehicle;
+      const tripDetails: TripEntity = {
+        tripId: trip.tripId,
+        driverId: trip.driverId,
+        vehicleId: trip.vehicleId,
+        tripOrigin: trip.tripOrigin as unknown as TripStop,
+        tripDestination: trip.tripDestination as unknown as TripStop,
+        tripStops: trip.tripStops as unknown as TripStop[],
+        tripRoute: trip.tripRoute as unknown as Route,
+        tripDistance: trip.tripDistance,
+        availableSeats: trip.availableSeats,
+        vacantSeats: trip.vacantSeats,
+        tripTags: trip.tripTags,
+        startTime: trip.startTime,
+        totalSeats: trip.totalSeats,
+        tripStatus: trip.tripStatus as TripStatus,
+        createdAt: trip.createdAt,
+        updatedAt: trip.updatedAt,
+      };
+
+      const vehicleDetails: VehicleEntity = vehicle ? {
+        vehicleId: vehicle.vehicleId,
+        driverId: vehicle.driverId,
+        recordId: vehicle.recordId,
+        vehicleType: vehicle.vehicleType as VehicleTypes,
+        vehicleModel: vehicle.vehicleModel,
+        vehicleMake: vehicle.vehicleMake,
+        vehicleCapacity: vehicle.vehicleCapacity,
+        registrationNumber: vehicle.registrationNumber,
+        vehicleImage: vehicle.vehicleImage,
+        vehicleStatus: vehicle.vehicleStatus as VehicleStatus,
+        createdAt: vehicle.createdAt,
+        updatedAt: vehicle.updatedAt,
+      } : (null as any);
+
+      const bookingDetails: BookingEntityWithPassenger[] = trip.bookings.map((b: any) => ({
+        bookingId: b.bookingId,
+        passengerId: b.passengerId,
+        tripId: b.tripId,
+        pickupPoint: b.pickupPoint as unknown as TripStop,
+        dropOffPoint: b.dropOffPoint as unknown as TripStop,
+        pickupPlaceId: b.pickupPlaceId,
+        dropOffPlaceId: b.dropOffPlaceId,
+        distanceKm: b.distanceKm,
+        seatCount: b.seatCount,
+        totalPrice: b.totalPrice,
+        status: b.status as BookingStatus,
+        passengerName: b.passenger ? `${b.passenger.firstName} ${b.passenger.lastName}` : undefined,
+        createdAt: b.createdAt,
+        updatedAt: b.updatedAt,
+      }));
+
+      return {
+        tripDetails,
+        vehicleDetails,
+        bookingDetails,
+      };
+    });
+
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    return {
+      data,
+      paginationMeta: {
+        totalItems,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
     };
   }
 

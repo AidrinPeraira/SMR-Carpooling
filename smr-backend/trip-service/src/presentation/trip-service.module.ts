@@ -256,11 +256,21 @@ const vehicleControllerV1 = new VehicleControllerV1(
   getDriverVehiclesUseCase,
 );
 
+import { DriverGetTripDetailsUseCase } from "#/application/use-case/driver/DriverGetTripDetailsUseCase";
+import { DriverListTripsUseCase } from "#/application/use-case/driver/DriverListTripsUseCase";
+
+const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
+const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
+  tripsRepository,
+);
+
 const tripControllerV1 = new TripControllerV1(
   consolaLogger,
   createTripUseCase,
   listTripsUseCase,
   getJourneyDetailsUseCase,
+  driverListTripsUseCase,
+  driverGetTripDetailsUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(
