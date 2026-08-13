@@ -1,4 +1,5 @@
 import { NewBookingRequestDTO } from "#/application/dto/trip/BookingDTO";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IPricingRulesRepository } from "#/application/interfaces/repository/IPricingRulesRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
@@ -11,6 +12,7 @@ import {
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
+  NewBookingEvent,
   TripErrorMessage,
   TripStatus,
 } from "@sharemyride/shared";
@@ -21,11 +23,13 @@ export class NewBookingUseCase implements INewBookingUseCase {
     private readonly _configStore: IConfigurationStore,
     private readonly _configRepository: IPricingRulesRepository,
     private readonly _tripRepository: ITripRepository,
+    private readonly _eventBus: IEventBus,
   ) {}
 
   /**
    * This method gets the trip and vehicle details, verifies the data,
    * calculates pricing, and creates a new booking.
+   * It also publishes new booking event for other services
    *
    * @param dto : Booking details from user
    */
@@ -130,5 +134,9 @@ export class NewBookingUseCase implements INewBookingUseCase {
     };
 
     await this._bookingRepository.save(newBooking);
+
+    const newBookingEvent: NewBookingEvent = {};
+
+    this._eventBus.publish(newBookingEvent);
   }
 }

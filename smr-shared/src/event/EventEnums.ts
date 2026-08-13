@@ -12,4 +12,6 @@ export enum EventName {
   ADMIN_APPROVE_APPLICTION = "admin.application.approve",
   ADMIN_REJECT_APPLICATION = "admin.application.reject",
   ADMIN_RETURN_APPLICTION = "admin.application.return",
+
+  BOOKING_NEW_BOOKING = "booking.trip.new_booking",
 }

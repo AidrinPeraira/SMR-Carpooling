@@ -1,1 +1,6 @@
-name: bookings
+info:
+  name: bookings
+  type: folder
+  seq: 1
+
+request: {}

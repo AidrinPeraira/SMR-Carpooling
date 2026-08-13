@@ -8,7 +8,7 @@ http:
   url: http://localhost:4000/api/v1/trips/search
   headers:
     - name: Authorization
-      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjgzNWU1NjJjYTgzYTgzN2Q2ZDkzMzk3ZmRjMzU0NWM2IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJOYXZhbSIsImxhc3ROYW1lIjoiQXJjaGl0ZWN0dXJlIiwiZW1haWxJZCI6Im5hdmFtYXJjaGl0ZWN0dXJlQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY1NTc3ODcsImV4cCI6MTc4NjU1ODY4N30.F4FJdHmHFJMKm-Lu4yv13CWXXNcpGgEwQVkf_3glNEM
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjgzNWU1NjJjYTgzYTgzN2Q2ZDkzMzk3ZmRjMzU0NWM2IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJOYXZhbSIsImxhc3ROYW1lIjoiQXJjaGl0ZWN0dXJlIiwiZW1haWxJZCI6Im5hdmFtYXJjaGl0ZWN0dXJlQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY2MjQzMDksImV4cCI6MTc4NjYyNTIwOX0._Bhajr27mBM640QzP0gB8d7Vi2D-G1T-L4igyceqRSk
     - name: x-frontend-key
       value: "{{FRONTEND_KEY}}"
   body:
