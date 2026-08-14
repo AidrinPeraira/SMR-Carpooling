@@ -7,6 +7,9 @@ import { User, ClipboardList, Star, Wallet } from "lucide-react";
 import { logoutUserAction } from "@/features/auth/api/actions/LogoutUserAction";
 import { useToast } from "@sharemyride/ui";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getUserRequest } from "@/features/profile/api/requests/getUserRequest";
+import { UserRole } from "@sharemyride/shared";
 
 interface Props {
   children: ReactNode;
@@ -15,6 +18,18 @@ interface Props {
 export default function ProfileLayout({ children }: Props) {
   const toast = useToast();
   const router = useRouter();
+
+  const { data: user } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getUserRequest,
+  });
+
+  const activeRole: "passenger" | "driver" | undefined =
+    user?.user_role === UserRole.DRIVER
+      ? "driver"
+      : user?.user_role === UserRole.PASSENGER
+      ? "passenger"
+      : undefined;
 
   const handleLogout = async () => {
     const res = await logoutUserAction();
@@ -55,9 +70,15 @@ export default function ProfileLayout({ children }: Props) {
 
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <SideNav items={profileNavItems} header={<PortalNavbar />} onLogout={handleLogout}>
+      <SideNav
+        items={profileNavItems}
+        header={<PortalNavbar userRole={activeRole} />}
+        onLogout={handleLogout}
+      >
         {children}
       </SideNav>
     </div>
   );
 }
+
+

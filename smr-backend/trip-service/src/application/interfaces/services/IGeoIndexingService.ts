@@ -28,21 +28,5 @@ export interface IGeoIndexingService {
    * @returns Object containing latitude and longitude
    */
   indexToLocation(index: string): Promise<{ lat: number; lng: number }>;
-
-  /**
-   * Optional method to search trips matching pickup and drop-off coordinates.
-   */
-  searchTrip?(params: {
-    pickupCoords: [number, number];
-    dropOffCoords: [number, number];
-  }): Promise<{ tripId: string }[]>;
-
-  /**
-   * Optional method to index trip route and stops.
-   */
-  addTripToIndex?(params: {
-    tripId: string;
-    tripRoute: unknown;
-    stops: { placeId: string; coordinates: [number, number] }[];
-  }): Promise<void>;
 }
+

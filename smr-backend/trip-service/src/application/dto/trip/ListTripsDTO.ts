@@ -22,8 +22,7 @@ export interface GetJourneyDetailsResponseDTO {
   tripId: string;
   tripStops: TripStop[];
   tripRoute: Route[];
-  availableStops: Route[];
+  availableStops: TripStop[];
   basePrice: number;
   pricePerKm: number;
 }
-

@@ -47,36 +47,55 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
         await map.clearAllMarkers();
         await map.clearAllRoutes();
 
-        const originPoint: MapPoint = [
-          currentTrip.trip_origin.stop_lng,
-          currentTrip.trip_origin.stop_lat,
-        ];
-        const destPoint: MapPoint = [
-          currentTrip.trip_destination.stop_lng,
-          currentTrip.trip_destination.stop_lat,
-        ];
+        // Gather all stops (origin, intermediate stops, destination)
+        const stops =
+          currentTrip.trip_stops && currentTrip.trip_stops.length > 0
+            ? currentTrip.trip_stops
+            : [currentTrip.trip_origin, currentTrip.trip_destination];
 
-        try {
-          const routeData = await map.getRoute([originPoint, destPoint]);
-          if (routeData?.route) {
-            await map.drawRoute(routeData.route, {
+        const stopPoints: MapPoint[] = stops.map((s) => [
+          s.stop_lng,
+          s.stop_lat,
+        ]);
+
+        // Add markers for all stops
+        for (const point of stopPoints) {
+          await map.addMarker(point);
+        }
+
+        // Render trip_route array if present, otherwise fallback to getRoute / direct line
+        if (currentTrip.trip_route && currentTrip.trip_route.length > 0) {
+          await map.drawRouteFromCoordinates(
+            currentTrip.trip_route as unknown as { lat: number; lng: number }[],
+            {
               id: "driver-trip-route",
               color: "#3b82f6",
               width: 6,
               opacity: 0.95,
+            },
+          );
+        } else {
+          try {
+            const routeData = await map.getRoute(stopPoints);
+            if (routeData?.route) {
+              await map.drawRoute(routeData.route, {
+                id: "driver-trip-route",
+                color: "#3b82f6",
+                width: 6,
+                opacity: 0.95,
+              });
+            }
+          } catch {
+            await map.drawRoute(stopPoints, {
+              id: "driver-trip-route",
+              color: "#3b82f6",
+              width: 6,
             });
           }
-        } catch {
-          await map.drawRoute([originPoint, destPoint], {
-            id: "driver-trip-route",
-            color: "#3b82f6",
-            width: 6,
-          });
         }
 
-        await map.addMarker(originPoint);
-        await map.addMarker(destPoint);
-        await map.fitBounds([originPoint, destPoint]);
+        // Fit viewport bounds to include all stops
+        await map.fitBounds(stopPoints);
       } catch (err) {
         console.warn("Map setup failed inside setupMapRoutes:", err);
       }
@@ -300,39 +319,47 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
         {/* Route Stops / Locations */}
         <Card className="p-6 border border-border-subtle bg-surface-card space-y-4">
           <h2 className="text-sm font-semibold text-content-secondary uppercase tracking-wider">
-            Route Stops
+            Route Stops (
+            {tripDetails.trip_stops && tripDetails.trip_stops.length > 0
+              ? tripDetails.trip_stops.length
+              : 2}
+            )
           </h2>
 
           <div className="space-y-4 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-border-subtle">
-            {/* Origin */}
-            <div className="flex items-start gap-3 relative z-10">
-              <div className="w-8 h-8 rounded-full bg-success-surface border border-success-border text-success-content flex items-center justify-center text-xs font-bold shrink-0">
-                A
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-content-primary">
-                  {tripDetails.trip_origin.stop_name}
-                </p>
-                <p className="text-xs text-content-secondary mt-0.5">
-                  {tripDetails.trip_origin.stop_address}
-                </p>
-              </div>
-            </div>
+            {(
+              tripDetails.trip_stops && tripDetails.trip_stops.length > 0
+                ? tripDetails.trip_stops
+                : [tripDetails.trip_origin, tripDetails.trip_destination]
+            ).map((stop, index, arr) => {
+              const isOrigin = index === 0;
+              const isDestination = index === arr.length - 1;
+              const label = isOrigin ? "A" : isDestination ? "B" : `${index}`;
 
-            {/* Destination */}
-            <div className="flex items-start gap-3 relative z-10">
-              <div className="w-8 h-8 rounded-full bg-accent/15 border border-accent/30 text-accent flex items-center justify-center text-xs font-bold shrink-0">
-                B
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-content-primary">
-                  {tripDetails.trip_destination.stop_name}
-                </p>
-                <p className="text-xs text-content-secondary mt-0.5">
-                  {tripDetails.trip_destination.stop_address}
-                </p>
-              </div>
-            </div>
+              return (
+                <div key={index} className="flex items-start gap-3 relative z-10">
+                  <div
+                    className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ${
+                      isOrigin
+                        ? "bg-success-surface border-success-border text-success-content"
+                        : isDestination
+                        ? "bg-accent/15 border-accent/30 text-accent"
+                        : "bg-surface-muted border-border-subtle text-content-primary"
+                    }`}
+                  >
+                    {label}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-content-primary">
+                      {stop.stop_name}
+                    </p>
+                    <p className="text-xs text-content-secondary mt-0.5">
+                      {stop.stop_address}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </Card>
       </div>

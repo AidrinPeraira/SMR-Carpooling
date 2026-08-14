@@ -6,11 +6,11 @@ import {
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { TripEntity } from "#/domain/entities/TripEntity";
 import { VehicleEntity } from "#/domain/entities/VehicleEntity";
-import { PaginatedPayload, Route, VehicleTypes } from "@sharemyride/shared";
+import { PaginatedPayload, TripStop, VehicleTypes } from "@sharemyride/shared";
 
 export interface JourneyDetailsPayload {
   trip: TripEntity;
-  availableStops: Route;
+  availableStops: TripStop[];
   vehicleType: VehicleTypes;
 }
 

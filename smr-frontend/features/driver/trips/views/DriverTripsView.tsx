@@ -3,7 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { getDriverTripsRequest, DriverTripItem } from "../api/getDriverTripsRequest";
+import {
+  getDriverTripsRequest,
+  DriverTripItem,
+} from "../api/getDriverTripsRequest";
 import { Button, Card, DropDown, Loader, Tag } from "@sharemyride/ui";
 import { Calendar, Car, ArrowRight, PlusCircle } from "lucide-react";
 
@@ -103,8 +106,11 @@ export function DriverTripsView() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/driver/trips/new">
-            <Button variant="primary" className="text-xs py-2 px-3 flex items-center gap-1.5">
+          <Link href="/driver/trips/new-trip">
+            <Button
+              variant="primary"
+              className="text-xs py-2 px-3 flex items-center gap-1.5"
+            >
               <PlusCircle className="w-4 h-4" />
               Offer New Trip
             </Button>
@@ -174,10 +180,18 @@ export function DriverTripsView() {
                   <tr className="border-b border-border-subtle bg-surface-muted/60 text-xs uppercase tracking-wider text-content-secondary">
                     <th className="py-3.5 px-4 font-semibold">Route</th>
                     <th className="py-3.5 px-4 font-semibold">Vehicle</th>
-                    <th className="py-3.5 px-4 font-semibold">Departure Time</th>
-                    <th className="py-3.5 px-4 font-semibold text-center">Vacant / Seats</th>
-                    <th className="py-3.5 px-4 font-semibold text-center">Status</th>
-                    <th className="py-3.5 px-4 font-semibold text-right">Action</th>
+                    <th className="py-3.5 px-4 font-semibold">
+                      Departure Time
+                    </th>
+                    <th className="py-3.5 px-4 font-semibold text-center">
+                      Vacant / Seats
+                    </th>
+                    <th className="py-3.5 px-4 font-semibold text-center">
+                      Status
+                    </th>
+                    <th className="py-3.5 px-4 font-semibold text-right">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border-subtle text-content-primary text-xs">
@@ -190,7 +204,10 @@ export function DriverTripsView() {
                       : "N/A";
 
                     return (
-                      <tr key={trip.trip_id} className="hover:bg-surface-muted/40 transition-colors">
+                      <tr
+                        key={trip.trip_id}
+                        className="hover:bg-surface-muted/40 transition-colors"
+                      >
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-2 font-bold text-sm text-content-primary">
                             <span>{trip.trip_origin}</span>
@@ -208,14 +225,20 @@ export function DriverTripsView() {
                           </span>
                         </td>
                         <td className="py-4 px-4 text-center font-semibold">
-                          <span className="text-accent">{trip.vacant_seats}</span> / {trip.available_seats}
+                          <span className="text-accent">
+                            {trip.vacant_seats}
+                          </span>{" "}
+                          / {trip.available_seats}
                         </td>
                         <td className="py-4 px-4 text-center">
                           {renderStatusTag(trip.trip_status)}
                         </td>
                         <td className="py-4 px-4 text-right">
                           <Link href={`/driver/trips/${trip.trip_id}`}>
-                            <Button variant="secondary" className="text-xs py-1 px-3">
+                            <Button
+                              variant="secondary"
+                              className="text-xs py-1 px-3"
+                            >
                               View Details →
                             </Button>
                           </Link>
@@ -232,8 +255,15 @@ export function DriverTripsView() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between border-t border-border-subtle pt-6">
               <p className="text-xs text-content-secondary">
-                Showing Page <span className="font-semibold text-content-primary">{page}</span> of{" "}
-                <span className="font-semibold text-content-primary">{totalPages}</span> ({totalItems} total trips)
+                Showing Page{" "}
+                <span className="font-semibold text-content-primary">
+                  {page}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-content-primary">
+                  {totalPages}
+                </span>{" "}
+                ({totalItems} total trips)
               </p>
 
               <div className="flex items-center gap-2">
@@ -252,7 +282,9 @@ export function DriverTripsView() {
                   variant="secondary"
                   className="text-xs py-1 px-3"
                   disabled={page >= totalPages}
-                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                 >
                   Next
                 </Button>

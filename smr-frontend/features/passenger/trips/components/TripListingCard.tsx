@@ -84,14 +84,14 @@ export function TripListingCard({
 
     const pickupStop =
       selectedPickupStop ||
-      (journeyDetails?.trip_stops && journeyDetails.trip_stops.length > 0
-        ? journeyDetails.trip_stops[0]
+      (availableStopsList.length > 0
+        ? availableStopsList[0]
         : trip.trip_origin);
 
     const dropoffStop =
       selectedDropoffStop ||
-      (journeyDetails?.trip_stops && journeyDetails.trip_stops.length > 0
-        ? journeyDetails.trip_stops[journeyDetails.trip_stops.length - 1]
+      (availableStopsList.length > 0
+        ? availableStopsList[availableStopsList.length - 1]
         : trip.trip_destination);
 
     const flatRoute: [number, number][] =
@@ -278,19 +278,24 @@ export function TripListingCard({
     minute: "2-digit",
   });
 
-  // Calculate current pickup index in trip_stops
+  const availableStopsList =
+    journeyDetails?.available_stops && journeyDetails.available_stops.length > 0
+      ? journeyDetails.available_stops
+      : journeyDetails?.trip_stops || [];
+
+  // Calculate current pickup index in available_stops
   const pickupIndex =
     selectedPickupStop && journeyDetails
-      ? journeyDetails.trip_stops.findIndex(
+      ? availableStopsList.findIndex(
           (s) =>
             s.stop_lat === selectedPickupStop.stop_lat &&
             s.stop_lng === selectedPickupStop.stop_lng,
         )
       : -1;
 
-  // Boarding point options: closest 5 stops to passenger's searched origin (or trip origin)
+  // Boarding point options: closest 5 stops to passenger's searched origin from available_stops
   const availableBoardingStopOptions = (() => {
-    if (!journeyDetails || !journeyDetails.trip_stops.length) return [];
+    if (!journeyDetails || !availableStopsList.length) return [];
 
     const originLng = passengerOrigin
       ? passengerOrigin.lng
@@ -301,7 +306,7 @@ export function TripListingCard({
 
     const originPt = turf.point([originLng, originLat]);
 
-    const stopsWithDist = journeyDetails.trip_stops
+    const stopsWithDist = availableStopsList
       .slice(0, -1) // Exclude final destination as boarding point
       .map((stop, index) => {
         const stopPt = turf.point([stop.stop_lng, stop.stop_lat]);
@@ -326,19 +331,19 @@ export function TripListingCard({
     }));
   })();
 
-  // Calculate current drop-off index in trip_stops
+  // Calculate current drop-off index in available_stops
   const dropoffIndex =
     selectedDropoffStop && journeyDetails
-      ? journeyDetails.trip_stops.findIndex(
+      ? availableStopsList.findIndex(
           (s) =>
             s.stop_lat === selectedDropoffStop.stop_lat &&
             s.stop_lng === selectedDropoffStop.stop_lng,
         )
       : -1;
 
-  // Drop-off point options: closest 5 stops to passenger's searched destination (or trip destination)
+  // Drop-off point options: closest 5 stops to passenger's searched destination from available_stops
   const availableDropoffStopOptions = (() => {
-    if (!journeyDetails || !journeyDetails.trip_stops.length) return [];
+    if (!journeyDetails || !availableStopsList.length) return [];
 
     const destLng = passengerDestination
       ? passengerDestination.lng
@@ -351,7 +356,7 @@ export function TripListingCard({
 
     const currentPickupIdx = pickupIndex >= 0 ? pickupIndex : -1;
 
-    const downstreamStops = journeyDetails.trip_stops
+    const downstreamStops = availableStopsList
       .map((stop, index) => ({ stop, index }))
       .filter((item) => item.index > currentPickupIdx)
       .map((item) => {
@@ -383,7 +388,7 @@ export function TripListingCard({
   const pickupValue =
     selectedPickupStop && journeyDetails
       ? String(
-          journeyDetails.trip_stops.findIndex(
+          availableStopsList.findIndex(
             (s) =>
               s.stop_lat === selectedPickupStop.stop_lat &&
               s.stop_lng === selectedPickupStop.stop_lng,
@@ -395,7 +400,7 @@ export function TripListingCard({
   const dropoffValue =
     selectedDropoffStop && journeyDetails
       ? String(
-          journeyDetails.trip_stops.findIndex(
+          availableStopsList.findIndex(
             (s) =>
               s.stop_lat === selectedDropoffStop.stop_lat &&
               s.stop_lng === selectedDropoffStop.stop_lng,
@@ -473,25 +478,25 @@ export function TripListingCard({
                         const newPickupIndex = Number(val);
                         if (
                           journeyDetails &&
-                          journeyDetails.trip_stops[newPickupIndex]
+                          availableStopsList[newPickupIndex]
                         ) {
-                          const newPickup = journeyDetails.trip_stops[newPickupIndex];
+                          const newPickup = availableStopsList[newPickupIndex];
                           setSelectedPickupStop(newPickup);
 
-                          const currentDropoffIndex = selectedDropoffStop
-                            ? journeyDetails.trip_stops.findIndex(
+                          if (selectedDropoffStop !== null) {
+                            const currentDropoffIndex =
+                              availableStopsList.findIndex(
                                 (s) =>
                                   s.stop_lat === selectedDropoffStop.stop_lat &&
                                   s.stop_lng === selectedDropoffStop.stop_lng,
-                              )
-                            : -1;
+                              );
 
-                          if (currentDropoffIndex <= newPickupIndex) {
-                            const lastStopIndex =
-                              journeyDetails.trip_stops.length - 1;
-                            setSelectedDropoffStop(
-                              journeyDetails.trip_stops[lastStopIndex],
-                            );
+                            if (
+                              currentDropoffIndex !== -1 &&
+                              currentDropoffIndex <= newPickupIndex
+                            ) {
+                              setSelectedDropoffStop(null);
+                            }
                           }
                         }
                       }}
@@ -516,10 +521,10 @@ export function TripListingCard({
                         const index = Number(val);
                         if (
                           journeyDetails &&
-                          journeyDetails.trip_stops[index]
+                          availableStopsList[index]
                         ) {
                           setSelectedDropoffStop(
-                            journeyDetails.trip_stops[index],
+                            availableStopsList[index],
                           );
                         }
                       }}

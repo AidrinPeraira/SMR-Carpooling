@@ -59,7 +59,7 @@ export class GetJourneyDetailsUseCase implements IGetJourneyDetailsUseCase {
       tripId: trip.tripId,
       tripStops: [trip.tripOrigin, ...trip.tripStops, trip.tripDestination],
       tripRoute: [trip.tripRoute],
-      availableStops: [availableStops],
+      availableStops,
       basePrice: matchingRule ? matchingRule.basePrice : 0,
       pricePerKm: matchingRule ? matchingRule.pricePerKm : 0,
     };

@@ -48,9 +48,9 @@ describe("GetJourneyDetailsUseCase", () => {
   };
 
   const mockAvailableStops = [
-    [76.1, 10.1],
-    [76.2, 10.2],
-  ] as [number, number][];
+    { stopLat: 10.1, stopLng: 76.1, stopName: "Stop 1", stopAddress: "Addr 1" },
+    { stopLat: 10.2, stopLng: 76.2, stopName: "Stop 2", stopAddress: "Addr 2" },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -106,7 +106,7 @@ describe("GetJourneyDetailsUseCase", () => {
       tripId: "trip-123",
       tripStops: [mockTripEntity.tripOrigin, mockTripEntity.tripDestination],
       tripRoute: [mockTripEntity.tripRoute],
-      availableStops: [mockAvailableStops],
+      availableStops: mockAvailableStops,
       basePrice: 50,
       pricePerKm: 15,
     });

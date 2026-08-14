@@ -22,7 +22,7 @@ export interface GetJourneyDetailsResult {
   trip_id: string;
   trip_stops: TripStopDTO[];
   trip_route: Route[];
-  available_stops: Route[];
+  available_stops: TripStopDTO[];
   base_price: number;
   price_per_km: number;
 }

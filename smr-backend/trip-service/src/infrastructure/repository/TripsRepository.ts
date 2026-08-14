@@ -148,8 +148,8 @@ export class TripsRepository implements ITripRepository {
         bookingId: b.bookingId,
         passengerId: b.passengerId,
         tripId: b.tripId,
-        pickupPoint: b.pickupPoint as unknown as TripStop,
-        dropOffPoint: b.dropOffPoint as unknown as TripStop,
+        pickupPoint: b.pickupPoint as TripStop,
+        dropOffPoint: b.dropOffPoint as TripStop,
         pickupPlaceId: b.pickupPlaceId,
         dropOffPlaceId: b.dropOffPlaceId,
         distanceKm: b.distanceKm,
@@ -210,10 +210,10 @@ export class TripsRepository implements ITripRepository {
         tripId: trip.tripId,
         driverId: trip.driverId,
         vehicleId: trip.vehicleId,
-        tripOrigin: trip.tripOrigin as unknown as TripStop,
-        tripDestination: trip.tripDestination as unknown as TripStop,
-        tripStops: trip.tripStops as unknown as TripStop[],
-        tripRoute: trip.tripRoute as unknown as Route,
+        tripOrigin: trip.tripOrigin as TripStop,
+        tripDestination: trip.tripDestination as TripStop,
+        tripStops: trip.tripStops as TripStop[],
+        tripRoute: trip.tripRoute as Route,
         tripDistance: trip.tripDistance,
         availableSeats: trip.availableSeats,
         vacantSeats: trip.vacantSeats,
@@ -247,8 +247,8 @@ export class TripsRepository implements ITripRepository {
           bookingId: b.bookingId,
           passengerId: b.passengerId,
           tripId: b.tripId,
-          pickupPoint: b.pickupPoint as unknown as TripStop,
-          dropOffPoint: b.dropOffPoint as unknown as TripStop,
+          pickupPoint: b.pickupPoint as TripStop,
+          dropOffPoint: b.dropOffPoint as TripStop,
           pickupPlaceId: b.pickupPlaceId,
           dropOffPlaceId: b.dropOffPlaceId,
           distanceKm: b.distanceKm,
@@ -291,7 +291,17 @@ export class TripsRepository implements ITripRepository {
   ): Promise<JourneyDetailsPayload | null> {
     const trip = await this._tripModel.findUnique({
       where: { tripId },
-      include: { vehicle: true },
+      include: {
+        vehicle: true,
+        tripPlaces: {
+          include: {
+            place: true,
+          },
+          orderBy: {
+            seqNumber: "asc",
+          },
+        },
+      },
     });
 
     if (!trip || !trip.vehicle) return null;
@@ -315,9 +325,46 @@ export class TripsRepository implements ITripRepository {
       updatedAt: trip.updatedAt,
     };
 
+    // Extract and deduplicate stops from tripPlaces table join
+    const visited = new Set<string>();
+    const availableStops: TripStop[] = [];
+
+    if (trip.tripPlaces && trip.tripPlaces.length > 0) {
+      for (const tp of trip.tripPlaces) {
+        if (!tp.place) continue;
+        const key = `${tp.place.placeLat},${tp.place.placeLng}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          availableStops.push({
+            stopLat: tp.place.placeLat,
+            stopLng: tp.place.placeLng,
+            stopName: tp.place.placeName,
+            stopAddress: tp.place.placeAddress,
+          });
+        }
+      }
+    }
+
+    // Fallback if tripPlaces table is empty
+    if (availableStops.length === 0) {
+      const fallbackStops = [
+        tripEntity.tripOrigin,
+        ...(tripEntity.tripStops || []),
+        tripEntity.tripDestination,
+      ];
+      for (const stop of fallbackStops) {
+        if (!stop) continue;
+        const key = `${stop.stopLat},${stop.stopLng}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          availableStops.push(stop);
+        }
+      }
+    }
+
     return {
       trip: tripEntity,
-      availableStops: trip.tripRoute as unknown as Route,
+      availableStops,
       vehicleType: trip.vehicle.vehicleType as VehicleTypes,
     };
   }
@@ -360,67 +407,165 @@ export class TripsRepository implements ITripRepository {
   async findMatchingTrips(
     dto: ListTripsRequestDTO,
   ): Promise<PaginatedPayload<ListTripsResultDTO[]>> {
-    if (!this._geoIndexingService.searchTrip) {
+    const page = dto.query?.page || 1;
+    const limit = dto.query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    // index locations with buffer
+    const rawOriginIndices =
+      await this._geoIndexingService.locationToAreaIndices(
+        dto.origin.stopLat,
+        dto.origin.stopLng,
+      );
+    const rawDestIndices = await this._geoIndexingService.locationToAreaIndices(
+      dto.destination.stopLat,
+      dto.destination.stopLng,
+    );
+
+    // filter indices with known places in cache/db
+    const validOriginSet = await this._getValidPlaceIndices(rawOriginIndices);
+    const validDestSet = await this._getValidPlaceIndices(rawDestIndices);
+
+    const validOriginIndices = rawOriginIndices.filter((idx) =>
+      validOriginSet.has(idx),
+    );
+    const validDestIndices = rawDestIndices.filter((idx) =>
+      validDestSet.has(idx),
+    );
+
+    // quickly return if there are no matches
+    if (validOriginIndices.length === 0 || validDestIndices.length === 0) {
       return {
         data: [],
         paginationMeta: {
+          currentPage: page,
+          limit,
           totalItems: 0,
           totalPages: 0,
-          currentPage: 1,
-          limit: 10,
         },
       };
     }
 
-    const geoIndexingResults = await this._geoIndexingService.searchTrip({
-      pickupCoords: [dto.origin.stopLng, dto.origin.stopLat],
-      dropOffCoords: [dto.destination.stopLng, dto.destination.stopLat],
+    // find all trips touching origin
+    const originPlaces = await this._tripPlacesModel.findMany({
+      where: {
+        placeIndex: { in: validOriginIndices },
+        tripDate: {
+          gte: dto.time,
+          lt: new Date(
+            new Date(dto.time).setDate(new Date(dto.time).getDate() + 1),
+          ),
+        },
+      },
+      select: { tripId: true, seqNumber: true },
     });
 
-    if (geoIndexingResults.length === 0) {
+    // return if no origin matches
+    if (originPlaces.length === 0) {
       return {
         data: [],
         paginationMeta: {
+          currentPage: page,
+          limit,
           totalItems: 0,
           totalPages: 0,
-          currentPage: 1,
-          limit: 10,
         },
       };
     }
 
-    const matchedTripIds = geoIndexingResults.map((t) => t.tripId);
+    // Map each tripId to its minimum (earliest) sequence number at origin
+    const originTripMap = new Map<string, number>();
+    for (const p of originPlaces) {
+      const prev = originTripMap.get(p.tripId);
+      if (prev === undefined || p.seqNumber < prev) {
+        originTripMap.set(p.tripId, p.seqNumber);
+      }
+    }
+
+    // check for destination places that have the origin trip ids
+    const destPlaces = await this._tripPlacesModel.findMany({
+      where: {
+        placeIndex: { in: validDestIndices },
+        tripId: { in: Array.from(originTripMap.keys()) },
+      },
+      select: { tripId: true, seqNumber: true },
+    });
+
+    // check and find suitable matching trip IDs
+    const matchingTripIds = Array.from(
+      new Set(
+        destPlaces
+          .filter((v) => {
+            const minOrigSeq = originTripMap.get(v.tripId);
+            return minOrigSeq !== undefined && minOrigSeq < v.seqNumber;
+          })
+          .map((v) => v.tripId),
+      ),
+    );
+
+    const totalItems = matchingTripIds.length;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    if (totalItems === 0) {
+      return {
+        data: [],
+        paginationMeta: {
+          currentPage: page,
+          limit,
+          totalItems: 0,
+          totalPages: 0,
+        },
+      };
+    }
+
+    const paginatedTripIds = matchingTripIds.slice(skip, skip + limit);
+
     const trips = await this._tripModel.findMany({
       where: {
-        tripId: { in: matchedTripIds },
+        tripId: { in: paginatedTripIds },
         vacantSeats: { gt: 0 },
         tripStatus: TripStatus.SCHEDULED,
       },
-      include: {
-        vehicle: true,
-      },
     });
+
+    const vehicleIds = [...new Set(trips.map((t) => t.vehicleId))];
+    const driverIds = [...new Set(trips.map((t) => t.driverId))];
+
+    const [vehicles, drivers] = await Promise.all([
+      prisma.vehicle.findMany({
+        where: { vehicleId: { in: vehicleIds } },
+      }),
+      prisma.driver.findMany({
+        where: { driverId: { in: driverIds } },
+      }),
+    ]);
+
+    const vehicleTypeMap = new Map(
+      vehicles.map((v) => [v.vehicleId, v.vehicleType]),
+    );
+    const driverNameMap = new Map(
+      drivers.map((d) => [d.driverId, `${d.firstName} ${d.lastName}`.trim()]),
+    );
 
     const data: ListTripsResultDTO[] = trips.map((trip) => ({
       tripId: trip.tripId,
-      driverName: (trip as any).vehicle?.driver
-        ? `${(trip as any).vehicle.driver.firstName} ${(trip as any).vehicle.driver.lastName}`.trim()
-        : "Driver",
       tripOrigin: trip.tripOrigin as unknown as TripStop,
       tripDestination: trip.tripDestination as unknown as TripStop,
       tripDistance: trip.tripDistance,
+      driverName: driverNameMap.get(trip.driverId) || "Driver",
       seatsAvailable: trip.vacantSeats,
       time: trip.startTime,
-      vehicleType: trip.vehicle?.vehicleType as VehicleTypes,
+      vehicleType: (vehicleTypeMap.get(trip.vehicleId) ||
+        "car") as VehicleTypes,
     }));
 
     return {
       data,
       paginationMeta: {
-        totalItems: data.length,
-        totalPages: 1,
-        currentPage: 1,
-        limit: 10,
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
       },
     };
   }
@@ -430,107 +575,97 @@ export class TripsRepository implements ITripRepository {
    * @param trip Trip entity
    */
   async save(trip: TripEntity): Promise<void> {
-    const placesToInsert: {
-      placeId: string;
-      placeName: string;
-      coordinates: [number, number];
-    }[] = [];
+    // with buffer for corridor
+    const placesWithIndex = (
+      await Promise.all(
+        trip.tripRoute.map(async (point, i) => {
+          const areaIndices =
+            await this._geoIndexingService.locationToAreaIndices(
+              point[1],
+              point[0],
+            );
+          return areaIndices.map((placeIndex) => ({
+            placeIndex,
+            tripId: trip.tripId,
+            tripDate: trip.startTime,
+            seqNumber: i,
+            isCompleted: false,
+          }));
+        }),
+      )
+    ).flat();
 
-    if (this._placesCacheStore?.get) {
-      const placeCacheRecordOrigin = await this._placesCacheStore.get(
-        trip.tripOrigin.stopName,
-      );
-      if (!placeCacheRecordOrigin) {
-        throw new Error("Place cache record not found");
-      }
-      placesToInsert.push({
-        placeId: placeCacheRecordOrigin.placeId,
-        placeName: trip.tripOrigin.stopName,
-        coordinates: [
-          placeCacheRecordOrigin.location.coordinates[0],
-          placeCacheRecordOrigin.location.coordinates[1],
-        ],
-      });
+    // filter to remove duplicate cells for points
+    const visited = new Set<string>();
+    const uniqueTripPlaces = placesWithIndex.filter((v) => {
+      const key = v.placeIndex;
+      if (visited.has(key)) return false;
+      visited.add(key);
+      return true;
+    });
 
-      const placeCacheRecordDestination = await this._placesCacheStore.get(
-        trip.tripDestination.stopName,
-      );
-      if (!placeCacheRecordDestination) {
-        throw new Error("Place cache record not found");
-      }
-      placesToInsert.push({
-        placeId: placeCacheRecordDestination.placeId,
-        placeName: trip.tripDestination.stopName,
-        coordinates: [
-          placeCacheRecordDestination.location.coordinates[0],
-          placeCacheRecordDestination.location.coordinates[1],
-        ],
-      });
+    // filter this according to places data in cache
+    const tripIndices = uniqueTripPlaces.map((v) => v.placeIndex);
+    const validIndicesSet = await this._getValidPlaceIndices(tripIndices);
 
-      for (const stop of trip.tripStops) {
-        const placeCacheRecord = await this._placesCacheStore.get(
-          stop.stopName,
-        );
-        if (!placeCacheRecord) {
-          throw new Error("Place cache record not found");
-        }
-        placesToInsert.push({
-          placeId: placeCacheRecord.placeId,
-          placeName: stop.stopName,
-          coordinates: [
-            placeCacheRecord.location.coordinates[0],
-            placeCacheRecord.location.coordinates[1],
-          ],
-        });
-      }
-    }
+    const filteredTripPlaces = uniqueTripPlaces.filter((place) =>
+      validIndicesSet.has(place.placeIndex),
+    );
 
-    await prisma.$transaction(async (tx) => {
-      await tx.trip.create({
+    // create db entries
+    await prisma.$transaction([
+      this._tripModel.create({
         data: {
           tripId: trip.tripId,
           driverId: trip.driverId,
           vehicleId: trip.vehicleId,
-          tripOrigin: trip.tripOrigin as unknown as object,
-          tripDestination: trip.tripDestination as unknown as object,
-          tripStops: trip.tripStops as unknown as object,
-          tripRoute: trip.tripRoute as unknown as object,
+          tripOrigin: trip.tripOrigin as any,
+          tripDestination: trip.tripDestination as any,
+          tripStops: trip.tripStops as any,
+          tripRoute: trip.tripRoute as any,
           tripDistance: trip.tripDistance,
           availableSeats: trip.availableSeats,
           vacantSeats: trip.vacantSeats,
           tripTags: trip.tripTags,
           startTime: trip.startTime,
           totalSeats: trip.totalSeats,
-          tripStatus: trip.tripStatus,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          tripStatus: trip.tripStatus as any,
+          createdAt: trip.createdAt,
+          updatedAt: trip.updatedAt,
+        },
+      }),
+      this._tripPlacesModel.createMany({
+        data: filteredTripPlaces,
+      }),
+    ]);
+  }
+
+  /**
+   * Checks Redis for valid place indices.
+   * If the Redis cache key does not exist yet, fetches all place rows from the database,
+   * caches them in Redis via `addPlaceIndices`, and then performs the index check.
+   */
+  private async _getValidPlaceIndices(indices: string[]): Promise<Set<string>> {
+    if (indices.length === 0) return new Set();
+
+    const cacheExists = await this._placesCacheStore.hasCache();
+
+    if (!cacheExists) {
+      const allPlaces = await prisma.places.findMany({
+        select: {
+          placeIndex: true,
         },
       });
 
-      for (let i = 0; i < placesToInsert.length; i++) {
-        const place = placesToInsert[i];
-        if (place) {
-          await tx.tripPlaces.create({
-            data: {
-              tripId: trip.tripId,
-              placeIndex: place.placeId,
-              seqNumber: i + 1,
-              tripDate: trip.startTime,
-            },
-          });
-        }
+      if (allPlaces.length > 0) {
+        const allIndices = allPlaces.map((p) => p.placeIndex);
+        await this._placesCacheStore.addPlaceIndices(allIndices);
       }
-    });
-
-    if (this._geoIndexingService?.addTripToIndex) {
-      await this._geoIndexingService.addTripToIndex({
-        tripId: trip.tripId,
-        tripRoute: trip.tripRoute,
-        stops: placesToInsert.map((p) => ({
-          placeId: p.placeId,
-          coordinates: p.coordinates,
-        })),
-      });
     }
+
+    const cachedStatus =
+      await this._placesCacheStore.checkPlaceIndices(indices);
+
+    return new Set(indices.filter((_, i) => cachedStatus[i] === 1));
   }
 }

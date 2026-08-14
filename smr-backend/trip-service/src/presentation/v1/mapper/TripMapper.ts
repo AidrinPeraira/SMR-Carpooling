@@ -113,9 +113,19 @@ export class TripMapper {
   ): GetJourneyDetailsResult {
     return {
       trip_id: dto.tripId,
-      trip_stops: dto.tripStops.map((stop) => this.toTripStopDTO(stop)),
+      trip_stops: dto.tripStops.map((stop) => ({
+        stop_lat: stop.stopLat,
+        stop_lng: stop.stopLng,
+        stop_name: stop.stopName,
+        stop_address: stop.stopAddress,
+      })),
       trip_route: dto.tripRoute,
-      available_stops: dto.availableStops,
+      available_stops: dto.availableStops.map((stop) => ({
+        stop_lat: stop.stopLat,
+        stop_lng: stop.stopLng,
+        stop_name: stop.stopName,
+        stop_address: stop.stopAddress,
+      })),
       base_price: dto.basePrice,
       price_per_km: dto.pricePerKm,
     };

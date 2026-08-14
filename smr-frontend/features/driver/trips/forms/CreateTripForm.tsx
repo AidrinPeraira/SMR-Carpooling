@@ -19,7 +19,7 @@ import {
   Tag,
   useToast,
 } from "@sharemyride/ui";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -40,6 +40,7 @@ export function CreateTripForm() {
   const map = useMap();
   const toast = useToast();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [stopId, setStopId] = useState<number[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<{
@@ -296,6 +297,8 @@ export function CreateTripForm() {
           }
         }
         setErrors(errMap);
+
+        await queryClient.invalidateQueries({ queryKey: ["userProfile"] });
         toast("Please fix form errors before submitting", { variant: "warn" });
         return;
       }
