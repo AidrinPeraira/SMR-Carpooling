@@ -2,12 +2,8 @@ import { IGetAllApplicationsUseCase } from "#/application/interfaces/use-case/ad
 import { IPocessApplicationUseCase } from "#/application/interfaces/use-case/admin/application/IProcessApplicationUseCase";
 import { IGetApplicationDetailsUseCase } from "#/application/interfaces/use-case/application/IGetApplicationDetailsUseCase";
 import { IAdminApplicationControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminApplicationControllerV1";
-import {
-  toAdminApplicationListResult,
-  toProcessApplicationRequestDTO,
-} from "#/presentation/v1/mapper/admin/AdminApplicationMapper";
-import { toApplicationDetailsResult } from "#/presentation/v1/mapper/ApplicationMapper";
-import { toGetAllApplicationsRequestQuery } from "#/presentation/v1/mapper/QueryMapper";
+import { AdminApplicationMapper } from "#/presentation/v1/mapper/admin/AdminApplicationMapper";
+import { ApplicationMapper } from "#/presentation/v1/mapper/ApplicationMapper";
 import {
   ApplicationDetailsResult,
   ApplicationIdParamSchema,
@@ -17,8 +13,10 @@ import {
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  ProcessApplicationRequest,
   ProcessApplicationSchema,
-  ProcessApplicationSchemaType,
+  QueryRequest,
+  QuerySchema,
   zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
@@ -35,12 +33,13 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
     const adminId = req.headers["x-user-id"] as string;
     this._logger.info("Admin fetching all applications: ", { adminId });
 
-    const query = toGetAllApplicationsRequestQuery(req.query);
+    const queryParams = zodParser<QueryRequest>(QuerySchema, req.query);
+    const query = AdminApplicationMapper.toGetAllApplicationsRequestQuery(queryParams);
     const result = await this._getAllApplicationsUseCase.execute(query);
 
     res.status(HttpStatusCodes.Ok).json(
       makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, {
-        data: result.data.map(toAdminApplicationListResult),
+        data: result.data.map(AdminApplicationMapper.toAdminApplicationListResult),
         paginationMeta: result.paginationMeta,
       }),
     );
@@ -64,7 +63,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       .json(
         makeSuccessResponse<ApplicationDetailsResult>(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toApplicationDetailsResult(result),
+          ApplicationMapper.toApplicationDetailsResult(result),
         ),
       );
   }
@@ -72,7 +71,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
   async processApplication(req: Request, res: Response): Promise<void> {
     const adminId = req.headers["x-user-id"] as string;
 
-    const body = zodParser<ProcessApplicationSchemaType>(
+    const body = zodParser<ProcessApplicationRequest>(
       ProcessApplicationSchema,
       req.body,
     );
@@ -82,7 +81,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       status: body.application_status,
     });
 
-    const dto = toProcessApplicationRequestDTO(body, adminId);
+    const dto = AdminApplicationMapper.toProcessApplicationRequestDTO(body, adminId);
     await this._processApplicationUseCase.execute(dto);
 
     res

@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 import { IAdminUserControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminUserControllerV1";
-import {
-  toGetAllUsersRequestQuery,
-  toGetAllUsersResult,
-} from "#/presentation/v1/mapper/QueryMapper";
+import { AdminUsersMapper } from "#/presentation/v1/mapper/admin/AdminUsersMapper";
 import {
   AccountStatus,
   ApplicationError,
@@ -14,6 +11,8 @@ import {
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  QueryRequest,
+  QuerySchema,
   UserSuccessMessage,
   zodParser,
   UserIdParamSchema,
@@ -21,7 +20,6 @@ import {
 } from "@sharemyride/shared";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
 import { IGetFullUserProfileUseCase } from "#/application/interfaces/use-case/admin/users/IGetFullUserProfileUseCase";
-import { toGetFullUserProfileResult } from "#/presentation/v1/mapper/admin/AdminUsersMapper";
 
 export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   constructor(
@@ -32,7 +30,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   ) {}
 
   /**
-   * This constroller method takes the user query fields from the request query params
+   * This controller method takes the user query fields from the request query params
    * and maps into into the shape needed by domain and calls the use case to
    * get all the users that match, and sends it back to the client
    *
@@ -40,7 +38,8 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
    * @param res - Express response object
    */
   async getAllUsers(req: Request, res: Response): Promise<void> {
-    const query = toGetAllUsersRequestQuery(req.query);
+    const queryParams = zodParser<QueryRequest>(QuerySchema, req.query);
+    const query = AdminUsersMapper.toGetAllUsersRequestQuery(queryParams);
 
     this._logger.info("Fetching all users. Admin: ", {
       adminUserId: req.headers["x-user-id"],
@@ -50,16 +49,16 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
 
     res.status(HttpStatusCodes.Ok).json(
       makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, {
-        data: result.data.map((user) => toGetAllUsersResult(user)),
+        data: result.data.map((user) => AdminUsersMapper.toGetAllUsersResult(user)),
         paginationMeta: result.paginationMeta,
       }),
     );
   }
 
   /**
-   * This method gets the user id from request prams
+   * This method gets the user id from request params
    * validates it using schema parser
-   *  and calls the use case to get full user profile details for tha admin
+   * and calls the use case to get full user profile details for the admin
    *
    * @param req - Express request object
    * @param res - Express response object
@@ -82,14 +81,14 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
       .json(
         makeSuccessResponse(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toGetFullUserProfileResult(result),
+          AdminUsersMapper.toGetFullUserProfileResult(result),
         ),
       );
   }
 
   /**
-   * This controller method gets the user id from  request path params and
-   * calls the use case to chagne the user status to blocked.
+   * This controller method gets the user id from request path params and
+   * calls the use case to change the user status to blocked.
    *
    * @param req - Express request object
    * @param res - Express response object
@@ -120,8 +119,8 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   }
 
   /**
-   * This controller method gets the user id from  request path params and
-   * calls the use case to chagne the user status to unblocked / active.
+   * This controller method gets the user id from request path params and
+   * calls the use case to change the user status to unblocked / active.
    *
    * @param req - Express request object
    * @param res - Express response object
