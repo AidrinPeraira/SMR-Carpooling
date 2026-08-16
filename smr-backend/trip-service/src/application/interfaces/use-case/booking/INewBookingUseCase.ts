@@ -1,4 +1,4 @@
-import { NewBookingRequestDTO } from "#/application/dto/trip/BookingDTO";
+import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 
 /**
  * this use case calculates the trip cost

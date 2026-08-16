@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { IDriverListTripsUseCase } from "#/application/interfaces/use-case/driver/IDriverListTripsUseCase";
-import { IDriverGetTripDetailsUseCase } from "#/application/interfaces/use-case/driver/IDriverTripDetailsUseCase";
+import { IDriverListTripsUseCase } from "#/application/interfaces/use-case/trip/IDriverListTripsUseCase";
+import { IDriverGetTripDetailsUseCase } from "#/application/interfaces/use-case/trip/IDriverTripDetailsUseCase";
 import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICreateTripUseCase";
 import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";

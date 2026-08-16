@@ -1,4 +1,4 @@
-import { GetBookingDetailsResultDTO } from "#/application/dto/driver/BookingDetailsDTO";
+import { GetBookingDetailsResultDTO } from "#/application/dto/booking/DriverBookingDetailsDTO";
 
 export interface IDriverGetBookingDetailsUseCase {
   execute(

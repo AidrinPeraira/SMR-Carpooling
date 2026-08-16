@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { DriverListTripsUseCase } from "#/application/use-case/driver/DriverListTripsUseCase";
+import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { TripStatus } from "@sharemyride/shared";
 

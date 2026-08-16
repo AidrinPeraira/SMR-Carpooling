@@ -2,13 +2,13 @@ import {
   DriverGetAllTripsQueryDTO,
   DriverGetTripDetailsResponseDTO,
   DriverListTripsResponseDTO,
-} from "#/application/dto/driver/DriverTripsDTO";
+} from "#/application/dto/trip/DriverTripsDetailsDTO";
 import { CreateTripRequestDTO } from "#/application/dto/trip/CreateTripRequestDTO";
 import {
   GetJourneyDetailsResponseDTO,
   ListTripsRequestDTO,
   ListTripsResultDTO,
-} from "#/application/dto/trip/ListTripsDTO";
+} from "#/application/dto/trip/PassengerListTripsDTO";
 import {
   CreateTripSchemaType,
   DriverGetTripsQuerySchemaType,

@@ -1,4 +1,4 @@
-import { GetJourneyDetailsResponseDTO } from "#/application/dto/trip/ListTripsDTO";
+import { GetJourneyDetailsResponseDTO } from "#/application/dto/trip/PassengerListTripsDTO";
 import { IPricingRulesRepository } from "#/application/interfaces/repository/IPricingRulesRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IConfigurationStore } from "#/application/interfaces/store/IConfigurationsStore";

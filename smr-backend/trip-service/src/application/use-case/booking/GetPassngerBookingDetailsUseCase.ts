@@ -1,9 +1,9 @@
-import { GetPassengerBookingDetailsResultDTO } from "#/application/dto/passenger/BookingDetailsDTO";
+import { GetPassengerBookingDetailsResultDTO } from "#/application/dto/booking/PassengerBookingDetailsDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IVehicleRepository } from "#/application/interfaces/repository/IVehicleRepository";
-import { IGetPassngerBookingDetailsUseCase } from "#/application/interfaces/use-case/passenger/IGetPassengerBookingDetailsUseCase";
+import { IGetPassngerBookingDetailsUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerBookingDetailsUseCase";
 import {
   ApplicationError,
   BookingErrorMessage,

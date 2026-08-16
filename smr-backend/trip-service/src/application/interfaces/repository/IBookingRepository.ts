@@ -1,11 +1,11 @@
 import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
-} from "#/application/dto/driver/BookingDetailsDTO";
+} from "#/application/dto/booking/DriverBookingDetailsDTO";
 import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
-} from "#/application/dto/passenger/BookingDetailsDTO";
+} from "#/application/dto/booking/PassengerBookingDetailsDTO";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { BookingStatus, PaginatedPayload } from "@sharemyride/shared";
 

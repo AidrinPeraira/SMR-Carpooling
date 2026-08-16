@@ -1,4 +1,4 @@
-import { GetJourneyDetailsResponseDTO } from "#/application/dto/trip/ListTripsDTO";
+import { GetJourneyDetailsResponseDTO } from "#/application/dto/trip/PassengerListTripsDTO";
 
 /**
  * This use case returns additional details needed for route

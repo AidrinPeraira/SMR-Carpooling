@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { WithdrawBookingUseCase } from "#/application/use-case/passenger/WithdrawBookingUseCase";
+import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { ApplicationError, BookingStatus } from "@sharemyride/shared";
 

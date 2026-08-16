@@ -1,9 +1,9 @@
 import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
-} from "#/application/dto/passenger/BookingDetailsDTO";
+} from "#/application/dto/booking/PassengerBookingDetailsDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
-import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case/passenger/IPassengerListBookingsUseCase";
+import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case/booking/IPassengerListBookingsUseCase";
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**

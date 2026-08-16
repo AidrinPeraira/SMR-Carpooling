@@ -1,9 +1,9 @@
 import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
-} from "#/application/dto/driver/BookingDetailsDTO";
+} from "#/application/dto/booking/DriverBookingDetailsDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
-import { IDriverListAllBookingsUseCase } from "#/application/interfaces/use-case/driver/IDriverListAllBookingsUseCase";
+import { IDriverListAllBookingsUseCase } from "#/application/interfaces/use-case/booking/IDriverListAllBookingsUseCase";
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**

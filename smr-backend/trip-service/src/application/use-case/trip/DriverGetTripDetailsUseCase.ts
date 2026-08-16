@@ -1,6 +1,6 @@
-import { DriverGetTripDetailsResponseDTO } from "#/application/dto/driver/DriverTripsDTO";
+import { DriverGetTripDetailsResponseDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
-import { IDriverGetTripDetailsUseCase } from "#/application/interfaces/use-case/driver/IDriverTripDetailsUseCase";
+import { IDriverGetTripDetailsUseCase } from "#/application/interfaces/use-case/trip/IDriverTripDetailsUseCase";
 import {
   ApplicationError,
   BookingErrorMessage,

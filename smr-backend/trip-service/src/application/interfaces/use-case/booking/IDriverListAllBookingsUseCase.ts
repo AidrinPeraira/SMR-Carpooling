@@ -1,7 +1,7 @@
 import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
-} from "#/application/dto/driver/BookingDetailsDTO";
+} from "#/application/dto/booking/DriverBookingDetailsDTO";
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**

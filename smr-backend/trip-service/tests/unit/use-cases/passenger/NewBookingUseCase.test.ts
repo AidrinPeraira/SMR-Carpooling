@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { NewBookingUseCase } from "#/application/use-case/passenger/NewBookingUseCase";
+import { NewBookingUseCase } from "#/application/use-case/booking/NewBookingUseCase";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IConfigurationStore } from "#/application/interfaces/store/IConfigurationsStore";
 import { IPricingRulesRepository } from "#/application/interfaces/repository/IPricingRulesRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
-import { NewBookingRequestDTO } from "#/application/dto/trip/BookingDTO";
+import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import {
   ApplicationError,
   BookingStatus,

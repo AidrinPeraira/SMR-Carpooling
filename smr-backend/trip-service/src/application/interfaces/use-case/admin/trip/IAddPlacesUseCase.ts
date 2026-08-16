@@ -1,4 +1,4 @@
-import { AddPlacesRequestDTO } from "#/application/dto/trip/AddPlacesRequestDTO";
+import { AddPlacesRequestDTO } from "#/application/dto/admin/AddPlacesRequestDTO";
 
 /**
  * This use case adds a list of predefined places to

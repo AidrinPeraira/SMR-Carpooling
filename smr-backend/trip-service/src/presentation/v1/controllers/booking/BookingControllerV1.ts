@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { IDriverAcceptBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverAcceptBookingUseCase";
-import { IDriverGetBookingDetailsUseCase } from "#/application/interfaces/use-case/driver/IDriverGetBookingDetailsUseCase";
-import { IDriverListAllBookingsUseCase } from "#/application/interfaces/use-case/driver/IDriverListAllBookingsUseCase";
-import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverRejectBookingUseCase";
-import { IGetPassngerBookingDetailsUseCase } from "#/application/interfaces/use-case/passenger/IGetPassengerBookingDetailsUseCase";
-import { INewBookingUseCase } from "#/application/interfaces/use-case/passenger/INewBookingUseCase";
-import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case/passenger/IPassengerListBookingsUseCase";
-import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/passenger/IWithdrawBookingUseCase";
+import { IDriverAcceptBookingUseCase } from "#/application/interfaces/use-case/booking/IDriverAcceptBookingUseCase";
+import { IDriverGetBookingDetailsUseCase } from "#/application/interfaces/use-case/booking/IDriverGetBookingDetailsUseCase";
+import { IDriverListAllBookingsUseCase } from "#/application/interfaces/use-case/booking/IDriverListAllBookingsUseCase";
+import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/booking/IDriverRejectBookingUseCase";
+import { IGetPassngerBookingDetailsUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerBookingDetailsUseCase";
+import { INewBookingUseCase } from "#/application/interfaces/use-case/booking/INewBookingUseCase";
+import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case/booking/IPassengerListBookingsUseCase";
+import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/booking/IWithdrawBookingUseCase";
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
 import { BookingMapper } from "#/presentation/v1/mapper/BookingMapper";
 import {

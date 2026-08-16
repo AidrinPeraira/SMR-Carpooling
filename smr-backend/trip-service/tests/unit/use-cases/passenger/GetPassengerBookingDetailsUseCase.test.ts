@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/passenger/GetPassngerBookingDetailsUseCase";
+import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/booking/GetPassngerBookingDetailsUseCase";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";

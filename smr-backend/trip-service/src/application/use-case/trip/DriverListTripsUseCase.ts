@@ -1,9 +1,9 @@
 import {
   DriverGetAllTripsQueryDTO,
   DriverListTripsResponseDTO,
-} from "#/application/dto/driver/DriverTripsDTO";
+} from "#/application/dto/trip/DriverTripsDetailsDTO";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
-import { IDriverListTripsUseCase } from "#/application/interfaces/use-case/driver/IDriverListTripsUseCase";
+import { IDriverListTripsUseCase } from "#/application/interfaces/use-case/trip/IDriverListTripsUseCase";
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**

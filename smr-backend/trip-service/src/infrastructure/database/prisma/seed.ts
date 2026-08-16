@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { AddPlacesRequestDTO } from "#/application/dto/trip/AddPlacesRequestDTO";
-import { AddPlacesUseCase } from "#/application/use-case/trip/AddPlacesUseCase";
+import { AddPlacesRequestDTO } from "#/application/dto/admin/AddPlacesRequestDTO";
+import { AddPlacesUseCase } from "#/application/use-case/admin/trip/AddPlacesUseCase";
 import { PlacesRepository } from "#/infrastructure/repository/PlacesRepository";
 import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingService";
 import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";

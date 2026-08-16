@@ -1,6 +1,6 @@
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
-import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverRejectBookingUseCase";
+import { IDriverAcceptBookingUseCase } from "#/application/interfaces/use-case/booking/IDriverAcceptBookingUseCase";
 import {
   ApplicationError,
   BookingErrorMessage,
@@ -11,10 +11,12 @@ import {
 } from "@sharemyride/shared";
 
 /**
- * This use case rejects a passenger's booking request to join a trip.
- * Verifies booking existence, driver ownership, and updates status to REJECTED.
+ * This use case accepts a passenger's booking request to join a trip.
+ * Verifies booking status, driver ownership, seat availability, and sets status to payment_pending.
  */
-export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
+export class DriverAcceptBookingUseCase
+  implements IDriverAcceptBookingUseCase
+{
   constructor(
     private readonly _bookingRepository: IBookingRepository,
     private readonly _tripRepository: ITripRepository,
@@ -30,7 +32,7 @@ export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
         {
-          location: "DriverRejectBookingUseCase",
+          location: "DriverAcceptBookingUseCase",
           description: `Booking not found with bookingId: ${bookingId}`,
         },
       );
@@ -43,7 +45,7 @@ export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
         {
-          location: "DriverRejectBookingUseCase",
+          location: "DriverAcceptBookingUseCase",
           description: `Booking status is '${booking.status}', expected '${BookingStatus.REQUESTED}'`,
         },
       );
@@ -58,15 +60,28 @@ export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
         {
-          location: "DriverRejectBookingUseCase",
+          location: "DriverAcceptBookingUseCase",
           description: `Trip not found or does not belong to driver: ${driverId}`,
+        },
+      );
+    }
+
+    if (trip.vacantSeats < booking.seatCount) {
+      throw new ApplicationError(
+        BookingErrorMessage.INSUFFICIENT_SEATS,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "DriverAcceptBookingUseCase",
+          description: `Requested seats (${booking.seatCount}) exceed available vacant seats (${trip.vacantSeats})`,
         },
       );
     }
 
     await this._bookingRepository.updateStatus(
       bookingId,
-      BookingStatus.REJECTED,
+      BookingStatus.PAYMENT_PENDING,
     );
   }
 }

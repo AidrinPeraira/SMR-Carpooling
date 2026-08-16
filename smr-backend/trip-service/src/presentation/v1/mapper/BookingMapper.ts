@@ -2,13 +2,13 @@ import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
   GetBookingDetailsResultDTO,
-} from "#/application/dto/driver/BookingDetailsDTO";
+} from "#/application/dto/booking/DriverBookingDetailsDTO";
 import {
   GetPassengerBookingDetailsResultDTO,
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
-} from "#/application/dto/passenger/BookingDetailsDTO";
-import { NewBookingRequestDTO } from "#/application/dto/trip/BookingDTO";
+} from "#/application/dto/booking/PassengerBookingDetailsDTO";
+import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
   BookingStatus,

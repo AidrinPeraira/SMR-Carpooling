@@ -45,7 +45,7 @@ import { BookingsRepository } from "#/infrastructure/repository/BookingsReposito
 import { CreateTripUseCase } from "#/application/use-case/trip/CreateTripUseCase";
 import { ListTripsUseCase } from "#/application/use-case/trip/ListTripsUseCase";
 import { GetJourneyDetailsUseCase } from "#/application/use-case/trip/GetJourneyDetailsUseCase";
-import { NewBookingUseCase } from "#/application/use-case/passenger/NewBookingUseCase";
+import { NewBookingUseCase } from "#/application/use-case/booking/NewBookingUseCase";
 import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
 import { BookingControllerV1 } from "#/presentation/v1/controllers/booking/BookingControllerV1";
 import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
@@ -150,13 +150,13 @@ const eventBusInstance = new EventBus(
   eventDispatcher,
 );
 
-import { DriverAcceptBookingUseCase } from "#/application/use-case/driver/DriverAcceptBookingUseCase";
-import { DriverGetBookingDetailsUseCase } from "#/application/use-case/driver/DriverGetBookingDetailsUseCase";
-import { DriverListAllBookingsUseCase } from "#/application/use-case/driver/DriverListAllBookingUseCase";
-import { DriverRejectBookingUseCase } from "#/application/use-case/driver/DriverRejectBookingUseCase";
-import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/passenger/GetPassngerBookingDetailsUseCase";
-import { PassengerListBookingsUseCase } from "#/application/use-case/passenger/PassengerListBookingsUseCase";
-import { WithdrawBookingUseCase } from "#/application/use-case/passenger/WithdrawBookingUseCase";
+import { DriverAcceptBookingUseCase } from "#/application/use-case/booking/DriverAcceptBookingUseCase";
+import { DriverGetBookingDetailsUseCase } from "#/application/use-case/booking/DriverGetBookingDetailsUseCase";
+import { DriverListAllBookingsUseCase } from "#/application/use-case/booking/DriverListAllBookingUseCase";
+import { DriverRejectBookingUseCase } from "#/application/use-case/booking/DriverRejectBookingUseCase";
+import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/booking/GetPassngerBookingDetailsUseCase";
+import { PassengerListBookingsUseCase } from "#/application/use-case/booking/PassengerListBookingsUseCase";
+import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
 
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,
@@ -256,8 +256,8 @@ const vehicleControllerV1 = new VehicleControllerV1(
   getDriverVehiclesUseCase,
 );
 
-import { DriverGetTripDetailsUseCase } from "#/application/use-case/driver/DriverGetTripDetailsUseCase";
-import { DriverListTripsUseCase } from "#/application/use-case/driver/DriverListTripsUseCase";
+import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
+import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
 
 const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
 const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(

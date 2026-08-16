@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { PassengerListBookingsUseCase } from "#/application/use-case/passenger/PassengerListBookingsUseCase";
+import { PassengerListBookingsUseCase } from "#/application/use-case/booking/PassengerListBookingsUseCase";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 
 describe("PassengerListBookingsUseCase", () => {

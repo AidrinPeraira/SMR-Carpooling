@@ -1,4 +1,4 @@
-import { NewBookingRequestDTO } from "#/application/dto/trip/BookingDTO";
+import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
@@ -6,7 +6,7 @@ import { IPassengerRepository } from "#/application/interfaces/repository/IPasse
 import { IPricingRulesRepository } from "#/application/interfaces/repository/IPricingRulesRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IConfigurationStore } from "#/application/interfaces/store/IConfigurationsStore";
-import { INewBookingUseCase } from "#/application/interfaces/use-case/passenger/INewBookingUseCase";
+import { INewBookingUseCase } from "#/application/interfaces/use-case/booking/INewBookingUseCase";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import {
   ApplicationError,

@@ -1,6 +1,6 @@
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
-import { IDriverAcceptBookingUseCase } from "#/application/interfaces/use-case/driver/IDriverAcceptBookingUseCase";
+import { IDriverRejectBookingUseCase } from "#/application/interfaces/use-case/booking/IDriverRejectBookingUseCase";
 import {
   ApplicationError,
   BookingErrorMessage,
@@ -11,12 +11,10 @@ import {
 } from "@sharemyride/shared";
 
 /**
- * This use case accepts a passenger's booking request to join a trip.
- * Verifies booking status, driver ownership, seat availability, and sets status to payment_pending.
+ * This use case rejects a passenger's booking request to join a trip.
+ * Verifies booking existence, driver ownership, and updates status to REJECTED.
  */
-export class DriverAcceptBookingUseCase
-  implements IDriverAcceptBookingUseCase
-{
+export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
   constructor(
     private readonly _bookingRepository: IBookingRepository,
     private readonly _tripRepository: ITripRepository,
@@ -32,7 +30,7 @@ export class DriverAcceptBookingUseCase
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
         {
-          location: "DriverAcceptBookingUseCase",
+          location: "DriverRejectBookingUseCase",
           description: `Booking not found with bookingId: ${bookingId}`,
         },
       );
@@ -45,7 +43,7 @@ export class DriverAcceptBookingUseCase
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
         {
-          location: "DriverAcceptBookingUseCase",
+          location: "DriverRejectBookingUseCase",
           description: `Booking status is '${booking.status}', expected '${BookingStatus.REQUESTED}'`,
         },
       );
@@ -60,28 +58,15 @@ export class DriverAcceptBookingUseCase
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
         {
-          location: "DriverAcceptBookingUseCase",
+          location: "DriverRejectBookingUseCase",
           description: `Trip not found or does not belong to driver: ${driverId}`,
-        },
-      );
-    }
-
-    if (trip.vacantSeats < booking.seatCount) {
-      throw new ApplicationError(
-        BookingErrorMessage.INSUFFICIENT_SEATS,
-        HttpStatusCodes.BadRequest,
-        ErrorCode.INPUT_FORBIDDEN,
-        ErrorDetails.INPUT_FORBIDDEN,
-        {
-          location: "DriverAcceptBookingUseCase",
-          description: `Requested seats (${booking.seatCount}) exceed available vacant seats (${trip.vacantSeats})`,
         },
       );
     }
 
     await this._bookingRepository.updateStatus(
       bookingId,
-      BookingStatus.PAYMENT_PENDING,
+      BookingStatus.REJECTED,
     );
   }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { DriverRejectBookingUseCase } from "#/application/use-case/driver/DriverRejectBookingUseCase";
+import { DriverRejectBookingUseCase } from "#/application/use-case/booking/DriverRejectBookingUseCase";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import {

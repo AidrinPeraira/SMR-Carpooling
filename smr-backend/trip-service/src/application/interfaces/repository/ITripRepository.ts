@@ -1,8 +1,8 @@
-import { DriverGetAllTripsQueryDTO } from "#/application/dto/driver/DriverTripsDTO";
+import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
-} from "#/application/dto/trip/ListTripsDTO";
+} from "#/application/dto/trip/PassengerListTripsDTO";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { TripEntity } from "#/domain/entities/TripEntity";
 import { VehicleEntity } from "#/domain/entities/VehicleEntity";

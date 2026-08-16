@@ -1,5 +1,5 @@
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
-import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/passenger/IWithdrawBookingUseCase";
+import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/booking/IWithdrawBookingUseCase";
 import {
   ApplicationError,
   BookingErrorMessage,

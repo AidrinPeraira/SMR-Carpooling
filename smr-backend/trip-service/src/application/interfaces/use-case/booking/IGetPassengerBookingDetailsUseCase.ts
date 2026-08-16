@@ -1,4 +1,4 @@
-import { GetPassengerBookingDetailsResultDTO } from "#/application/dto/passenger/BookingDetailsDTO";
+import { GetPassengerBookingDetailsResultDTO } from "#/application/dto/booking/PassengerBookingDetailsDTO";
 
 /**
  * this use case gets details about booking for passenger

@@ -1,6 +1,6 @@
-import { AddPlacesRequestDTO } from "#/application/dto/trip/AddPlacesRequestDTO";
+import { AddPlacesRequestDTO } from "#/application/dto/admin/AddPlacesRequestDTO";
 import { IPlacesRepository } from "#/application/interfaces/repository/IPlacesRepository";
-import { IAddPlacesUseCase } from "#/application/interfaces/use-case/trip/IAddPlacesUseCase";
+import { IAddPlacesUseCase } from "#/application/interfaces/use-case/admin/trip/IAddPlacesUseCase";
 
 /**
  * Implementation of the use case for adding predefined places to the places repository.
