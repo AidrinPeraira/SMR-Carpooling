@@ -19,6 +19,7 @@ describe("SwitchUserRoleUseCase", () => {
     const mockDriver = createMockUserData({
       userId: "user-1",
       userRole: UserRole.DRIVER,
+      isDriver: true,
     });
 
     const mockPassenger = {
@@ -46,6 +47,7 @@ describe("SwitchUserRoleUseCase", () => {
     const mockPassenger = createMockUserData({
       userId: "user-1",
       userRole: UserRole.PASSENGER,
+      isDriver: true,
     });
 
     const mockDriver = {
@@ -70,5 +72,16 @@ describe("SwitchUserRoleUseCase", () => {
     vi.mocked(mockUserRepository.findByCustomId).mockResolvedValue(null);
 
     await expect(useCase.execute("non-existent")).rejects.toThrow(ApplicationError);
+  });
+
+  it("should throw ApplicationError if user is not registered as a driver", async () => {
+    const mockUserNotDriver = createMockUserData({
+      userId: "user-1",
+      isDriver: false,
+    });
+
+    vi.mocked(mockUserRepository.findByCustomId).mockResolvedValue(mockUserNotDriver);
+
+    await expect(useCase.execute("user-1")).rejects.toThrow(ApplicationError);
   });
 });
