@@ -1,5 +1,28 @@
+import { BookingStatus } from "../enums";
 import { Route } from "../types";
 import { TripStopDTO } from "./TripDTO";
+
+export interface CreateBookingRequest {
+  trip_id: string;
+  pickup_point: TripStopDTO;
+  drop_off_point: TripStopDTO;
+  pickup_place_id: string;
+  drop_off_place_id: string;
+  seat_count: number;
+  distance_km: number;
+}
+
+export interface DriverGetBookingsQueryRequest {
+  booking_status?: BookingStatus;
+  page: number;
+  limit: number;
+}
+
+export interface PassengerGetBookingsQueryRequest {
+  booking_status?: BookingStatus;
+  page: number;
+  limit: number;
+}
 
 export interface DriverBookingItemDTO {
   booking_id: string;
@@ -59,3 +82,8 @@ export interface PassengerBookingDetailsDTO {
   status: string;
   total_price: number;
 }
+
+export type DriverBookingItemResult = DriverBookingItemDTO;
+export type DriverBookingDetailsResult = DriverBookingDetailsDTO;
+export type PassengerBookingItemResult = PassengerBookingItemDTO;
+export type PassengerBookingDetailsResult = PassengerBookingDetailsDTO;

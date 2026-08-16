@@ -10,16 +10,16 @@ import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/booki
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
 import { BookingMapper } from "#/presentation/v1/mapper/BookingMapper";
 import {
+  CreateBookingRequest,
   CreateBookingSchema,
-  CreateBookingSchemaType,
+  DriverGetBookingsQueryRequest,
   DriverGetBookingsQuerySchema,
-  DriverGetBookingsQuerySchemaType,
   GenericSuccessMessage,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  PassengerGetBookingsQueryRequest,
   PassengerGetBookingsQuerySchema,
-  PassengerGetBookingsQuerySchemaType,
   zodParser,
 } from "@sharemyride/shared";
 
@@ -44,7 +44,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     try {
       const passengerId = req.headers["x-user-id"] as string;
 
-      const validatedBody = zodParser<CreateBookingSchemaType>(
+      const validatedBody = zodParser<CreateBookingRequest>(
         CreateBookingSchema,
         req.body,
       );
@@ -78,7 +78,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     try {
       const driverId = req.headers["x-user-id"] as string;
 
-      const validatedQuery = zodParser<DriverGetBookingsQuerySchemaType>(
+      const validatedQuery = zodParser<DriverGetBookingsQueryRequest>(
         DriverGetBookingsQuerySchema,
         req.query,
       );
@@ -194,7 +194,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     try {
       const passengerId = req.headers["x-user-id"] as string;
 
-      const validatedQuery = zodParser<PassengerGetBookingsQuerySchemaType>(
+      const validatedQuery = zodParser<PassengerGetBookingsQueryRequest>(
         PassengerGetBookingsQuerySchema,
         req.query,
       );

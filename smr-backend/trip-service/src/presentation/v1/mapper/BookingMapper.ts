@@ -12,20 +12,20 @@ import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
   BookingStatus,
-  CreateBookingSchemaType,
+  CreateBookingRequest,
   DriverBookingDetailsDTO,
   DriverBookingItemDTO,
-  DriverGetBookingsQuerySchemaType,
+  DriverGetBookingsQueryRequest,
   PaginatedPayload,
   PassengerBookingDetailsDTO,
   PassengerBookingItemDTO,
-  PassengerGetBookingsQuerySchemaType,
+  PassengerGetBookingsQueryRequest,
 } from "@sharemyride/shared";
 
 export class BookingMapper {
   static toNewBookingRequestDTO(
     passengerId: string,
-    body: CreateBookingSchemaType,
+    body: CreateBookingRequest,
   ): NewBookingRequestDTO {
     return {
       passengerId,
@@ -40,7 +40,7 @@ export class BookingMapper {
   }
 
   static toDriverGetAllBookingsQueryDTO(
-    query: DriverGetBookingsQuerySchemaType,
+    query: DriverGetBookingsQueryRequest,
   ): DriverGetAllBookingsQueryDTO {
     return {
       bookingStatus: query.booking_status as BookingStatus,
@@ -90,7 +90,7 @@ export class BookingMapper {
   }
 
   static toPassengerGetAllBookingsQueryDTO(
-    query: PassengerGetBookingsQuerySchemaType,
+    query: PassengerGetBookingsQueryRequest,
   ): PassengerGetAllBookingsQueryDTO {
     return {
       bookingStatus: query.booking_status as BookingStatus,

@@ -5,31 +5,23 @@ import { IUpdatePricingUseCase } from "#/application/interfaces/use-case/admin/c
 import { ICreateNewVehicleUseCase } from "#/application/interfaces/use-case/admin/configurations/ICreateNewVehicleUseCase";
 import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/admin/configurations/IUpdateVehicleUseCase";
 import { IAdminConfigurationControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminConfigurationControllerV1";
-import {
-  toCreatePricingRequestDTO,
-  toCreateVehicleRequestDTO,
-  toGetConfigurationsResponse,
-  toPricingRuleResponse,
-  toUpdatePricingRequestDTO,
-  toUpdateVehicleRequestDTO,
-  toVehicleListResponse,
-} from "#/presentation/v1/mapper/admin/AdminConfigurationMapper";
+import { AdminConfigurationMapper } from "#/presentation/v1/mapper/admin/AdminConfigurationMapper";
 import {
   ApplicationError,
+  CreatePricingRequest,
   CreatePricingSchema,
-  CreatePricingSchemaType,
+  CreateVehicleRequest,
   CreateVehicleSchema,
-  CreateVehicleSchemaType,
   ErrorCode,
   GenericErrorMessage,
   GenericSuccessMessage,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  UpdatePricingRequest,
   UpdatePricingSchema,
-  UpdatePricingSchemaType,
+  UpdateVehicleRequest,
   UpdateVehicleSchema,
-  UpdateVehicleSchemaType,
   zodParser,
 } from "@sharemyride/shared";
 
@@ -58,7 +50,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       .json(
         makeSuccessResponse(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toGetConfigurationsResponse(result),
+          AdminConfigurationMapper.toGetConfigurationsResponse(result),
         ),
       );
   }
@@ -67,7 +59,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
    * Creates a new pricing rule configuration.
    */
   async createPricing(req: Request, res: Response): Promise<void> {
-    const validatedBody = zodParser<CreatePricingSchemaType>(
+    const validatedBody = zodParser<CreatePricingRequest>(
       CreatePricingSchema,
       req.body,
     );
@@ -77,7 +69,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       vehicleType: validatedBody.vehicle_type,
     });
 
-    const dto = toCreatePricingRequestDTO(validatedBody);
+    const dto = AdminConfigurationMapper.toCreatePricingRequestDTO(validatedBody);
     const result = await this._createNewPricingUseCase.execute(dto);
 
     res
@@ -85,7 +77,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       .json(
         makeSuccessResponse(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toPricingRuleResponse(result.pricingRule),
+          AdminConfigurationMapper.toPricingRuleResponse(result.pricingRule),
         ),
       );
   }
@@ -107,7 +99,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       );
     }
 
-    const validatedBody = zodParser<UpdatePricingSchemaType>(
+    const validatedBody = zodParser<UpdatePricingRequest>(
       UpdatePricingSchema,
       req.body,
     );
@@ -117,7 +109,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       pricingId: id,
     });
 
-    const dto = toUpdatePricingRequestDTO(id, validatedBody);
+    const dto = AdminConfigurationMapper.toUpdatePricingRequestDTO(id, validatedBody);
     const result = await this._updatePricingUseCase.execute(dto);
 
     res
@@ -125,7 +117,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       .json(
         makeSuccessResponse(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toPricingRuleResponse(result.pricingRule),
+          AdminConfigurationMapper.toPricingRuleResponse(result.pricingRule),
         ),
       );
   }
@@ -134,7 +126,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
    * Creates a new vehicle in the vehicle configurations list.
    */
   async createVehicle(req: Request, res: Response): Promise<void> {
-    const validatedBody = zodParser<CreateVehicleSchemaType>(
+    const validatedBody = zodParser<CreateVehicleRequest>(
       CreateVehicleSchema,
       req.body,
     );
@@ -145,7 +137,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       vehicleModel: validatedBody.vehicle_model,
     });
 
-    const dto = toCreateVehicleRequestDTO(validatedBody);
+    const dto = AdminConfigurationMapper.toCreateVehicleRequestDTO(validatedBody);
     const result = await this._createNewVehicleUseCase.execute(dto);
 
     res
@@ -153,7 +145,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       .json(
         makeSuccessResponse(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toVehicleListResponse(result.vehicle),
+          AdminConfigurationMapper.toVehicleListResponse(result.vehicle),
         ),
       );
   }
@@ -175,7 +167,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       );
     }
 
-    const validatedBody = zodParser<UpdateVehicleSchemaType>(
+    const validatedBody = zodParser<UpdateVehicleRequest>(
       UpdateVehicleSchema,
       req.body,
     );
@@ -185,7 +177,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       vehicleId: id,
     });
 
-    const dto = toUpdateVehicleRequestDTO(id, validatedBody);
+    const dto = AdminConfigurationMapper.toUpdateVehicleRequestDTO(id, validatedBody);
     const result = await this._updateVehicleUseCase.execute(dto);
 
     res
@@ -193,7 +185,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       .json(
         makeSuccessResponse(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toVehicleListResponse(result.vehicle),
+          AdminConfigurationMapper.toVehicleListResponse(result.vehicle),
         ),
       );
   }

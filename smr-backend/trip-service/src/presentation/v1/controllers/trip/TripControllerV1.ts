@@ -7,18 +7,18 @@ import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListT
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
+  CreateTripRequest,
   CreateTripSchema,
-  CreateTripSchemaType,
+  DriverGetTripsQueryRequest,
   DriverGetTripsQuerySchema,
-  DriverGetTripsQuerySchemaType,
   GenericSuccessMessage,
   GetJourneyDetailsSchema,
   GetJourneyDetailsSchemaType,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  SearchTripRequest,
   SearchTripSchema,
-  SearchTripSchemaType,
   zodParser,
 } from "@sharemyride/shared";
 
@@ -40,7 +40,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     try {
       const driverId = req.headers["x-user-id"] as string;
 
-      const validatedBody = zodParser<CreateTripSchemaType>(
+      const validatedBody = zodParser<CreateTripRequest>(
         CreateTripSchema,
         req.body,
       );
@@ -71,7 +71,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     try {
       const passengerUserId = req.headers["x-user-id"] as string;
 
-      const validatedBody = zodParser<SearchTripSchemaType>(
+      const validatedBody = zodParser<SearchTripRequest>(
         SearchTripSchema,
         req.body,
       );
@@ -141,7 +141,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     try {
       const driverId = req.headers["x-user-id"] as string;
 
-      const validatedQuery = zodParser<DriverGetTripsQuerySchemaType>(
+      const validatedQuery = zodParser<DriverGetTripsQueryRequest>(
         DriverGetTripsQuerySchema,
         req.query,
       );

@@ -1,11 +1,38 @@
 import { BookingStatus, TripStatus, VehicleTypes } from "../enums";
 import { Route } from "../types";
+import { QueryRequest } from "./QueryDTO";
 
 export interface TripStopDTO {
   stop_lat: number;
   stop_lng: number;
   stop_name: string;
   stop_address: string;
+}
+
+export interface CreateTripRequest {
+  vehicle_id: string;
+  trip_origin: TripStopDTO;
+  trip_destination: TripStopDTO;
+  trip_stops: TripStopDTO[];
+  trip_route: Route;
+  trip_distance: number;
+  available_seats: number;
+  trip_tags?: string[];
+  start_time: string | Date;
+  total_seats: number;
+}
+
+export interface SearchTripRequest {
+  origin: TripStopDTO;
+  destination: TripStopDTO;
+  time: string | Date;
+  query?: QueryRequest;
+}
+
+export interface DriverGetTripsQueryRequest {
+  trip_status?: TripStatus;
+  page: number;
+  limit: number;
 }
 
 export interface ListTripsResult {
@@ -59,3 +86,7 @@ export interface DriverTripDetailsDTO {
   trip_status: TripStatus;
   trip_bookings: DriverTripBookingDetailsDTO[];
 }
+
+export type DriverTripItemResult = DriverTripItemDTO;
+export type DriverTripBookingDetailsResult = DriverTripBookingDetailsDTO;
+export type DriverTripDetailsResult = DriverTripDetailsDTO;

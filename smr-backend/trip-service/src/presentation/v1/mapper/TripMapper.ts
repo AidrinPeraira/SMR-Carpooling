@@ -10,14 +10,14 @@ import {
   ListTripsResultDTO,
 } from "#/application/dto/trip/PassengerListTripsDTO";
 import {
-  CreateTripSchemaType,
-  DriverGetTripsQuerySchemaType,
+  CreateTripRequest,
+  DriverGetTripsQueryRequest,
   DriverTripDetailsDTO,
   DriverTripItemDTO,
   GetJourneyDetailsResult,
   ListTripsResult,
   PaginatedPayload,
-  SearchTripSchemaType,
+  SearchTripRequest,
   TripStatus,
   TripStop,
   TripStopDTO,
@@ -44,7 +44,7 @@ export class TripMapper {
 
   static toCreateTripRequestDTO(
     driverId: string,
-    body: CreateTripSchemaType,
+    body: CreateTripRequest,
   ): CreateTripRequestDTO {
     return {
       driverId,
@@ -55,14 +55,14 @@ export class TripMapper {
       tripRoute: body.trip_route,
       tripDistance: body.trip_distance,
       availableSeats: body.available_seats,
-      tripTags: body.trip_tags,
+      tripTags: body.trip_tags || [],
       startTime: new Date(body.start_time),
       totalSeats: body.total_seats,
     };
   }
 
   static toListTripsRequestDTO(
-    body: SearchTripSchemaType,
+    body: SearchTripRequest,
   ): ListTripsRequestDTO {
     return {
       origin: this.toTripStop(body.origin),
@@ -132,7 +132,7 @@ export class TripMapper {
   }
 
   static toDriverGetAllTripsQueryDTO(
-    query: DriverGetTripsQuerySchemaType,
+    query: DriverGetTripsQueryRequest,
   ): DriverGetAllTripsQueryDTO {
     return {
       tripStatus: query.trip_status as TripStatus,
