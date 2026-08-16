@@ -126,7 +126,7 @@ export function TripListingCard({
         description: "Your request to join this ride has been submitted.",
       });
 
-      router.push("/passenger/requests");
+      router.push("/passenger/bookings");
     } catch (err: unknown) {
       console.error("Failed to submit booking request:", err);
       toast("Booking Failed", {
@@ -519,13 +519,8 @@ export function TripListingCard({
                       value={dropoffValue}
                       onChange={(val) => {
                         const index = Number(val);
-                        if (
-                          journeyDetails &&
-                          availableStopsList[index]
-                        ) {
-                          setSelectedDropoffStop(
-                            availableStopsList[index],
-                          );
+                        if (journeyDetails && availableStopsList[index]) {
+                          setSelectedDropoffStop(availableStopsList[index]);
                         }
                       }}
                       placeholder="Select Drop-off Point"
@@ -570,7 +565,8 @@ export function TripListingCard({
                       +
                     </button>
                     <span className="text-[10px] text-fg-secondary ml-1">
-                      (Max {trip.seats_available} seat{trip.seats_available === 1 ? "" : "s"})
+                      (Max {trip.seats_available} seat
+                      {trip.seats_available === 1 ? "" : "s"})
                     </span>
                   </div>
                 </div>
