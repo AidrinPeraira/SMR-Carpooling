@@ -7,6 +7,7 @@ import { ITripRepository } from "#/application/interfaces/repository/ITripReposi
 import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import {
   ApplicationError,
+  BookingErrorMessage,
   BookingStatus,
   HttpStatusCodes,
   Route,
@@ -260,9 +261,28 @@ describe("NewBookingUseCase", () => {
     await expect(useCase.execute(validDto)).rejects.toThrow(ApplicationError);
   });
 
-  it("should throw BadRequest error if requested seats exceed vacant seats", async () => {
+  it("should throw BadRequest error if requested seats exceed available seats", async () => {
     const invalidSeatDto = { ...validDto, seatCount: 10 };
 
-    await expect(useCase.execute(invalidSeatDto)).rejects.toThrow(ApplicationError);
+    await expect(useCase.execute(invalidSeatDto)).rejects.toThrow(
+      BookingErrorMessage.INSUFFICIENT_SEATS,
+    );
+  });
+
+  it("should throw BadRequest error if requested seats exceed vacant seats", async () => {
+    vi.mocked(mockTripRepository.findTripDetails).mockResolvedValueOnce({
+      ...mockTripPayload,
+      tripDetails: {
+        ...mockTripPayload.tripDetails,
+        availableSeats: 5,
+        vacantSeats: 1,
+      },
+    });
+
+    const invalidSeatDto = { ...validDto, seatCount: 2 };
+
+    await expect(useCase.execute(invalidSeatDto)).rejects.toThrow(
+      BookingErrorMessage.INSUFFICIENT_SEATS,
+    );
   });
 });

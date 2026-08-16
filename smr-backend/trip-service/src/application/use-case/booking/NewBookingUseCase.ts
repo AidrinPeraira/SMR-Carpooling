@@ -67,6 +67,19 @@ export class NewBookingUseCase implements INewBookingUseCase {
       );
     }
 
+    if (existingTrip.tripDetails.availableSeats < dto.seatCount) {
+      throw new ApplicationError(
+        BookingErrorMessage.INSUFFICIENT_SEATS,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "NewBookingUseCase",
+          description: `Requested seats (${dto.seatCount}) exceed available seats (${existingTrip.tripDetails.availableSeats})`,
+        },
+      );
+    }
+
     // Check if passenger already has an active booking on this trip
     const alreadyBooked = existingTrip.bookingDetails?.some(
       (b) =>
