@@ -7,4 +7,6 @@ export const AppConfig = {
     process.env.API_GATEWAY_KEY ||
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
+
+  MONGO_DB_URL: String(process.env.MONGO_DB_URL),
 };
