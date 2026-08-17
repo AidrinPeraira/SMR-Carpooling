@@ -41,10 +41,15 @@ import { PassengerRepository } from "#/infrastructure/repository/PassengerReposi
 import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
 import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingService";
 import { TripsRepository } from "#/infrastructure/repository/TripsRepository";
+import { BookingsRepository } from "#/infrastructure/repository/BookingsRepository";
 import { CreateTripUseCase } from "#/application/use-case/trip/CreateTripUseCase";
 import { ListTripsUseCase } from "#/application/use-case/trip/ListTripsUseCase";
+import { GetJourneyDetailsUseCase } from "#/application/use-case/trip/GetJourneyDetailsUseCase";
+import { NewBookingUseCase } from "#/application/use-case/booking/NewBookingUseCase";
 import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
+import { BookingControllerV1 } from "#/presentation/v1/controllers/booking/BookingControllerV1";
 import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
+import { createBookingRouterV1 } from "#/presentation/v1/routes/booking/BookingRouterV1";
 
 /**
  * Composition Root for the Trip Service.
@@ -62,8 +67,8 @@ const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
 const placesCacheStore = new PlacesCacheStore(redisClient);
 const passengerRepository = new PassengerRepository();
-
 const geoIndexingService = new H3GeoIndexingService();
+const bookingsRepository = new BookingsRepository(geoIndexingService);
 const tripsRepository = new TripsRepository(
   geoIndexingService,
   placesCacheStore,
@@ -93,6 +98,11 @@ const createNewPassengerUseCase = new CreateNewPassengerUseCase(
 
 const createTripUseCase = new CreateTripUseCase(tripsRepository);
 const listTripsUseCase = new ListTripsUseCase(tripsRepository);
+const getJourneyDetailsUseCase = new GetJourneyDetailsUseCase(
+  tripsRepository,
+  pricingRulesRepository,
+  configurationStore,
+);
 
 // Application Event Handlers
 const newUserEventHandler = new NewUserEventHandler(
@@ -139,6 +149,68 @@ const eventBusInstance = new EventBus(
   AppConfig.RABBITMQ_EXCHANGE_NAME,
   eventDispatcher,
 );
+
+import { DriverAcceptBookingUseCase } from "#/application/use-case/booking/DriverAcceptBookingUseCase";
+import { DriverGetBookingDetailsUseCase } from "#/application/use-case/booking/DriverGetBookingDetailsUseCase";
+import { DriverListAllBookingsUseCase } from "#/application/use-case/booking/DriverListAllBookingUseCase";
+import { DriverRejectBookingUseCase } from "#/application/use-case/booking/DriverRejectBookingUseCase";
+import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/booking/GetPassngerBookingDetailsUseCase";
+import { PassengerListBookingsUseCase } from "#/application/use-case/booking/PassengerListBookingsUseCase";
+import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
+
+const newBookingUseCase = new NewBookingUseCase(
+  bookingsRepository,
+  configurationStore,
+  pricingRulesRepository,
+  tripsRepository,
+  eventBusInstance,
+  passengerRepository,
+  driverRepository,
+);
+
+const driverListAllBookingsUseCase = new DriverListAllBookingsUseCase(
+  bookingsRepository,
+);
+const driverGetBookingDetailsUseCase = new DriverGetBookingDetailsUseCase(
+  bookingsRepository,
+  tripsRepository,
+  passengerRepository,
+  vehicleRepository,
+);
+const driverAcceptBookingUseCase = new DriverAcceptBookingUseCase(
+  bookingsRepository,
+  tripsRepository,
+);
+const driverRejectBookingUseCase = new DriverRejectBookingUseCase(
+  bookingsRepository,
+  tripsRepository,
+);
+
+const passengerListBookingsUseCase = new PassengerListBookingsUseCase(
+  bookingsRepository,
+);
+const getPassengerBookingDetailsUseCase = new GetPassengerBookingDetailsUseCase(
+  bookingsRepository,
+  tripsRepository,
+  driverRepository,
+  vehicleRepository,
+);
+const withdrawBookingUseCase = new WithdrawBookingUseCase(bookingsRepository);
+
+import { AdminListAllTripsUseCase } from "#/application/use-case/admin/trip/AdminListAllTripsUseCase";
+import { AdminGetTripDetailsUseCase } from "#/application/use-case/admin/trip/AdminGetTripDetailsUseCase";
+import { AdminListAllBookingsUseCase } from "#/application/use-case/admin/booking/AdminListAllBookingsUseCase";
+import { AdminGetBookingDetailsUseCase } from "#/application/use-case/admin/booking/AdminGetBookingDetailsUseCase";
+import { AdminTripControllerV1 } from "#/presentation/v1/controllers/admin/AdminTripControllerV1";
+import { AdminBookingControllerV1 } from "#/presentation/v1/controllers/admin/AdminBookingControllerV1";
+import { createAdminTripRouterV1 } from "#/presentation/v1/routes/admin/AdminTripRouterV1";
+import { createAdminBookingRouterV1 } from "#/presentation/v1/routes/admin/AdminBookingRouterV1";
+
+// Admin Trip & Booking Use Cases
+const adminListAllTripsUseCase = new AdminListAllTripsUseCase(tripsRepository);
+const adminGetTripDetailsUseCase = new AdminGetTripDetailsUseCase(tripsRepository);
+const adminListAllBookingsUseCase = new AdminListAllBookingsUseCase(bookingsRepository);
+const adminGetBookingDetailsUseCase = new AdminGetBookingDetailsUseCase(bookingsRepository);
 
 // Admin Configuration Use Cases
 const getConfigurationsUseCase = new GetConfigurationUseCase(
@@ -189,6 +261,18 @@ const adminVehicleControllerV1 = new AdminVehicleControllerV1(
   getDriverVehiclesUseCase,
 );
 
+const adminTripControllerV1 = new AdminTripControllerV1(
+  consolaLogger,
+  adminListAllTripsUseCase,
+  adminGetTripDetailsUseCase,
+);
+
+const adminBookingControllerV1 = new AdminBookingControllerV1(
+  consolaLogger,
+  adminListAllBookingsUseCase,
+  adminGetBookingDetailsUseCase,
+);
+
 const driverControllerV1 = new DriverControllerV1(
   consolaLogger,
   getDriverDetailsUseCase,
@@ -199,10 +283,33 @@ const vehicleControllerV1 = new VehicleControllerV1(
   getDriverVehiclesUseCase,
 );
 
+import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
+import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
+
+const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
+const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
+  tripsRepository,
+);
+
 const tripControllerV1 = new TripControllerV1(
   consolaLogger,
   createTripUseCase,
   listTripsUseCase,
+  getJourneyDetailsUseCase,
+  driverListTripsUseCase,
+  driverGetTripDetailsUseCase,
+);
+
+const bookingControllerV1 = new BookingControllerV1(
+  consolaLogger,
+  newBookingUseCase,
+  driverListAllBookingsUseCase,
+  driverGetBookingDetailsUseCase,
+  driverAcceptBookingUseCase,
+  driverRejectBookingUseCase,
+  passengerListBookingsUseCase,
+  getPassengerBookingDetailsUseCase,
+  withdrawBookingUseCase,
 );
 
 // Routers
@@ -213,22 +320,29 @@ const adminDriverRoutesV1 = createAdminDriverRouterV1(adminDriverControllerV1);
 const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
   adminVehicleControllerV1,
 );
+const adminTripRoutesV1 = createAdminTripRouterV1(adminTripControllerV1);
+const adminBookingRoutesV1 = createAdminBookingRouterV1(adminBookingControllerV1);
 
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
 const tripRoutesV1 = createTripRouterV1(tripControllerV1);
+const bookingRoutesV1 = createBookingRouterV1(bookingControllerV1);
 
 const v1Router = express.Router();
 v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
 v1Router.use("/admin/trip/driver", adminDriverRoutesV1);
 v1Router.use("/admin/trip/vehicles", adminVehicleRoutesV1);
+v1Router.use("/admin/trip/trips", adminTripRoutesV1);
+v1Router.use("/admin/trip/bookings", adminBookingRoutesV1);
 
 v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
 v1Router.use("/trips", tripRoutesV1);
+v1Router.use("/bookings", bookingRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,
 };
 
 export const eventBus = eventBusInstance;
+

@@ -17,4 +17,6 @@ export enum UserErrorMessage {
   UNVERIFIED_EMAIL = "Please verify your email address before continuing.",
   INVALID_TOKEN = "The verification token is invalid or has expired.",
   PASSWORD_MISMATCH = "Passwords do not match.",
+  NOT_A_DRIVER = "User is not registered as a driver.",
 }
+

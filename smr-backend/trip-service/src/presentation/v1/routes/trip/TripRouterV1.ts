@@ -15,11 +15,32 @@ export function createTripRouterV1(
     (req, res, next) => tripController.createTrip(req, res, next),
   );
 
+  // Driver: List all trips
+  router.get(
+    "/driver",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.getDriverTrips(req, res, next),
+  );
+
+  // Driver: Get specific trip details
+  router.get(
+    "/driver/:tripId",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.getDriverTripDetails(req, res, next),
+  );
+
   // Search/list matching trips (Passenger only)
   router.post(
     "/search",
     AuthMiddleware(UserRole.PASSENGER),
     (req, res, next) => tripController.listMatchingTrips(req, res, next),
+  );
+
+  // Get journey details for a trip (Passenger only)
+  router.post(
+    "/journey-details",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => tripController.getJourneyDetails(req, res, next),
   );
 
   return router;

@@ -10,48 +10,35 @@ import { IResubmitRenewDriverApplicationUseCase } from "#/application/interfaces
 import { IResubmitRenewVehicleApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewVehicleApplicationUseCase";
 import { IGetFileUploadUrlUseCase } from "#/application/interfaces/use-case/IGetFileUploadUrlUseCase";
 import { IApplicationControllerV1 } from "#/presentation/v1/interfaces/IApplicationControllerV1";
-import {
-  toApplicationDetailsResult,
-  toGetApplicationsSummaryResult,
-  toGetFileUploadUrlRequestDTO,
-  toGetFileUploadUrlResult,
-  toNewVehicleApplicationRequestDTO,
-  toOnboardingApplicationRequestDTO,
-  toRenewDriverApplicationRequestDTO,
-  toRenewVehicleApplicationRequestDTO,
-  toResubmitNewVehicleApplicationRequestDTO,
-  toResubmitOnboardingApplicationRequestDTO,
-  toResubmitRenewDriverApplicationRequestDTO,
-  toResubmitRenewVehicleApplicationRequestDTO,
-} from "#/presentation/v1/mapper/ApplicationMapper";
+import { ApplicationMapper } from "#/presentation/v1/mapper/ApplicationMapper";
 import {
   ApplicationDetailsResult,
   ApplicationIdParamSchema,
   ApplicationIdParamSchemaType,
   ApplicationSuccessMessage,
   GenericSuccessMessage,
+  GetFileUploadUrlRequest,
   GetFileUploadUrlResult,
   GetFileUploadUrlSchema,
-  GetFileUploadUrlSchemaType,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
+  NewVehicleApplicationRequest,
   NewVehicleApplicationSchema,
-  NewVehicleApplicationSchemaType,
+  OnboardingApplicationRequest,
   OnboardingApplicationSchema,
-  OnboardingApplicationSchemaType,
+  RenewDriverApplicationRequest,
   RenewDriverApplicationSchema,
-  RenewDriverApplicationSchemaType,
+  RenewVehicleApplicationRequest,
   RenewVehicleApplicationSchema,
-  RenewVehicleApplicationSchemaType,
+  ResubmitNewVehicleApplicationRequest,
   ResubmitNewVehicleApplicationSchema,
-  ResubmitNewVehicleApplicationSchemaType,
+  ResubmitOnboardingApplicationRequest,
   ResubmitOnboardingApplicationSchema,
-  ResubmitOnboardingApplicationSchemaType,
+  ResubmitRenewDriverApplicationRequest,
   ResubmitRenewDriverApplicationSchema,
-  ResubmitRenewDriverApplicationSchemaType,
+  ResubmitRenewVehicleApplicationRequest,
   ResubmitRenewVehicleApplicationSchema,
-  ResubmitRenewVehicleApplicationSchemaType,
   zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
@@ -76,11 +63,11 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Getting file upload URL for userId: ", userId);
 
-    const body = zodParser<GetFileUploadUrlSchemaType>(
+    const body = zodParser<GetFileUploadUrlRequest>(
       GetFileUploadUrlSchema,
       req.body,
     );
-    const dto = toGetFileUploadUrlRequestDTO(body, userId);
+    const dto = ApplicationMapper.toGetFileUploadUrlRequestDTO(body, userId);
     const result = await this._getFileUploadUrlUseCase.execute(dto);
 
     res
@@ -88,7 +75,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       .json(
         makeSuccessResponse<GetFileUploadUrlResult>(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toGetFileUploadUrlResult(result),
+          ApplicationMapper.toGetFileUploadUrlResult(result),
         ),
       );
   }
@@ -97,11 +84,11 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Submitting onboarding application for userId: ", userId);
 
-    const body = zodParser<OnboardingApplicationSchemaType>(
+    const body = zodParser<OnboardingApplicationRequest>(
       OnboardingApplicationSchema,
       req.body,
     );
-    const dto = toOnboardingApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toOnboardingApplicationRequestDTO(body, userId);
     await this._onboardingApplicationUseCase.execute(dto);
 
     res
@@ -113,11 +100,11 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Submitting new vehicle application for userId: ", userId);
 
-    const body = zodParser<NewVehicleApplicationSchemaType>(
+    const body = zodParser<NewVehicleApplicationRequest>(
       NewVehicleApplicationSchema,
       req.body,
     );
-    const dto = toNewVehicleApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toNewVehicleApplicationRequestDTO(body, userId);
     await this._newVehicleApplicationUseCase.execute(dto);
 
     res
@@ -129,11 +116,11 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Submitting renew driver application for userId: ", userId);
 
-    const body = zodParser<RenewDriverApplicationSchemaType>(
+    const body = zodParser<RenewDriverApplicationRequest>(
       RenewDriverApplicationSchema,
       req.body,
     );
-    const dto = toRenewDriverApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toRenewDriverApplicationRequestDTO(body, userId);
     await this._renewDriverApplicationUseCase.execute(dto);
 
     res
@@ -145,11 +132,11 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Submitting renew vehicle application for userId: ", userId);
 
-    const body = zodParser<RenewVehicleApplicationSchemaType>(
+    const body = zodParser<RenewVehicleApplicationRequest>(
       RenewVehicleApplicationSchema,
       req.body,
     );
-    const dto = toRenewVehicleApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toRenewVehicleApplicationRequestDTO(body, userId);
     await this._renewVehicleApplicationUseCase.execute(dto);
 
     res
@@ -165,11 +152,14 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     this._logger.info("Resubmitting onboarding application: ", applicationId);
 
-    const body = zodParser<ResubmitOnboardingApplicationSchemaType>(
+    const body = zodParser<ResubmitOnboardingApplicationRequest>(
       ResubmitOnboardingApplicationSchema,
       req.body,
     );
-    const dto = toResubmitOnboardingApplicationRequestDTO(body, applicationId);
+    const dto = ApplicationMapper.toResubmitOnboardingApplicationRequestDTO(
+      body,
+      applicationId,
+    );
     await this._resubmitOnboardingApplicationUseCase.execute(dto);
 
     res
@@ -185,11 +175,14 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     this._logger.info("Resubmitting new vehicle application: ", applicationId);
 
-    const body = zodParser<ResubmitNewVehicleApplicationSchemaType>(
+    const body = zodParser<ResubmitNewVehicleApplicationRequest>(
       ResubmitNewVehicleApplicationSchema,
       req.body,
     );
-    const dto = toResubmitNewVehicleApplicationRequestDTO(body, applicationId);
+    const dto = ApplicationMapper.toResubmitNewVehicleApplicationRequestDTO(
+      body,
+      applicationId,
+    );
     await this._resubmitNewVehicleApplicationUseCase.execute(dto);
 
     res
@@ -205,11 +198,14 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     this._logger.info("Resubmitting renew driver application: ", applicationId);
 
-    const body = zodParser<ResubmitRenewDriverApplicationSchemaType>(
+    const body = zodParser<ResubmitRenewDriverApplicationRequest>(
       ResubmitRenewDriverApplicationSchema,
       req.body,
     );
-    const dto = toResubmitRenewDriverApplicationRequestDTO(body, applicationId);
+    const dto = ApplicationMapper.toResubmitRenewDriverApplicationRequestDTO(
+      body,
+      applicationId,
+    );
     await this._resubmitRenewDriverApplicationUseCase.execute(dto);
 
     res
@@ -225,11 +221,14 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     this._logger.info("Resubmitting renew vehicle application: ", applicationId);
 
-    const body = zodParser<ResubmitRenewVehicleApplicationSchemaType>(
+    const body = zodParser<ResubmitRenewVehicleApplicationRequest>(
       ResubmitRenewVehicleApplicationSchema,
       req.body,
     );
-    const dto = toResubmitRenewVehicleApplicationRequestDTO(body, applicationId);
+    const dto = ApplicationMapper.toResubmitRenewVehicleApplicationRequestDTO(
+      body,
+      applicationId,
+    );
     await this._resubmitRenewVehicleApplicationUseCase.execute(dto);
 
     res
@@ -242,7 +241,9 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     this._logger.info("Getting applications for userId: ", userId);
 
     const list = await this._getApplicationsUseCase.execute(userId);
-    const result = list.map((item) => toGetApplicationsSummaryResult(item, userId));
+    const result = list.map((item) =>
+      ApplicationMapper.toGetApplicationsSummaryResult(item, userId),
+    );
 
     res
       .status(HttpStatusCodes.Ok)
@@ -263,7 +264,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     const details = await this._getApplicationDetailsUseCase.execute(
       applicationId,
     );
-    const result = toApplicationDetailsResult(details);
+    const result = ApplicationMapper.toApplicationDetailsResult(details);
 
     res
       .status(HttpStatusCodes.Ok)

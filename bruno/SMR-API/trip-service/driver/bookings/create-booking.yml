@@ -1,0 +1,209 @@
+info:
+  name: create-booking
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/bookings
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjgzNWU1NjJjYTgzYTgzN2Q2ZDkzMzk3ZmRjMzU0NWM2IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJOYXZhbSIsImxhc3ROYW1lIjoiQXJjaGl0ZWN0dXJlIiwiZW1haWxJZCI6Im5hdmFtYXJjaGl0ZWN0dXJlQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY2MjU3MjcsImV4cCI6MTc4NjYyNjYyN30.xhNmGzFHQfg-C14217GCYgfSO3LMFFafk89Kz8UWTVc
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "trip_id": "5436b6b6-ed60-42a9-a1dc-ae1f090c21e1",
+          "pickup_point": {
+            "stop_lat": 9.0011752,
+            "stop_lng": 76.77360008,
+            "stop_name": "Real Bazar",
+            "stop_address": "Alumootil Building, Oyoor Road, Market, JN, Kottarakkara, 691531, India"
+          },
+          "drop_off_point": {
+            "stop_lat": 9.49257219,
+            "stop_lng": 76.33883015,
+            "stop_name": "Medical",
+            "stop_address": "Alappuzha, 688013, India"
+          },
+          "pickup_place_id": "Real Bazar",
+          "drop_off_place_id": "Medical",
+          "seat_count": 1,
+          "distance_km": 102.07
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-error
+    request:
+      url: http://localhost:4000/api/v1/bookings
+      method: POST
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjgzNWU1NjJjYTgzYTgzN2Q2ZDkzMzk3ZmRjMzU0NWM2IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJOYXZhbSIsImxhc3ROYW1lIjoiQXJjaGl0ZWN0dXJlIiwiZW1haWxJZCI6Im5hdmFtYXJjaGl0ZWN0dXJlQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY2MjU3MjcsImV4cCI6MTc4NjYyNjYyN30.xhNmGzFHQfg-C14217GCYgfSO3LMFFafk89Kz8UWTVc
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |2-
+            {
+              "trip_id": "5436b6b6-ed60-42a9-a1dc-ae1f090c21e1",
+              "pickup_point": {
+                "stop_lat": 9.0011752,
+                "stop_lng": 76.77360008,
+                "stop_name": "Real Bazar",
+                "stop_address": "Alumootil Building, Oyoor Road, Market, JN, Kottarakkara, 691531, India"
+              },
+              "drop_off_point": {
+                "stop_lat": 9.49257219,
+                "stop_lng": 76.33883015,
+                "stop_name": "Medical",
+                "stop_address": "Alappuzha, 688013, India"
+              },
+              "pickup_place_id": "Real Bazar",
+              "drop_off_place_id": "Medical",
+              "seat_count": 1,
+              "distance_km": 102.07
+            }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "195"
+        - name: etag
+          value: W/"c3-RBFZPNPzCTjfuN83oCz4agsgsuk"
+        - name: date
+          value: Thu, 13 Aug 2026 12:55:52 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "You are already a participant in this trip.",
+            "error": {
+              "code": "ERR_DOMAIN_CONFLICT",
+              "details": "Domain Conflict: The operation contradicts the current business state."
+            }
+          }
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/bookings
+      method: POST
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjgzNWU1NjJjYTgzYTgzN2Q2ZDkzMzk3ZmRjMzU0NWM2IiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJOYXZhbSIsImxhc3ROYW1lIjoiQXJjaGl0ZWN0dXJlIiwiZW1haWxJZCI6Im5hdmFtYXJjaGl0ZWN0dXJlQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY2MjU3MjcsImV4cCI6MTc4NjYyNjYyN30.xhNmGzFHQfg-C14217GCYgfSO3LMFFafk89Kz8UWTVc
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |2-
+            {
+              "trip_id": "5436b6b6-ed60-42a9-a1dc-ae1f090c21e1",
+              "pickup_point": {
+                "stop_lat": 9.0011752,
+                "stop_lng": 76.77360008,
+                "stop_name": "Real Bazar",
+                "stop_address": "Alumootil Building, Oyoor Road, Market, JN, Kottarakkara, 691531, India"
+              },
+              "drop_off_point": {
+                "stop_lat": 9.49257219,
+                "stop_lng": 76.33883015,
+                "stop_name": "Medical",
+                "stop_address": "Alappuzha, 688013, India"
+              },
+              "pickup_place_id": "Real Bazar",
+              "drop_off_place_id": "Medical",
+              "seat_count": 1,
+              "distance_km": 102.07
+            }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "77"
+        - name: etag
+          value: W/"4d-4AKoaX2hp6HQ1QAr68sybeRkEYQ"
+        - name: date
+          value: Thu, 13 Aug 2026 12:59:50 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": null
+          }

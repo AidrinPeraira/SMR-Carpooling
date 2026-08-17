@@ -1,7 +1,7 @@
 import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
-} from "#/application/dto/trip/ListTripsDTO";
+} from "#/application/dto/trip/PassengerListTripsDTO";
 import { PaginatedPayload } from "@sharemyride/shared";
 
 /**

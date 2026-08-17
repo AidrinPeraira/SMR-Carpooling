@@ -1,13 +1,85 @@
 import {
+  AdminGetAllTripsQuery,
+  AdminGetAllTripsResponseDTO,
+  AdminGetTripDetailsResponseDTO,
+} from "#/application/dto/admin/AdminTripsDTO";
+import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
+import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
-} from "#/application/dto/trip/ListTripsDTO";
-import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
+} from "#/application/dto/trip/PassengerListTripsDTO";
+import {
+  BookingEntityWithPassenger,
+  ITripRepository,
+  JourneyDetailsPayload,
+  TripResultPayload,
+} from "#/application/interfaces/repository/ITripRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { IPlacesCacheStore } from "#/application/interfaces/store/IPlacesCacheStore";
 import { TripEntity } from "#/domain/entities/TripEntity";
+import { VehicleEntity } from "#/domain/entities/VehicleEntity";
 import { prisma } from "#/infrastructure/database/prisma";
-import { PaginatedPayload, TripStop, VehicleTypes } from "@sharemyride/shared";
+import { Prisma } from "#/infrastructure/database/generated/prisma/client";
+import {
+  BookingStatus,
+  PaginatedPayload,
+  Route,
+  TripStatus,
+  TripStop,
+  VehicleStatus,
+  VehicleTypes,
+} from "@sharemyride/shared";
+
+interface BookingWithPassengerRecord {
+  bookingId: string;
+  passengerId: string;
+  tripId: string;
+  pickupPoint: unknown;
+  dropOffPoint: unknown;
+  pickupPlaceId: string;
+  dropOffPlaceId: string;
+  distanceKm: number;
+  seatCount: number;
+  totalPrice: number;
+  status: string;
+  passenger?: { firstName: string; lastName: string } | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface TripRecordWithRelations {
+  tripId: string;
+  driverId: string;
+  vehicleId: string;
+  tripOrigin: unknown;
+  tripDestination: unknown;
+  tripStops: unknown;
+  tripRoute: unknown;
+  tripDistance: number;
+  availableSeats: number;
+  vacantSeats: number;
+  tripTags: string[];
+  startTime: Date;
+  totalSeats: number;
+  tripStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
+  vehicle?: {
+    vehicleId: string;
+    driverId: string;
+    recordId: string;
+    vehicleType: string;
+    vehicleModel: string;
+    vehicleMake: string;
+    vehicleCapacity: number;
+    registrationNumber: string;
+    vehicleImage: string;
+    vehicleStatus: string;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+  bookings: BookingWithPassengerRecord[];
+}
 
 /**
  * Implementation for the trip repository.
@@ -22,93 +94,322 @@ export class TripsRepository implements ITripRepository {
     private readonly _placesCacheStore: IPlacesCacheStore,
   ) {}
 
-  async save(trip: TripEntity): Promise<void> {
-    //create indexed data
-
-    /*
-    //without buffering
-    const placesWithIndex = await Promise.all(
-      trip.tripRoute.map(async (point, i) => {
-        const placeIndex = await this._geoIndexingService.locationToIndex(
-          point[1],
-          point[0],
-        );
-        return {
-          placeIndex,
-          tripId: trip.tripId,
-          tripDate: trip.startTime,
-          seqNumber: i,
-          isCompleted: false,
-        };
-      }),
-    );
-
-    */
-    //with buffer for corridor
-    const placesWithIndex = (
-      await Promise.all(
-        trip.tripRoute.map(async (point, i) => {
-          const areaIndices =
-            await this._geoIndexingService.locationToAreaIndices(
-              point[1],
-              point[0],
-            );
-          return areaIndices.map((placeIndex) => ({
-            placeIndex,
-            tripId: trip.tripId,
-            tripDate: trip.startTime,
-            seqNumber: i,
-            isCompleted: false,
-          }));
-        }),
-      )
-    ).flat();
-
-    //filter to remove duplicate cells for points
-    const visited = new Set<string>();
-    const uniqueTripPlaces = placesWithIndex.filter((v) => {
-      const key = v.placeIndex;
-      if (visited.has(key)) return false;
-      visited.add(key);
-      return true;
+  /**
+   * Finds trip details with joined vehicle and booking details
+   * @param tripId Trip ID
+   */
+  async findTripDetails(tripId: string): Promise<TripResultPayload> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+      include: {
+        bookings: {
+          include: {
+            passenger: true,
+          },
+        },
+        vehicle: true,
+      },
     });
 
-    //filter this according to places data in cache
-    const tripIndices = uniqueTripPlaces.map((v) => v.placeIndex);
-    const validIndicesSet = await this._getValidPlaceIndices(tripIndices);
+    if (!trip || !trip.vehicle) return null as unknown as TripResultPayload;
 
-    const filteredTripPlaces = uniqueTripPlaces.filter((place) =>
-      validIndicesSet.has(place.placeIndex),
+    const vehicle = trip.vehicle;
+
+    const tripDetails: TripEntity = {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      tripStops: trip.tripStops as unknown as TripStop[],
+      tripRoute: trip.tripRoute as unknown as Route,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as TripStatus,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+
+    const vehicleDetails: VehicleEntity = {
+      vehicleId: vehicle.vehicleId,
+      driverId: vehicle.driverId,
+      recordId: vehicle.recordId,
+      vehicleType: vehicle.vehicleType as VehicleTypes,
+      vehicleModel: vehicle.vehicleModel,
+      vehicleMake: vehicle.vehicleMake,
+      vehicleCapacity: vehicle.vehicleCapacity,
+      registrationNumber: vehicle.registrationNumber,
+      vehicleImage: vehicle.vehicleImage,
+      vehicleStatus: vehicle.vehicleStatus as VehicleStatus,
+      createdAt: vehicle.createdAt,
+      updatedAt: vehicle.updatedAt,
+    };
+
+    const bookingDetails: BookingEntityWithPassenger[] = trip.bookings.map(
+      (b: BookingWithPassengerRecord) => ({
+        bookingId: b.bookingId,
+        passengerId: b.passengerId,
+        tripId: b.tripId,
+        pickupPoint: b.pickupPoint as TripStop,
+        dropOffPoint: b.dropOffPoint as TripStop,
+        pickupPlaceId: b.pickupPlaceId,
+        dropOffPlaceId: b.dropOffPlaceId,
+        distanceKm: b.distanceKm,
+        seatCount: b.seatCount,
+        totalPrice: b.totalPrice,
+        status: b.status as BookingStatus,
+        passengerName: b.passenger
+          ? `${b.passenger.firstName} ${b.passenger.lastName}`
+          : undefined,
+        createdAt: b.createdAt,
+        updatedAt: b.updatedAt,
+      }),
     );
 
-    //create db entries
-    await prisma.$transaction([
-      this._tripModel.create({
-        data: {
-          tripId: trip.tripId,
-          driverId: trip.driverId,
-          vehicleId: trip.vehicleId,
-          tripOrigin: trip.tripOrigin as any,
-          tripDestination: trip.tripDestination as any,
-          tripStops: trip.tripStops as any,
-          tripRoute: trip.tripRoute as any,
-          tripDistance: trip.tripDistance,
-          availableSeats: trip.availableSeats,
-          vacantSeats: trip.vacantSeats,
-          tripTags: trip.tripTags,
-          startTime: trip.startTime,
-          totalSeats: trip.totalSeats,
-          tripStatus: trip.tripStatus as any,
-          createdAt: trip.createdAt,
-          updatedAt: trip.updatedAt,
-        },
-      }),
-      this._tripPlacesModel.createMany({
-        data: filteredTripPlaces,
-      }),
-    ]);
+    return {
+      tripDetails,
+      vehicleDetails,
+      bookingDetails,
+    };
   }
 
+  async findTripsByDriverId(
+    driverId: string,
+    query?: DriverGetAllTripsQueryDTO,
+  ): Promise<PaginatedPayload<TripResultPayload[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = { driverId };
+    if (query?.tripStatus && (query.tripStatus as string) !== "all") {
+      where.tripStatus = query.tripStatus;
+    }
+
+    const [totalItems, records] = await Promise.all([
+      this._tripModel.count({ where }),
+      this._tripModel.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          vehicle: true,
+          bookings: {
+            include: {
+              passenger: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const data: TripResultPayload[] = (
+      records as unknown as TripRecordWithRelations[]
+    ).map((trip) => {
+      const vehicle = trip.vehicle;
+      const tripDetails: TripEntity = {
+        tripId: trip.tripId,
+        driverId: trip.driverId,
+        vehicleId: trip.vehicleId,
+        tripOrigin: trip.tripOrigin as TripStop,
+        tripDestination: trip.tripDestination as TripStop,
+        tripStops: trip.tripStops as TripStop[],
+        tripRoute: trip.tripRoute as Route,
+        tripDistance: trip.tripDistance,
+        availableSeats: trip.availableSeats,
+        vacantSeats: trip.vacantSeats,
+        tripTags: trip.tripTags,
+        startTime: trip.startTime,
+        totalSeats: trip.totalSeats,
+        tripStatus: trip.tripStatus as TripStatus,
+        createdAt: trip.createdAt,
+        updatedAt: trip.updatedAt,
+      };
+
+      const vehicleDetails: VehicleEntity = vehicle
+        ? {
+            vehicleId: vehicle.vehicleId,
+            driverId: vehicle.driverId,
+            recordId: vehicle.recordId,
+            vehicleType: vehicle.vehicleType as VehicleTypes,
+            vehicleModel: vehicle.vehicleModel,
+            vehicleMake: vehicle.vehicleMake,
+            vehicleCapacity: vehicle.vehicleCapacity,
+            registrationNumber: vehicle.registrationNumber,
+            vehicleImage: vehicle.vehicleImage,
+            vehicleStatus: vehicle.vehicleStatus as VehicleStatus,
+            createdAt: vehicle.createdAt,
+            updatedAt: vehicle.updatedAt,
+          }
+        : (null as unknown as VehicleEntity);
+
+      const bookingDetails: BookingEntityWithPassenger[] = trip.bookings.map(
+        (b: BookingWithPassengerRecord) => ({
+          bookingId: b.bookingId,
+          passengerId: b.passengerId,
+          tripId: b.tripId,
+          pickupPoint: b.pickupPoint as TripStop,
+          dropOffPoint: b.dropOffPoint as TripStop,
+          pickupPlaceId: b.pickupPlaceId,
+          dropOffPlaceId: b.dropOffPlaceId,
+          distanceKm: b.distanceKm,
+          seatCount: b.seatCount,
+          totalPrice: b.totalPrice,
+          status: b.status as BookingStatus,
+          passengerName: b.passenger
+            ? `${b.passenger.firstName} ${b.passenger.lastName}`
+            : undefined,
+          createdAt: b.createdAt,
+          updatedAt: b.updatedAt,
+        }),
+      );
+
+      return {
+        tripDetails,
+        vehicleDetails,
+        bookingDetails,
+      };
+    });
+
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    return {
+      data,
+      paginationMeta: {
+        totalItems,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+    };
+  }
+
+  /**
+   * gets route details for the trip service
+   */
+  async findJourneyDetails(
+    tripId: string,
+  ): Promise<JourneyDetailsPayload | null> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+      include: {
+        vehicle: true,
+        tripPlaces: {
+          include: {
+            place: true,
+          },
+          orderBy: {
+            seqNumber: "asc",
+          },
+        },
+      },
+    });
+
+    if (!trip || !trip.vehicle) return null;
+
+    const tripEntity: TripEntity = {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      tripStops: trip.tripStops as unknown as TripStop[],
+      tripRoute: trip.tripRoute as unknown as Route,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as TripStatus,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+
+    // Extract and deduplicate stops from tripPlaces table join
+    const visited = new Set<string>();
+    const availableStops: TripStop[] = [];
+
+    if (trip.tripPlaces && trip.tripPlaces.length > 0) {
+      for (const tp of trip.tripPlaces) {
+        if (!tp.place) continue;
+        const key = `${tp.place.placeLat},${tp.place.placeLng}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          availableStops.push({
+            stopLat: tp.place.placeLat,
+            stopLng: tp.place.placeLng,
+            stopName: tp.place.placeName,
+            stopAddress: tp.place.placeAddress,
+          });
+        }
+      }
+    }
+
+    // Fallback if tripPlaces table is empty
+    if (availableStops.length === 0) {
+      const fallbackStops = [
+        tripEntity.tripOrigin,
+        ...(tripEntity.tripStops || []),
+        tripEntity.tripDestination,
+      ];
+      for (const stop of fallbackStops) {
+        if (!stop) continue;
+        const key = `${stop.stopLat},${stop.stopLng}`;
+        if (!visited.has(key)) {
+          visited.add(key);
+          availableStops.push(stop);
+        }
+      }
+    }
+
+    return {
+      trip: tripEntity,
+      availableStops,
+      vehicleType: trip.vehicle.vehicleType as VehicleTypes,
+    };
+  }
+
+  /**
+   * Finds a single trip entity by tripId
+   * @param tripId Trip ID
+   */
+  async findByTripId(tripId: string): Promise<TripEntity | null> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+    });
+
+    if (!trip) return null;
+
+    return {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      tripStops: trip.tripStops as unknown as TripStop[],
+      tripRoute: trip.tripRoute as unknown as Route,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as TripStatus,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+  }
+
+  /**
+   * Match data with trips that match using the indexed tables
+   * @param dto Search parameters
+   */
   async findMatchingTrips(
     dto: ListTripsRequestDTO,
   ): Promise<PaginatedPayload<ListTripsResultDTO[]>> {
@@ -116,7 +417,7 @@ export class TripsRepository implements ITripRepository {
     const limit = dto.query?.limit || 10;
     const skip = (page - 1) * limit;
 
-    //index locatiosn with buffer
+    // index locations with buffer
     const rawOriginIndices =
       await this._geoIndexingService.locationToAreaIndices(
         dto.origin.stopLat,
@@ -127,7 +428,7 @@ export class TripsRepository implements ITripRepository {
       dto.destination.stopLng,
     );
 
-    //filter indices with known places in cache/db
+    // filter indices with known places in cache/db
     const validOriginSet = await this._getValidPlaceIndices(rawOriginIndices);
     const validDestSet = await this._getValidPlaceIndices(rawDestIndices);
 
@@ -138,7 +439,7 @@ export class TripsRepository implements ITripRepository {
       validDestSet.has(idx),
     );
 
-    //quickly return if there is no matches
+    // quickly return if there are no matches
     if (validOriginIndices.length === 0 || validDestIndices.length === 0) {
       return {
         data: [],
@@ -151,16 +452,21 @@ export class TripsRepository implements ITripRepository {
       };
     }
 
-    //find all trips touching origin.
+    // find all trips touching origin
     const originPlaces = await this._tripPlacesModel.findMany({
       where: {
         placeIndex: { in: validOriginIndices },
-        tripDate: { gte: dto.time },
+        tripDate: {
+          gte: dto.time,
+          lt: new Date(
+            new Date(dto.time).setDate(new Date(dto.time).getDate() + 1),
+          ),
+        },
       },
       select: { tripId: true, seqNumber: true },
     });
 
-    //return if no origin matches
+    // return if no origin matches
     if (originPlaces.length === 0) {
       return {
         data: [],
@@ -182,7 +488,7 @@ export class TripsRepository implements ITripRepository {
       }
     }
 
-    //check for destiontion places that have the origin trip ids
+    // check for destination places that have the origin trip ids
     const destPlaces = await this._tripPlacesModel.findMany({
       where: {
         placeIndex: { in: validDestIndices },
@@ -191,7 +497,7 @@ export class TripsRepository implements ITripRepository {
       select: { tripId: true, seqNumber: true },
     });
 
-    //check and find suitabel
+    // check and find suitable matching trip IDs
     const matchingTripIds = Array.from(
       new Set(
         destPlaces
@@ -221,15 +527,30 @@ export class TripsRepository implements ITripRepository {
     const paginatedTripIds = matchingTripIds.slice(skip, skip + limit);
 
     const trips = await this._tripModel.findMany({
-      where: { tripId: { in: paginatedTripIds } },
+      where: {
+        tripId: { in: paginatedTripIds },
+        vacantSeats: { gt: 0 },
+        tripStatus: TripStatus.SCHEDULED,
+      },
     });
 
     const vehicleIds = [...new Set(trips.map((t) => t.vehicleId))];
-    const vehicles = await prisma.vehicle.findMany({
-      where: { vehicleId: { in: vehicleIds } },
-    });
+    const driverIds = [...new Set(trips.map((t) => t.driverId))];
+
+    const [vehicles, drivers] = await Promise.all([
+      prisma.vehicle.findMany({
+        where: { vehicleId: { in: vehicleIds } },
+      }),
+      prisma.driver.findMany({
+        where: { driverId: { in: driverIds } },
+      }),
+    ]);
+
     const vehicleTypeMap = new Map(
       vehicles.map((v) => [v.vehicleId, v.vehicleType]),
+    );
+    const driverNameMap = new Map(
+      drivers.map((d) => [d.driverId, `${d.firstName} ${d.lastName}`.trim()]),
     );
 
     const data: ListTripsResultDTO[] = trips.map((trip) => ({
@@ -237,6 +558,7 @@ export class TripsRepository implements ITripRepository {
       tripOrigin: trip.tripOrigin as unknown as TripStop,
       tripDestination: trip.tripDestination as unknown as TripStop,
       tripDistance: trip.tripDistance,
+      driverName: driverNameMap.get(trip.driverId) || "Driver",
       seatsAvailable: trip.vacantSeats,
       time: trip.startTime,
       vehicleType: (vehicleTypeMap.get(trip.vehicleId) ||
@@ -252,6 +574,76 @@ export class TripsRepository implements ITripRepository {
         totalPages,
       },
     };
+  }
+
+  /**
+   * Saves a new trip and indexes its places
+   * @param trip Trip entity
+   */
+  async save(trip: TripEntity): Promise<void> {
+    // with buffer for corridor
+    const placesWithIndex = (
+      await Promise.all(
+        trip.tripRoute.map(async (point, i) => {
+          const areaIndices =
+            await this._geoIndexingService.locationToAreaIndices(
+              point[1],
+              point[0],
+            );
+          return areaIndices.map((placeIndex) => ({
+            placeIndex,
+            tripId: trip.tripId,
+            tripDate: trip.startTime,
+            seqNumber: i,
+            isCompleted: false,
+          }));
+        }),
+      )
+    ).flat();
+
+    // filter to remove duplicate cells for points
+    const visited = new Set<string>();
+    const uniqueTripPlaces = placesWithIndex.filter((v) => {
+      const key = v.placeIndex;
+      if (visited.has(key)) return false;
+      visited.add(key);
+      return true;
+    });
+
+    // filter this according to places data in cache
+    const tripIndices = uniqueTripPlaces.map((v) => v.placeIndex);
+    const validIndicesSet = await this._getValidPlaceIndices(tripIndices);
+
+    const filteredTripPlaces = uniqueTripPlaces.filter((place) =>
+      validIndicesSet.has(place.placeIndex),
+    );
+
+    // create db entries
+    await prisma.$transaction([
+      this._tripModel.create({
+        data: {
+          tripId: trip.tripId,
+          driverId: trip.driverId,
+          vehicleId: trip.vehicleId,
+          tripOrigin: trip.tripOrigin as any,
+          tripDestination: trip.tripDestination as any,
+          tripStops: trip.tripStops as any,
+          tripRoute: trip.tripRoute as any,
+          tripDistance: trip.tripDistance,
+          availableSeats: trip.availableSeats,
+          vacantSeats: trip.vacantSeats,
+          tripTags: trip.tripTags,
+          startTime: trip.startTime,
+          totalSeats: trip.totalSeats,
+          tripStatus: trip.tripStatus as any,
+          createdAt: trip.createdAt,
+          updatedAt: trip.updatedAt,
+        },
+      }),
+      this._tripPlacesModel.createMany({
+        data: filteredTripPlaces,
+      }),
+    ]);
   }
 
   /**
@@ -281,5 +673,184 @@ export class TripsRepository implements ITripRepository {
       await this._placesCacheStore.checkPlaceIndices(indices);
 
     return new Set(indices.filter((_, i) => cachedStatus[i] === 1));
+  }
+
+  /**
+   * Find all trips with driver and vehicle relations formatted for admin dashboard
+   */
+  async findAllTrips(
+    query: AdminGetAllTripsQuery,
+  ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.TripWhereInput = {};
+
+    if (query?.search) {
+      const search = query.search;
+      where.OR = [
+        { tripId: { contains: search, mode: "insensitive" } },
+        { driverId: { contains: search, mode: "insensitive" } },
+        { vehicleId: { contains: search, mode: "insensitive" } },
+        { driver: { firstName: { contains: search, mode: "insensitive" } } },
+        { driver: { lastName: { contains: search, mode: "insensitive" } } },
+        { vehicle: { vehicleMake: { contains: search, mode: "insensitive" } } },
+        { vehicle: { vehicleModel: { contains: search, mode: "insensitive" } } },
+        { tripOrigin: { path: ["stopName"], string_contains: search } },
+        { tripOrigin: { path: ["stopAddress"], string_contains: search } },
+        { tripOrigin: { path: ["name"], string_contains: search } },
+        { tripOrigin: { path: ["address"], string_contains: search } },
+        { tripDestination: { path: ["stopName"], string_contains: search } },
+        { tripDestination: { path: ["stopAddress"], string_contains: search } },
+        { tripDestination: { path: ["name"], string_contains: search } },
+        { tripDestination: { path: ["address"], string_contains: search } },
+      ];
+    }
+
+    if (query?.filterField && query?.filterValue && (query.filterField as any) !== "None" && (query.filterValue as any) !== "None") {
+      const field = String(query.filterField);
+      const val = String(query.filterValue);
+      if (field === "tripStatus") {
+        where.tripStatus = val.toLowerCase() as Prisma.EnumTripStatusFilter;
+      } else if (field === "driverName") {
+        where.driver = {
+          OR: [
+            { firstName: { contains: val, mode: "insensitive" } },
+            { lastName: { contains: val, mode: "insensitive" } },
+          ],
+        };
+      } else if (field === "vehicleName") {
+        where.vehicle = {
+          OR: [
+            { vehicleMake: { contains: val, mode: "insensitive" } },
+            { vehicleModel: { contains: val, mode: "insensitive" } },
+          ],
+        };
+      }
+    }
+
+    let orderBy: Prisma.TripOrderByWithRelationInput = { createdAt: "desc" };
+    if (query?.sortField && (query.sortField as any) !== "None") {
+      const sortOrder = query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
+      const field = String(query.sortField);
+
+      if (field === "driverName") {
+        orderBy = { driver: { firstName: sortOrder } };
+      } else if (field === "vehicleName") {
+        orderBy = { vehicle: { vehicleMake: sortOrder } };
+      } else if (field === "startTime") {
+        orderBy = { startTime: sortOrder };
+      } else if (field === "tripStatus") {
+        orderBy = { tripStatus: sortOrder };
+      } else if (field === "availableSeats") {
+        orderBy = { availableSeats: sortOrder };
+      } else if (field === "vacantSeats") {
+        orderBy = { vacantSeats: sortOrder };
+      } else if (field === "tripId") {
+        orderBy = { tripId: sortOrder };
+      } else {
+        orderBy = { createdAt: sortOrder };
+      }
+    }
+
+    const [totalItems, records] = await Promise.all([
+      this._tripModel.count({ where }),
+      this._tripModel.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include: {
+          driver: true,
+          vehicle: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    const items: AdminGetAllTripsResponseDTO[] = records.map((trip: any) => {
+      const origin =
+        (trip.tripOrigin as unknown as TripStop)?.stopName ||
+        (trip.tripOrigin as unknown as TripStop)?.stopAddress ||
+        "";
+      const destination =
+        (trip.tripDestination as unknown as TripStop)?.stopName ||
+        (trip.tripDestination as unknown as TripStop)?.stopAddress ||
+        "";
+      return {
+        tripId: trip.tripId,
+        driverName:
+          `${trip.driver?.firstName || ""} ${trip.driver?.lastName || ""}`.trim(),
+        vehicleName:
+          `${trip.vehicle?.vehicleMake || ""} ${trip.vehicle?.vehicleModel || ""}`.trim(),
+        tripOrigin: origin,
+        tripDestination: destination,
+        availableSeats: trip.availableSeats,
+        vacantSeats: trip.vacantSeats,
+        startTime: trip.startTime,
+        tripStatus: trip.tripStatus as TripStatus,
+      };
+    });
+
+    return {
+      data: items,
+      paginationMeta: {
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Finds full trip details aggregated with driver, vehicle, and bookings for admin dashboard
+   */
+  async findAdminTripDetails(
+    tripId: string,
+  ): Promise<AdminGetTripDetailsResponseDTO | null> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+      include: {
+        driver: true,
+        vehicle: true,
+        bookings: {
+          include: {
+            passenger: true,
+          },
+        },
+      },
+    });
+
+    if (!trip || !trip.driver || !trip.vehicle) return null;
+
+    return {
+      tripId: trip.tripId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      route: trip.tripRoute as unknown as Route,
+      tripDate: trip.startTime,
+      vehicleId: trip.vehicleId,
+      vehicleName:
+        `${trip.vehicle.vehicleMake} ${trip.vehicle.vehicleModel}`.trim(),
+      vehicleImage: trip.vehicle.vehicleImage || "",
+      driverId: trip.driverId,
+      driverName: `${trip.driver.firstName} ${trip.driver.lastName}`.trim(),
+      bookings: trip.bookings.map((b: any) => ({
+        bookingId: b.bookingId,
+        passengerName: b.passenger
+          ? `${b.passenger.firstName} ${b.passenger.lastName}`.trim()
+          : "Passenger",
+        bookingStatus: b.status as BookingStatus,
+        bookingOrigin:
+          (b.pickupPoint)?.name || (b.pickupPoint)?.address || "",
+        bookingDestination:
+          (b.dropOffPoint)?.name ||
+          (b.dropOffPoint)?.address ||
+          "",
+      })),
+    };
   }
 }

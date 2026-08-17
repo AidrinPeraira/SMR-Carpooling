@@ -1,0 +1,89 @@
+info:
+  name: reject-booking
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: http://localhost:4000/api/v1/bookings/:bookingId/reject
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY0MDQ4MywiZXhwIjoxNzg2NjQxMzgzfQ.J95MkwnFI4V4WAjMkynQ95xltvUdgj7NJzA-9u1tM7g
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  params:
+    - name: bookingId
+      value: dabc6807-7aeb-4a03-9bcc-13639a4563d1
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/bookings/:bookingId/reject
+      method: PATCH
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY0MDQ4MywiZXhwIjoxNzg2NjQxMzgzfQ.J95MkwnFI4V4WAjMkynQ95xltvUdgj7NJzA-9u1tM7g
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      params:
+        - name: bookingId
+          value: dabc6807-7aeb-4a03-9bcc-13639a4563d1
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "81"
+        - name: etag
+          value: W/"51-fjDvlDUJ5CgDSyAr2I+po2KEFWo"
+        - name: date
+          value: Thu, 13 Aug 2026 17:05:09 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Booking request rejected successfully",
+            "payload": null
+          }

@@ -7,4 +7,19 @@ export interface ITripControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+  getJourneyDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
+  getDriverTrips(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
+  getDriverTripDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

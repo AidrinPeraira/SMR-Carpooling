@@ -19,3 +19,5 @@ export interface AdminApplicationListResult {
   created_at: Date;
   updated_at: Date;
 }
+
+export type GetAllApplicationsResult = AdminApplicationListResult;

@@ -1,6 +1,5 @@
-import { DriverTripsView } from "@/features/driver/trips/views/DriverTripsView";
+import { AdminTripsView } from "@/features/admin/trips/views/AdminTripsView";
 
 export default function AdminTripsPage() {
-  return <DriverTripsView />;
+  return <AdminTripsView />;
 }
-

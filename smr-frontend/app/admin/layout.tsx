@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Car,
   Compass,
+  BookmarkCheck,
   Settings,
 } from "lucide-react";
 import { logoutUserAction } from "@/features/auth/api/actions/LogoutUserAction";
@@ -67,6 +68,11 @@ export default function AdminLayout({ children }: Props) {
           name: "Trips",
           href: "/admin/trips",
           icon: <Compass className="w-4 h-4" />,
+        },
+        {
+          name: "Bookings",
+          href: "/admin/bookings",
+          icon: <BookmarkCheck className="w-4 h-4" />,
         },
       ],
     },

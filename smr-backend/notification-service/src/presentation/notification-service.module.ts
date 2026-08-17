@@ -9,11 +9,13 @@ import { SendApplicationReturnedMailUseCase } from "#/application/use-case/SendA
 import { SendPasswordChangeRequestMailUseCase } from "#/application/use-case/SendPasswordChangeRequestMailUseCase";
 import { SendPasswordChangedMailUseCase } from "#/application/use-case/SendPasswordChangedMailUseCase";
 import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSignupVerificationMailUseCase";
+import { SendNewBookingEmailUseCase } from "#/application/use-case/SendNewBookingEmailUseCase";
 import { RabbitMQConsumer } from "#/infrastructure/services/RabbitMQConsumer";
 import { ResendEmailService } from "#/infrastructure/services/ResendEMailService";
 import { ApplicationApprovedHandler } from "#/presentation/event-handlers/ApplicationApprovedHandler";
 import { ApplicationRejectedHandler } from "#/presentation/event-handlers/ApplicationRejectedHandler";
 import { ApplicationReturnedHandler } from "#/presentation/event-handlers/ApplicationReturnedHandler";
+import { NewBookingHandler } from "#/presentation/event-handlers/NewBookingHandler";
 import { PasswordChangeRequestHandler } from "#/presentation/event-handlers/PasswordChangeRequestHandler";
 import { PasswordChangedHandler } from "#/presentation/event-handlers/PasswordChangedHandler";
 import { UserSignupHandler } from "#/presentation/event-handlers/UserSignupHandler";
@@ -42,6 +44,10 @@ const sendApplicationRejectedMailUseCase =
 
 const sendApplicationReturnedMailUseCase =
   new SendApplicationReturnedMailUseCase(resendMailService);
+
+const sendNewBookingEmailUseCase = new SendNewBookingEmailUseCase(
+  resendMailService,
+);
 
 const userSignupHandler = new UserSignupHandler(
   consolaLogger,
@@ -73,6 +79,11 @@ const applicationReturnedHandler = new ApplicationReturnedHandler(
   sendApplicationReturnedMailUseCase,
 );
 
+const newBookingHandler = new NewBookingHandler(
+  consolaLogger,
+  sendNewBookingEmailUseCase,
+);
+
 const eventDispatcher = new EventDispatcher(consolaLogger);
 await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, userSignupHandler);
 await eventDispatcher.register(
@@ -94,6 +105,10 @@ await eventDispatcher.register(
 await eventDispatcher.register(
   EventName.ADMIN_RETURN_APPLICTION,
   applicationReturnedHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_NEW_BOOKING,
+  newBookingHandler,
 );
 
 const rabbitMqConsumer = new RabbitMQConsumer(

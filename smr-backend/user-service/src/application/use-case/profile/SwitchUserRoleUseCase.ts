@@ -34,6 +34,19 @@ export class SwitchUserRoleUseCase implements ISwitchUserRoleUseCase {
       );
     }
 
+    if (!existingUser.isDriver) {
+      throw new ApplicationError(
+        UserErrorMessage.NOT_A_DRIVER,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_UNAUTHORIZED,
+        {
+          location: "SwitchUserRoleUseCase",
+          description: "User not a registered drinver",
+          userId,
+        },
+      );
+    }
+
     const newRole =
       existingUser.userRole === UserRole.DRIVER
         ? UserRole.PASSENGER

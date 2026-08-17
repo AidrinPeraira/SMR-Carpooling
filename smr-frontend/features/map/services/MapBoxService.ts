@@ -1,4 +1,7 @@
-import { IMapProviderService } from "@/features/map/services/IMapProviderService";
+import {
+  IMapProviderService,
+  RouteDrawOptions,
+} from "@/features/map/services/IMapProviderService";
 import {
   MapPoint,
   Place,
@@ -27,6 +30,7 @@ export class MapBoxService implements IMapProviderService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _searchSession: SearchSession<any, any, any, any>;
   private _markers: Map<string, Marker> = new Map();
+  private _activeRoutes: Set<string> = new Set();
 
   constructor() {
     this._searchBox = new SearchBoxCore({
@@ -68,7 +72,7 @@ export class MapBoxService implements IMapProviderService {
     // remove any location tracking first
     await this.stopLocationTracking();
     await this.clearAllMarkers();
-    await this.removeRoute();
+    await this.clearAllRoutes();
 
     this._map?.remove();
     this._map = null;
@@ -93,9 +97,11 @@ export class MapBoxService implements IMapProviderService {
    * Fetches user's current GPS location via browser Geolocation API
    */
   async getCurrentLocation(): Promise<MapPoint> {
-    return new Promise((resolve, reject) => {
+    const DEFAULT_FALLBACK: MapPoint = [76.95272651, 8.48706726];
+
+    return new Promise((resolve) => {
       if (typeof window === "undefined" || !navigator.geolocation) {
-        reject(new Error("Geolocation is not supported by this browser."));
+        resolve(DEFAULT_FALLBACK);
         return;
       }
 
@@ -104,8 +110,14 @@ export class MapBoxService implements IMapProviderService {
           const { longitude, latitude } = position.coords;
           resolve([longitude, latitude]);
         },
-        (error) => reject(error),
-        { enableHighAccuracy: true, timeout: 10000 },
+        (error) => {
+          console.warn(
+            "Geolocation positioning failed or timed out, using fallback location:",
+            error,
+          );
+          resolve(DEFAULT_FALLBACK);
+        },
+        { enableHighAccuracy: true, timeout: 20000 },
       );
     });
   }
@@ -342,13 +354,20 @@ export class MapBoxService implements IMapProviderService {
   /**
    * Draws a GeoJSON line route on the map given an array of coordinates
    *
-   * @param points : Array of MapPoint ([lng, lat])
+   * @param points Array of MapPoint ([lng, lat])
+   * @param options Optional route drawing styling and custom ID
    */
-  async drawRoute(points: MapPoint[]): Promise<void> {
+  async drawRoute(
+    points: MapPoint[],
+    options?: RouteDrawOptions,
+  ): Promise<void> {
     if (!this._map) throw new Error("Map not initialised");
 
-    const routeSourceId = "mapbox-trip-route-source";
-    const routeLayerId = "mapbox-trip-route-layer";
+    const routeId = options?.id || "default";
+    const routeSourceId = `mapbox-trip-route-source-${routeId}`;
+    const routeLayerId = `mapbox-trip-route-layer-${routeId}`;
+
+    this._activeRoutes.add(routeId);
 
     const feature = {
       type: "Feature" as const,
@@ -362,6 +381,7 @@ export class MapBoxService implements IMapProviderService {
     const existingSource = this._map.getSource(
       routeSourceId,
     ) as mapboxgl.GeoJSONSource;
+
     if (existingSource) {
       existingSource.setData(feature);
     } else {
@@ -379,22 +399,30 @@ export class MapBoxService implements IMapProviderService {
           "line-cap": "round",
         },
         paint: {
-          "line-color": "#3b82f6",
-          "line-width": 5,
-          "line-opacity": 0.8,
+          "line-color": options?.color || "#3b82f6",
+          "line-width": options?.width || 5,
+          "line-opacity": options?.opacity || 0.85,
         },
       });
     }
   }
 
   /**
-   * Removes active route layer and source from the map instance
+   * Removes active route layer and source from the map instance for a given ID.
+   * If no ID is provided, removes all active routes.
+   *
+   * @param id Optional route ID to remove
    */
-  async removeRoute(): Promise<void> {
+  async removeRoute(id?: string): Promise<void> {
     if (!this._map) return;
 
-    const routeSourceId = "mapbox-trip-route-source";
-    const routeLayerId = "mapbox-trip-route-layer";
+    if (!id) {
+      await this.clearAllRoutes();
+      return;
+    }
+
+    const routeSourceId = `mapbox-trip-route-source-${id}`;
+    const routeLayerId = `mapbox-trip-route-layer-${id}`;
 
     if (this._map.getLayer(routeLayerId)) {
       this._map.removeLayer(routeLayerId);
@@ -402,5 +430,67 @@ export class MapBoxService implements IMapProviderService {
     if (this._map.getSource(routeSourceId)) {
       this._map.removeSource(routeSourceId);
     }
+
+    this._activeRoutes.delete(id);
+
+    // Backward compatibility for legacy single-route IDs
+    if (this._map.getLayer("mapbox-trip-route-layer")) {
+      this._map.removeLayer("mapbox-trip-route-layer");
+    }
+    if (this._map.getSource("mapbox-trip-route-source")) {
+      this._map.removeSource("mapbox-trip-route-source");
+    }
+  }
+
+  /**
+   * Removes all active route layers and sources from the map instance
+   */
+  async clearAllRoutes(): Promise<void> {
+    if (!this._map) return;
+
+    for (const routeId of this._activeRoutes) {
+      const routeSourceId = `mapbox-trip-route-source-${routeId}`;
+      const routeLayerId = `mapbox-trip-route-layer-${routeId}`;
+
+      if (this._map.getLayer(routeLayerId)) {
+        this._map.removeLayer(routeLayerId);
+      }
+      if (this._map.getSource(routeSourceId)) {
+        this._map.removeSource(routeSourceId);
+      }
+    }
+
+    this._activeRoutes.clear();
+
+    // Clean up legacy single route IDs if present
+    if (this._map.getLayer("mapbox-trip-route-layer")) {
+      this._map.removeLayer("mapbox-trip-route-layer");
+    }
+    if (this._map.getSource("mapbox-trip-route-source")) {
+      this._map.removeSource("mapbox-trip-route-source");
+    }
+  }
+
+  /**
+   * Renders a route line on the map using an array of latitude/longitude objects or coordinate tuples
+   *
+   * @param coordinates Array of { lat, lng } objects or [number, number] tuples
+   * @param options Optional route drawing styling and ID
+   */
+  async drawRouteFromCoordinates(
+    coordinates: { lat: number; lng: number }[] | [number, number][],
+    options?: RouteDrawOptions,
+  ): Promise<void> {
+    if (!coordinates || coordinates.length === 0) return;
+
+    const points: MapPoint[] = coordinates.map((coord) => {
+      if (Array.isArray(coord)) {
+        return [coord[0], coord[1]];
+      }
+      return [coord.lng, coord.lat];
+    });
+
+    await this.drawRoute(points, options);
   }
 }
+

@@ -9,7 +9,9 @@ enum TripStatus {
 model Trip {
   tripId    String @id
   driverId  String
+  driver    Driver @relation(fields: [driverId], references: [driverId])
   vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [vehicleId])
 
   //TripStop as json 
   tripOrigin      Json
@@ -32,6 +34,7 @@ model Trip {
   updatedAt      DateTime
 
   tripPlaces TripPlaces[]
+  bookings   Bookings[]
 }
 
 model TripPlaces {
@@ -42,7 +45,7 @@ model TripPlaces {
   seqNumber   Int
   isCompleted Boolean @default(false)
 
-  trip Trip @relation(fields: [tripId], references: [tripId])
+  trip  Trip   @relation(fields: [tripId], references: [tripId])
   place Places @relation(fields: [placeIndex], references: [placeIndex])
 
   // Composite primary key ensures a trip cannot have duplicate sequence numbers for the same place

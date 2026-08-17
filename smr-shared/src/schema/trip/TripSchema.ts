@@ -33,3 +33,53 @@ export const SearchTripSchema = z.object({
 });
 
 export type SearchTripSchemaType = z.infer<typeof SearchTripSchema>;
+
+export const GetJourneyDetailsSchema = z.object({
+  trip_id: z.string().min(1),
+});
+
+export type GetJourneyDetailsSchemaType = z.infer<
+  typeof GetJourneyDetailsSchema
+>;
+
+export const CreateBookingSchema = z.object({
+  trip_id: z.string().min(1),
+  pickup_point: TripStopSchema,
+  drop_off_point: TripStopSchema,
+  pickup_place_id: z.string().min(1),
+  drop_off_place_id: z.string().min(1),
+  seat_count: z.number().int().positive(),
+  distance_km: z.number().nonnegative(),
+});
+
+export type CreateBookingSchemaType = z.infer<typeof CreateBookingSchema>;
+
+export const DriverGetBookingsQuerySchema = z.object({
+  booking_status: z.string().optional(),
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+});
+
+export type DriverGetBookingsQuerySchemaType = z.infer<
+  typeof DriverGetBookingsQuerySchema
+>;
+
+export const PassengerGetBookingsQuerySchema = z.object({
+  booking_status: z.string().optional(),
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+});
+
+export type PassengerGetBookingsQuerySchemaType = z.infer<
+  typeof PassengerGetBookingsQuerySchema
+>;
+
+export const DriverGetTripsQuerySchema = z.object({
+  trip_status: z.string().optional(),
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+});
+
+export type DriverGetTripsQuerySchemaType = z.infer<
+  typeof DriverGetTripsQuerySchema
+>;

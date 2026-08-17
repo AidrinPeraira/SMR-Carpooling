@@ -29,3 +29,4 @@ export interface IGeoIndexingService {
    */
   indexToLocation(index: string): Promise<{ lat: number; lng: number }>;
 }
+

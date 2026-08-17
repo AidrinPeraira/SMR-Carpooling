@@ -19,4 +19,5 @@ model Vehicle {
   updatedAt          DateTime      @updatedAt
 
   driver Driver @relation(fields: [driverId], references: [driverId])
+  trips  Trip[]
 }

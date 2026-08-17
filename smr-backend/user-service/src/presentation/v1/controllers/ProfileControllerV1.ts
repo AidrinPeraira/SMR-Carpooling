@@ -4,19 +4,14 @@ import { ISwitchUserRoleUseCase } from "#/application/interfaces/use-case/profil
 import { IUpdateAvatarUseCase } from "#/application/interfaces/use-case/profile/IUpdateAvatarUseCase";
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
 import { IProfileControllerV1 } from "#/presentation/v1/interfaces/IProfileControllerV1";
-import { toLoginResult } from "#/presentation/v1/mapper/AuthMapper";
-import {
-  toGetAvatarUploadUrlRequestDTO,
-  toGetAvatarUploadUrlResult,
-  toGetUserResult,
-  toUpdateAvatarRequestDTO,
-  toUpdateAvatarResult,
-  toUpdateUserRequestDTO,
-} from "#/presentation/v1/mapper/ProfileMapper";
+import { AuthMapper } from "#/presentation/v1/mapper/AuthMapper";
+import { ProfileMapper } from "#/presentation/v1/mapper/ProfileMapper";
 import {
   ApplicationError,
   ErrorCode,
+  GetAvatarUploadUrlRequest,
   GetAvatarUploadUrlResult,
+  GetAvatarUploadUrlSchema,
   GenericErrorMessage,
   GenericSuccessMessage,
   GetUserResult,
@@ -24,8 +19,13 @@ import {
   ILogger,
   LoginResult,
   makeSuccessResponse,
+  UpdateAvatarRequest,
   UpdateAvatarResult,
+  UpdateAvatarSchema,
+  UpdateUserRequest,
+  UpdateUserSchema,
   UserSuccessMessage,
+  zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
 
@@ -45,7 +45,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
     this._logger.info("Getting user data for ID: ", userId);
 
     const result = await this._getUserUseCase.execute(userId);
-    const mappedResult = toGetUserResult(result);
+    const mappedResult = ProfileMapper.toGetUserResult(result);
 
     res
       .status(HttpStatusCodes.Ok)
@@ -63,7 +63,8 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   async updateUser(req: Request, res: Response): Promise<void> {
     const headerUserId = req.headers["x-user-id"] as string;
 
-    const data = toUpdateUserRequestDTO(req.body);
+    const body = zodParser<UpdateUserRequest>(UpdateUserSchema, req.body);
+    const data = ProfileMapper.toUpdateUserRequestDTO(body);
 
     //check if user id from auth cookies is the same as the one in body data
     if (headerUserId !== data.userId) {
@@ -86,7 +87,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       .json(
         makeSuccessResponse(
           UserSuccessMessage.PROFILE_UPDATED,
-          toGetUserResult(result),
+          ProfileMapper.toGetUserResult(result),
         ),
       );
   }
@@ -94,7 +95,11 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   async getAvatarUploadUrl(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
-    const dto = toGetAvatarUploadUrlRequestDTO(req.body, userId);
+    const body = zodParser<GetAvatarUploadUrlRequest>(
+      GetAvatarUploadUrlSchema,
+      req.body,
+    );
+    const dto = ProfileMapper.toGetAvatarUploadUrlRequestDTO(body, userId);
     const result = await this._getAvatarUploadUrlUseCase.execute(dto);
 
     res
@@ -102,7 +107,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       .json(
         makeSuccessResponse<GetAvatarUploadUrlResult>(
           GenericSuccessMessage.OPERATION_SUCCESSFUL,
-          toGetAvatarUploadUrlResult(result),
+          ProfileMapper.toGetAvatarUploadUrlResult(result),
         ),
       );
   }
@@ -110,7 +115,8 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   async updateAvatar(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
-    const dto = toUpdateAvatarRequestDTO(req.body, userId);
+    const body = zodParser<UpdateAvatarRequest>(UpdateAvatarSchema, req.body);
+    const dto = ProfileMapper.toUpdateAvatarRequestDTO(body, userId);
     const result = await this._updateAvatarUseCase.execute(dto);
 
     res
@@ -118,7 +124,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       .json(
         makeSuccessResponse<UpdateAvatarResult>(
           UserSuccessMessage.PROFILE_UPDATED,
-          toUpdateAvatarResult(result),
+          ProfileMapper.toUpdateAvatarResult(result),
         ),
       );
   }
@@ -129,7 +135,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
     this._logger.info("Switching user role for ID: ", userId);
 
     const result = await this._switchUserRoleUseCase.execute(userId);
-    const mappedResult = toLoginResult(result);
+    const mappedResult = AuthMapper.toLoginResult(result);
 
     res
       .status(HttpStatusCodes.Ok)

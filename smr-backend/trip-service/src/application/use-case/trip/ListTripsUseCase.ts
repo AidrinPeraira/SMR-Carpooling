@@ -1,7 +1,7 @@
 import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
-} from "#/application/dto/trip/ListTripsDTO";
+} from "#/application/dto/trip/PassengerListTripsDTO";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { PaginatedPayload } from "@sharemyride/shared";
@@ -22,6 +22,7 @@ export class ListTripsUseCase implements IListTripsUseCase {
   async execute(
     query: ListTripsRequestDTO,
   ): Promise<PaginatedPayload<ListTripsResultDTO[]>> {
+    console.log("Searching for trips: ", query);
     return this._tripRepository.findMatchingTrips(query);
   }
 }
