@@ -3,6 +3,8 @@ import { IPricingRulesRepository } from "#/application/interfaces/repository/IPr
 import { IVehicleListRepository } from "#/application/interfaces/repository/IVehicleListRepository";
 import { IConfigurationStore } from "#/application/interfaces/store/IConfigurationsStore";
 import { IGetConfigurationsUseCase } from "#/application/interfaces/use-case/admin/configurations/IGetConfigurationsUseCase";
+import { VehicleList } from "#/domain/entities/ConfigurationEntities";
+import { QueryDTO } from "@sharemyride/shared";
 
 /**
  * This class implements the use case to get all configurations for the admin dash.
@@ -15,13 +17,12 @@ export class GetConfigurationUseCase implements IGetConfigurationsUseCase {
   ) {}
 
   /**
-   * This method finds the system configurations and  returnsn
-   * the mapped result as result DTO. It checks the redis cache first.
-   * If not found checks db.
+   * This method finds the system configurations and returns
+   * the mapped result as result DTO.
    *
    * @returns All available and configured settings in trip service
    */
-  async execute(): Promise<GetConfigurationsResultDTO> {
+  async execute(query?: QueryDTO<VehicleList>): Promise<GetConfigurationsResultDTO> {
     let pricing = await this._configStore.getPricingRules();
     if (!pricing) {
       pricing = await this._pricingRepository.findAll();
@@ -29,10 +30,16 @@ export class GetConfigurationUseCase implements IGetConfigurationsUseCase {
       if (pricing) await this._configStore.setPricingRules(pricing);
     }
 
-    let vehicles = await this._configStore.getVehicleList();
+    let vehicles: VehicleList[] | null = null;
+    const hasQuery = query && (query.search || query.filterField || query.sortField);
+
+    if (!hasQuery) {
+      vehicles = await this._configStore.getVehicleList();
+    }
+
     if (!vehicles) {
-      vehicles = await this._vehicleRepository.findAll();
-      if (vehicles) await this._configStore.setVehicleList(vehicles);
+      vehicles = await this._vehicleRepository.findAll(query);
+      if (vehicles && !hasQuery) await this._configStore.setVehicleList(vehicles);
     }
 
     return {

@@ -19,6 +19,7 @@ import { IPlacesCacheStore } from "#/application/interfaces/store/IPlacesCacheSt
 import { TripEntity } from "#/domain/entities/TripEntity";
 import { VehicleEntity } from "#/domain/entities/VehicleEntity";
 import { prisma } from "#/infrastructure/database/prisma";
+import { Prisma } from "#/infrastructure/database/generated/prisma/client";
 import {
   BookingStatus,
   PaginatedPayload,
@@ -684,35 +685,73 @@ export class TripsRepository implements ITripRepository {
     const limit = query?.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.TripWhereInput = {};
+
     if (query?.search) {
+      const search = query.search;
       where.OR = [
-        {
-          driver: {
-            firstName: { contains: query.search, mode: "insensitive" },
-          },
-        },
-        {
-          driver: { lastName: { contains: query.search, mode: "insensitive" } },
-        },
-        {
-          vehicle: {
-            vehicleMake: { contains: query.search, mode: "insensitive" },
-          },
-        },
-        {
-          vehicle: {
-            vehicleModel: { contains: query.search, mode: "insensitive" },
-          },
-        },
+        { tripId: { contains: search, mode: "insensitive" } },
+        { driverId: { contains: search, mode: "insensitive" } },
+        { vehicleId: { contains: search, mode: "insensitive" } },
+        { driver: { firstName: { contains: search, mode: "insensitive" } } },
+        { driver: { lastName: { contains: search, mode: "insensitive" } } },
+        { vehicle: { vehicleMake: { contains: search, mode: "insensitive" } } },
+        { vehicle: { vehicleModel: { contains: search, mode: "insensitive" } } },
+        { tripOrigin: { path: ["stopName"], string_contains: search } },
+        { tripOrigin: { path: ["stopAddress"], string_contains: search } },
+        { tripOrigin: { path: ["name"], string_contains: search } },
+        { tripOrigin: { path: ["address"], string_contains: search } },
+        { tripDestination: { path: ["stopName"], string_contains: search } },
+        { tripDestination: { path: ["stopAddress"], string_contains: search } },
+        { tripDestination: { path: ["name"], string_contains: search } },
+        { tripDestination: { path: ["address"], string_contains: search } },
       ];
     }
 
-    const orderBy: any = {};
-    if (query?.sortField) {
-      orderBy[query.sortField] = query.sortValue || "desc";
-    } else {
-      orderBy.createdAt = "desc";
+    if (query?.filterField && query?.filterValue && (query.filterField as any) !== "None" && (query.filterValue as any) !== "None") {
+      const field = String(query.filterField);
+      const val = String(query.filterValue);
+      if (field === "tripStatus") {
+        where.tripStatus = val.toLowerCase() as Prisma.EnumTripStatusFilter;
+      } else if (field === "driverName") {
+        where.driver = {
+          OR: [
+            { firstName: { contains: val, mode: "insensitive" } },
+            { lastName: { contains: val, mode: "insensitive" } },
+          ],
+        };
+      } else if (field === "vehicleName") {
+        where.vehicle = {
+          OR: [
+            { vehicleMake: { contains: val, mode: "insensitive" } },
+            { vehicleModel: { contains: val, mode: "insensitive" } },
+          ],
+        };
+      }
+    }
+
+    let orderBy: Prisma.TripOrderByWithRelationInput = { createdAt: "desc" };
+    if (query?.sortField && (query.sortField as any) !== "None") {
+      const sortOrder = (query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc") as Prisma.SortOrder;
+      const field = String(query.sortField);
+
+      if (field === "driverName") {
+        orderBy = { driver: { firstName: sortOrder } };
+      } else if (field === "vehicleName") {
+        orderBy = { vehicle: { vehicleMake: sortOrder } };
+      } else if (field === "startTime") {
+        orderBy = { startTime: sortOrder };
+      } else if (field === "tripStatus") {
+        orderBy = { tripStatus: sortOrder };
+      } else if (field === "availableSeats") {
+        orderBy = { availableSeats: sortOrder };
+      } else if (field === "vacantSeats") {
+        orderBy = { vacantSeats: sortOrder };
+      } else if (field === "tripId") {
+        orderBy = { tripId: sortOrder };
+      } else {
+        orderBy = { createdAt: sortOrder };
+      }
     }
 
     const [totalItems, records] = await Promise.all([
@@ -729,7 +768,7 @@ export class TripsRepository implements ITripRepository {
       }),
     ]);
 
-    const totalPages = Math.ceil(totalItems / limit);
+    const totalPages = Math.ceil(totalItems / limit) || 1;
 
     const items: AdminGetAllTripsResponseDTO[] = records.map((trip: any) => {
       const origin =

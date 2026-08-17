@@ -27,6 +27,12 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
       const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
       const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
       const search = req.query.search ? (req.query.search as string) : undefined;
+      const filterField = req.query.filterField
+        ? (req.query.filterField as any)
+        : undefined;
+      const filterValue = req.query.filterValue
+        ? (req.query.filterValue as any)
+        : undefined;
       const sortField = req.query.sortField
         ? (req.query.sortField as any)
         : undefined;
@@ -40,6 +46,8 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
         page,
         limit,
         search,
+        filterField,
+        filterValue,
         sortField,
         sortValue,
       });

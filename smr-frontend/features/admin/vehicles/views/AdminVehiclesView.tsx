@@ -3,43 +3,69 @@
 import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { VehicleListResult } from "@sharemyride/shared";
+import {
+  QueryDTO,
+  SortOrder,
+  VehicleListResult,
+  VehicleTypes,
+} from "@sharemyride/shared";
 import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
 import { InlineError } from "@/components/InlineError";
+import { Filter } from "@/components/UserInput/Filter";
 import { Search } from "@/components/UserInput/Search";
+import { Sort } from "@/components/UserInput/Sort";
 import { getAdminVehiclesRequest } from "../api/requests/getAdminVehiclesRequest";
 
 export function AdminVehiclesView() {
   const existingParams = useSearchParams();
   const router = useRouter();
 
-  const searchValue = (existingParams.get("search") || "").toLowerCase();
+  const searchValue = existingParams.get("search") || "";
+  const filterField = existingParams.get("filterField");
+  const filterValue = existingParams.get("filterValue");
+  const sortField = existingParams.get("sortField");
+  const sortValue = existingParams.get("sortValue") || existingParams.get("sortOrder");
+
+  const page = existingParams.get("page") || "1";
+  const limit = existingParams.get("limit") || "10";
+
+  const queryParams: Record<string, string> = useMemo(() => {
+    const query: Partial<Record<keyof QueryDTO<VehicleListResult>, string>> = {};
+
+    if (searchValue) {
+      query.search = searchValue;
+    }
+
+    if (
+      filterField &&
+      filterValue &&
+      filterField !== "None" &&
+      filterValue !== "None"
+    ) {
+      query.filterField = filterField as keyof VehicleListResult;
+      query.filterValue = filterValue;
+    }
+
+    if (sortField) {
+      query.sortField = sortField as keyof VehicleListResult;
+      query.sortValue = (sortValue as SortOrder) || SortOrder.ASC;
+    }
+
+    query.page = page;
+    query.limit = limit;
+
+    return query as Record<string, string>;
+  }, [searchValue, filterField, filterValue, sortField, sortValue, page, limit]);
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["adminVehicles"],
+    queryKey: ["adminVehicles", queryParams],
     queryFn: async () => {
-      return await getAdminVehiclesRequest();
+      return await getAdminVehiclesRequest(queryParams);
     },
     placeholderData: keepPreviousData,
     staleTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
     gcTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
   });
-
-  const filteredVehicles = useMemo(() => {
-    const vehicles =
-      data && data.success && data.payload?.vehicles
-        ? data.payload.vehicles
-        : [];
-    if (!vehicles.length) return [];
-    if (!searchValue) return vehicles;
-
-    return vehicles.filter(
-      (v: VehicleListResult) =>
-        v.vehicle_make.toLowerCase().includes(searchValue) ||
-        v.vehicle_model.toLowerCase().includes(searchValue) ||
-        v.vehicle_type.toLowerCase().includes(searchValue),
-    );
-  }, [data, searchValue]);
 
   if (isPending) {
     return (
@@ -61,8 +87,10 @@ export function AdminVehiclesView() {
     );
   }
 
+  const vehiclesList = data.payload.vehicles ?? [];
+
   const tableData: TableProps<VehicleListResult> = {
-    data: filteredVehicles,
+    data: vehiclesList,
     columnNames: [
       {
         headerName: "Vehicle ID",
@@ -109,6 +137,13 @@ export function AdminVehiclesView() {
     ],
   };
 
+  const filterFields = {
+    vehicleType: [VehicleTypes.SEDAN, VehicleTypes.SUV, VehicleTypes.HATCHBACK],
+    isActive: ["true", "false"],
+  };
+
+  const sortFields = ["vehicleMake", "vehicleModel", "vehicleType", "isActive"];
+
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-2xl font-bold text-content-primary">
@@ -117,6 +152,10 @@ export function AdminVehiclesView() {
       <div className="flex flex-wrap gap-4 items-center w-full justify-between">
         <div>
           <Search />
+        </div>
+        <div className="flex flex-col md:flex-row">
+          <Filter filters={filterFields} />
+          <Sort sortFields={sortFields} />
         </div>
       </div>
       <div className="overflow-x-auto">

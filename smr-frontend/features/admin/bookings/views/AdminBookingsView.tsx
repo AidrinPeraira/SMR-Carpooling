@@ -11,6 +11,7 @@ import {
 } from "@sharemyride/shared";
 import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
 import { InlineError } from "@/components/InlineError";
+import { Filter } from "@/components/UserInput/Filter";
 import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
@@ -21,8 +22,10 @@ export function AdminBookingsView() {
   const router = useRouter();
 
   const searchValue = existingParams.get("search") || "";
+  const filterField = existingParams.get("filterField");
+  const filterValue = existingParams.get("filterValue");
   const sortField = existingParams.get("sortField");
-  const sortValue = existingParams.get("sortValue");
+  const sortValue = existingParams.get("sortValue") || existingParams.get("sortOrder");
 
   const page = existingParams.get("page") || "1";
   const limit = existingParams.get("limit") || "10";
@@ -34,8 +37,18 @@ export function AdminBookingsView() {
       query.search = searchValue;
     }
 
+    if (
+      filterField &&
+      filterValue &&
+      filterField !== "None" &&
+      filterValue !== "None"
+    ) {
+      query.filterField = filterField as keyof AdminBookingItemDTO;
+      query.filterValue = filterValue;
+    }
+
     if (sortField) {
-      query.sortField = sortField;
+      query.sortField = sortField as keyof AdminBookingItemDTO;
       query.sortValue = (sortValue as SortOrder) || SortOrder.ASC;
     }
 
@@ -43,7 +56,7 @@ export function AdminBookingsView() {
     query.limit = limit;
 
     return query as Record<string, string>;
-  }, [searchValue, sortField, sortValue, page, limit]);
+  }, [searchValue, filterField, filterValue, sortField, sortValue, page, limit]);
 
   const { isPending, error, data } = useQuery({
     queryKey: ["adminBookings", queryParams],
@@ -139,7 +152,18 @@ export function AdminBookingsView() {
     ],
   };
 
-  const sortFields = ["passengerName", "tripDate", "status"];
+  const filterFields = {
+    status: [
+      BookingStatus.CONFIRMED,
+      BookingStatus.REQUESTED,
+      BookingStatus.PAYMENT_PENDING,
+      BookingStatus.REJECTED,
+      BookingStatus.WITHDRAWN,
+      BookingStatus.CANCELLED,
+    ],
+  };
+
+  const sortFields = ["passengerName", "tripDate", "status", "bookingOrigin", "bookingDestination"];
 
   return (
     <div className="p-8 space-y-6">
@@ -150,7 +174,8 @@ export function AdminBookingsView() {
         <div>
           <Search />
         </div>
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col md:flex-row">
+          <Filter filters={filterFields} />
           <Sort sortFields={sortFields} />
         </div>
       </div>

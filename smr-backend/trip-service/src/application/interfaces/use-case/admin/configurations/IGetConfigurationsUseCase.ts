@@ -1,8 +1,10 @@
 import { GetConfigurationsResultDTO } from "#/application/dto/admin/ConfigurationDTO";
+import { VehicleList } from "#/domain/entities/ConfigurationEntities";
+import { QueryDTO } from "@sharemyride/shared";
 
 /**
- * This use case lists all availabel configs for admins
+ * This use case lists all available configs for admins
  */
 export interface IGetConfigurationsUseCase {
-  execute(): Promise<GetConfigurationsResultDTO>;
+  execute(query?: QueryDTO<VehicleList>): Promise<GetConfigurationsResultDTO>;
 }

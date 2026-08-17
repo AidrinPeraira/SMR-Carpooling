@@ -1,12 +1,14 @@
 import { IVehicleListRepository } from "#/application/interfaces/repository/IVehicleListRepository";
 import { VehicleList } from "#/domain/entities/ConfigurationEntities";
 import { prisma } from "#/infrastructure/database/prisma";
+import { Prisma } from "#/infrastructure/database/generated/prisma/client";
 import {
   ApplicationError,
   ErrorCode,
   ErrorDetails,
   GenericErrorMessage,
   HttpStatusCodes,
+  QueryDTO,
   VehicleTypes,
 } from "@sharemyride/shared";
 
@@ -42,13 +44,63 @@ export class VehicleListRepository implements IVehicleListRepository {
   }
 
   /**
-   * This method finds all vehclels in the table
-   * Note: It doesn't paginate the results. It returns "all" records
+   * This method finds all vehicles in the table matching search, filter, and sort
    *
-   * @returns All vehicles in vehicle list table
+   * @returns All matching vehicles in vehicle list table
    */
-  async findAll(): Promise<VehicleList[] | null> {
-    const vehicles = await this._model.findMany();
+  async findAll(query?: QueryDTO<VehicleList>): Promise<VehicleList[] | null> {
+    const where: Prisma.VehicleListWhereInput = {};
+
+    if (query?.search) {
+      const search = query.search;
+      where.OR = [
+        { id: { contains: search, mode: "insensitive" } },
+        { vehicleMake: { contains: search, mode: "insensitive" } },
+        { vehicleModel: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    if (
+      query?.filterField &&
+      query?.filterValue &&
+      query.filterField !== ("None" as any) &&
+      query.filterValue !== ("None" as any)
+    ) {
+      const field = String(query.filterField);
+      const val = String(query.filterValue);
+      if (field === "vehicleType" || field === "vehicle_type") {
+        where.vehicleType = val.toLowerCase() as Prisma.EnumVehicleTypesFilter;
+      } else if (field === "isActive" || field === "is_active") {
+        where.isActive = val.toLowerCase() === "true";
+      }
+    }
+
+    let orderBy: Prisma.VehicleListOrderByWithRelationInput = {
+      vehicleMake: "asc",
+    };
+    if (query?.sortField && query.sortField !== ("None" as any)) {
+      const sortOrder = (
+        query.sortValue?.toLowerCase() === "desc" ? "desc" : "asc"
+      ) as Prisma.SortOrder;
+      const field = String(query.sortField);
+
+      if (field === "vehicleMake" || field === "vehicle_make") {
+        orderBy = { vehicleMake: sortOrder };
+      } else if (field === "vehicleModel" || field === "vehicle_model") {
+        orderBy = { vehicleModel: sortOrder };
+      } else if (field === "vehicleType" || field === "vehicle_type") {
+        orderBy = { vehicleType: sortOrder };
+      } else if (field === "isActive" || field === "is_active") {
+        orderBy = { isActive: sortOrder };
+      } else if (field === "id") {
+        orderBy = { id: sortOrder };
+      }
+    }
+
+    const vehicles = await this._model.findMany({
+      where,
+      orderBy,
+    });
 
     if (!vehicles) return null;
 

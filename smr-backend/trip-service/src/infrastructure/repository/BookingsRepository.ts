@@ -279,17 +279,58 @@ export class BookingsRepository implements IBookingRepository {
     const skip = (page - 1) * limit;
 
     const where: Prisma.BookingsWhereInput = {};
+
     if (query?.search) {
+      const search = query.search;
       where.OR = [
-        { passenger: { firstName: { contains: query.search, mode: "insensitive" } } },
-        { passenger: { lastName: { contains: query.search, mode: "insensitive" } } },
-        { bookingId: { contains: query.search, mode: "insensitive" } },
+        { bookingId: { contains: search, mode: "insensitive" } },
+        { passengerId: { contains: search, mode: "insensitive" } },
+        { tripId: { contains: search, mode: "insensitive" } },
+        { passenger: { firstName: { contains: search, mode: "insensitive" } } },
+        { passenger: { lastName: { contains: search, mode: "insensitive" } } },
+        { pickupPoint: { path: ["stopName"], string_contains: search } },
+        { pickupPoint: { path: ["stopAddress"], string_contains: search } },
+        { pickupPoint: { path: ["name"], string_contains: search } },
+        { pickupPoint: { path: ["address"], string_contains: search } },
+        { dropOffPoint: { path: ["stopName"], string_contains: search } },
+        { dropOffPoint: { path: ["stopAddress"], string_contains: search } },
+        { dropOffPoint: { path: ["name"], string_contains: search } },
+        { dropOffPoint: { path: ["address"], string_contains: search } },
       ];
     }
 
-    const orderBy: Prisma.BookingsOrderByWithRelationInput = query?.sortField
-      ? { [query.sortField as string]: query.sortValue || "desc" }
-      : { createdAt: "desc" };
+    if (query?.filterField && query?.filterValue && (query.filterField as any) !== "None" && (query.filterValue as any) !== "None") {
+      const field = String(query.filterField);
+      const val = String(query.filterValue);
+      if (field === "status") {
+        where.status = val.toLowerCase() as Prisma.EnumBookingStatusFilter;
+      } else if (field === "passengerName") {
+        where.passenger = {
+          OR: [
+            { firstName: { contains: val, mode: "insensitive" } },
+            { lastName: { contains: val, mode: "insensitive" } },
+          ],
+        };
+      }
+    }
+
+    let orderBy: Prisma.BookingsOrderByWithRelationInput = { createdAt: "desc" };
+    if (query?.sortField && (query.sortField as any) !== "None") {
+      const sortOrder = (query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc") as Prisma.SortOrder;
+      const field = String(query.sortField);
+
+      if (field === "passengerName") {
+        orderBy = { passenger: { firstName: sortOrder } };
+      } else if (field === "tripDate") {
+        orderBy = { trip: { startTime: sortOrder } };
+      } else if (field === "status") {
+        orderBy = { status: sortOrder };
+      } else if (field === "bookingId") {
+        orderBy = { bookingId: sortOrder };
+      } else {
+        orderBy = { createdAt: sortOrder };
+      }
+    }
 
     const [totalItems, records] = await Promise.all([
       this._bookingsModel.count({ where }),
@@ -305,7 +346,7 @@ export class BookingsRepository implements IBookingRepository {
       }),
     ]);
 
-    const totalPages = Math.ceil(totalItems / limit);
+    const totalPages = Math.ceil(totalItems / limit) || 1;
 
     const data: AdminListAllBookingsResponseDTO[] = records.map((b) => {
       const passengerName = b.passenger

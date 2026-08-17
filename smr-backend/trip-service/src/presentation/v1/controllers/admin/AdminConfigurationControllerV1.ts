@@ -43,7 +43,23 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       adminUserId: req.headers["x-user-id"],
     });
 
-    const result = await this._getConfigurationsUseCase.execute();
+    const search = req.query.search ? (req.query.search as string) : undefined;
+    const filterField = req.query.filterField ? (req.query.filterField as any) : undefined;
+    const filterValue = req.query.filterValue ? (req.query.filterValue as any) : undefined;
+    const sortField = req.query.sortField ? (req.query.sortField as any) : undefined;
+    const sortValue = req.query.sortValue ? (req.query.sortValue as any) : undefined;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+    const result = await this._getConfigurationsUseCase.execute({
+      page,
+      limit,
+      search,
+      filterField,
+      filterValue,
+      sortField,
+      sortValue,
+    });
 
     res
       .status(HttpStatusCodes.Ok)

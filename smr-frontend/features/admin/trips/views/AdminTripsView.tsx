@@ -11,6 +11,7 @@ import {
 } from "@sharemyride/shared";
 import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
 import { InlineError } from "@/components/InlineError";
+import { Filter } from "@/components/UserInput/Filter";
 import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
@@ -21,8 +22,10 @@ export function AdminTripsView() {
   const router = useRouter();
 
   const searchValue = existingParams.get("search") || "";
+  const filterField = existingParams.get("filterField");
+  const filterValue = existingParams.get("filterValue");
   const sortField = existingParams.get("sortField");
-  const sortValue = existingParams.get("sortValue");
+  const sortValue = existingParams.get("sortValue") || existingParams.get("sortOrder");
 
   const page = existingParams.get("page") || "1";
   const limit = existingParams.get("limit") || "10";
@@ -34,8 +37,18 @@ export function AdminTripsView() {
       query.search = searchValue;
     }
 
+    if (
+      filterField &&
+      filterValue &&
+      filterField !== "None" &&
+      filterValue !== "None"
+    ) {
+      query.filterField = filterField as keyof AdminTripItemDTO;
+      query.filterValue = filterValue;
+    }
+
     if (sortField) {
-      query.sortField = sortField;
+      query.sortField = sortField as keyof AdminTripItemDTO;
       query.sortValue = (sortValue as SortOrder) || SortOrder.ASC;
     }
 
@@ -43,7 +56,7 @@ export function AdminTripsView() {
     query.limit = limit;
 
     return query as Record<string, string>;
-  }, [searchValue, sortField, sortValue, page, limit]);
+  }, [searchValue, filterField, filterValue, sortField, sortValue, page, limit]);
 
   const { isPending, error, data } = useQuery({
     queryKey: ["adminTrips", queryParams],
@@ -149,7 +162,17 @@ export function AdminTripsView() {
     ],
   };
 
-  const sortFields = ["driverName", "startTime", "tripStatus"];
+  const filterFields = {
+    tripStatus: [
+      TripStatus.SCHEDULED,
+      TripStatus.ONGOING,
+      TripStatus.COMPLETED,
+      TripStatus.FULLY_BOOKED,
+      TripStatus.CANCELLED,
+    ],
+  };
+
+  const sortFields = ["driverName", "vehicleName", "startTime", "tripStatus", "availableSeats", "vacantSeats"];
 
   return (
     <div className="p-8 space-y-6">
@@ -160,7 +183,8 @@ export function AdminTripsView() {
         <div>
           <Search />
         </div>
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col md:flex-row">
+          <Filter filters={filterFields} />
           <Sort sortFields={sortFields} />
         </div>
       </div>
