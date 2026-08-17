@@ -18,7 +18,6 @@ import {
   ListTripsResult,
   PaginatedPayload,
   SearchTripRequest,
-  TripStatus,
   TripStop,
   TripStopDTO,
 } from "@sharemyride/shared";
@@ -135,7 +134,7 @@ export class TripMapper {
     query: DriverGetTripsQueryRequest,
   ): DriverGetAllTripsQueryDTO {
     return {
-      tripStatus: query.trip_status as TripStatus,
+      tripStatus: query.trip_status,
       page: query.page,
       limit: query.limit,
     };

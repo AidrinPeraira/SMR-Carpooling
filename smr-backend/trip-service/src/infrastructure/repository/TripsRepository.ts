@@ -806,10 +806,10 @@ export class TripsRepository implements ITripRepository {
           : "Passenger",
         bookingStatus: b.status as BookingStatus,
         bookingOrigin:
-          (b.pickupPoint as any)?.name || (b.pickupPoint as any)?.address || "",
+          (b.pickupPoint)?.name || (b.pickupPoint)?.address || "",
         bookingDestination:
-          (b.dropOffPoint as any)?.name ||
-          (b.dropOffPoint as any)?.address ||
+          (b.dropOffPoint)?.name ||
+          (b.dropOffPoint)?.address ||
           "",
       })),
     };

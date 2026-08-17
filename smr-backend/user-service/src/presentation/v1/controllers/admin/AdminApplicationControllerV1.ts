@@ -39,7 +39,9 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
 
     res.status(HttpStatusCodes.Ok).json(
       makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, {
-        data: result.data.map(AdminApplicationMapper.toAdminApplicationListResult),
+        data: result.data.map((item) =>
+          AdminApplicationMapper.toAdminApplicationListResult(item),
+        ),
         paginationMeta: result.paginationMeta,
       }),
     );

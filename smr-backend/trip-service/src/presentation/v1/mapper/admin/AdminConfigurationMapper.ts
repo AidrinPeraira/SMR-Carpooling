@@ -95,8 +95,10 @@ export class AdminConfigurationMapper {
     result: GetConfigurationsResultDTO,
   ): GetConfigurationsResult {
     return {
-      vehicles: result.vehicles.map(this.toVehicleListResponse),
-      pricing_rules: result.pricingRules.map(this.toPricingRuleResponse),
+      vehicles: result.vehicles.map((v) => this.toVehicleListResponse(v)),
+      pricing_rules: result.pricingRules.map((p) =>
+        this.toPricingRuleResponse(p),
+      ),
     };
   }
 }

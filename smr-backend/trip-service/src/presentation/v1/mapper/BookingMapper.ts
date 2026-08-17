@@ -11,7 +11,6 @@ import {
 import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
-  BookingStatus,
   CreateBookingRequest,
   DriverBookingDetailsDTO,
   DriverBookingItemDTO,
@@ -43,7 +42,7 @@ export class BookingMapper {
     query: DriverGetBookingsQueryRequest,
   ): DriverGetAllBookingsQueryDTO {
     return {
-      bookingStatus: query.booking_status as BookingStatus,
+      bookingStatus: query.booking_status,
       page: query.page,
       limit: query.limit,
     };
@@ -93,7 +92,7 @@ export class BookingMapper {
     query: PassengerGetBookingsQueryRequest,
   ): PassengerGetAllBookingsQueryDTO {
     return {
-      bookingStatus: query.booking_status as BookingStatus,
+      bookingStatus: query.booking_status,
       page: query.page,
       limit: query.limit,
     };
