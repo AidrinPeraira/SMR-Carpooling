@@ -1,3 +1,8 @@
+import {
+  AdminGetAllTripsQuery,
+  AdminGetAllTripsResponseDTO,
+  AdminGetTripDetailsResponseDTO,
+} from "#/application/dto/admin/AdminTripsDTO";
 import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import {
   ListTripsRequestDTO,
@@ -667,5 +672,146 @@ export class TripsRepository implements ITripRepository {
       await this._placesCacheStore.checkPlaceIndices(indices);
 
     return new Set(indices.filter((_, i) => cachedStatus[i] === 1));
+  }
+
+  /**
+   * Find all trips with driver and vehicle relations formatted for admin dashboard
+   */
+  async findAllTrips(
+    query: AdminGetAllTripsQuery,
+  ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (query?.search) {
+      where.OR = [
+        {
+          driver: {
+            firstName: { contains: query.search, mode: "insensitive" },
+          },
+        },
+        {
+          driver: { lastName: { contains: query.search, mode: "insensitive" } },
+        },
+        {
+          vehicle: {
+            vehicleMake: { contains: query.search, mode: "insensitive" },
+          },
+        },
+        {
+          vehicle: {
+            vehicleModel: { contains: query.search, mode: "insensitive" },
+          },
+        },
+      ];
+    }
+
+    const orderBy: any = {};
+    if (query?.sortField) {
+      orderBy[query.sortField] = query.sortValue || "desc";
+    } else {
+      orderBy.createdAt = "desc";
+    }
+
+    const [totalItems, records] = await Promise.all([
+      this._tripModel.count({ where }),
+      this._tripModel.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include: {
+          driver: true,
+          vehicle: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const items: AdminGetAllTripsResponseDTO[] = records.map((trip: any) => {
+      const origin =
+        (trip.tripOrigin as unknown as TripStop)?.stopName ||
+        (trip.tripOrigin as unknown as TripStop)?.stopAddress ||
+        "";
+      const destination =
+        (trip.tripDestination as unknown as TripStop)?.stopName ||
+        (trip.tripDestination as unknown as TripStop)?.stopAddress ||
+        "";
+      return {
+        tripId: trip.tripId,
+        driverName:
+          `${trip.driver?.firstName || ""} ${trip.driver?.lastName || ""}`.trim(),
+        vehicleName:
+          `${trip.vehicle?.vehicleMake || ""} ${trip.vehicle?.vehicleModel || ""}`.trim(),
+        tripOrigin: origin,
+        tripDestination: destination,
+        availableSeats: trip.availableSeats,
+        vacantSeats: trip.vacantSeats,
+        startTime: trip.startTime,
+        tripStatus: trip.tripStatus as TripStatus,
+      };
+    });
+
+    return {
+      data: items,
+      paginationMeta: {
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Finds full trip details aggregated with driver, vehicle, and bookings for admin dashboard
+   */
+  async findAdminTripDetails(
+    tripId: string,
+  ): Promise<AdminGetTripDetailsResponseDTO | null> {
+    const trip = await this._tripModel.findUnique({
+      where: { tripId },
+      include: {
+        driver: true,
+        vehicle: true,
+        bookings: {
+          include: {
+            passenger: true,
+          },
+        },
+      },
+    });
+
+    if (!trip || !trip.driver || !trip.vehicle) return null;
+
+    return {
+      tripId: trip.tripId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      route: trip.tripRoute as unknown as Route,
+      tripDate: trip.startTime,
+      vehicleId: trip.vehicleId,
+      vehicleName:
+        `${trip.vehicle.vehicleMake} ${trip.vehicle.vehicleModel}`.trim(),
+      vehicleImage: trip.vehicle.vehicleImage || "",
+      driverId: trip.driverId,
+      driverName: `${trip.driver.firstName} ${trip.driver.lastName}`.trim(),
+      bookings: trip.bookings.map((b: any) => ({
+        bookingId: b.bookingId,
+        passengerName: b.passenger
+          ? `${b.passenger.firstName} ${b.passenger.lastName}`.trim()
+          : "Passenger",
+        bookingStatus: b.status as BookingStatus,
+        bookingOrigin:
+          (b.pickupPoint as any)?.name || (b.pickupPoint as any)?.address || "",
+        bookingDestination:
+          (b.dropOffPoint as any)?.name ||
+          (b.dropOffPoint as any)?.address ||
+          "",
+      })),
+    };
   }
 }

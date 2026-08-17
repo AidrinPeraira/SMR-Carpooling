@@ -1,3 +1,8 @@
+import {
+  AdminGetAllTripsQuery,
+  AdminGetAllTripsResponseDTO,
+  AdminGetTripDetailsResponseDTO,
+} from "#/application/dto/admin/AdminTripsDTO";
 import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import {
   ListTripsRequestDTO,
@@ -79,4 +84,22 @@ export interface ITripRepository {
    * @param tripId Trip ID
    */
   findByTripId(tripId: string): Promise<TripEntity | null>;
+
+  /**
+   * Find all trips that match given query
+   */
+  findAllTrips?(
+    query: AdminGetAllTripsQuery,
+  ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>>;
+
+  /**
+   * Finds full trip details formatted for admin dashboard
+   *
+   * @param tripId Trip ID
+   */
+  findAdminTripDetails?(
+    tripId: string,
+  ): Promise<AdminGetTripDetailsResponseDTO | null>;
 }
+
+

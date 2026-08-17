@@ -1,4 +1,9 @@
 import {
+  AdminBookingDetiailsResponseDTO,
+  AdminListAllBookingsQueryDTO,
+  AdminListAllBookingsResponseDTO,
+} from "#/application/dto/admin/AdminBookingsDTO";
+import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
 } from "#/application/dto/booking/DriverBookingDetailsDTO";
@@ -11,7 +16,7 @@ import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndex
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { prisma } from "#/infrastructure/database/prisma";
 import { Prisma } from "#/infrastructure/database/generated/prisma/client";
-import { BookingStatus, PaginatedPayload } from "@sharemyride/shared";
+import { BookingStatus, PaginatedPayload, Route, TripStop } from "@sharemyride/shared";
 
 export class BookingsRepository implements IBookingRepository {
   private readonly _bookingsModel = prisma.bookings;
@@ -262,4 +267,131 @@ export class BookingsRepository implements IBookingRepository {
       },
     };
   }
+
+  /**
+   * Finds all bookings for admin dashboard with pagination and search
+   */
+  async findAllBookings(
+    query: AdminListAllBookingsQueryDTO,
+  ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.BookingsWhereInput = {};
+    if (query?.search) {
+      where.OR = [
+        { passenger: { firstName: { contains: query.search, mode: "insensitive" } } },
+        { passenger: { lastName: { contains: query.search, mode: "insensitive" } } },
+        { bookingId: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+
+    const orderBy: Prisma.BookingsOrderByWithRelationInput = query?.sortField
+      ? { [query.sortField as string]: query.sortValue || "desc" }
+      : { createdAt: "desc" };
+
+    const [totalItems, records] = await Promise.all([
+      this._bookingsModel.count({ where }),
+      this._bookingsModel.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include: {
+          passenger: true,
+          trip: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const data: AdminListAllBookingsResponseDTO[] = records.map((b) => {
+      const passengerName = b.passenger
+        ? `${b.passenger.firstName} ${b.passenger.lastName}`.trim()
+        : "Passenger";
+      const bookingOrigin =
+        (b.pickupPoint as any)?.stopName ||
+        (b.pickupPoint as any)?.stopAddress ||
+        (b.pickupPoint as any)?.name ||
+        "";
+      const bookingDestination =
+        (b.dropOffPoint as any)?.stopName ||
+        (b.dropOffPoint as any)?.stopAddress ||
+        (b.dropOffPoint as any)?.name ||
+        "";
+
+      return {
+        bookingId: b.bookingId,
+        passengerName,
+        bookingOrigin,
+        bookingDestination,
+        status: b.status as BookingStatus,
+        tripDate: b.trip?.startTime || b.createdAt,
+      };
+    });
+
+    return {
+      data,
+      paginationMeta: {
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Finds detailed booking information joined with passenger, trip, and vehicle for admin dashboard
+   */
+  async findAdminBookingDetails(
+    bookingId: string,
+  ): Promise<AdminBookingDetiailsResponseDTO | null> {
+    const booking = await this._bookingsModel.findUnique({
+      where: { bookingId },
+      include: {
+        passenger: true,
+        trip: {
+          include: {
+            vehicle: true,
+          },
+        },
+      },
+    });
+
+    if (!booking || !booking.trip) return null;
+
+    const passengerName = booking.passenger
+      ? `${booking.passenger.firstName} ${booking.passenger.lastName}`.trim()
+      : "Passenger";
+
+    const vehicle = booking.trip.vehicle;
+    const vehicelName = vehicle
+      ? `${vehicle.vehicleMake} ${vehicle.vehicleModel}`.trim()
+      : "Vehicle";
+
+    return {
+      bookingId: booking.bookingId,
+      tripId: booking.tripId,
+      tripDate:
+        booking.trip.startTime instanceof Date
+          ? booking.trip.startTime.toISOString()
+          : String(booking.trip.startTime),
+      tripOrigin: booking.trip.tripOrigin as unknown as TripStop,
+      tripDestination: booking.trip.tripDestination as unknown as TripStop,
+      tripRoute: booking.trip.tripRoute as unknown as Route,
+      vehicelName,
+      passengerId: booking.passengerId,
+      passengerName,
+      bookingStatus: booking.status as BookingStatus,
+      bookingOrigin: booking.pickupPoint as unknown as TripStop,
+      bookingDestination: booking.dropOffPoint as unknown as TripStop,
+      distanceKm: booking.distanceKm,
+      seatCount: booking.seatCount,
+      totalPrice: booking.totalPrice,
+    };
+  }
 }
+

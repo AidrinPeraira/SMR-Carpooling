@@ -1,4 +1,9 @@
 import {
+  AdminBookingDetiailsResponseDTO,
+  AdminListAllBookingsQueryDTO,
+  AdminListAllBookingsResponseDTO,
+} from "#/application/dto/admin/AdminBookingsDTO";
+import {
   DriverGetAllBookingsQueryDTO,
   DriverGetAllBookingsResultDTO,
 } from "#/application/dto/booking/DriverBookingDetailsDTO";
@@ -31,4 +36,14 @@ export interface IBookingRepository {
     passengerId: string,
     query?: PassengerGetAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<PassengerGetAllBookingsResultDTO[]>>;
+
+  findAllBookings?(
+    query: AdminListAllBookingsQueryDTO,
+  ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>>;
+
+  findAdminBookingDetails?(
+    bookingId: string,
+  ): Promise<AdminBookingDetiailsResponseDTO | null>;
 }
+
+

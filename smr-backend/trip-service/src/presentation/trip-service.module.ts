@@ -197,6 +197,21 @@ const getPassengerBookingDetailsUseCase = new GetPassengerBookingDetailsUseCase(
 );
 const withdrawBookingUseCase = new WithdrawBookingUseCase(bookingsRepository);
 
+import { AdminListAllTripsUseCase } from "#/application/use-case/admin/trip/AdminListAllTripsUseCase";
+import { AdminGetTripDetailsUseCase } from "#/application/use-case/admin/trip/AdminGetTripDetailsUseCase";
+import { AdminListAllBookingsUseCase } from "#/application/use-case/admin/booking/AdminListAllBookingsUseCase";
+import { AdminGetBookingDetailsUseCase } from "#/application/use-case/admin/booking/AdminGetBookingDetailsUseCase";
+import { AdminTripControllerV1 } from "#/presentation/v1/controllers/admin/AdminTripControllerV1";
+import { AdminBookingControllerV1 } from "#/presentation/v1/controllers/admin/AdminBookingControllerV1";
+import { createAdminTripRouterV1 } from "#/presentation/v1/routes/admin/AdminTripRouterV1";
+import { createAdminBookingRouterV1 } from "#/presentation/v1/routes/admin/AdminBookingRouterV1";
+
+// Admin Trip & Booking Use Cases
+const adminListAllTripsUseCase = new AdminListAllTripsUseCase(tripsRepository);
+const adminGetTripDetailsUseCase = new AdminGetTripDetailsUseCase(tripsRepository);
+const adminListAllBookingsUseCase = new AdminListAllBookingsUseCase(bookingsRepository);
+const adminGetBookingDetailsUseCase = new AdminGetBookingDetailsUseCase(bookingsRepository);
+
 // Admin Configuration Use Cases
 const getConfigurationsUseCase = new GetConfigurationUseCase(
   vehicleListRepository,
@@ -246,6 +261,18 @@ const adminVehicleControllerV1 = new AdminVehicleControllerV1(
   getDriverVehiclesUseCase,
 );
 
+const adminTripControllerV1 = new AdminTripControllerV1(
+  consolaLogger,
+  adminListAllTripsUseCase,
+  adminGetTripDetailsUseCase,
+);
+
+const adminBookingControllerV1 = new AdminBookingControllerV1(
+  consolaLogger,
+  adminListAllBookingsUseCase,
+  adminGetBookingDetailsUseCase,
+);
+
 const driverControllerV1 = new DriverControllerV1(
   consolaLogger,
   getDriverDetailsUseCase,
@@ -293,6 +320,8 @@ const adminDriverRoutesV1 = createAdminDriverRouterV1(adminDriverControllerV1);
 const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
   adminVehicleControllerV1,
 );
+const adminTripRoutesV1 = createAdminTripRouterV1(adminTripControllerV1);
+const adminBookingRoutesV1 = createAdminBookingRouterV1(adminBookingControllerV1);
 
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
@@ -303,6 +332,8 @@ const v1Router = express.Router();
 v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
 v1Router.use("/admin/trip/driver", adminDriverRoutesV1);
 v1Router.use("/admin/trip/vehicles", adminVehicleRoutesV1);
+v1Router.use("/admin/trip/trips", adminTripRoutesV1);
+v1Router.use("/admin/trip/bookings", adminBookingRoutesV1);
 
 v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
@@ -314,3 +345,4 @@ export const tripServiceRouters = {
 };
 
 export const eventBus = eventBusInstance;
+
