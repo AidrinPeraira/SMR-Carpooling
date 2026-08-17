@@ -316,7 +316,7 @@ export class BookingsRepository implements IBookingRepository {
 
     let orderBy: Prisma.BookingsOrderByWithRelationInput = { createdAt: "desc" };
     if (query?.sortField && (query.sortField as any) !== "None") {
-      const sortOrder = (query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc") as Prisma.SortOrder;
+      const sortOrder = query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
       const field = String(query.sortField);
 
       if (field === "passengerName") {

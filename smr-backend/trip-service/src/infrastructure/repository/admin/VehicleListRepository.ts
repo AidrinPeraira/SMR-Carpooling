@@ -79,9 +79,8 @@ export class VehicleListRepository implements IVehicleListRepository {
       vehicleMake: "asc",
     };
     if (query?.sortField && query.sortField !== ("None" as any)) {
-      const sortOrder = (
-        query.sortValue?.toLowerCase() === "desc" ? "desc" : "asc"
-      ) as Prisma.SortOrder;
+      const sortOrder =
+        query.sortValue?.toLowerCase() === "desc" ? "desc" : "asc";
       const field = String(query.sortField);
 
       if (field === "vehicleMake" || field === "vehicle_make") {
