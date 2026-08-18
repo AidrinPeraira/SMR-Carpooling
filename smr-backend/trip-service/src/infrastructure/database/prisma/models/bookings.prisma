@@ -30,6 +30,9 @@ model Bookings {
 
   status BookingStatus
 
+  paymentKey       String?
+  paymentKeyExpiry DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

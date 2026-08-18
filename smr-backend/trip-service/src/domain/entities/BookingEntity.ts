@@ -11,6 +11,8 @@ export interface BookingEntity {
   pickupPlaceId: string;
   dropOffPlaceId: string;
   status: BookingStatus;
+  paymentKey?: string;
+  paymentKeyExpiry?: Date;
   totalPrice: number;
   createdAt: Date;
   updatedAt: Date;

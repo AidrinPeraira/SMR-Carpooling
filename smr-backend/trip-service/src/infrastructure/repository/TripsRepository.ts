@@ -42,6 +42,8 @@ interface BookingWithPassengerRecord {
   seatCount: number;
   totalPrice: number;
   status: string;
+  paymentKey?: string | null;
+  paymentKeyExpiry?: Date | null;
   passenger?: { firstName: string; lastName: string } | null;
   createdAt: Date;
   updatedAt: Date;
@@ -162,6 +164,8 @@ export class TripsRepository implements ITripRepository {
         seatCount: b.seatCount,
         totalPrice: b.totalPrice,
         status: b.status as BookingStatus,
+        paymentKey: b.paymentKey ?? undefined,
+        paymentKeyExpiry: b.paymentKeyExpiry ?? undefined,
         passengerName: b.passenger
           ? `${b.passenger.firstName} ${b.passenger.lastName}`
           : undefined,
@@ -261,6 +265,8 @@ export class TripsRepository implements ITripRepository {
           seatCount: b.seatCount,
           totalPrice: b.totalPrice,
           status: b.status as BookingStatus,
+          paymentKey: b.paymentKey ?? undefined,
+          paymentKeyExpiry: b.paymentKeyExpiry ?? undefined,
           passengerName: b.passenger
             ? `${b.passenger.firstName} ${b.passenger.lastName}`
             : undefined,
@@ -696,7 +702,9 @@ export class TripsRepository implements ITripRepository {
         { driver: { firstName: { contains: search, mode: "insensitive" } } },
         { driver: { lastName: { contains: search, mode: "insensitive" } } },
         { vehicle: { vehicleMake: { contains: search, mode: "insensitive" } } },
-        { vehicle: { vehicleModel: { contains: search, mode: "insensitive" } } },
+        {
+          vehicle: { vehicleModel: { contains: search, mode: "insensitive" } },
+        },
         { tripOrigin: { path: ["stopName"], string_contains: search } },
         { tripOrigin: { path: ["stopAddress"], string_contains: search } },
         { tripOrigin: { path: ["name"], string_contains: search } },
@@ -708,7 +716,12 @@ export class TripsRepository implements ITripRepository {
       ];
     }
 
-    if (query?.filterField && query?.filterValue && (query.filterField as any) !== "None" && (query.filterValue as any) !== "None") {
+    if (
+      query?.filterField &&
+      query?.filterValue &&
+      (query.filterField as any) !== "None" &&
+      (query.filterValue as any) !== "None"
+    ) {
       const field = String(query.filterField);
       const val = String(query.filterValue);
       if (field === "tripStatus") {
@@ -732,7 +745,8 @@ export class TripsRepository implements ITripRepository {
 
     let orderBy: Prisma.TripOrderByWithRelationInput = { createdAt: "desc" };
     if (query?.sortField && (query.sortField as any) !== "None") {
-      const sortOrder = query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
+      const sortOrder =
+        query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
       const field = String(query.sortField);
 
       if (field === "driverName") {
@@ -844,13 +858,124 @@ export class TripsRepository implements ITripRepository {
           ? `${b.passenger.firstName} ${b.passenger.lastName}`.trim()
           : "Passenger",
         bookingStatus: b.status as BookingStatus,
-        bookingOrigin:
-          (b.pickupPoint)?.name || (b.pickupPoint)?.address || "",
+        bookingOrigin: b.pickupPoint?.name || b.pickupPoint?.address || "",
         bookingDestination:
-          (b.dropOffPoint)?.name ||
-          (b.dropOffPoint)?.address ||
-          "",
+          b.dropOffPoint?.name || b.dropOffPoint?.address || "",
       })),
     };
+  }
+
+  /**
+   * Updates fields of a trip record by tripId
+   */
+  async update(
+    tripId: string,
+    data: Partial<Omit<TripEntity, "tripId" | "createdAt" | "updatedAt">>,
+  ): Promise<TripEntity> {
+    const updateData: Prisma.TripUpdateInput = {};
+
+    if (data.driverId !== undefined)
+      updateData.driver = { connect: { driverId: data.driverId } };
+    if (data.vehicleId !== undefined)
+      updateData.vehicle = { connect: { vehicleId: data.vehicleId } };
+    if (data.tripOrigin !== undefined)
+      updateData.tripOrigin = data.tripOrigin as any;
+    if (data.tripDestination !== undefined)
+      updateData.tripDestination = data.tripDestination as any;
+    if (data.tripStops !== undefined)
+      updateData.tripStops = data.tripStops as any;
+    if (data.tripRoute !== undefined)
+      updateData.tripRoute = data.tripRoute as any;
+    if (data.tripDistance !== undefined)
+      updateData.tripDistance = data.tripDistance;
+    if (data.availableSeats !== undefined)
+      updateData.availableSeats = data.availableSeats;
+    if (data.vacantSeats !== undefined)
+      updateData.vacantSeats = data.vacantSeats;
+    if (data.tripTags !== undefined) updateData.tripTags = data.tripTags;
+    if (data.startTime !== undefined) updateData.startTime = data.startTime;
+    if (data.totalSeats !== undefined) updateData.totalSeats = data.totalSeats;
+    if (data.tripStatus !== undefined)
+      updateData.tripStatus = data.tripStatus as any;
+
+    const updated = await this._tripModel.update({
+      where: { tripId },
+      data: updateData,
+    });
+
+    return {
+      tripId: updated.tripId,
+      driverId: updated.driverId,
+      vehicleId: updated.vehicleId,
+      tripOrigin: updated.tripOrigin as unknown as TripStop,
+      tripDestination: updated.tripDestination as unknown as TripStop,
+      tripStops: updated.tripStops as unknown as TripStop[],
+      tripRoute: updated.tripRoute as unknown as Route,
+      tripDistance: updated.tripDistance,
+      availableSeats: updated.availableSeats,
+      vacantSeats: updated.vacantSeats,
+      tripTags: updated.tripTags,
+      startTime: updated.startTime,
+      totalSeats: updated.totalSeats,
+      tripStatus: updated.tripStatus as TripStatus,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
+    };
+  }
+
+  /**
+   * Atomically reserves seats for a trip if sufficient vacant seats exist
+   * @param tripId Trip ID
+   * @param seatCount Number of seats to reserve
+   */
+  async atmoicReserveSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null> {
+    const result = await prisma.$transaction(async (tx) => {
+      const trip = await tx.trip.findUnique({
+        where: { tripId: tripId },
+      });
+
+      if (!trip || trip.vacantSeats < seatCount) {
+        //return null to rollback transaction
+        return null;
+      }
+
+      const updatedVacantSeats = trip.vacantSeats - seatCount;
+      const newStatus =
+        updatedVacantSeats === 0 ? TripStatus.FULLY_BOOKED : trip.tripStatus;
+
+      const updated = await tx.trip.update({
+        where: { tripId, vacantSeats: { gte: seatCount } },
+        data: {
+          vacantSeats: { decrement: seatCount },
+          tripStatus: newStatus,
+        },
+      });
+
+      if (updated.vacantSeats < 0) return null;
+
+      return {
+        tripId: updated.tripId,
+        driverId: updated.driverId,
+        vehicleId: updated.vehicleId,
+        tripOrigin: updated.tripOrigin as unknown as TripStop,
+        tripDestination: updated.tripDestination as unknown as TripStop,
+        tripStops: updated.tripStops as unknown as TripStop[],
+        tripRoute: updated.tripRoute as unknown as Route,
+        tripDistance: updated.tripDistance,
+        availableSeats: updated.availableSeats,
+        vacantSeats: updated.vacantSeats,
+        tripTags: updated.tripTags,
+        startTime: updated.startTime,
+        totalSeats: updated.totalSeats,
+        tripStatus: updated.tripStatus as TripStatus,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt,
+      };
+    });
+
+    return result;
   }
 }

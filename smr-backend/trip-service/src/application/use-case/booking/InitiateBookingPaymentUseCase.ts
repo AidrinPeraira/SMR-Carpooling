@@ -1,0 +1,179 @@
+import {
+  CleanUpBookingRequsetDTO,
+  InitaiteBookingPaymentResponseDTO,
+} from "#/application/dto/booking/BookingPaymentsDTO";
+import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
+import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
+import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
+import { ISchedulerService } from "#/application/interfaces/services/ISchedulerService";
+import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
+import { IInitiateBookingPaymentUseCase } from "#/application/interfaces/use-case/booking/IInitiateBookingPaymentUseCase";
+import {
+  ApplicationError,
+  BookingErrorMessage,
+  BookingStatus,
+  ErrorCode,
+  ErrorDetails,
+  HttpStatusCodes,
+  ScheduledJOB,
+  UserErrorMessage,
+} from "@sharemyride/shared";
+
+export class InitiateBookingPaymentUseCase implements IInitiateBookingPaymentUseCase {
+  constructor(
+    private readonly _bookingRepository: IBookingRepository,
+    private readonly _passengerRepository: IPassengerRepository,
+    private readonly _tripRepository: ITripRepository,
+    private readonly _uniqueIdService: IUniqueIdGenerator,
+    private readonly _schedulerService: ISchedulerService,
+
+    private readonly _cleanupWebhookUrl: string,
+  ) {}
+
+  /**
+   * Verification of passenger and booking ownership, status, payment key expiry,
+   * seat reservation via atomic update, and payment key generation.
+   *
+   * @param bookingId Unique booking ID
+   * @param passengerId Unique passenger ID of the current user
+   * @returns Response DTO with idempotency key and expiry
+   */
+  async execute(
+    bookingId: string,
+    passengerId: string,
+  ): Promise<InitaiteBookingPaymentResponseDTO> {
+    const [passenger, booking] = await Promise.all([
+      this._passengerRepository.findByPassengerId(passengerId),
+      this._bookingRepository.findByBookingId(bookingId),
+    ]);
+
+    if (!passenger) {
+      throw new ApplicationError(
+        UserErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
+        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `Passenger not found with passengerId: ${passengerId}`,
+        },
+      );
+    }
+
+    if (!passenger.isActive) {
+      throw new ApplicationError(
+        UserErrorMessage.ACCOUNT_BLOCKED,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `Passenger account is inactive or blocked for passengerId: ${passengerId}`,
+        },
+      );
+    }
+
+    if (!booking) {
+      throw new ApplicationError(
+        BookingErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
+        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `Booking not found with bookingId: ${bookingId}`,
+        },
+      );
+    }
+
+    if (booking.status !== BookingStatus.PAYMENT_PENDING) {
+      throw new ApplicationError(
+        BookingErrorMessage.INVALID_STATUS_TRANSITION,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `Booking status is '${booking.status}', expected '${BookingStatus.PAYMENT_PENDING}'`,
+        },
+      );
+    }
+
+    if (booking.passengerId !== passengerId) {
+      throw new ApplicationError(
+        BookingErrorMessage.UNAUTHORIZED_PASSENGER,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `Booking does not belong to passengerId: ${passengerId}`,
+        },
+      );
+    }
+
+    const now = new Date();
+    if (
+      booking.paymentKey &&
+      booking.paymentKeyExpiry &&
+      booking.paymentKeyExpiry > now
+    ) {
+      throw new ApplicationError(
+        BookingErrorMessage.BOOKING_PAYMENT_IN_PROGRESS,
+        HttpStatusCodes.Conflict,
+        ErrorCode.DOMAIN_CONFLICT,
+        ErrorDetails.DOMAIN_CONFLICT,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `An unexpired payment key already exists for bookingId: ${bookingId}`,
+        },
+      );
+    }
+
+    const paymentKey = this._uniqueIdService.generateRandomId();
+    const keyExpiry = new Date(now.getTime() + 2 * 60 * 1000);
+
+    const updatedTrip = await this._tripRepository.atmoicReserveSeat(
+      booking.tripId,
+      booking.seatCount,
+    );
+
+    if (!updatedTrip) {
+      throw new ApplicationError(
+        BookingErrorMessage.INSUFFICIENT_SEATS,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "InitiateBookingPaymentUseCase",
+          description: `Failed to reserve seats. Insufficient vacant seats available on tripId: ${booking.tripId}`,
+        },
+      );
+    }
+
+    const cleanUpJob: ScheduledJOB<CleanUpBookingRequsetDTO> = {
+      webhookUrl: this._cleanupWebhookUrl,
+      body: {
+        bookingId: bookingId,
+        tripId: booking.tripId,
+        paymentKey: paymentKey,
+      },
+      delaySeconds: 2 * 60,
+      retries: 3,
+    };
+
+    await this._schedulerService.scheduleJob(cleanUpJob);
+
+    await this._bookingRepository.update(bookingId, {
+      paymentKeyExpiry: keyExpiry,
+      paymentKey: paymentKey,
+    });
+
+    return {
+      passengerId: passengerId,
+      bookingId: bookingId,
+      tansactionKey: paymentKey,
+      expiresAt: keyExpiry,
+    };
+  }
+}

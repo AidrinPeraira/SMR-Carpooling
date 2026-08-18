@@ -86,6 +86,17 @@ export interface ITripRepository {
   findByTripId(tripId: string): Promise<TripEntity | null>;
 
   /**
+   * Updates fields of a trip by tripId
+   *
+   * @param tripId Trip ID
+   * @param data Fields to update
+   */
+  update(
+    tripId: string,
+    data: Partial<Omit<TripEntity, "tripId" | "createdAt" | "updatedAt">>,
+  ): Promise<TripEntity>;
+
+  /**
    * Find all trips that match given query
    */
   findAllTrips?(
@@ -100,6 +111,9 @@ export interface ITripRepository {
   findAdminTripDetails?(
     tripId: string,
   ): Promise<AdminGetTripDetailsResponseDTO | null>;
+
+  atmoicReserveSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null>;
 }
-
-

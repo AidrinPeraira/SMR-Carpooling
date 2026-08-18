@@ -19,7 +19,7 @@ describe("WithdrawBookingUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn().mockResolvedValue(undefined),
+      update: vi.fn().mockResolvedValue(undefined),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
@@ -57,9 +57,8 @@ describe("WithdrawBookingUseCase", () => {
     await useCase.execute("b-123", "passenger-123");
 
     expect(mockBookingRepository.findByBookingId).toHaveBeenCalledWith("b-123");
-    expect(mockBookingRepository.updateStatus).toHaveBeenCalledWith(
-      "b-123",
-      BookingStatus.CANCELLED,
-    );
+    expect(mockBookingRepository.update).toHaveBeenCalledWith("b-123", {
+      status: BookingStatus.CANCELLED,
+    });
   });
 });

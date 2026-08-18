@@ -52,6 +52,8 @@ export class BookingsRepository implements IBookingRepository {
         seatCount: booking.seatCount,
         totalPrice: booking.totalPrice,
         status: booking.status,
+        ...(booking.paymentKey !== undefined ? { paymentKey: booking.paymentKey } : {}),
+        ...(booking.paymentKeyExpiry !== undefined ? { paymentKeyExpiry: booking.paymentKeyExpiry } : {}),
       },
     });
 
@@ -67,6 +69,8 @@ export class BookingsRepository implements IBookingRepository {
       seatCount: created.seatCount,
       totalPrice: created.totalPrice,
       status: created.status as any,
+      paymentKey: (created as any).paymentKey ?? undefined,
+      paymentKeyExpiry: (created as any).paymentKeyExpiry ?? undefined,
       createdAt: created.createdAt,
       updatedAt: created.updatedAt,
     };
@@ -160,21 +164,32 @@ export class BookingsRepository implements IBookingRepository {
       seatCount: booking.seatCount,
       totalPrice: booking.totalPrice,
       status: booking.status as any,
+      paymentKey: (booking as any).paymentKey ?? undefined,
+      paymentKeyExpiry: (booking as any).paymentKeyExpiry ?? undefined,
       createdAt: booking.createdAt,
       updatedAt: booking.updatedAt,
     };
   }
 
   /**
-   * Updates the status of a booking
+   * Updates fields of a booking by bookingId
    */
-  async updateStatus(
+  async update(
     bookingId: string,
-    newStatus: BookingStatus,
+    data: Partial<Omit<BookingEntity, "bookingId" | "createdAt" | "updatedAt">>,
   ): Promise<BookingEntity> {
+    const updateData: Prisma.BookingsUpdateInput = {};
+
+    if (data.status !== undefined) updateData.status = data.status as any;
+    if (data.paymentKey !== undefined) updateData.paymentKey = data.paymentKey;
+    if (data.paymentKeyExpiry !== undefined) updateData.paymentKeyExpiry = data.paymentKeyExpiry;
+    if (data.totalPrice !== undefined) updateData.totalPrice = data.totalPrice;
+    if (data.seatCount !== undefined) updateData.seatCount = data.seatCount;
+    if (data.distanceKm !== undefined) updateData.distanceKm = data.distanceKm;
+
     const updated = await this._bookingsModel.update({
       where: { bookingId },
-      data: { status: newStatus as any },
+      data: updateData,
     });
 
     return {
@@ -189,6 +204,8 @@ export class BookingsRepository implements IBookingRepository {
       seatCount: updated.seatCount,
       totalPrice: updated.totalPrice,
       status: updated.status as any,
+      paymentKey: (updated as any).paymentKey ?? undefined,
+      paymentKeyExpiry: (updated as any).paymentKeyExpiry ?? undefined,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
     };

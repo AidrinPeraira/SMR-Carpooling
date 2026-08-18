@@ -15,4 +15,5 @@ export enum BookingErrorMessage {
   UNAUTHORIZED_DRIVER = "This booking does not belong to your trip.",
   UNAUTHORIZED_PASSENGER = "This booking does not belong to your account.",
   INVALID_STATUS_TRANSITION = "Booking status does not allow this operation.",
+  BOOKING_PAYMENT_IN_PROGRESS = "Payment is already in progress. Try later.",
 }

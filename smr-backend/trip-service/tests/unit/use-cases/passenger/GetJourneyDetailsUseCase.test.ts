@@ -61,6 +61,8 @@ describe("GetJourneyDetailsUseCase", () => {
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn(),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
     };
 
     useCase = new GetJourneyDetailsUseCase(

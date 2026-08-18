@@ -35,7 +35,7 @@ describe("AdminGetBookingDetailsUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn(),
+      update: vi.fn(),
       findByBookingId: vi.fn(),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),

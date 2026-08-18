@@ -38,6 +38,8 @@ describe("AdminListAllTripsUseCase", () => {
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn(),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
       findAllTrips: vi.fn().mockResolvedValue(mockPaginatedTrips),
     };
 

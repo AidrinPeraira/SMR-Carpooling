@@ -58,9 +58,8 @@ export class WithdrawBookingUseCase implements IWithdrawBookingUseCase {
       );
     }
 
-    await this._bookingRepository.updateStatus(
-      bookingId,
-      BookingStatus.CANCELLED,
-    );
+    await this._bookingRepository.update(bookingId, {
+      status: BookingStatus.CANCELLED,
+    });
   }
 }

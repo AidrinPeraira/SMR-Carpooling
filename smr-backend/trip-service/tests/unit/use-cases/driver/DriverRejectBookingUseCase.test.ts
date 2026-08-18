@@ -53,7 +53,7 @@ describe("DriverRejectBookingUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn().mockResolvedValue(undefined),
+      update: vi.fn().mockResolvedValue(undefined),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
@@ -65,6 +65,8 @@ describe("DriverRejectBookingUseCase", () => {
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn().mockResolvedValue(mockTrip),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
     };
 
     useCase = new DriverRejectBookingUseCase(
@@ -76,10 +78,9 @@ describe("DriverRejectBookingUseCase", () => {
   it("should reject booking successfully", async () => {
     await useCase.execute("b-123", "driver-1");
 
-    expect(mockBookingRepository.updateStatus).toHaveBeenCalledWith(
-      "b-123",
-      BookingStatus.REJECTED,
-    );
+    expect(mockBookingRepository.update).toHaveBeenCalledWith("b-123", {
+      status: BookingStatus.REJECTED,
+    });
   });
 
   it("should throw error if booking does not exist", async () => {

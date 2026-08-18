@@ -111,7 +111,7 @@ describe("NewBookingUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn().mockResolvedValue(mockSavedBooking),
-      updateStatus: vi.fn().mockResolvedValue(mockSavedBooking),
+      update: vi.fn().mockResolvedValue(mockSavedBooking),
       findByBookingId: vi.fn().mockResolvedValue(mockSavedBooking),
       findBookingsByDriverId: vi.fn().mockResolvedValue({
         data: [],
@@ -154,6 +154,8 @@ describe("NewBookingUseCase", () => {
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn().mockResolvedValue(mockTripPayload.tripDetails),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
     };
 
     mockEventBus = {

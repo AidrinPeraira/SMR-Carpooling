@@ -79,9 +79,8 @@ export class DriverAcceptBookingUseCase
       );
     }
 
-    await this._bookingRepository.updateStatus(
-      bookingId,
-      BookingStatus.PAYMENT_PENDING,
-    );
+    await this._bookingRepository.update(bookingId, {
+      status: BookingStatus.PAYMENT_PENDING,
+    });
   }
 }

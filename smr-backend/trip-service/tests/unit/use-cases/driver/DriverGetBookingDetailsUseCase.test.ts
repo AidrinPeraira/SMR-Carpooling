@@ -85,7 +85,7 @@ describe("DriverGetBookingDetailsUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn(),
+      update: vi.fn(),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
@@ -97,6 +97,8 @@ describe("DriverGetBookingDetailsUseCase", () => {
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn().mockResolvedValue(mockTrip),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
     };
 
     mockPassengerRepository = {
