@@ -23,3 +23,27 @@ export interface NewBookingEventPayload {
 }
 
 export type NewBookingEvent = DomainEvent<NewBookingEventPayload>;
+
+export interface BookingPaymentSuccessEventPayload {
+  passengerId: string;
+  firstName: string;
+  lastName: string;
+  emailId: string;
+  bookingId: string;
+  paymentKey: string;
+}
+
+export type BookingPaymentSuccessEvent =
+  DomainEvent<BookingPaymentSuccessEventPayload>;
+
+export interface BookingPaymentFailureEventPayload {
+  passengerId: string;
+  firstName: string;
+  lastName: string;
+  emailId: string;
+  bookingId: string;
+  paymentKey: string;
+}
+
+export type BookingPaymentFailureEvent =
+  DomainEvent<BookingPaymentFailureEventPayload>;

@@ -14,4 +14,6 @@ export enum EventName {
   ADMIN_RETURN_APPLICTION = "admin.application.return",
 
   BOOKING_NEW_BOOKING = "booking.trip.new_booking",
+  BOOKING_PAYMENT_SUCCESS = "booking.payment.success",
+  BOOKING_PAYMENT_FAILURE = "booking.payment.failure",
 }

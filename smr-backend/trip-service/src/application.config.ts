@@ -18,4 +18,14 @@ export const AppConfig = {
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
+
+  QSTASH_URL: String(
+    process.env.QSTASH_URL || "https://qstash-eu-central-1.upstash.io",
+  ),
+  QSTASH_TOKEN: String(process.env.QSTASH_TOKEN || "secret.jwt.token"),
+  QSTASH_CURRENT_SIGNING_KEY:
+    String(process.env.QSTASH_CURRENT_SIGNING_KEY) || "secret_key",
+  QSTASH_NEXT_SIGNING_KEY: String(
+    process.env.QSTASH_NEXT_SIGNING_KEY || "secret_key",
+  ),
 };
