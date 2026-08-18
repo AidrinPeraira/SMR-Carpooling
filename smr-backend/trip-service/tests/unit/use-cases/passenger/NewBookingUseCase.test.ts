@@ -156,6 +156,7 @@ describe("NewBookingUseCase", () => {
       findByTripId: vi.fn().mockResolvedValue(mockTripPayload.tripDetails),
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
     };
 
     mockEventBus = {

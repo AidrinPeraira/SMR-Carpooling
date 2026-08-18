@@ -45,6 +45,7 @@ describe("AdminGetTripDetailsUseCase", () => {
       findByTripId: vi.fn(),
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
       findAdminTripDetails: vi.fn().mockResolvedValue(mockTripDetails),
     };
 

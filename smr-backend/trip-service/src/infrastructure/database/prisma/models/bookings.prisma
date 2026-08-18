@@ -1,6 +1,8 @@
 enum BookingStatus {
   requested
   payment_pending
+  payment_processing
+  payment_failed
   confirmed
   rejected
   withdrawn

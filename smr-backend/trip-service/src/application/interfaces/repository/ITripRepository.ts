@@ -112,7 +112,20 @@ export interface ITripRepository {
     tripId: string,
   ): Promise<AdminGetTripDetailsResponseDTO | null>;
 
+  /**
+   * A transaction to check and decrement seats for
+   * reservation
+   */
   atmoicReserveSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null>;
+
+  /**
+   * A trnasaction to check and increment seats
+   * to rollback a reservation
+   */
+  atmoicReleaseSeat(
     tripId: string,
     seatCount: number,
   ): Promise<TripEntity | null>;

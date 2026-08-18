@@ -72,6 +72,7 @@ describe("DriverGetTripDetailsUseCase", () => {
       findByTripId: vi.fn(),
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
     };
 
     useCase = new DriverGetTripDetailsUseCase(mockTripRepository);

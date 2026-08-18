@@ -170,7 +170,6 @@ export class InitiateBookingPaymentUseCase implements IInitiateBookingPaymentUse
     await this._bookingRepository.update(bookingId, {
       paymentKeyExpiry: keyExpiry,
       paymentKey: paymentKey,
-      status: BookingStatus.PAYMENT_PROCESSING,
     });
 
     return {

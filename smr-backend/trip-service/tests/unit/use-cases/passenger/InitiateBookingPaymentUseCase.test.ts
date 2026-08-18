@@ -73,6 +73,7 @@ describe("InitiateBookingPaymentUseCase", () => {
       findByTripId: vi.fn().mockResolvedValue({ ...mockTrip }),
       update: vi.fn(),
       atmoicReserveSeat: vi.fn().mockResolvedValue({ ...mockTrip, vacantSeats: 1 }),
+      atmoicReleaseSeat: vi.fn(),
     };
 
     mockUniqueIdService = {

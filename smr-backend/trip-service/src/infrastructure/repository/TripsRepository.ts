@@ -978,4 +978,58 @@ export class TripsRepository implements ITripRepository {
 
     return result;
   }
+
+  /**
+   * Atomically releases reserved seats back to a trip and updates trip status if no longer fully booked.
+   *
+   * @param tripId Trip ID
+   * @param seatCount Number of seats to release
+   */
+  async atmoicReleaseSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null> {
+    return await prisma.$transaction(async (tx) => {
+      const trip = await tx.trip.findUnique({
+        where: { tripId },
+      });
+
+      if (!trip) {
+        return null;
+      }
+
+      const newVacantSeats = trip.vacantSeats + seatCount;
+      const newStatus =
+        trip.tripStatus === TripStatus.FULLY_BOOKED
+          ? TripStatus.SCHEDULED
+          : trip.tripStatus;
+
+      const updated = await tx.trip.update({
+        where: { tripId },
+        data: {
+          vacantSeats: newVacantSeats,
+          tripStatus: newStatus as any,
+        },
+      });
+
+      return {
+        tripId: updated.tripId,
+        driverId: updated.driverId,
+        vehicleId: updated.vehicleId,
+        tripOrigin: updated.tripOrigin as unknown as TripStop,
+        tripDestination: updated.tripDestination as unknown as TripStop,
+        tripStops: updated.tripStops as unknown as TripStop[],
+        tripRoute: updated.tripRoute as unknown as Route,
+        tripDistance: updated.tripDistance,
+        availableSeats: updated.availableSeats,
+        vacantSeats: updated.vacantSeats,
+        tripTags: updated.tripTags,
+        startTime: updated.startTime,
+        totalSeats: updated.totalSeats,
+        tripStatus: updated.tripStatus as TripStatus,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt,
+      };
+    });
+  }
 }
