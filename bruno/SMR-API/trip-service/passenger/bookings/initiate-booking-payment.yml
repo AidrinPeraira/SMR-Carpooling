@@ -1,0 +1,50 @@
+info:
+  name: initiate-booking-payment
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/bookings/dabc6807-7aeb-4a03-9bcc-13639a4563d1/initiate-payment
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY0MDQ4MywiZXhwIjoxNzg2NjQxMzgzfQ.J95MkwnFI4V4WAjMkynQ95xltvUdgj7NJzA-9u1tM7g
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/bookings/dabc6807-7aeb-4a03-9bcc-13639a4563d1/initiate-payment
+      method: POST
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY0MDQ4MywiZXhwIjoxNzg2NjQxMzgzfQ.J95MkwnFI4V4WAjMkynQ95xltvUdgj7NJzA-9u1tM7g
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Booking payment initiated successfully",
+            "payload": {
+              "passenger_id": "4378c2d1604b9a0fa330bd561486a02d",
+              "booking_id": "dabc6807-7aeb-4a03-9bcc-13639a4563d1",
+              "transaction_key": "pay_xyz123abc456",
+              "expires_at": "2026-08-18T23:15:00.000Z"
+            }
+          }

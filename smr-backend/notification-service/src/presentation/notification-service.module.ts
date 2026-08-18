@@ -10,12 +10,16 @@ import { SendPasswordChangeRequestMailUseCase } from "#/application/use-case/Sen
 import { SendPasswordChangedMailUseCase } from "#/application/use-case/SendPasswordChangedMailUseCase";
 import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSignupVerificationMailUseCase";
 import { SendNewBookingEmailUseCase } from "#/application/use-case/SendNewBookingEmailUseCase";
+import { SendBookingPaymentSuccessMailUseCase } from "#/application/use-case/SendBookingPaymentSuccessMailUseCase";
+import { SendBookingPaymentFailedMailUseCase } from "#/application/use-case/SendBookingPaymentFailedMailUseCase";
 import { RabbitMQConsumer } from "#/infrastructure/services/RabbitMQConsumer";
 import { ResendEmailService } from "#/infrastructure/services/ResendEMailService";
 import { ApplicationApprovedHandler } from "#/presentation/event-handlers/ApplicationApprovedHandler";
 import { ApplicationRejectedHandler } from "#/presentation/event-handlers/ApplicationRejectedHandler";
 import { ApplicationReturnedHandler } from "#/presentation/event-handlers/ApplicationReturnedHandler";
 import { NewBookingHandler } from "#/presentation/event-handlers/NewBookingHandler";
+import { BookingPaymentSuccessHandler } from "#/presentation/event-handlers/BookingPaymentSuccessHandler";
+import { BookingPaymentFailedHandler } from "#/presentation/event-handlers/BookingPaymentFailedHandler";
 import { PasswordChangeRequestHandler } from "#/presentation/event-handlers/PasswordChangeRequestHandler";
 import { PasswordChangedHandler } from "#/presentation/event-handlers/PasswordChangedHandler";
 import { UserSignupHandler } from "#/presentation/event-handlers/UserSignupHandler";
@@ -48,6 +52,12 @@ const sendApplicationReturnedMailUseCase =
 const sendNewBookingEmailUseCase = new SendNewBookingEmailUseCase(
   resendMailService,
 );
+
+const sendBookingPaymentSuccessMailUseCase =
+  new SendBookingPaymentSuccessMailUseCase(resendMailService);
+
+const sendBookingPaymentFailedMailUseCase =
+  new SendBookingPaymentFailedMailUseCase(resendMailService);
 
 const userSignupHandler = new UserSignupHandler(
   consolaLogger,
@@ -84,6 +94,16 @@ const newBookingHandler = new NewBookingHandler(
   sendNewBookingEmailUseCase,
 );
 
+const bookingPaymentSuccessHandler = new BookingPaymentSuccessHandler(
+  consolaLogger,
+  sendBookingPaymentSuccessMailUseCase,
+);
+
+const bookingPaymentFailedHandler = new BookingPaymentFailedHandler(
+  consolaLogger,
+  sendBookingPaymentFailedMailUseCase,
+);
+
 const eventDispatcher = new EventDispatcher(consolaLogger);
 await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, userSignupHandler);
 await eventDispatcher.register(
@@ -109,6 +129,14 @@ await eventDispatcher.register(
 await eventDispatcher.register(
   EventName.BOOKING_NEW_BOOKING,
   newBookingHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_PAYMENT_SUCCESS,
+  bookingPaymentSuccessHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_PAYMENT_FAILURE,
+  bookingPaymentFailedHandler,
 );
 
 const rabbitMqConsumer = new RabbitMQConsumer(

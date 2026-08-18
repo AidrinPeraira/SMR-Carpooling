@@ -101,6 +101,8 @@ export class RabbitMQConsumer implements IMessageConsumer {
         EventName.ADMIN_APPROVE_APPLICTION,
         EventName.ADMIN_REJECT_APPLICATION,
         EventName.ADMIN_RETURN_APPLICTION,
+        EventName.BOOKING_PAYMENT_SUCCESS,
+        EventName.BOOKING_PAYMENT_FAILURE,
       ];
       for (const routingKey of evnetsToListenTo) {
         await this._channel.bindQueue(
