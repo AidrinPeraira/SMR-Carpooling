@@ -1,15 +1,20 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { INewCustomerUseCase } from "#/application/interfaces/use-cases/customer/INewCustomerUseCase";
+import { ICreateWalletUseCase } from "#/application/interfaces/use-cases/wallet/ICreateWalletUseCase";
 import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
 
 export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _newCustomerUseCase: INewCustomerUseCase,
+    private readonly _createWalletUseCase: ICreateWalletUseCase,
   ) {}
 
   async handle(event: UserSignUpEvent): Promise<void> {
-    this._logger.info("Handling new user event for payment service: ", event.payload.userId);
+    this._logger.info(
+      "Handling new user event for payment service: ",
+      event.payload.userId,
+    );
 
     await this._newCustomerUseCase.execute({
       customerId: event.payload.userId,
@@ -17,5 +22,7 @@ export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
       lastName: event.payload.lastName,
       emailId: event.payload.emailId,
     });
+
+    await this._createWalletUseCase.execute(event.payload.userId);
   }
 }

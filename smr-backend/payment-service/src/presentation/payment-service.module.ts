@@ -2,7 +2,10 @@ import { AppConfig } from "#/application.config";
 import { BlockCustomerUseCase } from "#/application/use-cases/customer/BlockCustomerUseCase";
 import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomerUseCase";
 import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
+import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWalletUseCase";
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
+import { MongoWalletRepository } from "#/infrastructure/repository/MongoWalletRepository";
+import { MongoWalletTransactionRepository } from "#/infrastructure/repository/MongoWalletTransactionRepository";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
@@ -16,17 +19,24 @@ const consolaLogger = new ConsolaLogger();
 
 // Infrastructure Repositories & Services
 const customerRepository = new MongoCustomerRepository();
+const walletRepository = new MongoWalletRepository();
+const walletTransactionRepository = new MongoWalletTransactionRepository();
 const cryptoUIDService = new CryptoUIDService();
 
-// Customer Use Cases
+// Customer & Wallet Use Cases
 const newCustomerUseCase = new NewCustomerUseCase(customerRepository);
 const blockCustomerUseCase = new BlockCustomerUseCase(customerRepository);
 const unblockCustomerUseCase = new UnblockCustomerUseCase(customerRepository);
+const createWalletUseCase = new CreateWalletUseCase(
+  walletRepository,
+  cryptoUIDService,
+);
 
 // Application Event Handlers
 const newUserEventHandler = new NewUserEventHandler(
   consolaLogger,
   newCustomerUseCase,
+  createWalletUseCase,
 );
 const userBlockedEventHandler = new UserBlockedEventHandler(
   consolaLogger,
@@ -62,4 +72,7 @@ const eventBusInstance = new EventBus(
 
 export const eventBus = eventBusInstance;
 export const customerRepo = customerRepository;
+export const walletRepo = walletRepository;
+export const walletTransactionRepo = walletTransactionRepository;
 export const uidService = cryptoUIDService;
+export const walletUseCase = createWalletUseCase;
