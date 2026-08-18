@@ -28,4 +28,9 @@ export const AppConfig = {
   QSTASH_NEXT_SIGNING_KEY: String(
     process.env.QSTASH_NEXT_SIGNING_KEY || "secret_key",
   ),
+
+  CLEANUP_WEBHOOK_URL: String(
+    process.env.CLEANUP_WEBHOOK_URL ||
+      "http://localhost:4000/api/v1/webhooks/booking-cleanup",
+  ),
 };

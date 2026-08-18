@@ -34,7 +34,10 @@ export class CleanUpBookingPaymentUseCase implements ICleanUpBookingPaymentUseCa
       return;
     }
 
-    await this._tripRepository.atmoicReleaseSeat(dto.tripId, booking.seatCount);
+    await this._tripRepository.atmoicReleaseSeat(
+      dto.tripId || booking.tripId,
+      booking.seatCount,
+    );
 
     await this._bookingRepository.update(dto.bookingId, {
       status: BookingStatus.PAYMENT_FAILED,

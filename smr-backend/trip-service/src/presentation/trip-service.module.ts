@@ -35,6 +35,8 @@ import { createDriverRouterV1 } from "#/presentation/v1/routes/driver/DriverRout
 import { createVehicleRouterV1 } from "#/presentation/v1/routes/vehicle/VehicleRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
+import { BookingPaymentSuccessEventHandler } from "#/presentation/v1/event-handlers/BookingPaymentSuccessEventHandler";
+import { BookingPaymentFailedEventHandler } from "#/presentation/v1/event-handlers/BookingPaymentFailedEventHandler";
 import { CreateNewPassengerUseCase } from "#/application/use-case/passenger/CreateNewPassengerUseCase";
 import { PassengerRepository } from "#/infrastructure/repository/PassengerRepository";
 
@@ -48,8 +50,15 @@ import { GetJourneyDetailsUseCase } from "#/application/use-case/trip/GetJourney
 import { NewBookingUseCase } from "#/application/use-case/booking/NewBookingUseCase";
 import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
 import { BookingControllerV1 } from "#/presentation/v1/controllers/booking/BookingControllerV1";
+import { WebhookControllerV1 } from "#/presentation/v1/controllers/webhook/WebhookControllerV1";
 import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
 import { createBookingRouterV1 } from "#/presentation/v1/routes/booking/BookingRouterV1";
+import { createWebhookRouterV1 } from "#/presentation/v1/routes/webhook/WebhookRouterV1";
+import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
+import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
+import { InitiateBookingPaymentUseCase } from "#/application/use-case/booking/InitiateBookingPaymentUseCase";
+import { ConfirmBookingPaymentUseCase } from "#/application/use-case/booking/ConfirmBookingPaymentUseCase";
+import { CleanUpBookingPaymentUseCase } from "#/application/use-case/booking/CleanUpBookingPaymentUseCase";
 
 /**
  * Composition Root for the Trip Service.
@@ -127,6 +136,35 @@ const userUnblockedHandler = new UserUnblockedEventHandler(
   changeDriverStatusUseCase,
 );
 
+// Payment Services & Use Cases
+const cryptoUIDService = new CryptoUIDService();
+const scheduledJobService = new ScheduledJobService();
+
+const confirmBookingPaymentUseCase = new ConfirmBookingPaymentUseCase(
+  bookingsRepository,
+);
+const cleanUpBookingPaymentUseCase = new CleanUpBookingPaymentUseCase(
+  bookingsRepository,
+  tripsRepository,
+);
+const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
+  bookingsRepository,
+  passengerRepository,
+  tripsRepository,
+  cryptoUIDService,
+  scheduledJobService,
+  AppConfig.CLEANUP_WEBHOOK_URL,
+);
+
+const bookingPaymentSuccessEventHandler = new BookingPaymentSuccessEventHandler(
+  consolaLogger,
+  confirmBookingPaymentUseCase,
+);
+const bookingPaymentFailedEventHandler = new BookingPaymentFailedEventHandler(
+  consolaLogger,
+  cleanUpBookingPaymentUseCase,
+);
+
 // Event Dispatcher & Message Consumer
 const eventDispatcher = new EventDispatcher(consolaLogger);
 await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, newUserEventHandler);
@@ -141,6 +179,14 @@ await eventDispatcher.register(
 await eventDispatcher.register(
   EventName.ADMIN_USER_UNBLOCKED,
   userUnblockedHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_PAYMENT_SUCCESS,
+  bookingPaymentSuccessEventHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_PAYMENT_FAILURE,
+  bookingPaymentFailedEventHandler,
 );
 
 const eventBusInstance = new EventBus(
@@ -310,6 +356,12 @@ const bookingControllerV1 = new BookingControllerV1(
   passengerListBookingsUseCase,
   getPassengerBookingDetailsUseCase,
   withdrawBookingUseCase,
+  initiateBookingPaymentUseCase,
+);
+
+const webhookControllerV1 = new WebhookControllerV1(
+  consolaLogger,
+  cleanUpBookingPaymentUseCase,
 );
 
 // Routers
@@ -327,6 +379,7 @@ const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
 const tripRoutesV1 = createTripRouterV1(tripControllerV1);
 const bookingRoutesV1 = createBookingRouterV1(bookingControllerV1);
+const webhookRoutesV1 = createWebhookRouterV1(webhookControllerV1);
 
 const v1Router = express.Router();
 v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
@@ -339,6 +392,7 @@ v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
 v1Router.use("/trips", tripRoutesV1);
 v1Router.use("/bookings", bookingRoutesV1);
+v1Router.use("/webhooks", webhookRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,

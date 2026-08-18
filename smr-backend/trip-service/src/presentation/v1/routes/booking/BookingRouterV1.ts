@@ -66,5 +66,12 @@ export function createBookingRouterV1(
     (req, res, next) => bookingController.withdrawBooking(req, res, next),
   );
 
+  // Passenger: Initiate booking payment
+  router.post(
+    "/:bookingId/initiate-payment",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => bookingController.initiateBookingPayment(req, res, next),
+  );
+
   return router;
 }
