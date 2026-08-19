@@ -403,7 +403,7 @@ v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
 v1Router.use("/trips", tripRoutesV1);
 v1Router.use("/bookings", bookingRoutesV1);
-v1Router.use("/webhooks", webhookRoutesV1);
+v1Router.use("/webhook/trips", webhookRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,

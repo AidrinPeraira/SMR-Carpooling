@@ -100,7 +100,7 @@ describe("InitiateBookingPaymentUseCase", () => {
       mockUniqueIdService,
       mockSchedulerService,
       mockTokenService,
-      "http://localhost/webhook/booking-cleanup",
+      "http://localhost/webhook/trips/booking-cleanup",
     );
   });
 

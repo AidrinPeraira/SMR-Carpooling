@@ -6,7 +6,7 @@ import { AppConfig } from "#/application.config";
  * This middleware checks the custom secret key header
  */
 export function keyMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (req.path === "/health") {
+  if (req.path === "/health" || req.path.startsWith("/v1/webhook")) {
     return next();
   }
 

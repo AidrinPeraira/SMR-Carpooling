@@ -32,7 +32,7 @@ export const AppConfig = {
 
   CLEANUP_WEBHOOK_URL: String(
     process.env.CLEANUP_WEBHOOK_URL ||
-      "http://localhost:4000/api/v1/webhooks/booking-cleanup",
+      "http://localhost:4000/api/v1/webhook/trips/booking-cleanup",
   ),
 
   PAYMENT_SECRET: String(process.env.PAYMENT_SECRET || "secret_key"),
