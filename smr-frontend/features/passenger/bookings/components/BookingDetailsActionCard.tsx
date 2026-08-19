@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { Button, Card, CardBody, Tag } from "@sharemyride/ui";
 import { AlertCircle, CreditCard, ShieldCheck, XCircle } from "lucide-react";
+import { OnlinePaymentButton } from "./OnlinePaymentButton";
 
 interface BookingDetailsActionCardProps {
   bookingId: string;
@@ -31,7 +31,8 @@ export function BookingDetailsActionCard({
                 Booking Request Pending
               </h4>
               <p className="text-xs text-warning-content/80">
-                Your request has been submitted to the driver. You can withdraw your request anytime before the driver accepts it.
+                Your request has been submitted to the driver. You can withdraw
+                your request anytime before the driver accepts it.
               </p>
             </div>
           </div>
@@ -42,7 +43,9 @@ export function BookingDetailsActionCard({
             disabled={isWithdrawing}
             onClick={onWithdraw}
           >
-            {isWithdrawing ? "Withdrawing Request..." : "Withdraw Booking Request"}
+            {isWithdrawing
+              ? "Withdrawing Request..."
+              : "Withdraw Booking Request"}
           </Button>
         </CardBody>
       </Card>
@@ -61,16 +64,29 @@ export function BookingDetailsActionCard({
                 Driver Accepted - Payment Pending
               </h4>
               <p className="text-xs text-content-secondary">
-                The driver accepted your booking request! Complete payment to confirm your seat reservation.
+                The driver accepted your booking request! Complete payment to
+                confirm your seat reservation.
               </p>
             </div>
           </div>
 
-          <Link href={`/passenger/bookings/${bookingId}/payment`} className="block w-full">
-            <Button variant="primary" className="w-full text-xs py-2 font-medium">
-              Proceed to Payment →
+          <div className="flex flex-col gap-2 w-full">
+            <OnlinePaymentButton bookingId={bookingId} />
+            <Button
+              variant="secondary"
+              className="w-full text-xs py-2 font-medium"
+            >
+              Pay with Wallet
             </Button>
-          </Link>
+            <Button
+              variant="danger"
+              className="w-full text-xs py-2 font-medium"
+              disabled={isWithdrawing}
+              onClick={onWithdraw}
+            >
+              {isWithdrawing ? "Withdrawing..." : "Withdraw"}
+            </Button>
+          </div>
         </CardBody>
       </Card>
     );
