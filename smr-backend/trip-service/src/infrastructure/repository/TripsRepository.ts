@@ -458,19 +458,25 @@ export class TripsRepository implements ITripRepository {
       };
     }
 
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000; // UTC+05:30
+    const dtoInIST = new Date(dto.time.getTime() + IST_OFFSET_MS);
+    dtoInIST.setUTCHours(0, 0, 0, 0); // midnight of that IST day
+    const startOfDayUTC = new Date(dtoInIST.getTime() - IST_OFFSET_MS); // 18:30 UTC prev day
+    const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000);
+
     // find all trips touching origin
     const originPlaces = await this._tripPlacesModel.findMany({
       where: {
         placeIndex: { in: validOriginIndices },
         tripDate: {
-          gte: dto.time,
-          lt: new Date(
-            new Date(dto.time).setDate(new Date(dto.time).getDate() + 1),
-          ),
+          gte: startOfDayUTC,
+          lt: endOfDayUTC,
         },
       },
       select: { tripId: true, seqNumber: true },
     });
+
+    console.log("Origin Places: ", originPlaces);
 
     // return if no origin matches
     if (originPlaces.length === 0) {
@@ -515,7 +521,19 @@ export class TripsRepository implements ITripRepository {
       ),
     );
 
-    const totalItems = matchingTripIds.length;
+    // Apply eligibility filters BEFORE computing totalItems so pagination
+    // metadata is accurate — ineligible trips (full/cancelled) are excluded first
+    const eligibleTrips = await this._tripModel.findMany({
+      where: {
+        tripId: { in: matchingTripIds },
+        vacantSeats: { gt: 0 },
+        tripStatus: TripStatus.SCHEDULED,
+      },
+      select: { tripId: true },
+    });
+
+    const eligibleTripIds = eligibleTrips.map((t) => t.tripId);
+    const totalItems = eligibleTripIds.length;
     const totalPages = Math.ceil(totalItems / limit);
 
     if (totalItems === 0) {
@@ -530,14 +548,10 @@ export class TripsRepository implements ITripRepository {
       };
     }
 
-    const paginatedTripIds = matchingTripIds.slice(skip, skip + limit);
+    const paginatedTripIds = eligibleTripIds.slice(skip, skip + limit);
 
     const trips = await this._tripModel.findMany({
-      where: {
-        tripId: { in: paginatedTripIds },
-        vacantSeats: { gt: 0 },
-        tripStatus: TripStatus.SCHEDULED,
-      },
+      where: { tripId: { in: paginatedTripIds } },
     });
 
     const vehicleIds = [...new Set(trips.map((t) => t.vehicleId))];
@@ -607,14 +621,15 @@ export class TripsRepository implements ITripRepository {
       )
     ).flat();
 
-    // filter to remove duplicate cells for points
-    const visited = new Set<string>();
-    const uniqueTripPlaces = placesWithIndex.filter((v) => {
-      const key = v.placeIndex;
-      if (visited.has(key)) return false;
-      visited.add(key);
-      return true;
-    });
+    // Last-wins dedup: if the same cell is covered by multiple route points,
+    // keep the entry with the highest seqNumber. This prevents a destination
+    // cell from being misclassified with a low seqNumber just because an
+    // earlier waypoint's gridDisk expansion happened to overlap it.
+    const indexMap = new Map<string, (typeof placesWithIndex)[0]>();
+    for (const v of placesWithIndex) {
+      indexMap.set(v.placeIndex, v);
+    }
+    const uniqueTripPlaces = Array.from(indexMap.values());
 
     // filter this according to places data in cache
     const tripIndices = uniqueTripPlaces.map((v) => v.placeIndex);
@@ -884,8 +899,7 @@ export class TripsRepository implements ITripRepository {
       updateData.tripDestination = data.tripDestination as any;
     if (data.tripStops !== undefined)
       updateData.tripStops = data.tripStops as any;
-    if (data.tripRoute !== undefined)
-      updateData.tripRoute = data.tripRoute;
+    if (data.tripRoute !== undefined) updateData.tripRoute = data.tripRoute;
     if (data.tripDistance !== undefined)
       updateData.tripDistance = data.tripDistance;
     if (data.availableSeats !== undefined)
@@ -895,8 +909,7 @@ export class TripsRepository implements ITripRepository {
     if (data.tripTags !== undefined) updateData.tripTags = data.tripTags;
     if (data.startTime !== undefined) updateData.startTime = data.startTime;
     if (data.totalSeats !== undefined) updateData.totalSeats = data.totalSeats;
-    if (data.tripStatus !== undefined)
-      updateData.tripStatus = data.tripStatus;
+    if (data.tripStatus !== undefined) updateData.tripStatus = data.tripStatus;
 
     const updated = await this._tripModel.update({
       where: { tripId },
@@ -1003,9 +1016,6 @@ export class TripsRepository implements ITripRepository {
         (trip.tripStatus as unknown) === TripStatus.FULLY_BOOKED
           ? TripStatus.SCHEDULED
           : trip.tripStatus;
-
-
-
 
       const updated = await tx.trip.update({
         where: { tripId },

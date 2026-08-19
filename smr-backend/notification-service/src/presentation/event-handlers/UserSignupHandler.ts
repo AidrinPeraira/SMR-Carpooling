@@ -14,6 +14,16 @@ export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
    * Passes the dto and calls the use case
    */
   async handle(event: UserSignUpEvent): Promise<void> {
+    if (!event.payload.token) {
+      this._logger.info(
+        "Skipping signup verification mail (no token provided): ",
+        {
+          emailId: event.payload.emailId,
+        },
+      );
+      return;
+    }
+
     const signupVerificationMailDTO: SinupVerifcationMailRequestDTO = {
       userName: event.payload.firstName + " " + event.payload.lastName,
       emailId: event.payload.emailId,

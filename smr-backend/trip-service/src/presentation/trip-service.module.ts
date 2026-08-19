@@ -79,7 +79,7 @@ const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
 const placesCacheStore = new PlacesCacheStore(redisClient);
 const passengerRepository = new PassengerRepository();
-const geoIndexingService = new H3GeoIndexingService();
+const geoIndexingService = new H3GeoIndexingService(7);
 const bookingsRepository = new BookingsRepository(geoIndexingService);
 const tripsRepository = new TripsRepository(
   geoIndexingService,

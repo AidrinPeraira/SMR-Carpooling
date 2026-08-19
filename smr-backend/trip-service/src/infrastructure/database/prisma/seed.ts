@@ -42,7 +42,7 @@ async function seedPlaces(): Promise<void> {
 
   await redisClient.connect();
   const placesCacheStore = new PlacesCacheStore(redisClient);
-  const geoIndexingService = new H3GeoIndexingService(8);
+  const geoIndexingService = new H3GeoIndexingService(7);
   const placesRepository = new PlacesRepository(
     geoIndexingService,
     placesCacheStore,

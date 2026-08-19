@@ -169,6 +169,7 @@ const googleAuthUseCase = new GoogleAuthUseCase(
   mongoUserRepository,
   cryptoUIDService,
   jwtTokenService,
+  rabbitMQEventBus,
 );
 
 const generatePasswordChangeTokenUseCase =
