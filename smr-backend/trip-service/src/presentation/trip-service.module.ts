@@ -38,6 +38,8 @@ import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEve
 import { BookingPaymentSuccessEventHandler } from "#/presentation/v1/event-handlers/BookingPaymentSuccessEventHandler";
 import { BookingPaymentFailedEventHandler } from "#/presentation/v1/event-handlers/BookingPaymentFailedEventHandler";
 import { CreateNewPassengerUseCase } from "#/application/use-case/passenger/CreateNewPassengerUseCase";
+import { BlockPassengerUseCase } from "#/application/use-case/passenger/BlockPassengerUseCase";
+import { UnblockPassengerUseCase } from "#/application/use-case/passenger/UnblockPassengerUseCase";
 import { PassengerRepository } from "#/infrastructure/repository/PassengerRepository";
 
 import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
@@ -105,6 +107,10 @@ const getDriverVehiclesUseCase = new GetDriverVehiclesUseCase(
 const createNewPassengerUseCase = new CreateNewPassengerUseCase(
   passengerRepository,
 );
+const blockPassengerUseCase = new BlockPassengerUseCase(passengerRepository);
+const unblockPassengerUseCase = new UnblockPassengerUseCase(
+  passengerRepository,
+);
 
 const createTripUseCase = new CreateTripUseCase(tripsRepository);
 const listTripsUseCase = new ListTripsUseCase(tripsRepository);
@@ -130,11 +136,13 @@ const applicationApprovedHandler = new ApplicationApprovedHandler(
 const userBlockedHandler = new UserBlockedEventHandler(
   consolaLogger,
   changeDriverStatusUseCase,
+  blockPassengerUseCase,
 );
 
 const userUnblockedHandler = new UserUnblockedEventHandler(
   consolaLogger,
   changeDriverStatusUseCase,
+  unblockPassengerUseCase,
 );
 
 // Payment Services & Use Cases

@@ -177,6 +177,7 @@ describe("NewBookingUseCase", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
+      update: vi.fn(),
     };
 
     mockDriverRepository = {

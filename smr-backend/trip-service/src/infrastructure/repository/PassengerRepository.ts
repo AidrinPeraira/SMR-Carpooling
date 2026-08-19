@@ -22,4 +22,23 @@ export class PassengerRepository implements IPassengerRepository {
     });
     return passenger;
   }
+
+  async update(
+    passengerId: string,
+    data: Partial<PassengerEntity>,
+  ): Promise<PassengerEntity | null> {
+    const existing = await this.passengerModel.findUnique({
+      where: { passengerId },
+    });
+    if (!existing) return null;
+
+    const updatedPassenger = await this.passengerModel.update({
+      where: { passengerId },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    });
+    return updatedPassenger;
+  }
 }

@@ -6,4 +6,8 @@ import { PassengerEntity } from "#/domain/entities/PassengerEntity";
 export interface IPassengerRepository {
   save(passenger: PassengerEntity): Promise<PassengerEntity>;
   findByPassengerId(passengerId: string): Promise<PassengerEntity | null>;
+  update(
+    passengerId: string,
+    data: Partial<PassengerEntity>,
+  ): Promise<PassengerEntity | null>;
 }

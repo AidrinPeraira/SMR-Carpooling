@@ -105,6 +105,7 @@ describe("DriverGetBookingDetailsUseCase", () => {
     mockPassengerRepository = {
       save: vi.fn(),
       findByPassengerId: vi.fn().mockResolvedValue(mockPassenger),
+      update: vi.fn(),
     };
 
     mockVehicleRepository = {
