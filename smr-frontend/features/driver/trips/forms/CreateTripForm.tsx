@@ -104,6 +104,12 @@ export function CreateTripForm() {
           }
         } catch (err) {
           console.error("Failed to update route on map:", err);
+          try {
+            await map.drawRoute(waypoints);
+            await map.fitBounds(waypoints);
+          } catch (fallbackErr) {
+            console.warn("Failed to render fallback route on map:", fallbackErr);
+          }
         }
       }
     }

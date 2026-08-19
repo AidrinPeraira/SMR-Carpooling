@@ -94,18 +94,26 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
           }
         }
 
-        // Fit viewport bounds to include all stops
-        await map.fitBounds(stopPoints);
+        // Fit viewport bounds to include all stops and route points
+        const routePoints: MapPoint[] =
+          currentTrip.trip_route && currentTrip.trip_route.length > 0
+            ? Array.isArray(currentTrip.trip_route[0])
+              ? (currentTrip.trip_route.flat(1) as unknown as MapPoint[])
+              : (currentTrip.trip_route as unknown as MapPoint[])
+            : [];
+
+        const allPointsToFit = [...stopPoints, ...routePoints].filter(Boolean);
+        if (allPointsToFit.length > 0) {
+          await map.fitBounds(allPointsToFit);
+        } else if (stopPoints.length > 0) {
+          await map.fitBounds(stopPoints);
+        }
       } catch (err) {
         console.warn("Map setup failed inside setupMapRoutes:", err);
       }
     };
 
-    const timer = setTimeout(() => {
-      setupMapRoutes();
-    }, 150);
-
-    return () => clearTimeout(timer);
+    setupMapRoutes();
   }, [tripDetails, map]);
 
   const renderStatusTag = (status?: string) => {
