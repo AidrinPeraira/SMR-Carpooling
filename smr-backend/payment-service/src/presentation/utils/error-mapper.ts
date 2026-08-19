@@ -1,4 +1,5 @@
-import { Prisma } from "#/infrastructure/database/generated/prisma/client";
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import {
   ApplicationError,
   HttpStatusCodes,
@@ -24,53 +25,39 @@ export const mapError = (err: unknown): ApplicationError => {
     );
   }
 
-  // Prisma Database Errors
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    if (err.code === "P2002") {
+  // Mongoose Validation Errors
+  if (err instanceof mongoose.Error) {
+    if (err instanceof mongoose.Error.ValidationError) {
       return new ApplicationError(
-        GenericErrorMessage.CONFLICT,
-        HttpStatusCodes.Conflict,
-        ErrorCode.DOMAIN_ALREADY_EXISTS,
-        ErrorDetails.DOMAIN_ALREADY_EXISTS,
+        GenericErrorMessage.VALIDATION_ERROR,
+        HttpStatusCodes.UnprocessableEntity,
+        ErrorCode.SYSTEM_DB_ERROR,
+        err.errors,
         err,
       );
     }
 
-    if (err.code === "P2003") {
+    if (err instanceof mongoose.Error.CastError) {
       return new ApplicationError(
-        "The referenced resource (passenger or trip) does not exist.",
+        GenericErrorMessage.BAD_REQUEST,
         HttpStatusCodes.BadRequest,
-        ErrorCode.INPUT_VALIDATION_ERROR,
-        ErrorDetails.SYSTEM_DB_ERROR,
+        ErrorCode.SYSTEM_DB_ERROR,
+        {
+          path: err.path,
+          value: err.value,
+        },
         err,
       );
     }
-
-    if (err.code === "P2025") {
-      return new ApplicationError(
-        GenericErrorMessage.NOT_FOUND,
-        HttpStatusCodes.NotFound,
-        ErrorCode.DOMAIN_NOT_FOUND,
-        ErrorDetails.DOMAIN_NOT_FOUND,
-        err,
-      );
-    }
-
-    return new ApplicationError(
-      GenericErrorMessage.INTERNAL_SERVER_ERROR,
-      HttpStatusCodes.InternalServerError,
-      ErrorCode.SYSTEM_DB_ERROR,
-      ErrorDetails.SYSTEM_DB_ERROR,
-      err,
-    );
   }
 
-  if ((err as any)?.name?.includes("Prisma")) {
+  // MongoDB Driver Errors (Duplicate Key 11000)
+  if ((err as any)?.code === 11000) {
     return new ApplicationError(
-      GenericErrorMessage.INTERNAL_SERVER_ERROR,
-      HttpStatusCodes.InternalServerError,
-      ErrorCode.SYSTEM_DB_ERROR,
-      ErrorDetails.SYSTEM_DB_ERROR,
+      GenericErrorMessage.CONFLICT,
+      HttpStatusCodes.Conflict,
+      ErrorCode.DOMAIN_ALREADY_EXISTS,
+      (err as any).keyValue,
       err,
     );
   }
@@ -118,7 +105,7 @@ export const mapError = (err: unknown): ApplicationError => {
     }
 
     return new ApplicationError(
-      "The configuration store is currently unavailable.",
+      "The service store is currently unavailable.",
       HttpStatusCodes.InternalServerError,
       ErrorCode.SYSTEM_UNAVAILABLE,
       ErrorDetails.SYSTEM_UNAVAILABLE,
@@ -126,7 +113,28 @@ export const mapError = (err: unknown): ApplicationError => {
     );
   }
 
-  // Normal Errors - Return generic message to prevent leaking internal stack/query details
+  // JWT Errors
+  if (err instanceof jwt.JsonWebTokenError) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return new ApplicationError(
+        "The verification token has expired.",
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_TOKEN_EXPIRED,
+        "The verification token has expired.",
+        err,
+      );
+    }
+
+    return new ApplicationError(
+      "Invalid or malformed verification token.",
+      HttpStatusCodes.BadRequest,
+      ErrorCode.INPUT_VALIDATION_ERROR,
+      "The verification token is invalid or malformed.",
+      err,
+    );
+  }
+
+  // Normal Errors - Return generic message to prevent leaking internal technical details
   if (err instanceof Error) {
     return new ApplicationError(
       GenericErrorMessage.INTERNAL_SERVER_ERROR,
@@ -146,4 +154,3 @@ export const mapError = (err: unknown): ApplicationError => {
     err,
   );
 };
-

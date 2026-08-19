@@ -136,10 +136,10 @@ export const mapError = (err: unknown): ApplicationError => {
     );
   }
 
-  // Normal Errors
+  // Normal Errors - Return generic message to prevent leaking internal details
   if (err instanceof Error) {
     return new ApplicationError(
-      err.message,
+      GenericErrorMessage.INTERNAL_SERVER_ERROR,
       HttpStatusCodes.InternalServerError,
       ErrorCode.SYSTEM_INTERNAL_ERROR,
       ErrorDetails.SYSTEM_INTERNAL_ERROR,
