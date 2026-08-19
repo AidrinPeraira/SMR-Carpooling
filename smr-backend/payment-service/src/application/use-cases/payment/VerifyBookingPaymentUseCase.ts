@@ -60,6 +60,10 @@ export class VerifyBookingPaymentUseCase implements IVerifyBookingPaymentUseCase
       );
     }
 
+    if (bookingPayment.status === TransactionStatus.SUCCESS) {
+      return;
+    }
+
     const customer = await this._customerRepository.findByCustomerId(
       bookingPayment.passengerId,
     );

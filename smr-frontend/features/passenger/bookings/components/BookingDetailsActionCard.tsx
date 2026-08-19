@@ -6,6 +6,7 @@ import { OnlinePaymentButton } from "./OnlinePaymentButton";
 
 interface BookingDetailsActionCardProps {
   bookingId: string;
+  amount: number;
   status: string;
   onWithdraw: () => Promise<void>;
   isWithdrawing: boolean;
@@ -13,6 +14,7 @@ interface BookingDetailsActionCardProps {
 
 export function BookingDetailsActionCard({
   bookingId,
+  amount,
   status,
   onWithdraw,
   isWithdrawing,
@@ -71,7 +73,7 @@ export function BookingDetailsActionCard({
           </div>
 
           <div className="flex flex-col gap-2 w-full">
-            <OnlinePaymentButton bookingId={bookingId} />
+            <OnlinePaymentButton bookingId={bookingId} amount={amount} />
             <Button
               variant="secondary"
               className="w-full text-xs py-2 font-medium"

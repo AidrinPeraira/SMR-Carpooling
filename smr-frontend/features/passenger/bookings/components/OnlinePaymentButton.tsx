@@ -3,15 +3,20 @@
 import { useState } from "react";
 import { Button, Dialog } from "@sharemyride/ui";
 import { useRouter } from "next/navigation";
-import { initiateBookingPaymentRequest } from "@/features/passenger/bookings/api/initiateBookingPaymentRequest";
+import Script from "next/script";
 import { createBookingPaymentOrderRequest } from "@/features/passenger/bookings/api/createBookingPaymentOrderRequest";
 import { verifyBookingPaymentRequest } from "@/features/passenger/bookings/api/verifyBookingPaymentRequest";
+import { initiateBookingPaymentRequest } from "@/features/passenger/bookings/api/initiateBookingPaymentRequest";
 
 interface OnlinePaymentButtonProps {
   bookingId: string;
+  amount: number;
 }
 
-export function OnlinePaymentButton({ bookingId }: OnlinePaymentButtonProps) {
+export function OnlinePaymentButton({
+  bookingId,
+  amount,
+}: OnlinePaymentButtonProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultDialog, setResultDialog] = useState<{
@@ -39,28 +44,66 @@ export function OnlinePaymentButton({ bookingId }: OnlinePaymentButtonProps) {
         payment_token,
       });
 
-      // 3. Verify successful payment
-      // Note: Razorpay is not implemented yet.
-      // In a real flow, Razorpay checkout would be here.
-      // We will mock the verify payment request with dummy values.
-      await verifyBookingPaymentRequest({
-        order_number,
-        payment_id: "mock_payment_id_" + Date.now(),
-        verification_key: "mock_verification_key",
+      // 3. Open Razorpay Checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
+        amount: amount * 100, // assuming INR and amount is in Rupees
+        currency: "INR",
+        name: "ShareMyRide",
+        description: "Booking Payment",
+        order_id: order_number,
+        handler: async function (response: any) {
+          try {
+            // Verify payment
+            await verifyBookingPaymentRequest({
+              order_number: response.razorpay_order_id,
+              payment_id: response.razorpay_payment_id,
+              verification_key: response.razorpay_signature,
+            });
+
+            setResultDialog({
+              isOpen: true,
+              success: true,
+              message: "Payment was successful! Your booking is confirmed.",
+            });
+          } catch (verifyError: any) {
+            setResultDialog({
+              isOpen: true,
+              success: false,
+              message: verifyError.message || "Payment verification failed.",
+            });
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        theme: {
+          color: "#4f46e5", // using a generic accent color
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+
+      rzp.on("payment.failed", function (response: any) {
+        setResultDialog({
+          isOpen: true,
+          success: false,
+          message: response.error.description || "Payment failed.",
+        });
+        setIsProcessing(false);
       });
 
-      setResultDialog({
-        isOpen: true,
-        success: true,
-        message: "Payment was successful! Your booking is confirmed.",
-      });
+      rzp.open();
     } catch (error: any) {
       setResultDialog({
         isOpen: true,
         success: false,
         message: error.message || "An error occurred during payment.",
       });
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -74,6 +117,10 @@ export function OnlinePaymentButton({ bookingId }: OnlinePaymentButtonProps) {
 
   return (
     <>
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="lazyOnload"
+      />
       <Button
         variant="primary"
         className="w-full text-xs py-2 font-medium"

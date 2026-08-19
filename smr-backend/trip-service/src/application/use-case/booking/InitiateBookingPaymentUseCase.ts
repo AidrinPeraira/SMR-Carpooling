@@ -158,7 +158,6 @@ export class InitiateBookingPaymentUseCase implements IInitiateBookingPaymentUse
         },
       );
     }
-
     const cleanUpJob: ScheduledJOB<CleanUpBookingRequsetDTO> = {
       webhookUrl: this._cleanupWebhookUrl,
       body: {

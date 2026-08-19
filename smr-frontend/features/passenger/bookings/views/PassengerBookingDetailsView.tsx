@@ -328,6 +328,7 @@ export function PassengerBookingDetailsView({
           <div className="pt-2">
             <BookingDetailsActionCard
               bookingId={booking.booking_id}
+              amount={booking.total_price}
               status={booking.status}
               onWithdraw={handleWithdraw}
               isWithdrawing={isWithdrawing}
