@@ -42,9 +42,6 @@ examples:
             "success": true,
             "message": "Booking payment initiated successfully",
             "payload": {
-              "passenger_id": "4378c2d1604b9a0fa330bd561486a02d",
-              "booking_id": "dabc6807-7aeb-4a03-9bcc-13639a4563d1",
-              "transaction_key": "pay_xyz123abc456",
-              "expires_at": "2026-08-18T23:15:00.000Z"
+              "payment_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXltZW50RGV0YWlscyI6eyJhbW1vdW50IjoxNTAsInBhc3NlbmdlcklkIjoiNDM3OGMyZDE2MDRiOWEwZmEzMzBiZDU2MTQ4NmEwMmQiLCJib29raW5nSWQiOiJkYWJjNjgwNy03YWViLTRhMDMtOWJjYy0xMzYzOWE0NTYzZDEiLCJwYXltZW50S2V5IjoicGF5X3h5ejEyM2FiYzQ1NiIsImV4cGlyZXNBdCI6IjIwMjYtMDgtMThUMjM6MTU6MDAuMDAwWiJ9LCJ0b2tlblR5cGUiOiJwYXltZW50X3Rva2VuIiwiaWF0IjoxNzg2NjQwNDgzLCJleHAiOjE3ODY2NDEzODN9.mock_signature"
             }
           }

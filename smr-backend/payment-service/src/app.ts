@@ -12,6 +12,7 @@ import {
   type ILogger,
 } from "@sharemyride/shared";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
+import { paymentServiceRouters } from "#/presentation/payment-service.module";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -26,6 +27,10 @@ export function createApp(logger: ILogger) {
   });
 
   app.use(keyMiddleware);
+
+  // Versioned API Routes
+  app.use("/v1", paymentServiceRouters.v1);
+
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

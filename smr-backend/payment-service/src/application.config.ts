@@ -13,4 +13,9 @@ export const AppConfig = {
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
+
+  RAZORPAY_API_KEY: String(process.env.RAZORPAY_API_KEY || "api_key"),
+  RAZORPAY_API_SECRET: String(process.env.RAZORPAY_API_SECRET || "api_secret"),
+  PAYMENT_SECRET: String(process.env.PAYMENT_SECRET || "secret_key"),
 };
+

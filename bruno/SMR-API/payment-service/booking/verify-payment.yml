@@ -1,0 +1,60 @@
+info:
+  name: verify-payment
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:4004/v1/payments/booking/verify
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  body:
+    type: json
+    data: |-
+      {
+        "order_number": "order_Nz10134881",
+        "payment_id": "pay_Nz1094817",
+        "verification_key": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4004/v1/payments/booking/verify
+      method: POST
+      headers:
+        - name: Content-Type
+          value: application/json
+        - name: x-gateway-key
+          value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+      body:
+        type: json
+        data: |-
+          {
+            "order_number": "order_Nz10134881",
+            "payment_id": "pay_Nz1094817",
+            "verification_key": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Payment verified successfully"
+          }
