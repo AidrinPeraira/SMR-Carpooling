@@ -885,7 +885,7 @@ export class TripsRepository implements ITripRepository {
     if (data.tripStops !== undefined)
       updateData.tripStops = data.tripStops as any;
     if (data.tripRoute !== undefined)
-      updateData.tripRoute = data.tripRoute as any;
+      updateData.tripRoute = data.tripRoute;
     if (data.tripDistance !== undefined)
       updateData.tripDistance = data.tripDistance;
     if (data.availableSeats !== undefined)
@@ -896,7 +896,7 @@ export class TripsRepository implements ITripRepository {
     if (data.startTime !== undefined) updateData.startTime = data.startTime;
     if (data.totalSeats !== undefined) updateData.totalSeats = data.totalSeats;
     if (data.tripStatus !== undefined)
-      updateData.tripStatus = data.tripStatus as any;
+      updateData.tripStatus = data.tripStatus;
 
     const updated = await this._tripModel.update({
       where: { tripId },
@@ -1000,9 +1000,12 @@ export class TripsRepository implements ITripRepository {
 
       const newVacantSeats = trip.vacantSeats + seatCount;
       const newStatus =
-        trip.tripStatus === TripStatus.FULLY_BOOKED
+        (trip.tripStatus as unknown) === TripStatus.FULLY_BOOKED
           ? TripStatus.SCHEDULED
           : trip.tripStatus;
+
+
+
 
       const updated = await tx.trip.update({
         where: { tripId },

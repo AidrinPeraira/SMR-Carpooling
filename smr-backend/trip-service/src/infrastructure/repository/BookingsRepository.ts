@@ -180,7 +180,7 @@ export class BookingsRepository implements IBookingRepository {
   ): Promise<BookingEntity> {
     const updateData: Prisma.BookingsUpdateInput = {};
 
-    if (data.status !== undefined) updateData.status = data.status as any;
+    if (data.status !== undefined) updateData.status = data.status;
     if (data.paymentKey !== undefined) updateData.paymentKey = data.paymentKey;
     if (data.paymentKeyExpiry !== undefined) updateData.paymentKeyExpiry = data.paymentKeyExpiry;
     if (data.totalPrice !== undefined) updateData.totalPrice = data.totalPrice;

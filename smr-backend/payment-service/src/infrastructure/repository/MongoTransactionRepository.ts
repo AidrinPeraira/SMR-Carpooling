@@ -19,9 +19,9 @@ export class MongoTransactionRepository
       transactionId: data.transactionId,
       creditor: data.creditor,
       debitor: data.debitor,
-      transactionType: data.transactionType as TransactionEntity["transactionType"],
-      transactionCategory: data.transactionCategory as TransactionEntity["transactionCategory"],
-      paymentMethod: data.paymentMethod as TransactionEntity["paymentMethod"],
+      transactionType: data.transactionType,
+      transactionCategory: data.transactionCategory,
+      paymentMethod: data.paymentMethod,
       recordId: data.recordId,
     };
   }

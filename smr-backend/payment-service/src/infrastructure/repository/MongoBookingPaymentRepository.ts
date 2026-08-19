@@ -24,8 +24,8 @@ export class MongoBookingPaymentRepository
       gatewayOrderId: data.gatewayOrderId ?? undefined,
       gatewayPaymentId: data.gatewayPaymentId ?? undefined,
       gatewayVeificationKey: data.gatewayVeificationKey ?? undefined,
-      paymentMethod: data.paymentMethod as BookingPaymentEntity["paymentMethod"],
-      status: data.status as BookingPaymentEntity["status"],
+      paymentMethod: data.paymentMethod,
+      status: data.status,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };
@@ -33,7 +33,7 @@ export class MongoBookingPaymentRepository
 
   async findByGatewayOrderId(orderId: string): Promise<BookingPaymentEntity | null> {
     const doc = await this.model.findOne({ gatewayOrderId: orderId }).lean();
-    return doc ? this.toDomainEntityMapper(doc as BookingPaymentDoc) : null;
+    return doc ? this.toDomainEntityMapper(doc) : null;
   }
 
   async findByBookingId(bookingId: string): Promise<BookingPaymentEntity | null> {
@@ -42,6 +42,6 @@ export class MongoBookingPaymentRepository
 
   async findByPaymentKey(paymentKey: string): Promise<BookingPaymentEntity | null> {
     const doc = await this.model.findOne({ paymentKey }).lean();
-    return doc ? this.toDomainEntityMapper(doc as BookingPaymentDoc) : null;
+    return doc ? this.toDomainEntityMapper(doc) : null;
   }
 }

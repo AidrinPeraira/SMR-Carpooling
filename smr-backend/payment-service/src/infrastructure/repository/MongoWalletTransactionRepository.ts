@@ -34,7 +34,7 @@ export class MongoWalletTransactionRepository
   async findByWalletId(walletId: string): Promise<WalletTransactionEntity[]> {
     const docs = await this.model.find({ walletId }).lean();
     return docs.map((doc) =>
-      this.toDomainEntityMapper(doc as WalletTransactionDoc),
+      this.toDomainEntityMapper(doc),
     );
   }
 }

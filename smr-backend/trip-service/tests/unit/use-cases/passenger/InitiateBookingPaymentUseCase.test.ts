@@ -4,7 +4,9 @@ import { IBookingRepository } from "#/application/interfaces/repository/IBooking
 import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
+import { ISchedulerService } from "#/application/interfaces/services/ISchedulerService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
+
 import {
   ApplicationError,
   BookingErrorMessage,
