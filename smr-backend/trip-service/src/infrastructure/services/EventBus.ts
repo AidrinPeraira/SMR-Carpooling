@@ -30,7 +30,7 @@ export class EventBus implements IEventBus {
     url: string,
     exchangeName: string = "sharemyride.events",
     eventDispatcher: IEventDispatcher,
-    queueName: string = "smr.trips.queue",
+    queueName: string = "smr.payments.queue",
   ) {
     this._logger = logger;
     this._url = url;

@@ -14,6 +14,7 @@ export const AppConfig = {
 
   DATABASE_URL: String(process.env.DATABASE_URL) || "",
   REDIS_URL: String(process.env.REDIS_URL) || "redis://localhost:6379",
+
   RABBITMQ_URL: String(process.env.RABBITMQ_URL || "amqp://localhost:5672"),
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",

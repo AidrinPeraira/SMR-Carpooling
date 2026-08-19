@@ -9,6 +9,7 @@ export const AppConfig = {
   ),
 
   MONGO_DB_URL: String(process.env.MONGO_DB_URL),
+
   RABBITMQ_URL: String(process.env.RABBITMQ_URL || "amqp://localhost:5672"),
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
@@ -18,4 +19,3 @@ export const AppConfig = {
   RAZORPAY_API_SECRET: String(process.env.RAZORPAY_API_SECRET || "api_secret"),
   PAYMENT_SECRET: String(process.env.PAYMENT_SECRET || "secret_key"),
 };
-
