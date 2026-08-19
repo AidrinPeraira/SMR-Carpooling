@@ -1,8 +1,5 @@
 export interface InitaiteBookingPaymentResponseDTO {
-  passengerId: string;
-  tansactionKey: string;
-  bookingId: string;
-  expiresAt: Date;
+  paymentToken: string;
 }
 
 export interface CleanUpBookingRequsetDTO {

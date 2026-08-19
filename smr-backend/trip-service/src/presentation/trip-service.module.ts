@@ -56,6 +56,7 @@ import { createBookingRouterV1 } from "#/presentation/v1/routes/booking/BookingR
 import { createWebhookRouterV1 } from "#/presentation/v1/routes/webhook/WebhookRouterV1";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
+import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { InitiateBookingPaymentUseCase } from "#/application/use-case/booking/InitiateBookingPaymentUseCase";
 import { ConfirmBookingPaymentUseCase } from "#/application/use-case/booking/ConfirmBookingPaymentUseCase";
 import { CleanUpBookingPaymentUseCase } from "#/application/use-case/booking/CleanUpBookingPaymentUseCase";
@@ -139,6 +140,7 @@ const userUnblockedHandler = new UserUnblockedEventHandler(
 // Payment Services & Use Cases
 const cryptoUIDService = new CryptoUIDService();
 const scheduledJobService = new ScheduledJobService();
+const jwtTokenService = new JWTTokenService();
 
 const confirmBookingPaymentUseCase = new ConfirmBookingPaymentUseCase(
   bookingsRepository,
@@ -153,6 +155,7 @@ const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
   tripsRepository,
   cryptoUIDService,
   scheduledJobService,
+  jwtTokenService,
   AppConfig.CLEANUP_WEBHOOK_URL,
 );
 

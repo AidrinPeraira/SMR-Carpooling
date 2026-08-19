@@ -4,7 +4,7 @@ import { IBookingRepository } from "#/application/interfaces/repository/IBooking
 import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
-import { ISchedulerService } from "#/application/interfaces/services/ISchedulerService";
+import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import {
   ApplicationError,
   BookingErrorMessage,
@@ -20,6 +20,7 @@ describe("InitiateBookingPaymentUseCase", () => {
   let mockTripRepository: ITripRepository;
   let mockUniqueIdService: IUniqueIdGenerator;
   let mockSchedulerService: ISchedulerService;
+  let mockTokenService: ITokenService;
   let useCase: InitiateBookingPaymentUseCase;
 
   const mockPassenger = {
@@ -84,12 +85,18 @@ describe("InitiateBookingPaymentUseCase", () => {
       scheduleJob: vi.fn().mockResolvedValue(undefined),
     };
 
+    mockTokenService = {
+      generateToken: vi.fn().mockReturnValue("mocked.jwt.token"),
+      verifyToken: vi.fn(),
+    };
+
     useCase = new InitiateBookingPaymentUseCase(
       mockBookingRepository,
       mockPassengerRepository,
       mockTripRepository,
       mockUniqueIdService,
       mockSchedulerService,
+      mockTokenService,
       "http://localhost/webhook/booking-cleanup",
     );
   });
@@ -97,10 +104,7 @@ describe("InitiateBookingPaymentUseCase", () => {
   it("should successfully initiate booking payment when passenger and booking are valid", async () => {
     const result = await useCase.execute("b-123", "passenger-123");
 
-    expect(result.passengerId).toBe("passenger-123");
-    expect(result.bookingId).toBe("b-123");
-    expect(result.tansactionKey).toBe("pay-key-999");
-    expect(result.expiresAt).toBeInstanceOf(Date);
+    expect(result.paymentToken).toBe("mocked.jwt.token");
 
     expect(mockTripRepository.atmoicReserveSeat).toHaveBeenCalledWith("t-456", 2);
     expect(mockBookingRepository.update).toHaveBeenCalledWith(

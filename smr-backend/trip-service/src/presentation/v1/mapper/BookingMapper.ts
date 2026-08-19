@@ -28,13 +28,7 @@ export class BookingMapper {
     dto: InitaiteBookingPaymentResponseDTO,
   ): InitiateBookingPaymentResponseDTO {
     return {
-      passenger_id: dto.passengerId,
-      booking_id: dto.bookingId,
-      transaction_key: dto.tansactionKey,
-      expires_at:
-        dto.expiresAt instanceof Date
-          ? dto.expiresAt.toISOString()
-          : String(dto.expiresAt),
+      payment_token: dto.paymentToken,
     };
   }
 

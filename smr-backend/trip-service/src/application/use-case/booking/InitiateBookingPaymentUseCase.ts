@@ -1,3 +1,4 @@
+import { AppConfig } from "#/application.config";
 import {
   CleanUpBookingRequsetDTO,
   InitaiteBookingPaymentResponseDTO,
@@ -6,6 +7,7 @@ import { IBookingRepository } from "#/application/interfaces/repository/IBooking
 import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { ISchedulerService } from "#/application/interfaces/services/ISchedulerService";
+import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { IInitiateBookingPaymentUseCase } from "#/application/interfaces/use-case/booking/IInitiateBookingPaymentUseCase";
 import {
@@ -15,7 +17,9 @@ import {
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
+  PaymentTokenPayload,
   ScheduledJOB,
+  TokenType,
   UserErrorMessage,
 } from "@sharemyride/shared";
 
@@ -26,6 +30,7 @@ export class InitiateBookingPaymentUseCase implements IInitiateBookingPaymentUse
     private readonly _tripRepository: ITripRepository,
     private readonly _uniqueIdService: IUniqueIdGenerator,
     private readonly _schedulerService: ISchedulerService,
+    private readonly _tokenService: ITokenService,
 
     private readonly _cleanupWebhookUrl: string,
   ) {}
@@ -173,11 +178,26 @@ export class InitiateBookingPaymentUseCase implements IInitiateBookingPaymentUse
       status: BookingStatus.PAYMENT_PROCESSING,
     });
 
+    const paymentTokenPayload: PaymentTokenPayload = {
+      paymentDetails: {
+        ammount: booking.totalPrice,
+        passengerId: passengerId,
+        bookingId: bookingId,
+        paymentKey: paymentKey,
+        expiresAt: keyExpiry,
+      },
+      tokenType: TokenType.PAYMENT_TOKEN,
+      iat: now.getTime(),
+      exp: keyExpiry.getTime(),
+    };
+
+    const paymentToken = this._tokenService.generateToken<PaymentTokenPayload>(
+      paymentTokenPayload,
+      AppConfig.PAYMENT_SECRET,
+    );
+
     return {
-      passengerId: passengerId,
-      bookingId: bookingId,
-      tansactionKey: paymentKey,
-      expiresAt: keyExpiry,
+      paymentToken,
     };
   }
 }
