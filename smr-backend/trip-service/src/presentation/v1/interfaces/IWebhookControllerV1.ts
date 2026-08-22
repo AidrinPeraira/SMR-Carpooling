@@ -6,4 +6,6 @@ export interface IWebhookControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+
+  cleanupTrips(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

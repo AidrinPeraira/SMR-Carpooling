@@ -11,5 +11,10 @@ export function createWebhookRouterV1(
     webhookController.cleanupBookingPayment(req, res, next),
   );
 
+  // Cleanup trips indexing callback from scheduler/QStash
+  router.post("/trips-cleanup", (req, res, next) =>
+    webhookController.cleanupTrips(req, res, next),
+  );
+
   return router;
 }

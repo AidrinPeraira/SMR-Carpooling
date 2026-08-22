@@ -149,6 +149,7 @@ describe("NewBookingUseCase", () => {
     };
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn().mockResolvedValue(mockTripPayload),
       findMatchingTrips: vi.fn(),

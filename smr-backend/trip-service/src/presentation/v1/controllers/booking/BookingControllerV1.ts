@@ -62,10 +62,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       res
         .status(HttpStatusCodes.Created)
         .json(
-          makeSuccessResponse(
-            GenericSuccessMessage.OPERATION_SUCCESSFUL,
-            null,
-          ),
+          makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, null),
         );
     } catch (error) {
       next(error);
@@ -96,7 +93,9 @@ export class BookingControllerV1 implements IBookingControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Driver bookings retrieved successfully", mapped));
+        .json(
+          makeSuccessResponse("Driver bookings retrieved successfully", mapped),
+        );
     } catch (error) {
       next(error);
     }
@@ -124,7 +123,9 @@ export class BookingControllerV1 implements IBookingControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Booking details retrieved successfully", mapped));
+        .json(
+          makeSuccessResponse("Booking details retrieved successfully", mapped),
+        );
     } catch (error) {
       next(error);
     }
@@ -149,10 +150,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(
-          makeSuccessResponse(
-            "Booking request accepted successfully",
-            null,
-          ),
+          makeSuccessResponse("Booking request accepted successfully", null),
         );
     } catch (error) {
       next(error);
@@ -178,10 +176,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(
-          makeSuccessResponse(
-            "Booking request rejected successfully",
-            null,
-          ),
+          makeSuccessResponse("Booking request rejected successfully", null),
         );
     } catch (error) {
       next(error);
@@ -203,7 +198,8 @@ export class BookingControllerV1 implements IBookingControllerV1 {
 
       this._logger.info("Fetching passenger bookings:", { passengerId });
 
-      const dto = BookingMapper.toPassengerGetAllBookingsQueryDTO(validatedQuery);
+      const dto =
+        BookingMapper.toPassengerGetAllBookingsQueryDTO(validatedQuery);
       const result = await this._passengerListBookingsUseCase.execute(
         passengerId,
         dto,
@@ -212,7 +208,12 @@ export class BookingControllerV1 implements IBookingControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Passenger bookings retrieved successfully", mapped));
+        .json(
+          makeSuccessResponse(
+            "Passenger bookings retrieved successfully",
+            mapped,
+          ),
+        );
     } catch (error) {
       next(error);
     }
@@ -273,10 +274,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(
-          makeSuccessResponse(
-            "Booking request withdrawn successfully",
-            null,
-          ),
+          makeSuccessResponse("Booking request withdrawn successfully", null),
         );
     } catch (error) {
       next(error);
@@ -307,10 +305,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(
-          makeSuccessResponse(
-            "Booking payment initiated successfully",
-            mapped,
-          ),
+          makeSuccessResponse("Booking payment initiated successfully", mapped),
         );
     } catch (error) {
       next(error);

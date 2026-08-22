@@ -1045,4 +1045,16 @@ export class TripsRepository implements ITripRepository {
       };
     });
   }
+  async cleanIndices(): Promise<void> {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000; // UTC+05:30
+    const dtoInIST = new Date(new Date().getTime() + IST_OFFSET_MS);
+    dtoInIST.setUTCHours(0, 0, 0, 0); // midnight of that IST day
+    const startOfDayUTC = new Date(dtoInIST.getTime() - IST_OFFSET_MS); // 18:30 UTC prev day
+
+    await this._tripPlacesModel.deleteMany({
+      where: {
+        tripDate: { lt: startOfDayUTC },
+      },
+    });
+  }
 }

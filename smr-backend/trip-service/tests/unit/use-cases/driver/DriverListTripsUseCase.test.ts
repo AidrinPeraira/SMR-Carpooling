@@ -39,6 +39,7 @@ describe("DriverListTripsUseCase", () => {
     vi.clearAllMocks();
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn(),
       findTripsByDriverId: vi.fn().mockResolvedValue(mockPaginatedTrips as any),

@@ -62,6 +62,7 @@ import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { InitiateBookingPaymentUseCase } from "#/application/use-case/booking/InitiateBookingPaymentUseCase";
 import { ConfirmBookingPaymentUseCase } from "#/application/use-case/booking/ConfirmBookingPaymentUseCase";
 import { CleanUpBookingPaymentUseCase } from "#/application/use-case/booking/CleanUpBookingPaymentUseCase";
+import { CleanUpTripsIndexingUseCase } from "#/application/use-case/trip/CleanUpTripsIndexingUseCase";
 
 /**
  * Composition Root for the Trip Service.
@@ -155,6 +156,9 @@ const confirmBookingPaymentUseCase = new ConfirmBookingPaymentUseCase(
 );
 const cleanUpBookingPaymentUseCase = new CleanUpBookingPaymentUseCase(
   bookingsRepository,
+  tripsRepository,
+);
+const cleanUpTripsIndexingUseCase = new CleanUpTripsIndexingUseCase(
   tripsRepository,
 );
 const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
@@ -373,6 +377,7 @@ const bookingControllerV1 = new BookingControllerV1(
 const webhookControllerV1 = new WebhookControllerV1(
   consolaLogger,
   cleanUpBookingPaymentUseCase,
+  cleanUpTripsIndexingUseCase,
 );
 
 // Routers

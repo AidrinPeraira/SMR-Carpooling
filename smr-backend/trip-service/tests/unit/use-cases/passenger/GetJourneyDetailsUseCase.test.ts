@@ -56,6 +56,7 @@ describe("GetJourneyDetailsUseCase", () => {
     vi.clearAllMocks();
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),

@@ -129,4 +129,10 @@ export interface ITripRepository {
     tripId: string,
     seatCount: number,
   ): Promise<TripEntity | null>;
+
+  /**
+   * this method deletes the rversed indexed items
+   * for the trips in the past
+   */
+  cleanIndices(): Promise<void>;
 }
