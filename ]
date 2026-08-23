@@ -98,8 +98,8 @@ export class CancelTripUseCase implements ICancelTripUseCas {
         cancelledBookings.push({
           bookingId: booking.bookingId,
           passengerId: booking.passengerId,
-          passengerName: booking.passengerName || "Passenger",
-          passengerEmail: booking.passengerEmail || "Unknown",
+          passengerName: booking.passengerName 
+          passengerEmail: booking.passengerEmail
         });
       }
     }

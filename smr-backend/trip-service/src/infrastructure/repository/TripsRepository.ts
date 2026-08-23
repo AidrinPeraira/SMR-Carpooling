@@ -44,7 +44,7 @@ interface BookingWithPassengerRecord {
   status: string;
   paymentKey?: string | null;
   paymentKeyExpiry?: Date | null;
-  passenger?: { firstName: string; lastName: string } | null;
+  passenger?: { firstName: string; lastName: string; emailId: string } | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -169,6 +169,7 @@ export class TripsRepository implements ITripRepository {
         passengerName: b.passenger
           ? `${b.passenger.firstName} ${b.passenger.lastName}`
           : undefined,
+        passengerEmail: b.passenger ? b.passenger.emailId : undefined,
         createdAt: b.createdAt,
         updatedAt: b.updatedAt,
       }),
@@ -270,6 +271,7 @@ export class TripsRepository implements ITripRepository {
           passengerName: b.passenger
             ? `${b.passenger.firstName} ${b.passenger.lastName}`
             : undefined,
+          passengerEmail: b.passenger ? b.passenger.emailId : undefined,
           createdAt: b.createdAt,
           updatedAt: b.updatedAt,
         }),

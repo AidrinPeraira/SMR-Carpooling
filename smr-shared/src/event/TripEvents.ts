@@ -6,9 +6,11 @@ export interface DriverCancelTripEventPayload {
     bookingId: string;
     passengerId: string;
     passengerName: string;
+    passengerEmail: string;
   }[];
   driverId: string;
   dirverName: string;
+  driverEmail: string;
 }
 
 export type DriverCancelTripEvent = DomainEvent<DriverCancelTripEventPayload>;

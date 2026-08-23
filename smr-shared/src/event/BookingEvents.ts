@@ -53,6 +53,7 @@ export interface PassengerCancelBookingEventPayload {
   bookingId: string;
   passengerId: string;
   passengerName: string;
+  passengerEmail: string;
   bookingStart: string;
   bookingStop: string;
   amount: string;

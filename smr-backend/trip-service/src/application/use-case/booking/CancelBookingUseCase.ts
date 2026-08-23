@@ -98,6 +98,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
         passengerName: passenger
           ? `${passenger.firstName} ${passenger.lastName}`.trim()
           : "Passenger",
+        passengerEmail: passenger ? passenger.emailId : "Unknown",
         bookingStart: booking.pickupPoint.stopName,
         bookingStop: booking.dropOffPoint.stopName,
         amount: booking.totalPrice.toString(),

@@ -21,6 +21,7 @@ export interface JourneyDetailsPayload {
 
 export interface BookingEntityWithPassenger extends BookingEntity {
   passengerName?: string;
+  passengerEmail?: string;
 }
 
 export interface TripResultPayload {
