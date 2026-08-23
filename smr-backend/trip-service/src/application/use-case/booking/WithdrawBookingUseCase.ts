@@ -11,7 +11,7 @@ import {
 
 /**
  * Use case to withdraw/cancel a pending booking request by a passenger.
- * Only bookings in REQUESTED status can be withdrawn by the passenger who created them.
+ * Only bookings in REQUESTED or PAYMENT_PENDING status can be withdrawn by the passenger who created them.
  */
 export class WithdrawBookingUseCase implements IWithdrawBookingUseCase {
   constructor(private readonly _bookingRepository: IBookingRepository) {}
@@ -45,7 +45,10 @@ export class WithdrawBookingUseCase implements IWithdrawBookingUseCase {
       );
     }
 
-    if (booking.status !== BookingStatus.REQUESTED) {
+    if (
+      booking.status !== BookingStatus.REQUESTED &&
+      booking.status !== BookingStatus.PAYMENT_PENDING
+    ) {
       throw new ApplicationError(
         BookingErrorMessage.INVALID_STATUS_TRANSITION,
         HttpStatusCodes.BadRequest,
@@ -53,7 +56,7 @@ export class WithdrawBookingUseCase implements IWithdrawBookingUseCase {
         ErrorDetails.INPUT_FORBIDDEN,
         {
           location: "WithdrawBookingUseCase",
-          description: `Booking status is '${booking.status}', expected '${BookingStatus.REQUESTED}'`,
+          description: `Booking status is '${booking.status}', expected '${BookingStatus.REQUESTED}' or '${BookingStatus.PAYMENT_PENDING}'`,
         },
       );
     }

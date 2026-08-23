@@ -36,18 +36,15 @@ export function OnlinePaymentButton({
     setIsProcessing(true);
 
     try {
-      // 1. Initiate payment request
       const { payment_token } = await initiateBookingPaymentRequest(bookingId);
-
-      // 2. Create booking order number
       const { order_number } = await createBookingPaymentOrderRequest({
         payment_token,
       });
 
-      // 3. Open Razorpay Checkout
+      //razorpay options
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
-        amount: amount * 100, // assuming INR and amount is in Rupees
+        amount: amount * 100, //Rupees to paise
         currency: "INR",
         name: "ShareMyRide",
         description: "Booking Payment",
@@ -145,7 +142,7 @@ export function OnlinePaymentButton({
         header={resultDialog.success ? "Payment Successful" : "Payment Failed"}
         description={resultDialog.message}
         confirmAction={closeResultDialog}
-        rejectAction={closeResultDialog} // Required to also close when reject is clicked
+        rejectAction={closeResultDialog}
       />
     </>
   );

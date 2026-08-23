@@ -218,6 +218,7 @@ import { DriverRejectBookingUseCase } from "#/application/use-case/booking/Drive
 import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/booking/GetPassngerBookingDetailsUseCase";
 import { PassengerListBookingsUseCase } from "#/application/use-case/booking/PassengerListBookingsUseCase";
 import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
+import { CancelBookingUseCase } from "#/application/use-case/booking/CancelBookingUseCase";
 
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,
@@ -257,6 +258,12 @@ const getPassengerBookingDetailsUseCase = new GetPassengerBookingDetailsUseCase(
   vehicleRepository,
 );
 const withdrawBookingUseCase = new WithdrawBookingUseCase(bookingsRepository);
+const cancelBookingUseCase = new CancelBookingUseCase(
+  bookingsRepository,
+  tripsRepository,
+  passengerRepository,
+  eventBusInstance,
+);
 
 import { AdminListAllTripsUseCase } from "#/application/use-case/admin/trip/AdminListAllTripsUseCase";
 import { AdminGetTripDetailsUseCase } from "#/application/use-case/admin/trip/AdminGetTripDetailsUseCase";
@@ -346,10 +353,17 @@ const vehicleControllerV1 = new VehicleControllerV1(
 
 import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
 import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
+import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
 
 const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
 const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
   tripsRepository,
+);
+const cancelTripUseCase = new CancelTripUseCase(
+  tripsRepository,
+  bookingsRepository,
+  driverRepository,
+  eventBusInstance,
 );
 
 const tripControllerV1 = new TripControllerV1(
@@ -359,6 +373,7 @@ const tripControllerV1 = new TripControllerV1(
   getJourneyDetailsUseCase,
   driverListTripsUseCase,
   driverGetTripDetailsUseCase,
+  cancelTripUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(
@@ -372,6 +387,7 @@ const bookingControllerV1 = new BookingControllerV1(
   getPassengerBookingDetailsUseCase,
   withdrawBookingUseCase,
   initiateBookingPaymentUseCase,
+  cancelBookingUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(

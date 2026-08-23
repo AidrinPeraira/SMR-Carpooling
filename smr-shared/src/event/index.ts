@@ -5,3 +5,4 @@ export * from "./AdminUserEvents";
 export * from "./VehicleListEvents";
 export * from "./ApplicationEvents";
 export * from "./BookingEvents";
+export * from "./TripEvents";

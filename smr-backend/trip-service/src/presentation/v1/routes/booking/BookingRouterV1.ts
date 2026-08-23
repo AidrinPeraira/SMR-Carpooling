@@ -73,5 +73,12 @@ export function createBookingRouterV1(
     (req, res, next) => bookingController.initiateBookingPayment(req, res, next),
   );
 
+  // Passenger: Cancel confirmed booking
+  router.patch(
+    "/:bookingId/cancel",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => bookingController.cancelBooking(req, res, next),
+  );
+
   return router;
 }

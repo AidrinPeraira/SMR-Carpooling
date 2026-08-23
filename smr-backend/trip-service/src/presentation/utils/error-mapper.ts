@@ -65,6 +65,7 @@ export const mapError = (err: unknown): ApplicationError => {
     );
   }
 
+  // eslint-disable-next-line
   if ((err as any)?.name?.includes("Prisma")) {
     return new ApplicationError(
       GenericErrorMessage.INTERNAL_SERVER_ERROR,
@@ -146,4 +147,3 @@ export const mapError = (err: unknown): ApplicationError => {
     err,
   );
 };
-

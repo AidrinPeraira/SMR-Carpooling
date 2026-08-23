@@ -47,3 +47,16 @@ export interface BookingPaymentFailureEventPayload {
 
 export type BookingPaymentFailureEvent =
   DomainEvent<BookingPaymentFailureEventPayload>;
+
+export interface PassengerCancelBookingEventPayload {
+  tripId: string;
+  bookingId: string;
+  passengerId: string;
+  passengerName: string;
+  bookingStart: string;
+  bookingStop: string;
+  amount: string;
+}
+
+export type PassengerCancelBookingEvent =
+  DomainEvent<PassengerCancelBookingEventPayload>;
