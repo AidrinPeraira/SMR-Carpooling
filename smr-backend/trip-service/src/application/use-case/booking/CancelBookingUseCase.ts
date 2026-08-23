@@ -2,6 +2,7 @@ import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { IPassengerRepository } from "#/application/interfaces/repository/IPassengerRepository";
+import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
 import { ICancelBookingUseCase } from "#/application/interfaces/use-case/booking/ICancelBookingUseCase";
 import {
   ApplicationError,
@@ -23,6 +24,7 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     private readonly _bookingRepository: IBookingRepository,
     private readonly _tripRepository: ITripRepository,
     private readonly _passengerRepository: IPassengerRepository,
+    private readonly _driverRepository: IDriverRepository,
     private readonly _eventBus: IEventBus,
   ) {}
 
@@ -88,6 +90,20 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     const passenger =
       await this._passengerRepository.findByPassengerId(passengerId);
 
+    const trip = await this._tripRepository.findByTripId(booking.tripId);
+    let driverId = "unknown";
+    let driverName = "Driver";
+    let driverEmail = "Unknown";
+    
+    if (trip) {
+      driverId = trip.driverId;
+      const driver = await this._driverRepository.findByDriverId(trip.driverId);
+      if (driver) {
+        driverName = `${driver.firstName} ${driver.lastName}`.trim();
+        driverEmail = driver.emailId;
+      }
+    }
+
     const cancelEvent: PassengerCancelBookingEvent = {
       eventName: EventName.BOOKING_CANCELLED_BY_PASSENGER,
       timestamp: new Date(),
@@ -99,6 +115,9 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
           ? `${passenger.firstName} ${passenger.lastName}`.trim()
           : "Passenger",
         passengerEmail: passenger ? passenger.emailId : "Unknown",
+        driverId,
+        driverName,
+        driverEmail,
         bookingStart: booking.pickupPoint.stopName,
         bookingStop: booking.dropOffPoint.stopName,
         amount: booking.totalPrice.toString(),

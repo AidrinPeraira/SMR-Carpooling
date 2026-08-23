@@ -262,6 +262,7 @@ const cancelBookingUseCase = new CancelBookingUseCase(
   bookingsRepository,
   tripsRepository,
   passengerRepository,
+  driverRepository,
   eventBusInstance,
 );
 

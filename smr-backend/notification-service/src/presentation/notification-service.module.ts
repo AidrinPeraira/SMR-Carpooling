@@ -12,6 +12,8 @@ import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSi
 import { SendNewBookingEmailUseCase } from "#/application/use-case/SendNewBookingEmailUseCase";
 import { SendBookingPaymentSuccessMailUseCase } from "#/application/use-case/SendBookingPaymentSuccessMailUseCase";
 import { SendBookingPaymentFailedMailUseCase } from "#/application/use-case/SendBookingPaymentFailedMailUseCase";
+import { SendBookingCancellationEmailUseCase } from "#/application/use-case/SendBookingCancellationEMailUseCase";
+import { SendTripCancellationEmailsUseCase } from "#/application/use-case/SendTripCancellationEmailsUseCase";
 import { RabbitMQConsumer } from "#/infrastructure/services/RabbitMQConsumer";
 import { ResendEmailService } from "#/infrastructure/services/ResendEMailService";
 import { ApplicationApprovedHandler } from "#/presentation/event-handlers/ApplicationApprovedHandler";
@@ -22,6 +24,8 @@ import { BookingPaymentSuccessHandler } from "#/presentation/event-handlers/Book
 import { BookingPaymentFailedHandler } from "#/presentation/event-handlers/BookingPaymentFailedHandler";
 import { PasswordChangeRequestHandler } from "#/presentation/event-handlers/PasswordChangeRequestHandler";
 import { PasswordChangedHandler } from "#/presentation/event-handlers/PasswordChangedHandler";
+import { BookingCancellationHandler } from "#/presentation/event-handlers/BookingCancellationHandler";
+import { TripCancellationEventHandler } from "#/presentation/event-handlers/TripCancelationEventHandler";
 import { UserSignupHandler } from "#/presentation/event-handlers/UserSignupHandler";
 import { EventDispatcher } from "#/presentation/messaging/EventDispatcher";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
@@ -58,6 +62,12 @@ const sendBookingPaymentSuccessMailUseCase =
 
 const sendBookingPaymentFailedMailUseCase =
   new SendBookingPaymentFailedMailUseCase(resendMailService);
+
+const sendBookingCancellationEmailUseCase =
+  new SendBookingCancellationEmailUseCase(resendMailService);
+
+const sendTripCancellationEmailsUseCase =
+  new SendTripCancellationEmailsUseCase(resendMailService);
 
 const userSignupHandler = new UserSignupHandler(
   consolaLogger,
@@ -104,6 +114,16 @@ const bookingPaymentFailedHandler = new BookingPaymentFailedHandler(
   sendBookingPaymentFailedMailUseCase,
 );
 
+const bookingCancellationHandler = new BookingCancellationHandler(
+  consolaLogger,
+  sendBookingCancellationEmailUseCase,
+);
+
+const tripCancellationEventHandler = new TripCancellationEventHandler(
+  consolaLogger,
+  sendTripCancellationEmailsUseCase,
+);
+
 const eventDispatcher = new EventDispatcher(consolaLogger);
 await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, userSignupHandler);
 await eventDispatcher.register(
@@ -137,6 +157,14 @@ await eventDispatcher.register(
 await eventDispatcher.register(
   EventName.BOOKING_PAYMENT_FAILURE,
   bookingPaymentFailedHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_CANCELLED_BY_PASSENGER,
+  bookingCancellationHandler,
+);
+await eventDispatcher.register(
+  EventName.TRIP_CANCELLED_BY_DRIVER,
+  tripCancellationEventHandler,
 );
 
 const rabbitMqConsumer = new RabbitMQConsumer(

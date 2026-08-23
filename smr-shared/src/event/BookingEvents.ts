@@ -54,6 +54,9 @@ export interface PassengerCancelBookingEventPayload {
   passengerId: string;
   passengerName: string;
   passengerEmail: string;
+  driverId: string;
+  driverName: string;
+  driverEmail: string;
   bookingStart: string;
   bookingStop: string;
   amount: string;
