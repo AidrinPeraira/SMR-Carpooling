@@ -168,7 +168,7 @@ const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
   cryptoUIDService,
   scheduledJobService,
   jwtTokenService,
-  AppConfig.CLEANUP_WEBHOOK_URL,
+  `${AppConfig.API_GATEWAY_URL}/api/v1/webhook/trips/booking-cleanup`,
 );
 
 const bookingPaymentSuccessEventHandler = new BookingPaymentSuccessEventHandler(
@@ -277,9 +277,15 @@ import { createAdminBookingRouterV1 } from "#/presentation/v1/routes/admin/Admin
 
 // Admin Trip & Booking Use Cases
 const adminListAllTripsUseCase = new AdminListAllTripsUseCase(tripsRepository);
-const adminGetTripDetailsUseCase = new AdminGetTripDetailsUseCase(tripsRepository);
-const adminListAllBookingsUseCase = new AdminListAllBookingsUseCase(bookingsRepository);
-const adminGetBookingDetailsUseCase = new AdminGetBookingDetailsUseCase(bookingsRepository);
+const adminGetTripDetailsUseCase = new AdminGetTripDetailsUseCase(
+  tripsRepository,
+);
+const adminListAllBookingsUseCase = new AdminListAllBookingsUseCase(
+  bookingsRepository,
+);
+const adminGetBookingDetailsUseCase = new AdminGetBookingDetailsUseCase(
+  bookingsRepository,
+);
 
 // Admin Configuration Use Cases
 const getConfigurationsUseCase = new GetConfigurationUseCase(
@@ -406,7 +412,9 @@ const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
   adminVehicleControllerV1,
 );
 const adminTripRoutesV1 = createAdminTripRouterV1(adminTripControllerV1);
-const adminBookingRoutesV1 = createAdminBookingRouterV1(adminBookingControllerV1);
+const adminBookingRoutesV1 = createAdminBookingRouterV1(
+  adminBookingControllerV1,
+);
 
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
@@ -432,4 +440,3 @@ export const tripServiceRouters = {
 };
 
 export const eventBus = eventBusInstance;
-

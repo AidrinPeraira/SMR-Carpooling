@@ -11,3 +11,7 @@ export interface VerifyBookingPaymentOrderRequestDTO {
   paymentId: string;
   verificationKey: string;
 }
+
+export interface FailedBookingPaymentRequestDTO {
+  bookingPaymentID: string;
+}

@@ -1,6 +1,7 @@
 import express from "express";
 import { AppConfig } from "#/application.config";
 import { CreateBookingPaymentOrderUseCase } from "#/application/use-cases/payment/CreateBookingPaymentOrderUseCase";
+import { FailedBookingPaymentUseCase } from "#/application/use-cases/payment/FailedBookingPaymentUseCase";
 import { VerifyBookingPaymentUseCase } from "#/application/use-cases/payment/VerifyBookingPaymentUseCase";
 import { BlockCustomerUseCase } from "#/application/use-cases/customer/BlockCustomerUseCase";
 import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomerUseCase";
@@ -12,6 +13,7 @@ import { MongoTransactionRepository } from "#/infrastructure/repository/MongoTra
 import { MongoWalletRepository } from "#/infrastructure/repository/MongoWalletRepository";
 import { MongoWalletTransactionRepository } from "#/infrastructure/repository/MongoWalletTransactionRepository";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
+import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { RazorPayPaymentProvider } from "#/infrastructure/services/RazorPayPaymentProvider";
@@ -20,7 +22,9 @@ import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEve
 import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
 import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
+import { WebhookControllerV1 } from "#/presentation/v1/controllers/WebhookControllerV1";
 import { createPaymentRouterV1 } from "#/presentation/v1/routes/PaymentRouterV1";
+import { createWebhookRouterV1 } from "#/presentation/v1/routes/WebhookRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
 // Logger
@@ -36,6 +40,7 @@ const transactionRepository = new MongoTransactionRepository();
 const cryptoUIDService = new CryptoUIDService();
 const jwtTokenService = new JWTTokenService();
 const razorPayPaymentProvider = new RazorPayPaymentProvider();
+const scheduledJobService = new ScheduledJobService();
 
 // Event Dispatcher & Message Consumer Setup
 const eventDispatcher = new EventDispatcher(consolaLogger);
@@ -63,10 +68,7 @@ const userUnblockedEventHandler = new UserUnblockedEventHandler(
   unblockCustomerUseCase,
 );
 
-await eventDispatcher.register(
-  EventName.AUTH_USER_SIGNUP,
-  newUserEventHandler,
-);
+await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, newUserEventHandler);
 await eventDispatcher.register(
   EventName.ADMIN_USER_BLOCKED,
   userBlockedEventHandler,
@@ -89,6 +91,8 @@ const createBookingPaymentOrderUseCase = new CreateBookingPaymentOrderUseCase(
   bookingPaymentRepository,
   jwtTokenService,
   razorPayPaymentProvider,
+  scheduledJobService,
+  `${AppConfig.API_GATEWAY_URL}/api/v1/payments/webhooks/clear-booking-payment`
 );
 
 const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
@@ -100,6 +104,10 @@ const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
   cryptoUIDService,
 );
 
+const failedBookingPaymentUseCase = new FailedBookingPaymentUseCase(
+  bookingPaymentRepository,
+);
+
 // Payment Controller & Router
 const paymentControllerV1 = new PaymentControllerV1(
   consolaLogger,
@@ -107,11 +115,18 @@ const paymentControllerV1 = new PaymentControllerV1(
   verifyBookingPaymentUseCase,
 );
 
+const webhookControllerV1 = new WebhookControllerV1(
+  consolaLogger,
+  failedBookingPaymentUseCase,
+);
+
 const paymentRouterV1 = createPaymentRouterV1(paymentControllerV1);
+const webhookRouterV1 = createWebhookRouterV1(webhookControllerV1);
 
 // Routers setup
 const v1Router = express.Router();
 v1Router.use("/payments", paymentRouterV1);
+v1Router.use("/webhooks", webhookRouterV1);
 
 export const paymentServiceRouters = {
   v1: v1Router,

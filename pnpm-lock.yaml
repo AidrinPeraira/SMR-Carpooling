@@ -334,6 +334,9 @@ importers:
       '@sharemyride/shared':
         specifier: workspace:*
         version: link:../../smr-shared
+      '@upstash/qstash':
+        specifier: ^2.11.3
+        version: 2.11.3
       amqplib:
         specifier: ^2.0.1
         version: 2.0.1

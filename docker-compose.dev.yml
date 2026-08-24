@@ -120,6 +120,7 @@ services:
     tty: true
     ports:
       - "4003:4003"
+      - "8080:8080"
     env_file:
       - ./smr-backend/trip-service/.env
     environment:

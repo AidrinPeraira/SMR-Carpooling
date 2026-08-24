@@ -2,9 +2,11 @@ import { AppConfig } from "#/application.config";
 import {
   CreateBookingPaymentOrderRequestDTO,
   CreateBookingPaymentOrderResponseDTO,
+  FailedBookingPaymentRequestDTO,
 } from "#/application/dto/payments/BookingPaymentDTO";
 import { IBookingPaymentRepository } from "#/application/interfaces/repository/IBookingPaymentRepository";
 import { IPaymentProvider } from "#/application/interfaces/services/IPaymentProvider";
+import { ISchedulerService } from "#/application/interfaces/services/ISchedulerService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { ICreateBookingPaymentOrderUseCase } from "#/application/interfaces/use-cases/payment/ICreateBookingPaymentOrderUseCase";
 import {
@@ -15,6 +17,7 @@ import {
   PaymentErrorMessage,
   PaymentMethod,
   PaymentTokenPayload,
+  ScheduledJOB,
   TransactionStatus,
 } from "@sharemyride/shared";
 
@@ -27,6 +30,9 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
     private readonly _bookingPaymentRepository: IBookingPaymentRepository,
     private readonly _tokenService: ITokenService,
     private readonly _paymentProvider: IPaymentProvider,
+    private readonly _schedulerService: ISchedulerService,
+
+    private readonly _cleanupWebhookUrl: string,
   ) {}
 
   /**
@@ -40,7 +46,7 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
   async execute(
     dto: CreateBookingPaymentOrderRequestDTO,
   ): Promise<CreateBookingPaymentOrderResponseDTO> {
-    // 1. Verify payment token
+    //verify token and get payload
     let payload: PaymentTokenPayload;
     try {
       payload = this._tokenService.verifyToken<PaymentTokenPayload>(
@@ -54,8 +60,8 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
         ErrorCode.INPUT_TOKEN_EXPIRED,
         ErrorDetails.INPUT_TOKEN_EXPIRED,
         {
-          location: "CreateBookingPaymentOrderUseCase - verifyToken",
-          cause: err,
+          location: "CreateBookingPaymentOrderUseCase",
+          description: "Token verification failed",
         },
       );
     }
@@ -72,10 +78,9 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
 
     const isExpired = expiryTimestamp > 0 && Date.now() > expiryTimestamp;
 
-    // 2. Check for existing payment record using paymentKey for idempotency
-    const existingPayment = await this._bookingPaymentRepository.findByPaymentKey(
-      paymentKey,
-    );
+    //check existing record for idempotency
+    const existingPayment =
+      await this._bookingPaymentRepository.findByPaymentKey(paymentKey);
 
     if (existingPayment) {
       if (isExpired) {
@@ -98,6 +103,8 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
         );
       }
 
+      //if previous valid order is present
+      //make payment to that order number
       if (existingPayment.gatewayOrderId) {
         return {
           orderNumber: existingPayment.gatewayOrderId,
@@ -118,27 +125,39 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
       );
     }
 
-    // 3. Save or use existing pending payment entity
-    const bookingPayment =
-      existingPayment ??
-      (await this._bookingPaymentRepository.save({
-        bookingId,
-        passengerId,
-        amount,
-        paymentKey,
-        paymentMethod: PaymentMethod.PAYMENT_GATEWAY,
-        status: TransactionStatus.PENDING,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }));
+    //new booking payment. (we have to do this to get bookingPayment record id)
+    //we create a new booking payment. (keep old one for record)
+    const bookingPayment = await this._bookingPaymentRepository.save({
+      bookingId,
+      passengerId,
+      amount,
+      paymentKey,
+      paymentMethod: PaymentMethod.PAYMENT_GATEWAY,
+      status: TransactionStatus.PENDING,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
-    // 4. Create order with payment provider
+    //publish a celanup job
+    const cleanupJob: ScheduledJOB<FailedBookingPaymentRequestDTO> = {
+      webhookUrl: this._cleanupWebhookUrl,
+      body: {
+        bookingPaymentID: bookingPayment.id,
+      },
+      retries: 3,
+      delaySeconds: 2 * 60,
+    };
+    await this._schedulerService.scheduleJob<FailedBookingPaymentRequestDTO>(
+      cleanupJob,
+    );
+
+    //create new order to process the new payment
     const providerOrder = await this._paymentProvider.createOrder(
       amount,
       bookingPayment.id,
     );
 
-    // 5. Store gatewayOrderId
+    //update
     await this._bookingPaymentRepository.updateById(bookingPayment.id, {
       gatewayOrderId: providerOrder.orderId,
       updatedAt: new Date(),
