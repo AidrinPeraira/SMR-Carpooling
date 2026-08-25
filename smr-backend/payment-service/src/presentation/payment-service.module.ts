@@ -2,6 +2,7 @@ import express from "express";
 import { AppConfig } from "#/application.config";
 import { CreateBookingPaymentOrderUseCase } from "#/application/use-cases/payment/CreateBookingPaymentOrderUseCase";
 import { FailedBookingPaymentUseCase } from "#/application/use-cases/payment/FailedBookingPaymentUseCase";
+import { RefundBookingPaymentUseCase } from "#/application/use-cases/payment/RefundBookingPaymentUseCase";
 import { VerifyBookingPaymentUseCase } from "#/application/use-cases/payment/VerifyBookingPaymentUseCase";
 import { BlockCustomerUseCase } from "#/application/use-cases/customer/BlockCustomerUseCase";
 import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomerUseCase";
@@ -20,6 +21,8 @@ import { PaymentControllerV1 } from "#/presentation/v1/controllers/PaymentContro
 import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
 import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
 import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
+import { BookingCancelledByPassengerEventHandler } from "#/presentation/v1/event-handlers/BookingCancelledByPassengerEventHandler";
+import { TripCancelledByDriverEventHandler } from "#/presentation/v1/event-handlers/TripCancelledByDriverEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { WebhookControllerV1 } from "#/presentation/v1/controllers/WebhookControllerV1";
 import { createPaymentRouterV1 } from "#/presentation/v1/routes/PaymentRouterV1";
@@ -76,6 +79,9 @@ await eventDispatcher.register(
   userUnblockedEventHandler,
 );
 
+// We need to wait for RefundBookingPaymentUseCase to be initialized before we can register the new handlers.
+// So we'll register the new handlers after eventBusInstance and refundBookingPaymentUseCase are created.
+
 const eventBusInstance = new EventBus(
   consolaLogger,
   AppConfig.RABBITMQ_URL,
@@ -104,6 +110,33 @@ const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
 
 const failedBookingPaymentUseCase = new FailedBookingPaymentUseCase(
   bookingPaymentRepository,
+);
+
+const refundBookingPaymentUseCase = new RefundBookingPaymentUseCase(
+  bookingPaymentRepository,
+  walletRepository,
+  transactionRepository,
+  cryptoUIDService,
+);
+
+const bookingCancelledByPassengerEventHandler = new BookingCancelledByPassengerEventHandler(
+  consolaLogger,
+  refundBookingPaymentUseCase,
+);
+
+const tripCancelledByDriverEventHandler = new TripCancelledByDriverEventHandler(
+  consolaLogger,
+  refundBookingPaymentUseCase,
+);
+
+await eventDispatcher.register(
+  EventName.BOOKING_CANCELLED_BY_PASSENGER,
+  bookingCancelledByPassengerEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.TRIP_CANCELLED_BY_DRIVER,
+  tripCancelledByDriverEventHandler,
 );
 
 // Payment Controller & Router
