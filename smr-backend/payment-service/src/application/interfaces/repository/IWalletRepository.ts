@@ -7,8 +7,11 @@ import { WalletTransactionEntity } from "#/domain/entities/WalletTransactionEnti
  */
 export interface IWalletRepository extends IBaseRepository<WalletEntity> {
   findByCustomerId(customerId: string): Promise<WalletEntity | null>;
-  addTransaction(
-    walletId: string,
-    transaction: WalletTransactionEntity,
+
+  addTransactionByCustomerId(
+    customerId: string,
+    transaction: Omit<WalletTransactionEntity, "id">,
   ): Promise<WalletEntity>;
+
+  getWalletTransactions(walletId: string): Promise<WalletTransactionEntity[]>;
 }

@@ -1,10 +1,21 @@
 import { IWalletRepository } from "#/application/interfaces/repository/IWalletRepository";
+import mongoose from "mongoose";
 import { WalletEntity } from "#/domain/entities/WalletEntity";
 import { WalletTransactionEntity } from "#/domain/entities/WalletTransactionEntity";
+import {
+  ApplicationError,
+  ErrorCode,
+  ErrorDetails,
+  HttpStatusCodes,
+  PaymentErrorMessage,
+  TransactionCategory,
+  TransactionType,
+} from "@sharemyride/shared";
 import {
   WalletDoc,
   WalletModel,
 } from "#/infrastructure/database/models/MongoWalletModel";
+import { WalletTransactionModel } from "#/infrastructure/database/models/MongoWalletTransactionModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
 
 export class MongoWalletRepository
@@ -31,24 +42,62 @@ export class MongoWalletRepository
     return doc ? this.toDomainEntityMapper(doc) : null;
   }
 
-  async addTransaction(
-    walletId: string,
-    transaction: WalletTransactionEntity,
+  async addTransactionByCustomerId(
+    customerId: string,
+    transaction: Omit<WalletTransactionEntity, "id">,
   ): Promise<WalletEntity> {
-    const updatedDoc = await this.model.findOneAndUpdate(
-      { walletId },
-      {
-        $push: { walletTransactions: transaction },
-        $inc: { balance: transaction.amount },
-        $set: { updatedAt: new Date() },
-      },
-      { returnDocument: "after" },
-    );
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    if (!updatedDoc) {
-      throw new Error(`Wallet not found for walletId: ${walletId}`);
+    try {
+      await WalletTransactionModel.create([transaction], { session });
+
+      const updatedDoc = await this.model.findOneAndUpdate(
+        { customerId },
+        {
+          $inc: { balance: transaction.amount },
+          $set: { updatedAt: new Date() },
+        },
+        { returnDocument: "after", session },
+      );
+
+      if (!updatedDoc) {
+        throw new ApplicationError(
+          PaymentErrorMessage.WALLET_NOT_FOUND,
+          HttpStatusCodes.NotFound,
+          ErrorCode.DOMAIN_NOT_FOUND,
+          ErrorDetails.DOMAIN_NOT_FOUND,
+          {
+            location: "MongoWalletRepository.addTransactionByCustomerId",
+            description: `Wallet not found for customerId: ${customerId}`,
+          },
+        );
+      }
+
+      await session.commitTransaction();
+      return this.toDomainEntityMapper(updatedDoc);
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      await session.endSession();
     }
+  }
 
-    return this.toDomainEntityMapper(updatedDoc);
+  async getWalletTransactions(
+    walletId: string,
+  ): Promise<WalletTransactionEntity[]> {
+    const docs = await WalletTransactionModel.find({ walletId }).lean();
+    return docs.map((doc) => ({
+      id: doc._id.toString(),
+      walletId: doc.walletId,
+      amount: doc.amount,
+      transactionType: doc.transactionType as TransactionType,
+      transactionCategory: doc.transactionCategory as TransactionCategory,
+      transactionId: doc.transactionId,
+      date: doc.date,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    }));
   }
 }

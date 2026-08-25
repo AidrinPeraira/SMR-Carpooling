@@ -11,7 +11,6 @@ import { MongoBookingPaymentRepository } from "#/infrastructure/repository/Mongo
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
 import { MongoTransactionRepository } from "#/infrastructure/repository/MongoTransactionRepository";
 import { MongoWalletRepository } from "#/infrastructure/repository/MongoWalletRepository";
-import { MongoWalletTransactionRepository } from "#/infrastructure/repository/MongoWalletTransactionRepository";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
 import { EventBus } from "#/infrastructure/services/EventBus";
@@ -33,7 +32,6 @@ const consolaLogger = new ConsolaLogger();
 // Infrastructure Repositories & Services
 const customerRepository = new MongoCustomerRepository();
 const walletRepository = new MongoWalletRepository();
-const walletTransactionRepository = new MongoWalletTransactionRepository();
 const bookingPaymentRepository = new MongoBookingPaymentRepository();
 const transactionRepository = new MongoTransactionRepository();
 
@@ -135,7 +133,6 @@ export const paymentServiceRouters = {
 export const eventBus = eventBusInstance;
 export const customerRepo = customerRepository;
 export const walletRepo = walletRepository;
-export const walletTransactionRepo = walletTransactionRepository;
 export const bookingPaymentRepo = bookingPaymentRepository;
 export const transactionRepo = transactionRepository;
 export const uidService = cryptoUIDService;

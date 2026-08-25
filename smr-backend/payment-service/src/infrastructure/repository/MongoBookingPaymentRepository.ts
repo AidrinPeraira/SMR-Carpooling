@@ -5,6 +5,7 @@ import {
   BookingPaymentModel,
 } from "#/infrastructure/database/models/MongoBookingPaymentModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
+import { TransactionStatus } from "@sharemyride/shared";
 
 export class MongoBookingPaymentRepository
   extends MongoBaseRepository<BookingPaymentEntity, BookingPaymentDoc>
@@ -42,6 +43,11 @@ export class MongoBookingPaymentRepository
 
   async findByPaymentKey(paymentKey: string): Promise<BookingPaymentEntity | null> {
     const doc = await this.model.findOne({ paymentKey }).lean();
+    return doc ? this.toDomainEntityMapper(doc) : null;
+  }
+
+  async findSuccesfulBookingById(bookingId: string): Promise<BookingPaymentEntity | null> {
+    const doc = await this.model.findOne({ bookingId, status: TransactionStatus.SUCCESS }).lean();
     return doc ? this.toDomainEntityMapper(doc) : null;
   }
 }

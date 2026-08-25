@@ -21,4 +21,5 @@ export enum TransactionStatus {
   CANCELLED = "cancelled",
   FAILED = "failed",
   SUCCESS = "success",
+  REFUNDED = "refunded",
 }

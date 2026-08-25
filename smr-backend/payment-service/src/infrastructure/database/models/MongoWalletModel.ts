@@ -1,33 +1,5 @@
 import mongoose, { HydratedDocument, InferSchemaType } from "mongoose";
 
-export const walletTransactionSchema = new mongoose.Schema({
-  walletId: {
-    type: String,
-    required: true,
-  },
-  amount: {
-    type: Number,
-    required: true,
-  },
-  transactionType: {
-    type: String,
-    required: true,
-  },
-  transactionCategory: {
-    type: String,
-    required: true,
-  },
-  transactionId: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-    default: Date.now,
-  },
-});
-
 export const walletSchema = new mongoose.Schema({
   walletId: {
     type: String,
@@ -46,8 +18,6 @@ export const walletSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-
-  walletTransactions: [walletTransactionSchema],
 
   createdAt: {
     type: Date,

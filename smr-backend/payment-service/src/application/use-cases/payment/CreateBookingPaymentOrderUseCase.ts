@@ -53,7 +53,7 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
         dto.paymentToken,
         AppConfig.PAYMENT_SECRET,
       );
-    } catch (err) {
+    } catch {
       throw new ApplicationError(
         PaymentErrorMessage.INVALID_PAYMENT_TOKEN,
         HttpStatusCodes.BadRequest,
@@ -68,15 +68,30 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
 
     const { bookingId, passengerId, paymentKey, ammount, expiresAt } =
       payload.paymentDetails;
-    const amount = ammount;
 
+    const amount = ammount;
     const expiryTimestamp = expiresAt
       ? new Date(expiresAt).getTime()
       : payload.exp
         ? payload.exp
         : 0;
-
     const isExpired = expiryTimestamp > 0 && Date.now() > expiryTimestamp;
+
+    //check for already paid
+    const successfulBooking =
+      await this._bookingPaymentRepository.findSuccesfulBookingById(bookingId);
+    if (successfulBooking) {
+      throw new ApplicationError(
+        PaymentErrorMessage.PAYMENT_ALREADY_COMPLETED,
+        HttpStatusCodes.Conflict,
+        ErrorCode.DOMAIN_CONFLICT,
+        ErrorDetails.DOMAIN_CONFLICT,
+        {
+          location: "CreateBookingPaymentOrderUseCase",
+          description: "The payment for this booking has been done",
+        },
+      );
+    }
 
     //check existing record for idempotency
     const existingPayment =

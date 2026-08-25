@@ -5,4 +5,7 @@ export interface IBookingPaymentRepository extends IBaseRepository<BookingPaymen
   findByGatewayOrderId(orderId: string): Promise<BookingPaymentEntity | null>;
   findByBookingId(bookingId: string): Promise<BookingPaymentEntity | null>;
   findByPaymentKey(paymentKey: string): Promise<BookingPaymentEntity | null>;
+  findSuccesfulBookingById(
+    bookingId: string,
+  ): Promise<BookingPaymentEntity | null>;
 }

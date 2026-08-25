@@ -1,7 +1,7 @@
 import { TransactionCategory, TransactionType } from "@sharemyride/shared";
 
 export interface WalletTransactionEntity {
-  id?: string;
+  id: string;
   walletId: string;
   amount: number;
   transactionType: TransactionType;
