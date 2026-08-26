@@ -12,5 +12,5 @@ export * from "./admin/AdminBookingsDTO";
 export * from "./TripDTO";
 export * from "./BookingDTO";
 export * from "./PaymentDTO";
-
+export * from "./WalletDTO";
 

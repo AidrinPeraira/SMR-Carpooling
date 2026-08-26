@@ -1,0 +1,14 @@
+info:
+  name: get-transactions
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:4004/v1/wallet/transactions?page=1&limit=10
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  auth: inherit

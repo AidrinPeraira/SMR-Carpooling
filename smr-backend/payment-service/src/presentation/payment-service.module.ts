@@ -8,6 +8,7 @@ import { BlockCustomerUseCase } from "#/application/use-cases/customer/BlockCust
 import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomerUseCase";
 import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
 import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWalletUseCase";
+import { GetWalletTransactionsUseCase } from "#/application/use-cases/wallet/GetWalletTransactionsUseCase";
 import { MongoBookingPaymentRepository } from "#/infrastructure/repository/MongoBookingPaymentRepository";
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
 import { MongoTransactionRepository } from "#/infrastructure/repository/MongoTransactionRepository";
@@ -25,7 +26,9 @@ import { BookingCancelledByPassengerEventHandler } from "#/presentation/v1/event
 import { TripCancelledByDriverEventHandler } from "#/presentation/v1/event-handlers/TripCancelledByDriverEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { WebhookControllerV1 } from "#/presentation/v1/controllers/WebhookControllerV1";
+import { WalletControllerV1 } from "#/presentation/v1/controllers/WalletControllerV1";
 import { createPaymentRouterV1 } from "#/presentation/v1/routes/PaymentRouterV1";
+import { createWalletRouterV1 } from "#/presentation/v1/routes/WalletRouterV1";
 import { createWebhookRouterV1 } from "#/presentation/v1/routes/WebhookRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
@@ -53,6 +56,9 @@ const unblockCustomerUseCase = new UnblockCustomerUseCase(customerRepository);
 const createWalletUseCase = new CreateWalletUseCase(
   walletRepository,
   cryptoUIDService,
+);
+const getWalletTransactionsUseCase = new GetWalletTransactionsUseCase(
+  walletRepository,
 );
 
 const newUserEventHandler = new NewUserEventHandler(
@@ -150,14 +156,20 @@ const webhookControllerV1 = new WebhookControllerV1(
   consolaLogger,
   failedBookingPaymentUseCase,
 );
+const walletControllerV1 = new WalletControllerV1(
+  consolaLogger,
+  getWalletTransactionsUseCase,
+);
 
 const paymentRouterV1 = createPaymentRouterV1(paymentControllerV1);
 const webhookRouterV1 = createWebhookRouterV1(webhookControllerV1);
+const walletRouterV1 = createWalletRouterV1(walletControllerV1);
 
 // Routers setup
 const v1Router = express.Router();
 v1Router.use("/payments", paymentRouterV1);
 v1Router.use("/webhooks", webhookRouterV1);
+v1Router.use("/wallet", walletRouterV1);
 
 export const paymentServiceRouters = {
   v1: v1Router,

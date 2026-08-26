@@ -7,7 +7,10 @@ import {
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
+  PaginatedPayload,
   PaymentErrorMessage,
+  QueryDTO,
+  SortOrder,
   TransactionCategory,
   TransactionType,
 } from "@sharemyride/shared";
@@ -86,9 +89,43 @@ export class MongoWalletRepository
 
   async getWalletTransactions(
     walletId: string,
-  ): Promise<WalletTransactionEntity[]> {
-    const docs = await WalletTransactionModel.find({ walletId }).lean();
-    return docs.map((doc) => ({
+    query: QueryDTO<WalletTransactionEntity>
+  ): Promise<PaginatedPayload<WalletTransactionEntity[]>> {
+    const queryObj: Record<string, any> = { walletId };
+
+    if (query) {
+      if (query.search) {
+        queryObj.$or = [
+          { transactionId: { $regex: query.search, $options: "i" } },
+          { transactionType: { $regex: query.search, $options: "i" } },
+          { transactionCategory: { $regex: query.search, $options: "i" } },
+        ];
+      }
+
+      if (query.filterField && query.filterValue) {
+        queryObj[query.filterField as string] = query.filterValue;
+      }
+    }
+
+    const mongoCursor = WalletTransactionModel.find(queryObj);
+
+    if (query.sortField && query.sortValue) {
+      mongoCursor.sort({
+        [query.sortField.toString()]: query.sortValue === SortOrder.ASC ? 1 : -1,
+      });
+    } else {
+      mongoCursor.sort({ date: -1 }); // Default sorting
+    }
+
+    const skip = (query.page - 1) * query.limit;
+    mongoCursor.skip(skip).limit(query.limit);
+
+    const [docs, count] = await Promise.all([
+      mongoCursor.lean().exec(),
+      WalletTransactionModel.countDocuments(queryObj).exec(),
+    ]);
+
+    const data = docs.map((doc) => ({
       id: doc._id.toString(),
       walletId: doc.walletId,
       amount: doc.amount,
@@ -99,5 +136,15 @@ export class MongoWalletRepository
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     }));
+
+    return {
+      data,
+      paginationMeta: {
+        totalItems: count,
+        currentPage: query.page,
+        limit: query.limit,
+        totalPages: Math.ceil(count / query.limit) || 1,
+      },
+    };
   }
 }
