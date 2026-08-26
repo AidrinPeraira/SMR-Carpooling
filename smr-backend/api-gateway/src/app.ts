@@ -108,7 +108,11 @@ export function createApp(logger: ILogger) {
   const paymentServiceProxy = createProxyMiddleware<Request, Response>({
     target: AppConfig.PAYMENT_SERVICE_URL,
     changeOrigin: true,
-    pathFilter: ["/api/*/payments/**", "/api/*/webhook/payments/**"],
+    pathFilter: [
+      "/api/*/payments/**",
+      "/api/*/wallet/**",
+      "/api/*/webhook/payments/**",
+    ],
     pathRewrite: {
       "^/api": "",
     },

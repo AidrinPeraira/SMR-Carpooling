@@ -30,13 +30,13 @@ export class WalletControllerV1 implements IWalletControllerV1 {
     try {
       const query = zodParser<QuerySchemaType>(QuerySchema, req.query);
 
-      const userId = req.user?.id;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         throw new ApplicationError(
           GenericErrorMessage.UNAUTHORIZED,
           HttpStatusCodes.Unauthorized,
-          ErrorCode.SYSTEM_AUTH_ERROR,
-          ErrorDetails.UNAUTHORIZED,
+          ErrorCode.INPUT_UNAUTHORIZED,
+          ErrorDetails.INPUT_UNAUTHORIZED,
         );
       }
 
@@ -53,7 +53,10 @@ export class WalletControllerV1 implements IWalletControllerV1 {
         filterValue: query.filterValue,
       };
 
-      const result = await this._getWalletTransactionsUseCase.execute(dto, userId);
+      const result = await this._getWalletTransactionsUseCase.execute(
+        dto,
+        userId,
+      );
 
       res
         .status(HttpStatusCodes.Ok)
