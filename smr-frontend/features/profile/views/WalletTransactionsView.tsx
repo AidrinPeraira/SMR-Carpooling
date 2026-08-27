@@ -121,7 +121,7 @@ export function WalletTransactionsView() {
     currentPage: 1,
     totalPages: 1,
   };
-  const walletBalance = data?.payload?.wallet_balance || 0;
+  const walletBalance = (data?.success && data.payload?.wallet_balance) || 0;
 
   return (
     <div className="space-y-6">

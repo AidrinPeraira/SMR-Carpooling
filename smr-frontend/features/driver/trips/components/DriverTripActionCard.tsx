@@ -4,14 +4,12 @@ import { Button, Card, CardBody, Tag } from "@sharemyride/ui";
 import { AlertCircle, XCircle } from "lucide-react";
 
 interface DriverTripActionCardProps {
-  tripId: string;
   tripStatus: string;
   onCancelTrip?: () => void;
   isCancelling?: boolean;
 }
 
 export function DriverTripActionCard({
-  tripId,
   tripStatus,
   onCancelTrip,
   isCancelling = false,

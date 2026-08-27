@@ -10,12 +10,10 @@ interface Booking {
 }
 
 interface DriverTripCommunicationCardProps {
-  tripId: string;
   bookings: Booking[];
 }
 
 export function DriverTripCommunicationCard({
-  tripId,
   bookings,
 }: DriverTripCommunicationCardProps) {
   const confirmedBookings = bookings.filter(

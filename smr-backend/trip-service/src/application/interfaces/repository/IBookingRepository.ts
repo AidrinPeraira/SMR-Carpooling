@@ -37,7 +37,7 @@ export interface IBookingRepository {
     query?: PassengerGetAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<PassengerGetAllBookingsResultDTO[]>>;
 
-  findAllBookings?(
+  findAllBookings(
     query: AdminListAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>>;
 

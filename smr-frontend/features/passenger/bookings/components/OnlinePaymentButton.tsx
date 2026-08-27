@@ -52,7 +52,7 @@ export function OnlinePaymentButton({
         name: "ShareMyRide",
         description: "Booking Payment",
         order_id: order_number,
-        handler: async function (response: any) {
+        handler: async function (response: Record<string, string>) {
           try {
             // Verify payment
             await verifyBookingPaymentRequest({
@@ -66,11 +66,11 @@ export function OnlinePaymentButton({
               success: true,
               message: "Payment was successful! Your booking is confirmed.",
             });
-          } catch (verifyError: any) {
+          } catch (verifyError: unknown) {
             setResultDialog({
               isOpen: true,
               success: false,
-              message: verifyError.message || "Payment verification failed.",
+              message: verifyError instanceof Error ? verifyError.message : "Payment verification failed.",
             });
           } finally {
             setIsProcessing(false);
@@ -88,9 +88,11 @@ export function OnlinePaymentButton({
         },
       };
 
-      const rzp = new (window as any).Razorpay(options);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rzp = new (window as typeof window & { Razorpay: any }).Razorpay(options);
 
-      rzp.on("payment.failed", function (response: any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rzp.on("payment.failed", function (response: Record<string, any>) {
         setResultDialog({
           isOpen: true,
           success: false,
@@ -100,11 +102,11 @@ export function OnlinePaymentButton({
       });
 
       rzp.open();
-    } catch (error: any) {
+    } catch (error: unknown) {
       setResultDialog({
         isOpen: true,
         success: false,
-        message: error.message || "An error occurred during payment.",
+        message: error instanceof Error ? error.message : "An error occurred during payment.",
       });
       setIsProcessing(false);
     }

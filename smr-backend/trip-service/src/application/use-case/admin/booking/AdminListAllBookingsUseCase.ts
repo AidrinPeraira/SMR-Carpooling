@@ -10,9 +10,7 @@ import { PaginatedPayload } from "@sharemyride/shared";
  * This class implements the use case to list all bookings
  * on the platform on the admin dashboard
  */
-export class AdminListAllBookingsUseCase
-  implements IAdminListAllBookingsUseCase
-{
+export class AdminListAllBookingsUseCase implements IAdminListAllBookingsUseCase {
   constructor(private readonly _bookingRepository: IBookingRepository) {}
 
   /**
@@ -28,4 +26,3 @@ export class AdminListAllBookingsUseCase
     return await this._bookingRepository.findAllBookings(query);
   }
 }
-

@@ -29,5 +29,7 @@
 
 - **Explicit Foreign Key Relations**: Always define two-way `@relation` attributes in Prisma models (e.g. `driver Driver @relation(...)` on `Trip` and `trips Trip[]` on `Driver`) to enable safe nested `include` queries without runtime errors.
 
+## TypeScript & Frontend Development
 
-
+- **Strict Error Handling**: Never type caught errors as `any` in `catch` blocks. Always use `catch (error: unknown)` and type-guard the error (e.g., `error instanceof Error ? error.message : "Fallback error"`) before accessing its properties to comply with strict ESLint rules.
+- **API Response Type Guarding**: When handling custom `ApiResponse<T>` responses, always verify the success state (`if (data?.success)`) before attempting to access `data.payload`. The `payload` property does not exist on `ApiFailureResponse` and will cause TypeScript build failures if accessed unconditionally.

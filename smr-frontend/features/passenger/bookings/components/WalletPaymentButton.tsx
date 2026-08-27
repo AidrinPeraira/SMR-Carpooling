@@ -41,11 +41,11 @@ export function WalletPaymentButton({ bookingId }: WalletPaymentButtonProps) {
         success: true,
         message: "Payment was successful! Your booking is confirmed.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setResultDialog({
         isOpen: true,
         success: false,
-        message: error.message || "An error occurred during wallet payment.",
+        message: error instanceof Error ? error.message : "An error occurred during wallet payment.",
       });
     } finally {
       setIsProcessing(false);

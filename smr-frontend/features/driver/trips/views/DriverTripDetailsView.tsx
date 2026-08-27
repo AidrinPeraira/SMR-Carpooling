@@ -259,8 +259,8 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
       toast("Trip cancelled successfully.", { variant: "success" });
       refetch();
       queryClient.invalidateQueries({ queryKey: ["driverTrips"] });
-    } catch (err: any) {
-      toast(err.message || "Failed to cancel trip", { variant: "error" });
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : "Failed to cancel trip", { variant: "error" });
     } finally {
       setIsCancelling(false);
       setIsCancelDialogOpen(false);
@@ -459,11 +459,9 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
       {/* Action Cards */}
       <div className="grid grid-cols-1 gap-6">
         <DriverTripCommunicationCard
-          tripId={tripDetails.trip_id}
           bookings={bookings}
         />
         <DriverTripActionCard
-          tripId={tripDetails.trip_id}
           tripStatus={tripDetails.trip_status}
           onCancelTrip={() => setIsCancelDialogOpen(true)}
           isCancelling={isCancelling}
