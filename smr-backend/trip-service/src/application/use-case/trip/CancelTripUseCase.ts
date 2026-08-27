@@ -65,15 +65,18 @@ export class CancelTripUseCase implements ICancelTripUseCas {
       );
     }
 
-    if (tripDetails.tripDetails.tripStatus !== TripStatus.SCHEDULED) {
+    if (
+      tripDetails.tripDetails.tripStatus !== TripStatus.SCHEDULED &&
+      tripDetails.tripDetails.tripStatus !== TripStatus.FULLY_BOOKED
+    ) {
       throw new ApplicationError(
-        "INVALID_STATUS_TRANSITION",
+        TripErrorMessage.CANNOT_CANCEL,
         HttpStatusCodes.BadRequest,
         ErrorCode.INPUT_FORBIDDEN,
         ErrorDetails.INPUT_FORBIDDEN,
         {
           location: "CancelTripUseCase",
-          description: `Trip status is '${tripDetails.tripDetails.tripStatus}', expected '${TripStatus.SCHEDULED}'`,
+          description: `Trip status is '${tripDetails.tripDetails.tripStatus}', expected '${TripStatus.SCHEDULED}' or ${TripStatus.FULLY_BOOKED}`,
         },
       );
     }
