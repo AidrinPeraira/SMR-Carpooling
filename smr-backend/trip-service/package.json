@@ -37,7 +37,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
-    "@sharemyride/shared": "^0.0.7",
+    "@sharemyride/shared": "^0.0.8",
     "@upstash/qstash": "^2.11.3",
     "amqplib": "^2.0.1",
     "cors": "^2.8.6",
