@@ -57,7 +57,7 @@ describe("DriverAcceptBookingUseCase", () => {
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
-    };
+    } as unknown as IBookingRepository;
 
     mockTripRepository = {
       cleanIndices: vi.fn(),
@@ -69,7 +69,7 @@ describe("DriverAcceptBookingUseCase", () => {
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
       atmoicReleaseSeat: vi.fn(),
-    };
+    } as unknown as ITripRepository;
 
     useCase = new DriverAcceptBookingUseCase(
       mockBookingRepository,

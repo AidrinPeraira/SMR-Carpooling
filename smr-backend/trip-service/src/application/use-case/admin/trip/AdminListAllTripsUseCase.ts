@@ -21,9 +21,7 @@ export class AdminListAllTripsUseCase implements IAdminListAllTripsUseCase {
   async execute(
     query: AdminGetAllTripsQuery,
   ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>> {
-    if (!this._tripRepository.findAllTrips) {
-      throw new Error("findAllTrips method not implemented in repository");
-    }
+
     return await this._tripRepository.findAllTrips(query);
   }
 }

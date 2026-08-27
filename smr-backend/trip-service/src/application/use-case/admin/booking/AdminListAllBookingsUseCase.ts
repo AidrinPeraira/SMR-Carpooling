@@ -20,9 +20,7 @@ export class AdminListAllBookingsUseCase implements IAdminListAllBookingsUseCase
   async execute(
     query: AdminListAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>> {
-    if (!this._bookingRepository.findAllBookings) {
-      throw new Error("findAllBookings method not implemented in repository");
-    }
+
     return await this._bookingRepository.findAllBookings(query);
   }
 }

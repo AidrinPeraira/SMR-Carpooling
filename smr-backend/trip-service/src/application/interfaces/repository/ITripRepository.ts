@@ -56,7 +56,7 @@ export interface ITripRepository {
    * @param driverId Driver ID
    * @param query Optional filtering and pagination params
    */
-  findTripsByDriverId?(
+  findTripsByDriverId(
     driverId: string,
     query?: DriverGetAllTripsQueryDTO,
   ): Promise<PaginatedPayload<TripResultPayload[]>>;
@@ -100,7 +100,7 @@ export interface ITripRepository {
   /**
    * Find all trips that match given query
    */
-  findAllTrips?(
+  findAllTrips(
     query: AdminGetAllTripsQuery,
   ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>>;
 
@@ -109,7 +109,7 @@ export interface ITripRepository {
    *
    * @param tripId Trip ID
    */
-  findAdminTripDetails?(
+  findAdminTripDetails(
     tripId: string,
   ): Promise<AdminGetTripDetailsResponseDTO | null>;
 

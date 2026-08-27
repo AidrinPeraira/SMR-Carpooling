@@ -49,7 +49,7 @@ describe("DriverListTripsUseCase", () => {
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
       atmoicReleaseSeat: vi.fn(),
-    };
+    } as unknown as ITripRepository;
 
     useCase = new DriverListTripsUseCase(mockTripRepository);
   });

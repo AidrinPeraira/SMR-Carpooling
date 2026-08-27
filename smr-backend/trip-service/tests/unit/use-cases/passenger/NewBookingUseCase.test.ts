@@ -131,7 +131,7 @@ describe("NewBookingUseCase", () => {
           totalPages: 0,
         },
       }),
-    };
+    } as unknown as IBookingRepository;
 
     mockConfigStore = {
       getVehicleList: vi.fn(),
@@ -158,7 +158,7 @@ describe("NewBookingUseCase", () => {
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
       atmoicReleaseSeat: vi.fn(),
-    };
+    } as unknown as ITripRepository;
 
     mockEventBus = {
       connect: vi.fn().mockResolvedValue(undefined),

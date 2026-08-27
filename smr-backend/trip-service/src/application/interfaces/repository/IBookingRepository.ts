@@ -41,7 +41,7 @@ export interface IBookingRepository {
     query: AdminListAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>>;
 
-  findAdminBookingDetails?(
+  findAdminBookingDetails(
     bookingId: string,
   ): Promise<AdminBookingDetiailsResponseDTO | null>;
 }

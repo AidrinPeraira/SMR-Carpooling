@@ -26,9 +26,7 @@ export class AdminGetBookingDetailsUseCase
    * @returns Full details of booking
    */
   async execute(bookingId: string): Promise<AdminBookingDetiailsResponseDTO> {
-    if (!this._bookingRepository.findAdminBookingDetails) {
-      throw new Error("findAdminBookingDetails method not implemented in repository");
-    }
+
     const details =
       await this._bookingRepository.findAdminBookingDetails(bookingId);
 

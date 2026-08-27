@@ -42,7 +42,7 @@ describe("CleanUpBookingPaymentUseCase", () => {
       findByBookingId: vi.fn().mockResolvedValue({ ...mockBooking }),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
-    };
+    } as unknown as IBookingRepository;
 
     mockTripRepository = {
       cleanIndices: vi.fn(),
@@ -54,7 +54,7 @@ describe("CleanUpBookingPaymentUseCase", () => {
       update: vi.fn(),
       atmoicReserveSeat: vi.fn(),
       atmoicReleaseSeat: vi.fn().mockResolvedValue({ ...mockTrip, vacantSeats: 3 }),
-    };
+    } as unknown as ITripRepository;
 
     useCase = new CleanUpBookingPaymentUseCase(
       mockBookingRepository,

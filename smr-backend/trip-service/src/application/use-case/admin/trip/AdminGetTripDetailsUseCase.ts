@@ -24,9 +24,7 @@ export class AdminGetTripDetailsUseCase implements IAdminGetTripDetailsUseCase {
    * @returns Full trip details
    */
   async execute(tripId: string): Promise<AdminGetTripDetailsResponseDTO> {
-    if (!this._tripRepository.findAdminTripDetails) {
-      throw new Error("findAdminTripDetails method not implemented in repository");
-    }
+
     const details = await this._tripRepository.findAdminTripDetails(tripId);
 
     if (!details) {

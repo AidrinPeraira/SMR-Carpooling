@@ -31,7 +31,7 @@ describe("ConfirmBookingPaymentUseCase", () => {
       findByBookingId: vi.fn().mockResolvedValue({ ...mockBooking }),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
-    };
+    } as unknown as IBookingRepository;
 
     useCase = new ConfirmBookingPaymentUseCase(mockBookingRepository);
   });

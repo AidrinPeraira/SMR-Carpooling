@@ -61,7 +61,7 @@ describe("InitiateBookingPaymentUseCase", () => {
       findByBookingId: vi.fn().mockResolvedValue({ ...mockBooking }),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
-    };
+    } as unknown as IBookingRepository;
 
     mockPassengerRepository = {
       save: vi.fn(),
@@ -79,7 +79,7 @@ describe("InitiateBookingPaymentUseCase", () => {
       update: vi.fn(),
       atmoicReserveSeat: vi.fn().mockResolvedValue({ ...mockTrip, vacantSeats: 1 }),
       atmoicReleaseSeat: vi.fn(),
-    };
+    } as unknown as ITripRepository;
 
     mockUniqueIdService = {
       generateRandomId: vi.fn().mockReturnValue("pay-key-999"),
