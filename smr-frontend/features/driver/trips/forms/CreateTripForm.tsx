@@ -315,6 +315,7 @@ export function CreateTripForm() {
       });
 
       toast("Trip created successfully!", { variant: "success" });
+      await queryClient.invalidateQueries({ queryKey: ["driverTrips"] });
       router.push("/driver/trips");
     } catch (err: unknown) {
       logger.error("Failed to submit create trip form: ", err);

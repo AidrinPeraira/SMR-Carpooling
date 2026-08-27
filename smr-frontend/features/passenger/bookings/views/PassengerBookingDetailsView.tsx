@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getPassengerBookingDetailsRequest } from "../api/getPassengerBookingDetailsRequest";
 import { withdrawBookingRequest } from "../api/withdrawBookingRequest";
+import { cancelBookingRequest } from "../api/cancelBookingRequest";
 import { BookingDetailsActionCard } from "../components/BookingDetailsActionCard";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { useMap } from "@/features/map/hooks/useMap";
@@ -22,6 +23,7 @@ export function PassengerBookingDetailsView({
   const map = useMap();
   const toast = useToast();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const {
     data: booking,
@@ -156,6 +158,27 @@ export function PassengerBookingDetailsView({
       });
     } finally {
       setIsWithdrawing(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!booking) return;
+    try {
+      setIsCancelling(true);
+      await cancelBookingRequest(booking.booking_id);
+      toast("Booking Cancelled", {
+        variant: "warn",
+        description: "Your confirmed booking has been successfully cancelled.",
+      });
+      refetch();
+    } catch (err: unknown) {
+      toast("Cancellation Failed", {
+        variant: "error",
+        description:
+          (err as Error).message || "Could not cancel booking.",
+      });
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -332,6 +355,8 @@ export function PassengerBookingDetailsView({
               status={booking.status}
               onWithdraw={handleWithdraw}
               isWithdrawing={isWithdrawing}
+              onCancel={handleCancel}
+              isCancelling={isCancelling}
             />
           </div>
         </>

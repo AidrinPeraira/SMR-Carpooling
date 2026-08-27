@@ -152,6 +152,7 @@ services:
     tty: true
     ports:
       - "4004:4004"
+      - "8081:8080"
     env_file:
       - ./smr-backend/payment-service/.env
     environment:

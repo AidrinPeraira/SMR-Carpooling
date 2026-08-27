@@ -2,6 +2,7 @@ import { TripCancellationMailDTO } from "#/application/dto/email/TripCancellatio
 import { IMailService } from "#/application/interfaces/services/IMailService";
 import { ISendTripCancellationEmailUseCase } from "#/application/interfaces/use-case/ISendTripCancellationEmail";
 import { NotificationEntity } from "#/domain/entities/NotificationEntity";
+import { EmailTemplate } from "#/application/utils/EmailTemplate";
 
 export class SendTripCancellationEmailsUseCase implements ISendTripCancellationEmailUseCase {
   constructor(private readonly _mailService: IMailService) {}
@@ -10,26 +11,29 @@ export class SendTripCancellationEmailsUseCase implements ISendTripCancellationE
     const driverNotification: NotificationEntity = {
       recipient: data.driverEmail,
       subject: `Trip Cancelled Successfully - ShareMyRide`,
-      body: `
-      Hello ${data.driverName},
-
-      Your trip (ID: ${data.tripId}) has been successfully cancelled.
-      All associated bookings have been cancelled and passengers have been notified.
-      `,
+      body: EmailTemplate.generate(
+        "Trip Cancelled",
+        `
+        <p>Hello <strong>${data.driverName}</strong>,</p>
+        <p>Your trip (ID: <strong>${data.tripId}</strong>) has been successfully cancelled.</p>
+        <p>All associated bookings have been cancelled and passengers have been notified.</p>
+        `
+      ),
     };
 
     const passengerNotifications: NotificationEntity[] =
       data.cancelledBookings.map((booking) => ({
         recipient: booking.passengerEmail,
         subject: `Trip Cancelled by Driver - ShareMyRide`,
-        body: `
-      Hello ${booking.passengerName},
-
-      We regret to inform you that your upcoming trip with ${data.driverName} has been cancelled by the driver.
-      Your booking (ID: ${booking.bookingId}) has been cancelled.
-      
-      Any payments made will be refunded to your original payment method shortly.
-      `,
+        body: EmailTemplate.generate(
+          "Trip Cancelled",
+          `
+          <p>Hello <strong>${booking.passengerName}</strong>,</p>
+          <p>We regret to inform you that your upcoming trip with <strong>${data.driverName}</strong> has been cancelled by the driver.</p>
+          <p>Your booking (ID: <strong>${booking.bookingId}</strong>) has been cancelled.</p>
+          <p>Any payments made will be refunded to your original payment method shortly.</p>
+          `
+        ),
       }));
 
     await Promise.all([

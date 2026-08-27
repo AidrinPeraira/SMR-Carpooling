@@ -102,7 +102,9 @@ const createBookingPaymentOrderUseCase = new CreateBookingPaymentOrderUseCase(
   jwtTokenService,
   razorPayPaymentProvider,
   scheduledJobService,
-  `${AppConfig.API_GATEWAY_URL}/api/v1/payments/webhooks/clear-booking-payment`
+  `${AppConfig.API_GATEWAY_URL}/api/v1/payments/webhooks/clear-booking-payment`,
+  customerRepository,
+  eventBusInstance
 );
 
 const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
@@ -116,6 +118,8 @@ const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
 
 const failedBookingPaymentUseCase = new FailedBookingPaymentUseCase(
   bookingPaymentRepository,
+  customerRepository,
+  eventBusInstance
 );
 
 const refundBookingPaymentUseCase = new RefundBookingPaymentUseCase(

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as turf from "@turf/turf";
 import { getDriverBookingDetailsRequest } from "../api/getDriverBookingDetailsRequest";
 import { acceptBookingRequest } from "../api/acceptBookingRequest";
@@ -30,6 +30,7 @@ export function DriverBookingDetailsView({
   const router = useRouter();
   const map = useMap();
   const toast = useToast();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(true);
   const [isAccepting, setIsAccepting] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
@@ -226,6 +227,7 @@ export function DriverBookingDetailsView({
         description: `Accepted booking request for ${booking.passenger_name}.`,
       });
       refetch();
+      queryClient.invalidateQueries({ queryKey: ["driverBookings"] });
     } catch (err: unknown) {
       toast("Accept Failed", {
         variant: "error",
@@ -247,6 +249,7 @@ export function DriverBookingDetailsView({
         description: `Rejected booking request for ${booking.passenger_name}.`,
       });
       refetch();
+      queryClient.invalidateQueries({ queryKey: ["driverBookings"] });
     } catch (err: unknown) {
       toast("Reject Failed", {
         variant: "error",

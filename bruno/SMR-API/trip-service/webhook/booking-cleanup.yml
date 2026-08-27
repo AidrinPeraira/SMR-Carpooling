@@ -13,9 +13,9 @@ http:
     type: json
     data: |-
       {
-        "booking_id": "dabc6807-7aeb-4a03-9bcc-13639a4563d1",
-        "trip_id": "791d2886-4151-4d08-a610-294ff3f0c486",
-        "payment_key": "pay_xyz123abc456"
+        "booking_id": "42e1af95-b7bd-4e09-9771-e562597903b1",
+        "trip_id": "66decd23-cee7-4477-a812-33f3f52709ba",
+        "payment_key": "89262ec8de6eadc22c3686093839906f"
       }
 
 settings:

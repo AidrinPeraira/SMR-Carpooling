@@ -13,6 +13,8 @@ interface OnlinePaymentButtonProps {
   amount: number;
 }
 
+import { useQueryClient } from "@tanstack/react-query";
+
 export function OnlinePaymentButton({
   bookingId,
   amount,
@@ -30,6 +32,7 @@ export function OnlinePaymentButton({
   });
 
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleOnlinePayment = async () => {
     setIsConfirmOpen(false);
@@ -79,6 +82,8 @@ export function OnlinePaymentButton({
         modal: {
           ondismiss: function () {
             setIsProcessing(false);
+            queryClient.invalidateQueries({ queryKey: ["passengerBookings"] });
+            queryClient.invalidateQueries({ queryKey: ["passengerBookingDetails", bookingId] });
           },
         },
       };
@@ -107,6 +112,8 @@ export function OnlinePaymentButton({
 
   const closeResultDialog = () => {
     setResultDialog((prev) => ({ ...prev, isOpen: false }));
+    queryClient.invalidateQueries({ queryKey: ["passengerBookings"] });
+    queryClient.invalidateQueries({ queryKey: ["passengerBookingDetails", bookingId] });
     if (resultDialog.success) {
       router.refresh();
     }
