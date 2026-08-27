@@ -10,6 +10,7 @@ import {
   Phone,
 } from "lucide-react";
 import { OnlinePaymentButton } from "./OnlinePaymentButton";
+import { WalletPaymentButton } from "./WalletPaymentButton";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface BookingDetailsActionCardProps {
@@ -102,12 +103,7 @@ export function BookingDetailsActionCard({
 
           <div className="flex flex-col gap-2 w-full">
             <OnlinePaymentButton bookingId={bookingId} amount={amount} />
-            <Button
-              variant="secondary"
-              className="w-full text-xs py-2 font-medium"
-            >
-              Pay with Wallet
-            </Button>
+            <WalletPaymentButton bookingId={bookingId} />
             <Button
               variant="danger"
               className="w-full text-xs py-2 font-medium"

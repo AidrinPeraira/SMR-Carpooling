@@ -116,8 +116,8 @@ export function WalletTransactionsView() {
     "transactionCategory",
   ];
 
-  const transactions = data?.payload?.transactions?.data || [];
-  const paginationMeta = data?.payload?.transactions?.paginationMeta || {
+  const transactions = (data?.success && data.payload?.transactions?.data) || [];
+  const paginationMeta = (data?.success && data.payload?.transactions?.paginationMeta) || {
     currentPage: 1,
     totalPages: 1,
   };

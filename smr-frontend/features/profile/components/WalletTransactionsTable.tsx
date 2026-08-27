@@ -30,7 +30,7 @@ export function WalletTransactionsTable({
           return (
             <Tag
               variant={
-                type === TransactionType.CREDIT ? "success" : "danger"
+                type === TransactionType.CREDIT ? "accent" : "muted"
               }
             >
               {type}
