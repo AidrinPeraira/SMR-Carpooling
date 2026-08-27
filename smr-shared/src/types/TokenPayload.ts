@@ -20,3 +20,16 @@ export interface AuthTokenPayload {
   iat: number;
   exp: number;
 }
+
+export interface PaymentTokenPayload {
+  paymentDetails: {
+    bookingId: string;
+    paymentKey: string;
+    expiresAt: Date;
+    ammount: number;
+    passengerId: string;
+  };
+  tokenType: TokenType.PAYMENT_TOKEN;
+  iat: number;
+  exp: number;
+}

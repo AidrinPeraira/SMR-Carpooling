@@ -1,6 +1,8 @@
 enum BookingStatus {
   requested
   payment_pending
+  payment_processing
+  payment_failed
   confirmed
   rejected
   withdrawn
@@ -29,6 +31,9 @@ model Bookings {
   totalPrice   Int
 
   status BookingStatus
+
+  paymentKey       String?
+  paymentKeyExpiry DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

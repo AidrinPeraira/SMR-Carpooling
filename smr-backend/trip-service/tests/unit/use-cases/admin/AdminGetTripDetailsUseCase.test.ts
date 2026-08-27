@@ -38,13 +38,17 @@ describe("AdminGetTripDetailsUseCase", () => {
     vi.clearAllMocks();
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn(),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
       findAdminTripDetails: vi.fn().mockResolvedValue(mockTripDetails),
-    };
+    } as unknown as ITripRepository;
 
     useCase = new AdminGetTripDetailsUseCase(mockTripRepository);
   });
@@ -60,7 +64,7 @@ describe("AdminGetTripDetailsUseCase", () => {
   });
 
   it("should throw ApplicationError 404 when trip is not found", async () => {
-    vi.mocked(mockTripRepository.findAdminTripDetails!).mockResolvedValue(null);
+    vi.mocked(mockTripRepository.findAdminTripDetails).mockResolvedValue(null);
 
     await expect(useCase.execute("invalid-trip-id")).rejects.toThrow(ApplicationError);
     await expect(useCase.execute("invalid-trip-id")).rejects.toMatchObject({
@@ -69,10 +73,5 @@ describe("AdminGetTripDetailsUseCase", () => {
     });
   });
 
-  it("should throw error if findAdminTripDetails is not implemented on repository", async () => {
-    delete mockTripRepository.findAdminTripDetails;
-    await expect(useCase.execute("trip-123")).rejects.toThrow(
-      "findAdminTripDetails method not implemented in repository",
-    );
-  });
+  
 });

@@ -53,19 +53,23 @@ describe("DriverAcceptBookingUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn().mockResolvedValue(undefined),
+      update: vi.fn().mockResolvedValue(undefined),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
-    };
+    } as unknown as IBookingRepository;
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn().mockResolvedValue(mockTrip),
-    };
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
+    } as unknown as ITripRepository;
 
     useCase = new DriverAcceptBookingUseCase(
       mockBookingRepository,
@@ -76,10 +80,9 @@ describe("DriverAcceptBookingUseCase", () => {
   it("should accept booking successfully", async () => {
     await useCase.execute("b-123", "driver-1");
 
-    expect(mockBookingRepository.updateStatus).toHaveBeenCalledWith(
-      "b-123",
-      BookingStatus.PAYMENT_PENDING,
-    );
+    expect(mockBookingRepository.update).toHaveBeenCalledWith("b-123", {
+      status: BookingStatus.PAYMENT_PENDING,
+    });
   });
 
   it("should throw error if booking does not exist", async () => {

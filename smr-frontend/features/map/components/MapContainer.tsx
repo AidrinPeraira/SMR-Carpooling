@@ -6,9 +6,13 @@ import { useEffect, useRef } from "react";
 
 type Props = {
   className?: string;
+  enableLocationTracking?: boolean;
 };
 
-export function MapContainer({ className }: Props) {
+export function MapContainer({
+  className,
+  enableLocationTracking = false,
+}: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapService = useMap();
 
@@ -17,7 +21,9 @@ export function MapContainer({ className }: Props) {
       if (mapRef.current) {
         try {
           await mapService.initialise(mapRef.current);
-          await mapService.startLocationTracking();
+          if (enableLocationTracking) {
+            await mapService.startLocationTracking();
+          }
         } catch (err) {
           console.warn("Map setup or location tracking warning:", err);
         }
@@ -30,7 +36,7 @@ export function MapContainer({ className }: Props) {
     return () => {
       mapService.destroy();
     };
-  }, [mapService]);
+  }, [mapService, enableLocationTracking]);
 
   const defaultMapStyles = "h-full w-full";
 

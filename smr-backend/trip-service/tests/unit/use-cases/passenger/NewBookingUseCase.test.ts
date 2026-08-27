@@ -111,7 +111,7 @@ describe("NewBookingUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn().mockResolvedValue(mockSavedBooking),
-      updateStatus: vi.fn().mockResolvedValue(mockSavedBooking),
+      update: vi.fn().mockResolvedValue(mockSavedBooking),
       findByBookingId: vi.fn().mockResolvedValue(mockSavedBooking),
       findBookingsByDriverId: vi.fn().mockResolvedValue({
         data: [],
@@ -131,7 +131,7 @@ describe("NewBookingUseCase", () => {
           totalPages: 0,
         },
       }),
-    };
+    } as unknown as IBookingRepository;
 
     mockConfigStore = {
       getVehicleList: vi.fn(),
@@ -149,12 +149,16 @@ describe("NewBookingUseCase", () => {
     };
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn().mockResolvedValue(mockTripPayload),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn().mockResolvedValue(mockTripPayload.tripDetails),
-    };
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
+    } as unknown as ITripRepository;
 
     mockEventBus = {
       connect: vi.fn().mockResolvedValue(undefined),
@@ -174,6 +178,7 @@ describe("NewBookingUseCase", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
+      update: vi.fn(),
     };
 
     mockDriverRepository = {

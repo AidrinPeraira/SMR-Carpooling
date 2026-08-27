@@ -6,11 +6,13 @@ import {
   HttpStatusCodes,
   UserErrorMessage,
   ErrorCode,
+  EventName,
 } from "@sharemyride/shared";
 import { mockGoogleAuthService } from "&#/mocks/MockGoogleAuthService";
 import { mockUserRepository } from "&#/mocks/MockUserRepository";
 import { mockUidGenerator } from "&#/mocks/MockUidGenerator";
 import { mockTokenService } from "&#/mocks/MockTokenService";
+import { mockEventBus } from "&#/mocks/MockEventBus";
 import { createMockUserData } from "&#/fixtures/dto/UserData";
 
 describe("GoogleAuthUseCase", () => {
@@ -19,6 +21,7 @@ describe("GoogleAuthUseCase", () => {
     mockUserRepository,
     mockUidGenerator,
     mockTokenService,
+    mockEventBus,
   );
 
   const mockGoogleProfile = {
@@ -62,6 +65,7 @@ describe("GoogleAuthUseCase", () => {
     expect(result.accessToken).toBe("access-token");
     expect(result.refreshToken).toBe("refresh-token");
     expect(mockUserRepository.save).not.toHaveBeenCalled();
+    expect(mockEventBus.publish).not.toHaveBeenCalled();
   });
 
   it("should register a new user and login successfully", async () => {
@@ -97,6 +101,17 @@ describe("GoogleAuthUseCase", () => {
         lastName: "Doe",
         emailVerified: true,
         accountStatus: AccountStatus.ACTIVE,
+      }),
+    );
+    expect(mockEventBus.publish).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventName: EventName.AUTH_USER_SIGNUP,
+        payload: expect.objectContaining({
+          userId: "random-uuid",
+          emailId: "johndoe@gmail.com",
+          firstName: "John",
+          lastName: "Doe",
+        }),
       }),
     );
   });

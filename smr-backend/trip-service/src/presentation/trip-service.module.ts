@@ -35,7 +35,11 @@ import { createDriverRouterV1 } from "#/presentation/v1/routes/driver/DriverRout
 import { createVehicleRouterV1 } from "#/presentation/v1/routes/vehicle/VehicleRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
+import { BookingPaymentSuccessEventHandler } from "#/presentation/v1/event-handlers/BookingPaymentSuccessEventHandler";
+import { BookingPaymentFailedEventHandler } from "#/presentation/v1/event-handlers/BookingPaymentFailedEventHandler";
 import { CreateNewPassengerUseCase } from "#/application/use-case/passenger/CreateNewPassengerUseCase";
+import { BlockPassengerUseCase } from "#/application/use-case/passenger/BlockPassengerUseCase";
+import { UnblockPassengerUseCase } from "#/application/use-case/passenger/UnblockPassengerUseCase";
 import { PassengerRepository } from "#/infrastructure/repository/PassengerRepository";
 
 import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
@@ -48,8 +52,17 @@ import { GetJourneyDetailsUseCase } from "#/application/use-case/trip/GetJourney
 import { NewBookingUseCase } from "#/application/use-case/booking/NewBookingUseCase";
 import { TripControllerV1 } from "#/presentation/v1/controllers/trip/TripControllerV1";
 import { BookingControllerV1 } from "#/presentation/v1/controllers/booking/BookingControllerV1";
+import { WebhookControllerV1 } from "#/presentation/v1/controllers/webhook/WebhookControllerV1";
 import { createTripRouterV1 } from "#/presentation/v1/routes/trip/TripRouterV1";
 import { createBookingRouterV1 } from "#/presentation/v1/routes/booking/BookingRouterV1";
+import { createWebhookRouterV1 } from "#/presentation/v1/routes/webhook/WebhookRouterV1";
+import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
+import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
+import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
+import { InitiateBookingPaymentUseCase } from "#/application/use-case/booking/InitiateBookingPaymentUseCase";
+import { ConfirmBookingPaymentUseCase } from "#/application/use-case/booking/ConfirmBookingPaymentUseCase";
+import { CleanUpBookingPaymentUseCase } from "#/application/use-case/booking/CleanUpBookingPaymentUseCase";
+import { CleanUpTripsIndexingUseCase } from "#/application/use-case/trip/CleanUpTripsIndexingUseCase";
 
 /**
  * Composition Root for the Trip Service.
@@ -67,7 +80,7 @@ const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
 const placesCacheStore = new PlacesCacheStore(redisClient);
 const passengerRepository = new PassengerRepository();
-const geoIndexingService = new H3GeoIndexingService();
+const geoIndexingService = new H3GeoIndexingService(7);
 const bookingsRepository = new BookingsRepository(geoIndexingService);
 const tripsRepository = new TripsRepository(
   geoIndexingService,
@@ -95,6 +108,10 @@ const getDriverVehiclesUseCase = new GetDriverVehiclesUseCase(
 const createNewPassengerUseCase = new CreateNewPassengerUseCase(
   passengerRepository,
 );
+const blockPassengerUseCase = new BlockPassengerUseCase(passengerRepository);
+const unblockPassengerUseCase = new UnblockPassengerUseCase(
+  passengerRepository,
+);
 
 const createTripUseCase = new CreateTripUseCase(tripsRepository);
 const listTripsUseCase = new ListTripsUseCase(tripsRepository);
@@ -120,11 +137,47 @@ const applicationApprovedHandler = new ApplicationApprovedHandler(
 const userBlockedHandler = new UserBlockedEventHandler(
   consolaLogger,
   changeDriverStatusUseCase,
+  blockPassengerUseCase,
 );
 
 const userUnblockedHandler = new UserUnblockedEventHandler(
   consolaLogger,
   changeDriverStatusUseCase,
+  unblockPassengerUseCase,
+);
+
+// Payment Services & Use Cases
+const cryptoUIDService = new CryptoUIDService();
+const scheduledJobService = new ScheduledJobService();
+const jwtTokenService = new JWTTokenService();
+
+const confirmBookingPaymentUseCase = new ConfirmBookingPaymentUseCase(
+  bookingsRepository,
+);
+const cleanUpBookingPaymentUseCase = new CleanUpBookingPaymentUseCase(
+  bookingsRepository,
+  tripsRepository,
+);
+const cleanUpTripsIndexingUseCase = new CleanUpTripsIndexingUseCase(
+  tripsRepository,
+);
+const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
+  bookingsRepository,
+  passengerRepository,
+  tripsRepository,
+  cryptoUIDService,
+  scheduledJobService,
+  jwtTokenService,
+  `${AppConfig.API_GATEWAY_URL}/api/v1/webhook/trips/booking-cleanup`,
+);
+
+const bookingPaymentSuccessEventHandler = new BookingPaymentSuccessEventHandler(
+  consolaLogger,
+  confirmBookingPaymentUseCase,
+);
+const bookingPaymentFailedEventHandler = new BookingPaymentFailedEventHandler(
+  consolaLogger,
+  cleanUpBookingPaymentUseCase,
 );
 
 // Event Dispatcher & Message Consumer
@@ -142,6 +195,14 @@ await eventDispatcher.register(
   EventName.ADMIN_USER_UNBLOCKED,
   userUnblockedHandler,
 );
+await eventDispatcher.register(
+  EventName.BOOKING_PAYMENT_SUCCESS,
+  bookingPaymentSuccessEventHandler,
+);
+await eventDispatcher.register(
+  EventName.BOOKING_PAYMENT_FAILURE,
+  bookingPaymentFailedEventHandler,
+);
 
 const eventBusInstance = new EventBus(
   consolaLogger,
@@ -157,6 +218,7 @@ import { DriverRejectBookingUseCase } from "#/application/use-case/booking/Drive
 import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/booking/GetPassngerBookingDetailsUseCase";
 import { PassengerListBookingsUseCase } from "#/application/use-case/booking/PassengerListBookingsUseCase";
 import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
+import { CancelBookingUseCase } from "#/application/use-case/booking/CancelBookingUseCase";
 
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,
@@ -196,6 +258,13 @@ const getPassengerBookingDetailsUseCase = new GetPassengerBookingDetailsUseCase(
   vehicleRepository,
 );
 const withdrawBookingUseCase = new WithdrawBookingUseCase(bookingsRepository);
+const cancelBookingUseCase = new CancelBookingUseCase(
+  bookingsRepository,
+  tripsRepository,
+  passengerRepository,
+  driverRepository,
+  eventBusInstance,
+);
 
 import { AdminListAllTripsUseCase } from "#/application/use-case/admin/trip/AdminListAllTripsUseCase";
 import { AdminGetTripDetailsUseCase } from "#/application/use-case/admin/trip/AdminGetTripDetailsUseCase";
@@ -208,9 +277,15 @@ import { createAdminBookingRouterV1 } from "#/presentation/v1/routes/admin/Admin
 
 // Admin Trip & Booking Use Cases
 const adminListAllTripsUseCase = new AdminListAllTripsUseCase(tripsRepository);
-const adminGetTripDetailsUseCase = new AdminGetTripDetailsUseCase(tripsRepository);
-const adminListAllBookingsUseCase = new AdminListAllBookingsUseCase(bookingsRepository);
-const adminGetBookingDetailsUseCase = new AdminGetBookingDetailsUseCase(bookingsRepository);
+const adminGetTripDetailsUseCase = new AdminGetTripDetailsUseCase(
+  tripsRepository,
+);
+const adminListAllBookingsUseCase = new AdminListAllBookingsUseCase(
+  bookingsRepository,
+);
+const adminGetBookingDetailsUseCase = new AdminGetBookingDetailsUseCase(
+  bookingsRepository,
+);
 
 // Admin Configuration Use Cases
 const getConfigurationsUseCase = new GetConfigurationUseCase(
@@ -285,10 +360,17 @@ const vehicleControllerV1 = new VehicleControllerV1(
 
 import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
 import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
+import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
 
 const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
 const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
   tripsRepository,
+);
+const cancelTripUseCase = new CancelTripUseCase(
+  tripsRepository,
+  bookingsRepository,
+  driverRepository,
+  eventBusInstance,
 );
 
 const tripControllerV1 = new TripControllerV1(
@@ -298,6 +380,7 @@ const tripControllerV1 = new TripControllerV1(
   getJourneyDetailsUseCase,
   driverListTripsUseCase,
   driverGetTripDetailsUseCase,
+  cancelTripUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(
@@ -310,6 +393,14 @@ const bookingControllerV1 = new BookingControllerV1(
   passengerListBookingsUseCase,
   getPassengerBookingDetailsUseCase,
   withdrawBookingUseCase,
+  initiateBookingPaymentUseCase,
+  cancelBookingUseCase,
+);
+
+const webhookControllerV1 = new WebhookControllerV1(
+  consolaLogger,
+  cleanUpBookingPaymentUseCase,
+  cleanUpTripsIndexingUseCase,
 );
 
 // Routers
@@ -321,12 +412,15 @@ const adminVehicleRoutesV1 = createAdminVehicleRouterV1(
   adminVehicleControllerV1,
 );
 const adminTripRoutesV1 = createAdminTripRouterV1(adminTripControllerV1);
-const adminBookingRoutesV1 = createAdminBookingRouterV1(adminBookingControllerV1);
+const adminBookingRoutesV1 = createAdminBookingRouterV1(
+  adminBookingControllerV1,
+);
 
 const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
 const tripRoutesV1 = createTripRouterV1(tripControllerV1);
 const bookingRoutesV1 = createBookingRouterV1(bookingControllerV1);
+const webhookRoutesV1 = createWebhookRouterV1(webhookControllerV1);
 
 const v1Router = express.Router();
 v1Router.use("/admin/trip/config", adminConfigurationRoutesV1);
@@ -339,10 +433,10 @@ v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
 v1Router.use("/trips", tripRoutesV1);
 v1Router.use("/bookings", bookingRoutesV1);
+v1Router.use("/webhook/trips", webhookRoutesV1);
 
 export const tripServiceRouters = {
   v1: v1Router,
 };
 
 export const eventBus = eventBusInstance;
-

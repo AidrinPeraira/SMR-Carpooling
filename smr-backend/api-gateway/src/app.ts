@@ -84,6 +84,7 @@ export function createApp(logger: ILogger) {
       "/api/*/vehicles/**",
       "/api/*/trips/**",
       "/api/*/bookings/**",
+      "/api/*/webhook/trips/**",
     ],
     pathRewrite: {
       "^/api": "",
@@ -104,8 +105,35 @@ export function createApp(logger: ILogger) {
     },
   });
 
+  const paymentServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.PAYMENT_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: [
+      "/api/*/payments/**",
+      "/api/*/wallet/**",
+      "/api/*/webhook/payments/**",
+    ],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("Payment service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("Payment service is unavailable"));
+        }
+      },
+    },
+  });
+
   app.use(userServiceProxy);
   app.use(tripServiceProxy);
+  app.use(paymentServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

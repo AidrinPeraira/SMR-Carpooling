@@ -19,4 +19,19 @@ describe("UserSignupHandler", () => {
       verificationToken: "token123",
     });
   });
+
+  it("should not send verification email if token is missing or empty", async () => {
+    const useCase = new MockSendSignupVerificationMailUseCase();
+    const mockLogger = new MockLogger();
+    const handler = new UserSignupHandler(mockLogger, useCase);
+
+    const eventWithoutToken = {
+      ...mockUserSignUpEvent,
+      payload: { ...mockUserSignUpEvent.payload, token: "" },
+    };
+
+    await handler.handle(eventWithoutToken);
+
+    expect(useCase.execute).not.toHaveBeenCalled();
+  });
 });

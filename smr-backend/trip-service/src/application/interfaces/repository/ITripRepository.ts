@@ -21,6 +21,7 @@ export interface JourneyDetailsPayload {
 
 export interface BookingEntityWithPassenger extends BookingEntity {
   passengerName?: string;
+  passengerEmail?: string;
 }
 
 export interface TripResultPayload {
@@ -55,7 +56,7 @@ export interface ITripRepository {
    * @param driverId Driver ID
    * @param query Optional filtering and pagination params
    */
-  findTripsByDriverId?(
+  findTripsByDriverId(
     driverId: string,
     query?: DriverGetAllTripsQueryDTO,
   ): Promise<PaginatedPayload<TripResultPayload[]>>;
@@ -86,9 +87,20 @@ export interface ITripRepository {
   findByTripId(tripId: string): Promise<TripEntity | null>;
 
   /**
+   * Updates fields of a trip by tripId
+   *
+   * @param tripId Trip ID
+   * @param data Fields to update
+   */
+  update(
+    tripId: string,
+    data: Partial<Omit<TripEntity, "tripId" | "createdAt" | "updatedAt">>,
+  ): Promise<TripEntity>;
+
+  /**
    * Find all trips that match given query
    */
-  findAllTrips?(
+  findAllTrips(
     query: AdminGetAllTripsQuery,
   ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>>;
 
@@ -97,9 +109,31 @@ export interface ITripRepository {
    *
    * @param tripId Trip ID
    */
-  findAdminTripDetails?(
+  findAdminTripDetails(
     tripId: string,
   ): Promise<AdminGetTripDetailsResponseDTO | null>;
+
+  /**
+   * A transaction to check and decrement seats for
+   * reservation
+   */
+  atmoicReserveSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null>;
+
+  /**
+   * A trnasaction to check and increment seats
+   * to rollback a reservation
+   */
+  atmoicReleaseSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null>;
+
+  /**
+   * this method deletes the rversed indexed items
+   * for the trips in the past
+   */
+  cleanIndices(): Promise<void>;
 }
-
-

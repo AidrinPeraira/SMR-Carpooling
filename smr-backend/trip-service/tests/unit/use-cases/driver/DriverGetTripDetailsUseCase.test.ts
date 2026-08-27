@@ -64,13 +64,17 @@ describe("DriverGetTripDetailsUseCase", () => {
     vi.clearAllMocks();
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn().mockResolvedValue(mockPayload),
       findTripsByDriverId: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn(),
-    };
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
+    } as unknown as ITripRepository;
 
     useCase = new DriverGetTripDetailsUseCase(mockTripRepository);
   });

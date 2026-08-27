@@ -5,6 +5,7 @@ const PassengerRepository = vi.fn(
   class implements IPassengerRepository {
     save = vi.fn();
     findByPassengerId = vi.fn();
+    update = vi.fn();
   },
 );
 

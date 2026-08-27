@@ -11,3 +11,4 @@ export * from "./ApplicationEnums";
 export * from "./DriverEnums";
 export * from "./TripEnums";
 export * from "./BookingEnums";
+export * from "./TransactionEnums";

@@ -26,6 +26,8 @@ export interface IMapProviderService {
     },
   ): Promise<void>;
 
+  isInitialized(): boolean;
+
   destroy(): Promise<void>;
 
   setCenter(point: MapPoint): Promise<void>;

@@ -120,6 +120,7 @@ services:
     tty: true
     ports:
       - "4003:4003"
+      - "8080:8080"
     env_file:
       - ./smr-backend/trip-service/.env
     environment:
@@ -151,6 +152,7 @@ services:
     tty: true
     ports:
       - "4004:4004"
+      - "8081:8080"
     env_file:
       - ./smr-backend/payment-service/.env
     environment:

@@ -8,7 +8,8 @@ import { AppConfig } from "#/application.config";
 export function keyMiddleware(req: Request, res: Response, next: NextFunction) {
   //health check probably comes from some outside service
   //so exclude that path
-  if (req.path === "/health") {
+  if (req.path === "/health" || req.path.startsWith("/api/v1/webhook")) {
+    req.headers["x-gateway-key"] = AppConfig.API_GATEWAY_KEY;
     return next();
   }
 

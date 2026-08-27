@@ -127,7 +127,7 @@ export function PassengerTripsView() {
     <div className="relative w-full h-full flex flex-col lg:flex-row overflow-hidden bg-surface-base">
       {/* Map (Fixed Right Side on desktop, Full Background on mobile/tablet) */}
       <div className="absolute inset-0 lg:relative lg:inset-auto flex-1 h-full w-full">
-        <MapContainer className="h-full w-full" />
+        <MapContainer enableLocationTracking className="h-full w-full" />
       </div>
 
       {/* Left Sidebar / Collapsible Drawer Panel */}

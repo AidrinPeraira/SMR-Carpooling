@@ -31,12 +31,19 @@ export class MapBoxService implements IMapProviderService {
   private _searchSession: SearchSession<any, any, any, any>;
   private _markers: Map<string, Marker> = new Map();
   private _activeRoutes: Set<string> = new Set();
+  private _initPromise: Promise<void> | null = null;
+  private _resolveInit: (() => void) | null = null;
+  private _hasCustomViewport = false;
 
   constructor() {
     this._searchBox = new SearchBoxCore({
       accessToken: MAP_BOX_API_KEY,
     });
     this._searchSession = new SearchSession(this._searchBox);
+  }
+
+  isInitialized(): boolean {
+    return !!this._map && (this._map.isStyleLoaded() || false);
   }
 
   /**
@@ -53,16 +60,49 @@ export class MapBoxService implements IMapProviderService {
     },
   ): Promise<void> {
     if (this._map) {
-      this.destroy();
+      await this.destroy();
     }
 
-    const currentLocation = await this.getCurrentLocation();
+    // Ensure DOM container element is empty to prevent Mapbox warning
+    element.innerHTML = "";
+
+    this._hasCustomViewport = Boolean(options?.center);
+    this._initPromise = new Promise((resolve) => {
+      this._resolveInit = resolve;
+    });
+
+    const initialCenter = options?.center || [75.2711, 10.8505];
     this._map = new MapboxMap({
       container: element,
       style: this._styleUrl,
-      center: currentLocation || [75.2711, 10.8505],
+      center: initialCenter,
       zoom: options?.zoom || 12,
     });
+
+    if (this._map.isStyleLoaded()) {
+      this._resolveInit?.();
+      this._resolveInit = null;
+    } else {
+      this._map.once("load", () => {
+        this._resolveInit?.();
+        this._resolveInit = null;
+      });
+    }
+
+    // Fetch user location in background if center was not specified
+    if (!options?.center) {
+      this.getCurrentLocation()
+        .then((location) => {
+          if (this._map && location && !this._hasCustomViewport) {
+            this._map.setCenter(location);
+          }
+        })
+        .catch(() => {
+          // Ignore location fallback warning
+        });
+    }
+
+    return this._initPromise;
   }
 
   /**
@@ -76,6 +116,9 @@ export class MapBoxService implements IMapProviderService {
 
     this._map?.remove();
     this._map = null;
+    this._initPromise = null;
+    this._resolveInit = null;
+    this._hasCustomViewport = false;
   }
 
   /**
@@ -84,9 +127,9 @@ export class MapBoxService implements IMapProviderService {
    * @param point : coordinates as MapPoint ([lng, lat])
    */
   async setCenter(point: MapPoint): Promise<void> {
-    if (!this._map) {
-      throw Error("No map initialise");
-    }
+    this._hasCustomViewport = true;
+    if (this._initPromise) await this._initPromise;
+    if (!this._map) return;
 
     this._map.flyTo({
       center: point,
@@ -117,7 +160,7 @@ export class MapBoxService implements IMapProviderService {
           );
           resolve(DEFAULT_FALLBACK);
         },
-        { enableHighAccuracy: true, timeout: 20000 },
+        { enableHighAccuracy: true, timeout: 5000 },
       );
     });
   }
@@ -129,7 +172,8 @@ export class MapBoxService implements IMapProviderService {
    * @param options : optional config
    */
   async startLocationTracking(): Promise<void> {
-    if (!this._map) throw new Error("Map not initialised");
+    if (this._initPromise) await this._initPromise;
+    if (!this._map) return;
 
     // Always stop and clean up any existing geolocation control attached to an old map
     if (this._geolocationControl) {
@@ -154,7 +198,9 @@ export class MapBoxService implements IMapProviderService {
     });
 
     this._geolocationControl.on("ready", () => {
-      geoControl.trigger();
+      if (!this._hasCustomViewport) {
+        geoControl.trigger();
+      }
     });
   }
 
@@ -248,7 +294,8 @@ export class MapBoxService implements IMapProviderService {
    * @param point : [lng, lat]
    */
   async addMarker(point: MapPoint): Promise<void> {
-    if (!this._map) throw new Error("Map not initailised");
+    if (this._initPromise) await this._initPromise;
+    if (!this._map) return;
 
     //create a key to identify the marker at each point
     const markerKey = `${point[0]},${point[1]}`;
@@ -267,7 +314,8 @@ export class MapBoxService implements IMapProviderService {
    * @param point : [lng, lat]
    */
   async removeMarker(point: MapPoint): Promise<void> {
-    if (!this._map) throw new Error("Map not initialised");
+    if (this._initPromise) await this._initPromise;
+    if (!this._map) return;
 
     const markerKey = `${point[0]},${point[1]}`;
 
@@ -283,6 +331,7 @@ export class MapBoxService implements IMapProviderService {
    * This clears all markers set in the current instance
    */
   async clearAllMarkers(): Promise<void> {
+    if (this._initPromise) await this._initPromise;
     if (this._markers.size > 0) {
       this._markers.forEach((marker) => {
         marker.remove();
@@ -297,7 +346,9 @@ export class MapBoxService implements IMapProviderService {
    * @param points : Array of MapPoint ([lng, lat])
    */
   async fitBounds(points: MapPoint[]): Promise<void> {
-    if (!this._map) throw new Error("Map not initialised");
+    this._hasCustomViewport = true;
+    if (this._initPromise) await this._initPromise;
+    if (!this._map) return;
     if (points.length === 0) return;
 
     if (points.length === 1) {
@@ -361,7 +412,8 @@ export class MapBoxService implements IMapProviderService {
     points: MapPoint[],
     options?: RouteDrawOptions,
   ): Promise<void> {
-    if (!this._map) throw new Error("Map not initialised");
+    if (this._initPromise) await this._initPromise;
+    if (!this._map) return;
 
     const routeId = options?.id || "default";
     const routeSourceId = `mapbox-trip-route-source-${routeId}`;
@@ -414,6 +466,7 @@ export class MapBoxService implements IMapProviderService {
    * @param id Optional route ID to remove
    */
   async removeRoute(id?: string): Promise<void> {
+    if (this._initPromise) await this._initPromise;
     if (!this._map) return;
 
     if (!id) {
@@ -446,6 +499,7 @@ export class MapBoxService implements IMapProviderService {
    * Removes all active route layers and sources from the map instance
    */
   async clearAllRoutes(): Promise<void> {
+    if (this._initPromise) await this._initPromise;
     if (!this._map) return;
 
     for (const routeId of this._activeRoutes) {
@@ -493,4 +547,3 @@ export class MapBoxService implements IMapProviderService {
     await this.drawRoute(points, options);
   }
 }
-

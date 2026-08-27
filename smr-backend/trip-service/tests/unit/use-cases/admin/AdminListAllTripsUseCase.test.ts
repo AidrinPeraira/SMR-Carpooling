@@ -33,13 +33,17 @@ describe("AdminListAllTripsUseCase", () => {
     vi.clearAllMocks();
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn(),
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
       findAllTrips: vi.fn().mockResolvedValue(mockPaginatedTrips),
-    };
+    } as unknown as ITripRepository;
 
     useCase = new AdminListAllTripsUseCase(mockTripRepository);
   });
@@ -55,10 +59,5 @@ describe("AdminListAllTripsUseCase", () => {
     expect(result.paginationMeta.totalItems).toBe(1);
   });
 
-  it("should throw error if findAllTrips is not implemented on repository", async () => {
-    delete mockTripRepository.findAllTrips;
-    await expect(useCase.execute({ page: 1, limit: 10 })).rejects.toThrow(
-      "findAllTrips method not implemented in repository",
-    );
-  });
+  
 });

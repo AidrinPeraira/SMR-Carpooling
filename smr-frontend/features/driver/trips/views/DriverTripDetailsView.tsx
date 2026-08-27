@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getDriverTripDetailsRequest } from "../api/getDriverTripDetailsRequest";
+import { cancelDriverTripRequest } from "../api/cancelDriverTripRequest";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint } from "@/features/map/types/MapTypes";
-import { Button, Card, Loader, Tag } from "@sharemyride/ui";
+import { Button, Card, Loader, Tag, useToast, Dialog } from "@sharemyride/ui";
 import {
   ArrowLeft,
   Calendar,
@@ -17,6 +18,8 @@ import {
   ArrowRight,
   ExternalLink,
 } from "lucide-react";
+import { DriverTripActionCard } from "../components/DriverTripActionCard";
+import { DriverTripCommunicationCard } from "../components/DriverTripCommunicationCard";
 
 interface DriverTripDetailsViewProps {
   tripId: string;
@@ -24,6 +27,10 @@ interface DriverTripDetailsViewProps {
 
 export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
   const map = useMap();
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
   const {
     data: tripDetails,
@@ -94,18 +101,26 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
           }
         }
 
-        // Fit viewport bounds to include all stops
-        await map.fitBounds(stopPoints);
+        // Fit viewport bounds to include all stops and route points
+        const routePoints: MapPoint[] =
+          currentTrip.trip_route && currentTrip.trip_route.length > 0
+            ? Array.isArray(currentTrip.trip_route[0])
+              ? (currentTrip.trip_route.flat(1) as unknown as MapPoint[])
+              : (currentTrip.trip_route as unknown as MapPoint[])
+            : [];
+
+        const allPointsToFit = [...stopPoints, ...routePoints].filter(Boolean);
+        if (allPointsToFit.length > 0) {
+          await map.fitBounds(allPointsToFit);
+        } else if (stopPoints.length > 0) {
+          await map.fitBounds(stopPoints);
+        }
       } catch (err) {
         console.warn("Map setup failed inside setupMapRoutes:", err);
       }
     };
 
-    const timer = setTimeout(() => {
-      setupMapRoutes();
-    }, 150);
-
-    return () => clearTimeout(timer);
+    setupMapRoutes();
   }, [tripDetails, map]);
 
   const renderStatusTag = (status?: string) => {
@@ -237,6 +252,21 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
     );
   }
 
+  const confirmCancelTrip = async () => {
+    try {
+      setIsCancelling(true);
+      await cancelDriverTripRequest(tripId);
+      toast("Trip cancelled successfully.", { variant: "success" });
+      refetch();
+      queryClient.invalidateQueries({ queryKey: ["driverTrips"] });
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : "Failed to cancel trip", { variant: "error" });
+    } finally {
+      setIsCancelling(false);
+      setIsCancelDialogOpen(false);
+    }
+  };
+
   const formattedDate = tripDetails.start_time
     ? new Date(tripDetails.start_time).toLocaleString(undefined, {
         dateStyle: "full",
@@ -327,24 +357,26 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
           </h2>
 
           <div className="space-y-4 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-border-subtle">
-            {(
-              tripDetails.trip_stops && tripDetails.trip_stops.length > 0
-                ? tripDetails.trip_stops
-                : [tripDetails.trip_origin, tripDetails.trip_destination]
+            {(tripDetails.trip_stops && tripDetails.trip_stops.length > 0
+              ? tripDetails.trip_stops
+              : [tripDetails.trip_origin, tripDetails.trip_destination]
             ).map((stop, index, arr) => {
               const isOrigin = index === 0;
               const isDestination = index === arr.length - 1;
               const label = isOrigin ? "A" : isDestination ? "B" : `${index}`;
 
               return (
-                <div key={index} className="flex items-start gap-3 relative z-10">
+                <div
+                  key={index}
+                  className="flex items-start gap-3 relative z-10"
+                >
                   <div
                     className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ${
                       isOrigin
                         ? "bg-success-surface border-success-border text-success-content"
                         : isDestination
-                        ? "bg-accent/15 border-accent/30 text-accent"
-                        : "bg-surface-muted border-border-subtle text-content-primary"
+                          ? "bg-accent/15 border-accent/30 text-accent"
+                          : "bg-surface-muted border-border-subtle text-content-primary"
                     }`}
                   >
                     {label}
@@ -424,21 +456,26 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
         )}
       </Card>
 
-      {/* Action Card Placeholder */}
-      <Card className="p-6 border border-border-subtle bg-surface-card space-y-3">
-        <h2 className="text-sm font-semibold text-content-secondary uppercase tracking-wider">
-          Trip Action Controls
-        </h2>
-        <div className="p-6 rounded-xl border border-dashed border-border-subtle bg-surface-muted/30 text-center">
-          <p className="text-sm text-content-secondary font-medium">
-            Trip Action Controls Placeholder
-          </p>
-          <p className="text-xs text-content-secondary/70 mt-1">
-            Status management actions (e.g. Start Trip, Complete Trip, Cancel
-            Trip) will appear here.
-          </p>
-        </div>
-      </Card>
+      {/* Action Cards */}
+      <div className="grid grid-cols-1 gap-6">
+        <DriverTripCommunicationCard
+          bookings={bookings}
+        />
+        <DriverTripActionCard
+          tripStatus={tripDetails.trip_status}
+          onCancelTrip={() => setIsCancelDialogOpen(true)}
+          isCancelling={isCancelling}
+        />
+      </div>
+
+      <Dialog
+        isOpen={isCancelDialogOpen}
+        onClose={() => setIsCancelDialogOpen(false)}
+        header="Cancel Trip"
+        description="Are you sure you want to cancel this trip? This action cannot be undone."
+        confirmAction={confirmCancelTrip}
+        rejectAction={() => setIsCancelDialogOpen(false)}
+      />
     </div>
   );
 }

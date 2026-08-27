@@ -3,6 +3,7 @@ import { SinupVerifcationMailRequestDTO } from "#/application/dto/email/SignupVe
 import { IMailService } from "#/application/interfaces/services/IMailService";
 import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/ISendSignupVerificationMailUseCase";
 import { NotificationEntity } from "#/domain/entities/NotificationEntity";
+import { EmailTemplate } from "#/application/utils/EmailTemplate";
 
 /**
  * This use case gets the validated and mapped data form the event consumer
@@ -16,15 +17,14 @@ export class SendSignupVerificationMailUseCase implements ISendSignupVerificatio
     const notification: NotificationEntity = {
       recipient: data.emailId,
       subject: `Welcome to ShareMyRide, ${data.userName}`,
-      body: `
-
-      Hello there. Welcome.
-  
-
-      Click Here to complete the signup process: ${AppConfig.FRONTEND_URL}/auth/signup/verify?token=${data.verificationToken}
-
-
-      `,
+      body: EmailTemplate.generate(
+        "Welcome to ShareMyRide",
+        `
+        <p>Hello <strong>${data.userName}</strong>. Welcome to the platform!</p>
+        <p>To get started and complete your signup process, please verify your email address.</p>
+        <a href="${AppConfig.FRONTEND_URL}/auth/signup/verify?token=${data.verificationToken}" class="button">Verify Email Address</a>
+        `
+      ),
     };
 
     //delete this for production

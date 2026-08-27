@@ -64,9 +64,8 @@ export class DriverRejectBookingUseCase implements IDriverRejectBookingUseCase {
       );
     }
 
-    await this._bookingRepository.updateStatus(
-      bookingId,
-      BookingStatus.REJECTED,
-    );
+    await this._bookingRepository.update(bookingId, {
+      status: BookingStatus.REJECTED,
+    });
   }
 }

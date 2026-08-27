@@ -85,23 +85,28 @@ describe("DriverGetBookingDetailsUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn(),
+      update: vi.fn(),
       findByBookingId: vi.fn().mockResolvedValue(mockBooking),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
-    };
+    } as unknown as IBookingRepository;
 
     mockTripRepository = {
+      cleanIndices: vi.fn(),
       save: vi.fn(),
       findTripDetails: vi.fn(),
       findMatchingTrips: vi.fn(),
       findJourneyDetails: vi.fn(),
       findByTripId: vi.fn().mockResolvedValue(mockTrip),
-    };
+      update: vi.fn(),
+      atmoicReserveSeat: vi.fn(),
+      atmoicReleaseSeat: vi.fn(),
+    } as unknown as ITripRepository;
 
     mockPassengerRepository = {
       save: vi.fn(),
       findByPassengerId: vi.fn().mockResolvedValue(mockPassenger),
+      update: vi.fn(),
     };
 
     mockVehicleRepository = {

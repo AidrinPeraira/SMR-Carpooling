@@ -1,0 +1,23 @@
+meta:
+  name: booking-payment-cleanup
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/payments/webhooks/clear-booking-payment
+  headers:
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |-
+      {
+        "booking_payment_id": "dabc6807-7aeb-4a03-9bcc-13639a4563d1"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

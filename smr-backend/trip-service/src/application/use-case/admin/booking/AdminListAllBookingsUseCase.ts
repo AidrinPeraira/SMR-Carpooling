@@ -10,9 +10,7 @@ import { PaginatedPayload } from "@sharemyride/shared";
  * This class implements the use case to list all bookings
  * on the platform on the admin dashboard
  */
-export class AdminListAllBookingsUseCase
-  implements IAdminListAllBookingsUseCase
-{
+export class AdminListAllBookingsUseCase implements IAdminListAllBookingsUseCase {
   constructor(private readonly _bookingRepository: IBookingRepository) {}
 
   /**
@@ -22,10 +20,7 @@ export class AdminListAllBookingsUseCase
   async execute(
     query: AdminListAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>> {
-    if (!this._bookingRepository.findAllBookings) {
-      throw new Error("findAllBookings method not implemented in repository");
-    }
+
     return await this._bookingRepository.findAllBookings(query);
   }
 }
-

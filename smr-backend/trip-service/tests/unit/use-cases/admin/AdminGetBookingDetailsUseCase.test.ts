@@ -35,12 +35,12 @@ describe("AdminGetBookingDetailsUseCase", () => {
 
     mockBookingRepository = {
       save: vi.fn(),
-      updateStatus: vi.fn(),
+      update: vi.fn(),
       findByBookingId: vi.fn(),
       findBookingsByDriverId: vi.fn(),
       findBookingsByPassengerId: vi.fn(),
       findAdminBookingDetails: vi.fn().mockResolvedValue(mockBookingDetails),
-    };
+    } as unknown as IBookingRepository;
 
     useCase = new AdminGetBookingDetailsUseCase(mockBookingRepository);
   });
@@ -56,7 +56,7 @@ describe("AdminGetBookingDetailsUseCase", () => {
   });
 
   it("should throw ApplicationError 404 when booking is not found", async () => {
-    vi.mocked(mockBookingRepository.findAdminBookingDetails!).mockResolvedValue(null);
+    vi.mocked(mockBookingRepository.findAdminBookingDetails).mockResolvedValue(null);
 
     await expect(useCase.execute("invalid-b-id")).rejects.toThrow(ApplicationError);
     await expect(useCase.execute("invalid-b-id")).rejects.toMatchObject({
@@ -65,10 +65,5 @@ describe("AdminGetBookingDetailsUseCase", () => {
     });
   });
 
-  it("should throw error if findAdminBookingDetails is not implemented on repository", async () => {
-    delete mockBookingRepository.findAdminBookingDetails;
-    await expect(useCase.execute("b-1")).rejects.toThrow(
-      "findAdminBookingDetails method not implemented in repository",
-    );
-  });
+  
 });

@@ -10,11 +10,13 @@ import {
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
 import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
+import { InitaiteBookingPaymentResponseDTO } from "#/application/dto/booking/BookingPaymentsDTO";
 import {
   CreateBookingRequest,
   DriverBookingDetailsDTO,
   DriverBookingItemDTO,
   DriverGetBookingsQueryRequest,
+  InitiateBookingPaymentResponseDTO,
   PaginatedPayload,
   PassengerBookingDetailsDTO,
   PassengerBookingItemDTO,
@@ -22,6 +24,14 @@ import {
 } from "@sharemyride/shared";
 
 export class BookingMapper {
+  static toInitiateBookingPaymentResponse(
+    dto: InitaiteBookingPaymentResponseDTO,
+  ): InitiateBookingPaymentResponseDTO {
+    return {
+      payment_token: dto.paymentToken,
+    };
+  }
+
   static toNewBookingRequestDTO(
     passengerId: string,
     body: CreateBookingRequest,

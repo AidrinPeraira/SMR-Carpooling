@@ -174,13 +174,22 @@ export function TripListingCard({
           }
         }
 
-        // Initial fit bounds for the full trip stops
+        // Initial fit bounds for the full trip stops or route
+        let flatRoutePoints: MapPoint[] = [];
+        if (data.trip_route && data.trip_route.length > 0) {
+          flatRoutePoints = Array.isArray(data.trip_route[0])
+            ? (data.trip_route.flat(1) as unknown as MapPoint[])
+            : (data.trip_route as unknown as MapPoint[]);
+        }
+
         if (data.trip_stops && data.trip_stops.length > 0) {
           const allPoints: MapPoint[] = data.trip_stops.map((s) => [
             s.stop_lng,
             s.stop_lat,
           ]);
-          await map.fitBounds(allPoints);
+          await map.fitBounds([...allPoints, ...flatRoutePoints]);
+        } else if (flatRoutePoints.length > 0) {
+          await map.fitBounds(flatRoutePoints);
         }
       } catch (err) {
         console.error("Failed to load journey details:", err);
@@ -204,12 +213,15 @@ export function TripListingCard({
       try {
         await map.clearAllMarkers();
 
+        const selectedPoints: MapPoint[] = [];
+
         if (selectedPickupStop) {
           const pickupPoint: MapPoint = [
             selectedPickupStop.stop_lng,
             selectedPickupStop.stop_lat,
           ];
           await map.addMarker(pickupPoint);
+          selectedPoints.push(pickupPoint);
         }
 
         if (selectedDropoffStop) {
@@ -218,6 +230,11 @@ export function TripListingCard({
             selectedDropoffStop.stop_lat,
           ];
           await map.addMarker(dropoffPoint);
+          selectedPoints.push(dropoffPoint);
+        }
+
+        if (selectedPoints.length > 0) {
+          await map.fitBounds(selectedPoints);
         }
       } catch (err) {
         console.error("Failed to update markers on map:", err);

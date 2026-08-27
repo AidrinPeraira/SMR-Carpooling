@@ -1,0 +1,59 @@
+info:
+  name: create-payment-order
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4000/v1/payments/booking/order
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  body:
+    type: json
+    data: |-
+      {
+        "payment_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4004/v1/payments/booking/order
+      method: POST
+      headers:
+        - name: Content-Type
+          value: application/json
+        - name: x-gateway-key
+          value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+      body:
+        type: json
+        data: |-
+          {
+            "payment_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXltZW50RGV0YWlscyI6eyJhbW1vdW50IjoxNTAsInBhc3NlbmdlcklkIjoiNDM3OGMyZDE2MDRiOWEwZmEzMzBiZDU2MTQ4NmEwMmQiLCJib29raW5nSWQiOiJkYWJjNjgwNy03YWViLTRhMDMtOWJjYy0xMzYzOWE0NTYzZDEiLCJwYXltZW50S2V5IjoicGF5X3h5ejEyM2FiYzQ1NiIsImV4cGlyZXNBdCI6IjIwMjYtMDgtMThUMjM6MTU6MDAuMDAwWiJ9LCJ0b2tlblR5cGUiOiJwYXltZW50X3Rva2VuIiwiaWF0IjoxNzg2NjQwNDgzLCJleHAiOjE3ODY2NDEzODN9.mock_signature"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Payment order created successfully",
+            "payload": {
+              "order_number": "order_Nz10134881"
+            }
+          }

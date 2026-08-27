@@ -12,7 +12,7 @@ import {
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
-import { BookingStatus, PaginatedPayload } from "@sharemyride/shared";
+import { PaginatedPayload } from "@sharemyride/shared";
 
 /**
  * This repository handles booking records
@@ -20,9 +20,9 @@ import { BookingStatus, PaginatedPayload } from "@sharemyride/shared";
 export interface IBookingRepository {
   save(booking: Omit<BookingEntity, "bookingId">): Promise<BookingEntity>;
 
-  updateStatus(
+  update(
     bookingId: string,
-    newStatus: BookingStatus,
+    data: Partial<Omit<BookingEntity, "bookingId" | "createdAt" | "updatedAt">>,
   ): Promise<BookingEntity>;
 
   findByBookingId(bookingId: string): Promise<BookingEntity | null>;
@@ -37,13 +37,11 @@ export interface IBookingRepository {
     query?: PassengerGetAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<PassengerGetAllBookingsResultDTO[]>>;
 
-  findAllBookings?(
+  findAllBookings(
     query: AdminListAllBookingsQueryDTO,
   ): Promise<PaginatedPayload<AdminListAllBookingsResponseDTO[]>>;
 
-  findAdminBookingDetails?(
+  findAdminBookingDetails(
     bookingId: string,
   ): Promise<AdminBookingDetiailsResponseDTO | null>;
 }
-
-

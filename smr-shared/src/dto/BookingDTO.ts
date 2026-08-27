@@ -83,7 +83,13 @@ export interface PassengerBookingDetailsDTO {
   total_price: number;
 }
 
+export interface InitiateBookingPaymentResponseDTO {
+  payment_token: string;
+}
+
 export type DriverBookingItemResult = DriverBookingItemDTO;
 export type DriverBookingDetailsResult = DriverBookingDetailsDTO;
 export type PassengerBookingItemResult = PassengerBookingItemDTO;
 export type PassengerBookingDetailsResult = PassengerBookingDetailsDTO;
+export type InitiateBookingPaymentResult = InitiateBookingPaymentResponseDTO;
+

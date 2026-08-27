@@ -4,16 +4,20 @@ import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/auth/IGoog
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { AppConfig } from "#/application.config";
 import {
   AccountStatus,
   ApplicationError,
   AuthTokenPayload,
   ErrorCode,
+  EventName,
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
   UserRole,
+  UserSignUpEvent,
+  UserSignupEventPayload,
 } from "@sharemyride/shared";
 
 /**
@@ -27,6 +31,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
     private readonly userRepository: IUserRepository,
     private readonly uniqueIdGenerator: IUniqueIdGenerator,
     private readonly tokenService: ITokenService,
+    private readonly eventBus: IEventBus,
   ) {}
 
   async execute(authToken: string): Promise<LoginUserResultDTO> {
@@ -66,6 +71,22 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         createdAt: now,
         updatedAt: now,
       });
+
+      const eventPayload: UserSignupEventPayload = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailId: user.emailId,
+        userId: user.userId,
+        token: "",
+      };
+
+      const event: UserSignUpEvent = {
+        eventName: EventName.AUTH_USER_SIGNUP,
+        payload: eventPayload,
+        timestamp: now,
+      };
+
+      await this.eventBus.publish(event);
     }
 
     if (user.accountStatus === AccountStatus.BLOCKED) {

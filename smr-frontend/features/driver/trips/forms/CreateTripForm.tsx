@@ -104,6 +104,12 @@ export function CreateTripForm() {
           }
         } catch (err) {
           console.error("Failed to update route on map:", err);
+          try {
+            await map.drawRoute(waypoints);
+            await map.fitBounds(waypoints);
+          } catch (fallbackErr) {
+            console.warn("Failed to render fallback route on map:", fallbackErr);
+          }
         }
       }
     }
@@ -309,6 +315,7 @@ export function CreateTripForm() {
       });
 
       toast("Trip created successfully!", { variant: "success" });
+      await queryClient.invalidateQueries({ queryKey: ["driverTrips"] });
       router.push("/driver/trips");
     } catch (err: unknown) {
       logger.error("Failed to submit create trip form: ", err);

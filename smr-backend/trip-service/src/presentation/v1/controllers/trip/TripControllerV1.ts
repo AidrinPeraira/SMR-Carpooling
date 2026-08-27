@@ -4,6 +4,7 @@ import { IDriverGetTripDetailsUseCase } from "#/application/interfaces/use-case/
 import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICreateTripUseCase";
 import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
+import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
@@ -30,6 +31,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _getJourneyDetailsUseCase: IGetJourneyDetailsUseCase,
     private readonly _driverListTripsUseCase: IDriverListTripsUseCase,
     private readonly _driverGetTripDetailsUseCase: IDriverGetTripDetailsUseCase,
+    private readonly _cancelTripUseCase: ICancelTripUseCas,
   ) {}
 
   async createTrip(
@@ -195,6 +197,35 @@ export class TripControllerV1 implements ITripControllerV1 {
           makeSuccessResponse(
             "Driver trip details fetched successfully",
             mapped,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async cancelTrip(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+      const { tripId } = req.params;
+
+      this._logger.info("Canceling trip:", { driverId, tripId });
+
+      await this._cancelTripUseCase.execute(
+        tripId as string,
+        driverId,
+      );
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Trip cancelled successfully",
+            null,
           ),
         );
     } catch (error) {
