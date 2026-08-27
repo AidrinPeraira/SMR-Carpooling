@@ -9,3 +9,7 @@ export const VerifyBookingPaymentOrderSchema = z.object({
   payment_id: z.string({ error: "Payment ID is required" }).min(1, "Payment ID cannot be empty"),
   verification_key: z.string({ error: "Verification key is required" }).min(1, "Verification key cannot be empty"),
 });
+
+export const PayBookingWithWalletSchema = z.object({
+  payment_token: z.string({ error: "Payment token is required" }).min(1, "Payment token cannot be empty"),
+});

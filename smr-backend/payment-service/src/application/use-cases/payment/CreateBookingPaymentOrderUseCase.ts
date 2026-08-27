@@ -23,6 +23,7 @@ import {
   PaymentTokenPayload,
   ScheduledJOB,
   TransactionStatus,
+  UserErrorMessage,
 } from "@sharemyride/shared";
 
 /**
@@ -51,9 +52,9 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
   async execute(
     dto: CreateBookingPaymentOrderRequestDTO,
   ): Promise<CreateBookingPaymentOrderResponseDTO> {
-    let passengerId = "";
-    let bookingId = "";
-    let paymentKey = "";
+    let passengerId: string | undefined;
+    let bookingId: string | undefined;
+    let paymentKey: string | undefined;
 
     try {
       //verify token and get payload
@@ -88,6 +89,20 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
           ? payload.exp
           : 0;
       const isExpired = expiryTimestamp > 0 && Date.now() > expiryTimestamp;
+
+      const customer = await this._customerRepository.findByCustomerId(passengerId);
+      if (!customer) {
+        throw new ApplicationError(
+          UserErrorMessage.NOT_FOUND,
+          HttpStatusCodes.NotFound,
+          ErrorCode.DOMAIN_NOT_FOUND,
+          ErrorDetails.DOMAIN_NOT_FOUND,
+          {
+            location: "CreateBookingPaymentOrderUseCase",
+            description: `No user found with the provided passengerId: ${passengerId}`,
+          },
+        );
+      }
 
       //check for already paid
       const successfulBooking =
@@ -134,10 +149,22 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
             },
           );
         }
+        if (existingPayment.status === TransactionStatus.CANCELLED) {
+          throw new ApplicationError(
+            PaymentErrorMessage.PAYMENT_CANCELLED,
+            HttpStatusCodes.BadRequest,
+            ErrorCode.DOMAIN_CONFLICT,
+            ErrorDetails.DOMAIN_CONFLICT,
+            {
+              location: "CreateBookingPaymentOrderUseCase",
+              description: "Payment has already been cancelled",
+            },
+          );
+        }
 
-        //if previous valid order is present
+        //if previous valid order is present and it is pending
         //make payment to that order number
-        if (existingPayment.gatewayOrderId) {
+        if (existingPayment.gatewayOrderId && existingPayment.status === TransactionStatus.PENDING) {
           return {
             orderNumber: existingPayment.gatewayOrderId,
           };
@@ -159,6 +186,7 @@ export class CreateBookingPaymentOrderUseCase implements ICreateBookingPaymentOr
 
       //new booking payment. (we have to do this to get bookingPayment record id)
       //we create a new booking payment. (keep old one for record)
+      // Note: This creates a new record even if a FAILED one exists.
       const bookingPayment = await this._bookingPaymentRepository.save({
         bookingId,
         passengerId,

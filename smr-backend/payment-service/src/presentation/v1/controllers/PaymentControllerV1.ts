@@ -1,5 +1,6 @@
 import { ICreateBookingPaymentOrderUseCase } from "#/application/interfaces/use-cases/payment/ICreateBookingPaymentOrderUseCase";
 import { IVerifyBookingPaymentUseCase } from "#/application/interfaces/use-cases/payment/IVerifyBookingPaymentUseCase";
+import { IPayBookingWithWalletUseCase } from "#/application/interfaces/use-cases/payment/IPayBookingWithWalletUseCase";
 import { IPaymentControllerV1 } from "#/presentation/v1/interfaces/IPaymentControllerV1";
 import { PaymentMapper } from "#/presentation/v1/mapper/PaymentMapper";
 import {
@@ -12,6 +13,8 @@ import {
   PaymentSuccessMessage,
   VerifyBookingPaymentOrderRequest,
   VerifyBookingPaymentOrderSchema,
+  PayBookingWithWalletRequest,
+  PayBookingWithWalletSchema,
   zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
@@ -21,6 +24,7 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     private readonly _logger: ILogger,
     private readonly _createBookingPaymentOrderUseCase: ICreateBookingPaymentOrderUseCase,
     private readonly _verifyBookingPaymentUseCase: IVerifyBookingPaymentUseCase,
+    private readonly _payBookingWithWalletUseCase: IPayBookingWithWalletUseCase,
   ) {}
 
   async createBookingPaymentOrder(req: Request, res: Response): Promise<void> {
@@ -69,5 +73,23 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     res
       .status(HttpStatusCodes.Ok)
       .json(makeSuccessResponse(PaymentSuccessMessage.PAYMENT_VERIFIED));
+  }
+
+  async payBookingWithWallet(req: Request, res: Response): Promise<void> {
+    const body = zodParser<PayBookingWithWalletRequest>(
+      PayBookingWithWalletSchema,
+      req.body,
+    );
+    const dto = PaymentMapper.toPayBookingWithWalletDTO(body);
+
+    this._logger.info("Processing wallet payment for booking");
+
+    await this._payBookingWithWalletUseCase.execute(dto);
+
+    this._logger.info("Booking wallet payment completed successfully");
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(makeSuccessResponse(PaymentSuccessMessage.PAYMENT_COMPLETED));
   }
 }

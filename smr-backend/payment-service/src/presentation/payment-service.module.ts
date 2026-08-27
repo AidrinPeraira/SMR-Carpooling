@@ -4,6 +4,7 @@ import { CreateBookingPaymentOrderUseCase } from "#/application/use-cases/paymen
 import { FailedBookingPaymentUseCase } from "#/application/use-cases/payment/FailedBookingPaymentUseCase";
 import { RefundBookingPaymentUseCase } from "#/application/use-cases/payment/RefundBookingPaymentUseCase";
 import { VerifyBookingPaymentUseCase } from "#/application/use-cases/payment/VerifyBookingPaymentUseCase";
+import { PayBookingWithWalletUseCase } from "#/application/use-cases/payment/PayBookingWithWalletUseCase";
 import { BlockCustomerUseCase } from "#/application/use-cases/customer/BlockCustomerUseCase";
 import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomerUseCase";
 import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
@@ -116,6 +117,16 @@ const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
   cryptoUIDService,
 );
 
+const payBookingWithWalletUseCase = new PayBookingWithWalletUseCase(
+  jwtTokenService,
+  bookingPaymentRepository,
+  walletRepository,
+  transactionRepository,
+  eventBusInstance,
+  cryptoUIDService,
+  customerRepository
+);
+
 const failedBookingPaymentUseCase = new FailedBookingPaymentUseCase(
   bookingPaymentRepository,
   customerRepository,
@@ -154,6 +165,7 @@ const paymentControllerV1 = new PaymentControllerV1(
   consolaLogger,
   createBookingPaymentOrderUseCase,
   verifyBookingPaymentUseCase,
+  payBookingWithWalletUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(

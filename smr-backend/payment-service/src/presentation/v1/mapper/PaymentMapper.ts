@@ -2,14 +2,17 @@ import {
   CreateBookingPaymentOrderRequestDTO,
   CreateBookingPaymentOrderResponseDTO,
   VerifyBookingPaymentOrderRequestDTO,
+  PayBookingWithWalletRequestDTO,
 } from "#/application/dto/payments/BookingPaymentDTO";
 import {
   CreateBookingPaymentOrderRequest,
   CreateBookingPaymentOrderResult,
   VerifyBookingPaymentOrderRequest,
+  PayBookingWithWalletRequest,
 } from "@sharemyride/shared";
 
 export class PaymentMapper {
+
   static toCreateBookingPaymentOrderDTO(
     request: CreateBookingPaymentOrderRequest,
   ): CreateBookingPaymentOrderRequestDTO {
@@ -33,6 +36,14 @@ export class PaymentMapper {
       orderNumber: request.order_number,
       paymentId: request.payment_id,
       verificationKey: request.verification_key,
+    };
+  }
+
+  static toPayBookingWithWalletDTO(
+    request: PayBookingWithWalletRequest,
+  ): PayBookingWithWalletRequestDTO {
+    return {
+      paymentToken: request.payment_token,
     };
   }
 }

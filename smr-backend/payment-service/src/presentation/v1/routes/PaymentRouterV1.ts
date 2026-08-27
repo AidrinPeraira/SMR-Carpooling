@@ -14,6 +14,10 @@ export function createPaymentRouterV1(
     "/booking/verify",
     paymentController.verifyBookingPayment.bind(paymentController),
   );
+  router.post(
+    "/booking/wallet",
+    paymentController.payBookingWithWallet.bind(paymentController),
+  );
 
   return router;
 }

@@ -11,3 +11,7 @@ export interface VerifyBookingPaymentOrderRequest {
   payment_id: string;
   verification_key: string;
 }
+
+export interface PayBookingWithWalletRequest {
+  payment_token: string;
+}
