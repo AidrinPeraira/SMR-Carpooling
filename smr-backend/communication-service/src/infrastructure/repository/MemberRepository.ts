@@ -1,4 +1,4 @@
-import { IMemberRepository } from "#/application/interfaces/repository/IUserRepository";
+import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
 import { MemberEntity } from "#/domain/entities/MemeberEntity";
 import { MemberDoc } from "#/infrastructure/database/models/MongoMemberModel";
 import { BaseRepository } from "#/infrastructure/repository/BaseRepository";
@@ -28,5 +28,19 @@ export class MemberRespository
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };
+  }
+
+  async addActiveTrip(userId: string, tripId: string): Promise<void> {
+    await this._memberModel.updateOne(
+      { memberId: userId },
+      { $addToSet: { activeTrips: tripId } }
+    );
+  }
+
+  async removeActiveTrip(userId: string, tripId: string): Promise<void> {
+    await this._memberModel.updateOne(
+      { memberId: userId },
+      { $pull: { activeTrips: tripId } }
+    );
   }
 }

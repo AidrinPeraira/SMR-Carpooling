@@ -1,5 +1,5 @@
 import { CreateNewMemberRequestDTO } from "#/application/dto/MemberDTO";
-import { IMemberRepository } from "#/application/interfaces/repository/IUserRepository";
+import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
 import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/ICreateMemberUseCase";
 
 /**

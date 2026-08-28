@@ -3,9 +3,13 @@ import { AppConfig } from "#/application.config";
 import { MemberModel } from "#/infrastructure/database/models/MongoMemberModel";
 import { MemberRespository } from "#/infrastructure/repository/MemberRepository";
 import { CreateMemberUseCase } from "#/application/use-cases/members/CreateMemberUseCase";
+import { AddActiveTripUseCase } from "#/application/use-cases/members/AddActiveTripUseCase";
+import { RemoveActiveTripUseCase } from "#/application/use-cases/members/RemoveActiveTripUseCase";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handlers/UserSignupEventHandler";
+
+import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/NewBookingEventHandler";
 
 /**
  * Composition Root for the Communication Service.
@@ -18,6 +22,8 @@ const memberRepository = new MemberRespository(MemberModel);
 
 // Use Cases
 const createMemberUseCase = new CreateMemberUseCase(memberRepository);
+const addActiveTripUseCase = new AddActiveTripUseCase(memberRepository);
+const removeActiveTripUseCase = new RemoveActiveTripUseCase(memberRepository);
 
 // Messaging
 const eventDispatcher = new EventDispatcher(consolaLogger);
@@ -28,9 +34,19 @@ const userSignupEventHandler = new UserSignupEventHandler(
   createMemberUseCase,
 );
 
+const newBookingEventHandler = new NewBookingEventHandler(
+  consolaLogger,
+  addActiveTripUseCase,
+);
+
 await eventDispatcher.register(
   EventName.AUTH_USER_SIGNUP,
   userSignupEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.BOOKING_NEW_BOOKING,
+  newBookingEventHandler,
 );
 
 export const eventBus = new EventBus(
@@ -40,3 +56,9 @@ export const eventBus = new EventBus(
   eventDispatcher,
   "smr.communications.queue",
 );
+
+export {
+  createMemberUseCase,
+  addActiveTripUseCase,
+  removeActiveTripUseCase,
+};

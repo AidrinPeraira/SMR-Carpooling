@@ -3,3 +3,10 @@ export interface CreateNewMemberRequestDTO {
   lastName: string;
   userId: string;
 }
+
+export interface AddActiveTripRequestDTO {
+  userId: string;
+  tripId: string;
+}
+
+export type RemoveActiveTripRequestDTO = AddActiveTripRequestDTO;
