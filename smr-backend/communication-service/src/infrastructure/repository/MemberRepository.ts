@@ -24,6 +24,7 @@ export class MemberRespository
       memberId: data.memberId,
       firstName: data.firstName,
       lastName: data.lastName,
+      activeTrips: data.activeTrips ?? [],
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };

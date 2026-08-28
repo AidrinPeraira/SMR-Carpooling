@@ -16,6 +16,11 @@ export const memberSchema = new mongoose.Schema({
     required: true,
   },
 
+  activeTrips: {
+    type: [String],
+    default: [],
+  },
+
   createdAt: {
     type: Date,
     required: true,

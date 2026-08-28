@@ -17,6 +17,7 @@ export class CreateMemberUseCase implements ICreateMemberUseCase {
       firstName: dto.firstName,
       lastName: dto.lastName,
       memberId: dto.userId,
+      activeTrips: [],
       createdAt: now,
       updatedAt: now,
     });
