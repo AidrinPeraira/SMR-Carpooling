@@ -1,0 +1,46 @@
+{
+  "name": "@smr/communication-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "imports": {
+    "#/*": {
+      "production": "./dist/src/*.js",
+      "default": "./src/*"
+    },
+    "&#/*": "./tests/*"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "docker:build": "docker build --target communication-service-prod -t aidrinperaira/communication-service:latest -f ../../Dockerfile.prod ../..",
+    "docker:push": "docker push aidrinperaira/communication-service:latest",
+    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
+    "update:shared": "pnpm add @sharemyride/shared@latest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "@sharemyride/shared": "^0.0.8",
+    "helmet": "^8.1.0",
+    "morgan": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

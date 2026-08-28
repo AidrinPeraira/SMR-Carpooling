@@ -176,6 +176,40 @@ services:
           path: ./smr-shared/dist
           target: /app/smr-shared/dist
 
+  communication-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: communication-service-dev
+    tty: true
+    ports:
+      - "4005:4005"
+    depends_on:
+      - redis
+      - rabbitmq
+    env_file:
+      - ./smr-backend/communication-service/.env
+    environment:
+      - NODE_ENV=development
+      - CI=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/smr-backend/communication-service/node_modules
+      - /app/smr-shared/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./smr-backend/communication-service/src
+          target: /app/smr-backend/communication-service/src
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: ./smr-backend/communication-service/package.json
+        - action: sync
+          path: ./smr-shared/dist
+          target: /app/smr-shared/dist
+
   # --- Infrastructure Services ---
 
   redis:
