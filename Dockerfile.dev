@@ -13,6 +13,7 @@ RUN mkdir -p /pnpm /app/node_modules \
   /app/smr-backend/payment-service/node_modules \
   /app/smr-backend/trip-service/node_modules \
   /app/smr-backend/user-service/node_modules \
+  /app/smr-backend/communication-service/node_modules \
   && chown -R node:node /app /pnpm
 
 FROM base AS root-workspace
@@ -102,3 +103,17 @@ COPY --chown=node:node ./smr-backend/trip-service/ ./smr-backend/trip-service/
 EXPOSE 4004
 RUN pnpm --filter @smr/trip-service run prisma:generate
 CMD ["pnpm", "--filter", "@smr/trip-service", "run", "dev"]
+
+#################################################
+# --- Communication Service ---
+
+FROM root-workspace AS communication-service-installer
+COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
+COPY --chown=node:node ./smr-backend/communication-service/package.json ./smr-backend/communication-service/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/communication-service...
+
+FROM communication-service-installer AS communication-service-dev
+COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
+COPY --chown=node:node ./smr-backend/communication-service/ ./smr-backend/communication-service/
+EXPOSE 4005
+CMD ["pnpm", "--filter", "@smr/communication-service", "run", "dev"]

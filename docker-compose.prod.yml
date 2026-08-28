@@ -67,6 +67,22 @@ services:
     environment:
       - NODE_ENV=production
 
+  communication-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: communication-service-prod
+    restart: unless-stopped
+    ports:
+      - "4005:4005"
+    depends_on:
+      - redis
+      - rabbitmq
+    env_file:
+      - ./smr-backend/communication-service/.env
+    environment:
+      - NODE_ENV=production
+
   # --- Infrastructure Services ---
 
   redis:
