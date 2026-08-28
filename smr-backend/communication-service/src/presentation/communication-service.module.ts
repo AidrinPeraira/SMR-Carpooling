@@ -114,4 +114,6 @@ export {
   addChatMemberUseCase,
   removeChatMembersUseCase,
   closeChatUseCase,
+  memberRepository,
+  chatRepository,
 };

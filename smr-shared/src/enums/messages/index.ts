@@ -5,5 +5,4 @@ export * from "./BookingMessages";
 export * from "./ConfigMessages";
 export * from "./ApplicationMessages";
 export * from "./PaymentMessages";
-
-
+export * from "./ChatMessages";
