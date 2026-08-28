@@ -10,6 +10,8 @@ export const AppConfig = {
     String(process.env.TRIP_SERVICE_URL) || "https://localhost:4003",
   PAYMENT_SERVICE_URL:
     String(process.env.PAYMENT_SERVICE_URL) || "http://localhost:4004",
+  COMMUNICATION_SERVICE_URL:
+    String(process.env.COMMUNICATION_SERVICE_URL) || "http://localhost:4005",
 
   ACCESS_TOKEN_SECRET: String(
     process.env.ACCESS_TOKEN_SECRET ||

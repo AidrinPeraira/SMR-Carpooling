@@ -28,20 +28,32 @@ export const createSocketServer = (
     void handleUserConnectUseCase.execute(userId);
 
     socket.on("join_chat", async (payload: { chatId: string }) => {
-      await joinChatUseCase.execute(userId, payload.chatId, socket.id);
+      try {
+        await joinChatUseCase.execute(userId, payload.chatId, socket.id);
+      } catch (error) {
+        socket.emit("error", { message: error instanceof Error ? error.message : "Failed to join chat" });
+      }
     });
 
     socket.on("send_message", async (payload: { chatId: string; body: string }) => {
-      await sendMessageUseCase.execute({
-        chatId: payload.chatId,
-        body: payload.body,
-        senderId: userId,
-      });
+      try {
+        await sendMessageUseCase.execute({
+          chatId: payload.chatId,
+          body: payload.body,
+          senderId: userId,
+        });
+      } catch (error) {
+        socket.emit("error", { message: error instanceof Error ? error.message : "Failed to send message" });
+      }
     });
 
     socket.on("sync_history", async (payload: { chatId: string }) => {
-      const history = await syncChatHistoryUseCase.execute(payload.chatId, userId);
-      socket.emit("chat_history", history);
+      try {
+        const history = await syncChatHistoryUseCase.execute(payload.chatId, userId);
+        socket.emit("chat_history", history);
+      } catch (error) {
+        socket.emit("error", { message: error instanceof Error ? error.message : "Failed to sync history" });
+      }
     });
 
     socket.on("disconnect", () => {

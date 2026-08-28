@@ -29,6 +29,7 @@ export interface PassengerGetAllBookingsResultDTO {
 
 export interface GetPassengerBookingDetailsResultDTO {
   bookingId: string;
+  tripId: string;
 
   driverName: string;
 

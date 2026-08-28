@@ -131,9 +131,34 @@ export function createApp(logger: ILogger) {
     },
   });
 
+  const communicationServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.COMMUNICATION_SERVICE_URL,
+    changeOrigin: true,
+    ws: true,
+    pathFilter: ["/socket.io/**"],
+    on: {
+      proxyReq: (proxyReq, req) => {
+        proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
+        fixRequestBody(proxyReq, req);
+      },
+      proxyReqWs: (proxyReqWs) => {
+        proxyReqWs.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("Communication service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("Communication service is unavailable"));
+        }
+      },
+    },
+  });
+
   app.use(userServiceProxy);
   app.use(tripServiceProxy);
   app.use(paymentServiceProxy);
+  app.use(communicationServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

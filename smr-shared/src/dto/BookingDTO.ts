@@ -70,6 +70,7 @@ export interface PassengerBookingItemDTO {
 
 export interface PassengerBookingDetailsDTO {
   booking_id: string;
+  trip_id: string;
   driver_name: string;
   trip_date: string;
   trip_vehicle: string;

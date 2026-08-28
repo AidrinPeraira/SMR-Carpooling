@@ -2,6 +2,7 @@
 
 import { Button, Card } from "@sharemyride/ui";
 import { MessageSquare, Phone } from "lucide-react";
+import Link from "next/link";
 
 interface Booking {
   booking_id: string;
@@ -10,10 +11,12 @@ interface Booking {
 }
 
 interface DriverTripCommunicationCardProps {
+  tripId: string;
   bookings: Booking[];
 }
 
 export function DriverTripCommunicationCard({
+  tripId,
   bookings,
 }: DriverTripCommunicationCardProps) {
   const confirmedBookings = bookings.filter(
@@ -32,14 +35,15 @@ export function DriverTripCommunicationCard({
       </div>
 
       <div className="pt-2">
-        <Button
-          variant="secondary"
-          className="w-full text-xs py-2 font-medium flex items-center justify-center gap-2"
-          onClick={() => alert("Trip chat feature coming soon!")}
-        >
-          <MessageSquare className="w-4 h-4" />
-          Open Trip Chat
-        </Button>
+        <Link href={`/driver/trips/${tripId}/chat`} className="w-full">
+          <Button
+            variant="secondary"
+            className="w-full text-xs py-2 font-medium flex items-center justify-center gap-2"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Open Trip Chat
+          </Button>
+        </Link>
       </div>
 
       {confirmedBookings.length > 0 && (

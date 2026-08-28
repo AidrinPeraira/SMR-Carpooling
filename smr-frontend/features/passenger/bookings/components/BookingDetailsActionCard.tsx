@@ -12,6 +12,7 @@ import {
 import { OnlinePaymentButton } from "./OnlinePaymentButton";
 import { WalletPaymentButton } from "./WalletPaymentButton";
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 interface BookingDetailsActionCardProps {
   bookingId: string;
@@ -21,6 +22,7 @@ interface BookingDetailsActionCardProps {
   isWithdrawing: boolean;
   onCancel?: () => Promise<void>;
   isCancelling?: boolean;
+  tripId?: string;
 }
 
 export function BookingDetailsActionCard({
@@ -31,6 +33,7 @@ export function BookingDetailsActionCard({
   isWithdrawing,
   onCancel,
   isCancelling = false,
+  tripId,
 }: BookingDetailsActionCardProps) {
   const queryClient = useQueryClient();
   const normalizedStatus = status.toLowerCase();
@@ -137,14 +140,18 @@ export function BookingDetailsActionCard({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 w-full pt-2">
-            <Button
-              variant="secondary"
-              className="w-full sm:flex-1 text-xs py-2 font-medium flex items-center justify-center gap-2"
-              onClick={() => alert("Chat feature coming soon!")}
+            <Link
+              href={`/passenger/bookings/${bookingId}/chat${tripId ? `?tripId=${tripId}` : ''}`}
+              className="w-full sm:flex-1"
             >
-              <MessageSquare className="w-4 h-4" />
-              Chat
-            </Button>
+              <Button
+                variant="secondary"
+                className="w-full text-xs py-2 font-medium flex items-center justify-center gap-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Chat
+              </Button>
+            </Link>
             <Button
               variant="secondary"
               className="w-full sm:flex-1 text-xs py-2 font-medium flex items-center justify-center gap-2"

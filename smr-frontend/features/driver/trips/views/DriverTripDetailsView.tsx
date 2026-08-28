@@ -459,6 +459,7 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
       {/* Action Cards */}
       <div className="grid grid-cols-1 gap-6">
         <DriverTripCommunicationCard
+          tripId={tripId}
           bookings={bookings}
         />
         <DriverTripActionCard

@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   "/api/v1/auth/change-password",
   "/api/v1/auth/forgot-password",
   "/api/v1/webhook",
+  "/socket.io",
 ];
 
 /**
