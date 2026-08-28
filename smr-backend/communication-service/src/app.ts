@@ -8,6 +8,8 @@ import {
   type ILogger,
 } from "@sharemyride/shared";
 import morgan from "morgan";
+import { keyMiddleware } from "#/presentation/middlewares/key.middleware";
+
 
 /**
  * Express Application Factory.
@@ -30,6 +32,8 @@ export function createApp(logger: ILogger) {
       },
     }),
   );
+
+  app.use(keyMiddleware);
 
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });

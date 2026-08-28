@@ -41,6 +41,8 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",
+    "mongoose": "^9.6.2",
+    "amqplib": "^2.0.1",
     "typescript": "^5.7.2"
   }
 }

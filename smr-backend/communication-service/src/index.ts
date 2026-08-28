@@ -2,9 +2,14 @@ import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
 import { ConsolaLogger } from "@sharemyride/shared";
+import { connectMongoDB } from "#/infrastructure/database/connect-mongodb";
+import { eventBus } from "#/presentation/communication-service.module";
 
 async function startServer(): Promise<void> {
   const logger = new ConsolaLogger();
+
+  await connectMongoDB(logger);
+  await eventBus.connect();
 
   const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
