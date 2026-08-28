@@ -1,6 +1,6 @@
 import { CreateNewMemberRequestDTO } from "#/application/dto/MemberDTO";
 import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
-import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/ICreateMemberUseCase";
+import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/members/ICreateMemberUseCase";
 
 /**
  * This class implements the use case that creates

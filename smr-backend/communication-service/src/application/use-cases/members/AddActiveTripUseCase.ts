@@ -1,6 +1,6 @@
 import { AddActiveTripRequestDTO } from "#/application/dto/MemberDTO";
 import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
-import { IAddActiveTripUseCase } from "#/application/interfaces/use-cases/IAddActiveTripUseCase";
+import { IAddActiveTripUseCase } from "#/application/interfaces/use-cases/members/IAddActiveTripUseCase";
 
 /**
  * This class implements the use case that

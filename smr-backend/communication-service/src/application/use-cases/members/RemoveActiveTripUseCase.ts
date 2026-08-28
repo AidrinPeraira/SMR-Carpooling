@@ -1,4 +1,4 @@
-import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/IRemoveActiveTripUseCase";
+import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/members/IRemoveActiveTripUseCase";
 import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
 import { RemoveActiveTripRequestDTO } from "#/application/dto/MemberDTO";
 

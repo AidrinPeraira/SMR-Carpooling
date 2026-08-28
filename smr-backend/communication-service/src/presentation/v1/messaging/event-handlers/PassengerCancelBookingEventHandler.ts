@@ -1,6 +1,7 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ILogger, PassengerCancelBookingEvent } from "@sharemyride/shared";
-import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/IRemoveActiveTripUseCase";
+import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/members/IRemoveActiveTripUseCase";
+import { IRemoveChatMembersUseCase } from "#/application/interfaces/use-cases/chat/IRemoveChatMembersUseCase";
 
 /**
  * This class implements the event handler that
@@ -11,6 +12,7 @@ export class PassengerCancelBookingEventHandler implements IEventHandler<Passeng
   constructor(
     private readonly _logger: ILogger,
     private readonly _removeActiveTripUseCase: IRemoveActiveTripUseCase,
+    private readonly _removeChatMembersUseCase: IRemoveChatMembersUseCase,
   ) {}
 
   async handle(event: PassengerCancelBookingEvent): Promise<void> {
@@ -25,6 +27,9 @@ export class PassengerCancelBookingEventHandler implements IEventHandler<Passeng
         userId: event.payload.passengerId,
         tripId: event.payload.tripId,
       });
+
+      // Remove from chat
+      await this._removeChatMembersUseCase.execute(event.payload.tripId, event.payload.passengerId);
 
       this._logger.info("Successfully removed active trip from passenger cancel booking event");
     } catch (error: unknown) {

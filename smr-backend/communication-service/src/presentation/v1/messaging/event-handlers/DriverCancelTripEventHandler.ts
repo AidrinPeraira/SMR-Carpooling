@@ -1,6 +1,7 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ILogger, DriverCancelTripEvent } from "@sharemyride/shared";
-import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/IRemoveActiveTripUseCase";
+import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/members/IRemoveActiveTripUseCase";
+import { ICloseChatUseCase } from "#/application/interfaces/use-cases/chat/ICloseChatUseCase";
 
 /**
  * This class implements the event handler that
@@ -11,6 +12,7 @@ export class DriverCancelTripEventHandler implements IEventHandler<DriverCancelT
   constructor(
     private readonly _logger: ILogger,
     private readonly _removeActiveTripUseCase: IRemoveActiveTripUseCase,
+    private readonly _closeChatUseCase: ICloseChatUseCase,
   ) {}
 
   async handle(event: DriverCancelTripEvent): Promise<void> {
@@ -34,6 +36,9 @@ export class DriverCancelTripEventHandler implements IEventHandler<DriverCancelT
           });
         }
       }
+
+      // Close the chat
+      await this._closeChatUseCase.execute(event.payload.tripId);
 
       this._logger.info("Successfully removed active trips for driver and passengers from cancel trip event");
     } catch (error: unknown) {
