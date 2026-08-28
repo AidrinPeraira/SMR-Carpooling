@@ -16,8 +16,6 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
     "docker:build": "docker build --target communication-service-prod -t aidrinperaira/communication-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/communication-service:latest",
     "docker:publish": "pnpm run docker:build && pnpm run docker:push",
