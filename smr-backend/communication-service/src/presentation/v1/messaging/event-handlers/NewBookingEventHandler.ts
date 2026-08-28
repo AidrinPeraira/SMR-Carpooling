@@ -25,12 +25,6 @@ export class NewBookingEventHandler implements IEventHandler<NewBookingEvent> {
         tripId: event.payload.tripId,
       });
 
-      // Add to driver
-      await this._addActiveTripUseCase.execute({
-        userId: event.payload.driverId,
-        tripId: event.payload.tripId,
-      });
-
       this._logger.info("Successfully added active trips from new booking event");
     } catch (error: unknown) {
       this._logger.error("Failed to handle new booking event", {

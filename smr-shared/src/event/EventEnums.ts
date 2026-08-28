@@ -18,4 +18,5 @@ export enum EventName {
   BOOKING_PAYMENT_FAILURE = "booking.payment.failure",
   TRIP_CANCELLED_BY_DRIVER = "trip.cancelled_by_driver",
   BOOKING_CANCELLED_BY_PASSENGER = "booking.cancelled_by_passenger",
+  TRIP_NEW_TRIP = "trip.new_trip",
 }

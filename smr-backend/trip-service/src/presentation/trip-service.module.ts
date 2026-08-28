@@ -113,7 +113,6 @@ const unblockPassengerUseCase = new UnblockPassengerUseCase(
   passengerRepository,
 );
 
-const createTripUseCase = new CreateTripUseCase(tripsRepository);
 const listTripsUseCase = new ListTripsUseCase(tripsRepository);
 const getJourneyDetailsUseCase = new GetJourneyDetailsUseCase(
   tripsRepository,
@@ -209,6 +208,12 @@ const eventBusInstance = new EventBus(
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
   eventDispatcher,
+);
+
+const createTripUseCase = new CreateTripUseCase(
+  tripsRepository,
+  driverRepository,
+  eventBusInstance,
 );
 
 import { DriverAcceptBookingUseCase } from "#/application/use-case/booking/DriverAcceptBookingUseCase";

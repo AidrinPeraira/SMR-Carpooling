@@ -14,3 +14,13 @@ export interface DriverCancelTripEventPayload {
 }
 
 export type DriverCancelTripEvent = DomainEvent<DriverCancelTripEventPayload>;
+
+export interface NewTripEventPayload {
+  tripId: string;
+  driverId: string;
+  driverName: string;
+  driverEmail: string;
+  tripDate: Date;
+}
+
+export type NewTripEvent = DomainEvent<NewTripEventPayload>;

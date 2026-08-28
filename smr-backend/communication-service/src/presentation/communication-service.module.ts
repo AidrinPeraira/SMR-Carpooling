@@ -10,6 +10,9 @@ import { EventBus } from "#/infrastructure/services/EventBus";
 import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handlers/UserSignupEventHandler";
 
 import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/NewBookingEventHandler";
+import { NewTripEventHandler } from "#/presentation/v1/messaging/event-handlers/NewTripEventHandler";
+import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
+import { PassengerCancelBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerCancelBookingEventHandler";
 
 /**
  * Composition Root for the Communication Service.
@@ -39,6 +42,21 @@ const newBookingEventHandler = new NewBookingEventHandler(
   addActiveTripUseCase,
 );
 
+const newTripEventHandler = new NewTripEventHandler(
+  consolaLogger,
+  addActiveTripUseCase,
+);
+
+const driverCancelTripEventHandler = new DriverCancelTripEventHandler(
+  consolaLogger,
+  removeActiveTripUseCase,
+);
+
+const passengerCancelBookingEventHandler = new PassengerCancelBookingEventHandler(
+  consolaLogger,
+  removeActiveTripUseCase,
+);
+
 await eventDispatcher.register(
   EventName.AUTH_USER_SIGNUP,
   userSignupEventHandler,
@@ -47,6 +65,21 @@ await eventDispatcher.register(
 await eventDispatcher.register(
   EventName.BOOKING_NEW_BOOKING,
   newBookingEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.TRIP_NEW_TRIP,
+  newTripEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.TRIP_CANCELLED_BY_DRIVER,
+  driverCancelTripEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.BOOKING_CANCELLED_BY_PASSENGER,
+  passengerCancelBookingEventHandler,
 );
 
 export const eventBus = new EventBus(
