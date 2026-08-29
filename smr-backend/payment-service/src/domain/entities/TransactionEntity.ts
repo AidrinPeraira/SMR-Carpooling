@@ -12,4 +12,7 @@ export interface TransactionEntity {
   transactionCategory: TransactionCategory;
   paymentMethod: PaymentMethod;
   recordId: string;
+  amount: number;
+  createdAt: Date;
 }
+

@@ -1,0 +1,116 @@
+info:
+  name: list-transactions
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:4000/v1/admin/transactions
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "10"
+      type: query
+    - name: search
+      value: ""
+      type: query
+      enabled: false
+    - name: searchFields
+      value: transactionId
+      type: query
+      enabled: false
+    - name: sortField
+      value: createdAt
+      type: query
+      enabled: false
+    - name: sortValue
+      value: desc
+      type: query
+      enabled: false
+    - name: filterField
+      value: paymentMethod
+      type: query
+      enabled: false
+    - name: filterValue
+      value: wallet
+      type: query
+      enabled: false
+  auth: inherit
+
+docs: |
+  ## Admin — List All Transactions
+
+  Returns a paginated list of all financial transactions across the platform.
+  Intended for admin use only. The endpoint supports full text search, single-field
+  filtering, and sorting.
+
+  ### Query Parameters
+
+  | Parameter      | Type     | Required | Description                                                                          |
+  |----------------|----------|----------|--------------------------------------------------------------------------------------|
+  | `page`         | number   | No       | Page number (default: 1)                                                             |
+  | `limit`        | number   | No       | Items per page (default: 10)                                                         |
+  | `search`       | string   | No       | Free-text search term                                                                |
+  | `searchFields` | string[] | No       | Fields to search in. E.g. `transactionId`, `creditor`, `debitor`                    |
+  | `sortField`    | string   | No       | Field to sort by: `transactionId`, `createdAt`, `amount`, `paymentMethod`, etc.     |
+  | `sortValue`    | string   | No       | Sort direction: `asc` or `desc` (default: `asc`)                                    |
+  | `filterField`  | string   | No       | Field to filter on: `paymentMethod`, `transactionType`, `transactionCategory`, etc. |
+  | `filterValue`  | string   | No       | Exact match value for `filterField`                                                  |
+
+  ### Filterable / Sortable Fields
+
+  **filterField options:**
+  - `paymentMethod` — values: `wallet`, `payment_gateway`
+  - `transactionType` — values: `credit`, `debit`
+  - `transactionCategory` — values: `booking_payment`, `refund`, `payout`, `wallet_topup`, `wallet_withdrawal`
+  - `creditor` — user ID or `SYSTEM`
+  - `debitor` — user ID or `SYSTEM`
+  - `recordId` — linked booking/payment record ID
+
+  **sortField options:**
+  - `transactionId`, `createdAt`, `amount`, `paymentMethod`, `transactionType`, `transactionCategory`, `creditor`, `debitor`
+
+  ### Response Shape (success)
+
+  ```json
+  {
+    "success": true,
+    "message": "Transactions fetched successfully",
+    "payload": {
+      "paginationMeta": {
+        "totalItems": 100,
+        "currentPage": 1,
+        "limit": 10,
+        "totalPages": 10
+      },
+      "data": [
+        {
+          "transaction_id": "txn_abc123",
+          "transaction_date": "2026-08-01T10:00:00.000Z",
+          "transaction_amount": 250.00,
+          "creditor_id": null,
+          "creditor_name": "SYSTEM",
+          "debitor_id": "user_xyz789",
+          "debitor_name": "user_xyz789",
+          "payment_method": "payment_gateway",
+          "transaction_type": "debit",
+          "transaction_category": "booking_payment",
+          "record_id": "pay_rec_001"
+        }
+      ]
+    }
+  }
+  ```
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

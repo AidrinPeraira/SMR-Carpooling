@@ -9,6 +9,7 @@ export * from "./admin/AdminConfigurationsDTO";
 export * from "./admin/AdminApplicationsDTO";
 export * from "./admin/AdminTripsDTO";
 export * from "./admin/AdminBookingsDTO";
+export * from "./admin/AdminTransactionsDTO";
 export * from "./TripDTO";
 export * from "./BookingDTO";
 export * from "./PaymentDTO";

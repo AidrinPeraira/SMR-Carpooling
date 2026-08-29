@@ -1,10 +1,15 @@
 import { ITransactionRepository } from "#/application/interfaces/repository/ITransactionRepository";
+import { AdminListTransactionsQueryDTO, AdminListTransactionsResultDTO } from "#/application/dto/admin/AdminPaymentsDTO";
 import { TransactionEntity } from "#/domain/entities/TransactionEntity";
 import {
   TransactionDoc,
   TransactionModel,
 } from "#/infrastructure/database/models/MongoTransactionModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
+import {
+  PaginatedPayload,
+  SortOrder,
+} from "@sharemyride/shared";
 
 export class MongoTransactionRepository
   extends MongoBaseRepository<TransactionEntity, TransactionDoc>
@@ -23,6 +28,76 @@ export class MongoTransactionRepository
       transactionCategory: data.transactionCategory,
       paymentMethod: data.paymentMethod,
       recordId: data.recordId,
+      amount: data.amount,
+      createdAt: data.createdAt,
+    };
+  }
+
+  /**
+   * Fetches all platform transactions for admin use with support for
+   * text search across relevant fields, single-field filtering, and sorting.
+   * Returns a paginated result set.
+   *
+   * @param query - AdminListTransactionsQueryDTO containing pagination, search, filter and sort parameters
+   * @returns Paginated list of AdminListTransactionsResultDTO
+   */
+  async findAllPaginated(
+    query: AdminListTransactionsQueryDTO,
+  ): Promise<PaginatedPayload<AdminListTransactionsResultDTO[]>> {
+    const queryObj: Record<string, any> = {};
+
+    if (query.search && query.searchFields && query.searchFields.length > 0) {
+      queryObj.$or = query.searchFields.map((field) => ({
+        [field]: { $regex: query.search, $options: "i" },
+      }));
+    }
+
+    if (query.filterField && query.filterValue !== undefined) {
+      queryObj[query.filterField as string] = query.filterValue;
+    }
+
+    const mongoCursor = TransactionModel.find(queryObj);
+
+    if (query.sortField && query.sortValue) {
+      mongoCursor.sort({
+        [query.sortField.toString()]: query.sortValue === SortOrder.ASC ? 1 : -1,
+      });
+    } else {
+      // Default: most recent first
+      mongoCursor.sort({ createdAt: -1 });
+    }
+
+    const skip = (query.page - 1) * query.limit;
+    mongoCursor.skip(skip).limit(query.limit);
+
+    const [docs, count] = await Promise.all([
+      mongoCursor.lean().exec(),
+      TransactionModel.countDocuments(queryObj).exec(),
+    ]);
+
+    const data: AdminListTransactionsResultDTO[] = docs.map((doc) => ({
+      transactionId: doc.transactionId,
+      transactionDate: doc.createdAt,
+      transactionAmount: doc.amount,
+      creditorId: doc.creditor === "SYSTEM" ? null : doc.creditor,
+      creditorName: doc.creditor,
+      debitorId: doc.debitor === "SYSTEM" ? null : doc.debitor,
+      debitorName: doc.debitor,
+      paymentMethod: doc.paymentMethod,
+      transactionType: doc.transactionType,
+      transactionCategory: doc.transactionCategory,
+      recordId: doc.recordId,
+    }));
+
+    return {
+      data,
+      paginationMeta: {
+        totalItems: count,
+        currentPage: query.page,
+        limit: query.limit,
+        totalPages: Math.ceil(count / query.limit) || 1,
+      },
     };
   }
 }
+
