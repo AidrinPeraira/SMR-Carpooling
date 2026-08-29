@@ -17,10 +17,12 @@ export class GetApplicationsUseCase implements IGetApplicationsUseCase {
    *
    * @param userId Id of the user
    */
-  async execute(userId: string): Promise<GetApplicationsResultDTO[]> {
+  async execute(userId: string, search?: string): Promise<GetApplicationsResultDTO[]> {
     const applications = await this._applicationRepository.find({
       filterField: "userId",
       filterValue: userId,
+      search: search,
+      searchFields: ["applicationId", "applicationType"],
       page: 1,
       limit: 100,
     });

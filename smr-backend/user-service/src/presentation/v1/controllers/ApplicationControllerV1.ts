@@ -238,9 +238,10 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
   async getApplications(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
+    const search = req.query.search as string;
     this._logger.info("Getting applications for userId: ", userId);
 
-    const list = await this._getApplicationsUseCase.execute(userId);
+    const list = await this._getApplicationsUseCase.execute(userId, search);
     const result = list.map((item) =>
       ApplicationMapper.toGetApplicationsSummaryResult(item, userId),
     );
