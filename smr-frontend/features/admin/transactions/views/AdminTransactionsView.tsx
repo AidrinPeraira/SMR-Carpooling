@@ -111,11 +111,6 @@ export default function AdminTransactionsView() {
       {
         headerName: "Transaction ID",
         fieldName: "transaction_id",
-        customRender: (value) => {
-          // Truncate if it's too long to save space, but it's typically fine.
-          const valStr = String(value);
-          return <span>{valStr.length > 15 ? valStr.substring(0, 15) + "..." : valStr}</span>;
-        }
       },
       {
         headerName: "Date",
@@ -135,7 +130,7 @@ export default function AdminTransactionsView() {
           const formatted = Number(value).toFixed(2);
           const isCredit = row.transaction_type === TransactionType.CREDIT;
           return <span className={isCredit ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-            {isCredit ? "+" : "-"}${formatted}
+            {isCredit ? "+" : "-"}₹{formatted}
           </span>;
         },
       },

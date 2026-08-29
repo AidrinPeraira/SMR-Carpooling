@@ -47,9 +47,46 @@ export class MongoTransactionRepository
     const queryObj: Record<string, any> = {};
 
     if (query.search && query.searchFields && query.searchFields.length > 0) {
-      queryObj.$or = query.searchFields.map((field) => ({
-        [field]: { $regex: query.search, $options: "i" },
-      }));
+      const searchConditions: any[] = [];
+      const hasCustomerField =
+        query.searchFields.includes("creditor" as any) ||
+        query.searchFields.includes("debitor" as any);
+
+      let matchingCustomerIds: string[] = [];
+      if (hasCustomerField) {
+        const { CustomerModel } = await import(
+          "#/infrastructure/database/models/MongoCustomerModel"
+        );
+        const matchingCustomers = await CustomerModel.find({
+          $or: [
+            { firstName: { $regex: query.search, $options: "i" } },
+            { lastName: { $regex: query.search, $options: "i" } },
+          ],
+        })
+          .select("customerId")
+          .lean()
+          .exec();
+        matchingCustomerIds = matchingCustomers.map((c) => c.customerId);
+      }
+
+      for (const field of query.searchFields) {
+        if ((field as string) === "creditor" || (field as string) === "debitor") {
+          // Search by name match (resolved to IDs) or by direct ID match
+          const orConditionsForField: any[] = [
+            { [field]: { $regex: query.search, $options: "i" } },
+          ];
+          if (matchingCustomerIds.length > 0) {
+            orConditionsForField.push({ [field]: { $in: matchingCustomerIds } });
+          }
+          searchConditions.push({ $or: orConditionsForField });
+        } else {
+          searchConditions.push({ [field]: { $regex: query.search, $options: "i" } });
+        }
+      }
+
+      if (searchConditions.length > 0) {
+        queryObj.$or = searchConditions;
+      }
     }
 
     if (query.filterField && query.filterValue !== undefined) {

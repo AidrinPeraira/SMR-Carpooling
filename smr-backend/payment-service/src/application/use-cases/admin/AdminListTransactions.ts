@@ -21,6 +21,11 @@ export class AdminListTransactionsUseCase implements IAdminListTransactionsUseCa
   async execute(
     query: AdminListTransactionsQueryDTO,
   ): Promise<PaginatedPayload<AdminListTransactionsResultDTO[]>> {
+    // If a search query is provided but no explicit fields are selected, default to these key fields
+    if (query.search && (!query.searchFields || query.searchFields.length === 0)) {
+      query.searchFields = ["transactionId", "creditor", "debitor"] as any;
+    }
+
     return this.transactionsRepository.findAllPaginated(query);
   }
 }
