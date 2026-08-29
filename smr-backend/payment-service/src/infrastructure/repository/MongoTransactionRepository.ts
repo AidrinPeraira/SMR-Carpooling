@@ -75,14 +75,34 @@ export class MongoTransactionRepository
       TransactionModel.countDocuments(queryObj).exec(),
     ]);
 
+    // Extract unique customer IDs
+    const uniqueCustomerIds = new Set<string>();
+    docs.forEach(doc => {
+      if (doc.creditor && doc.creditor !== "SYSTEM") uniqueCustomerIds.add(doc.creditor);
+      if (doc.debitor && doc.debitor !== "SYSTEM") uniqueCustomerIds.add(doc.debitor);
+    });
+
+    // We can require the model here or at top. It's safer to import at top. Let's assume it's imported.
+    const { CustomerModel } = await import("#/infrastructure/database/models/MongoCustomerModel");
+    
+    // Fetch names
+    const customers = await CustomerModel.find({
+      customerId: { $in: Array.from(uniqueCustomerIds) }
+    }).lean().exec();
+
+    const customerMap = new Map<string, string>();
+    customers.forEach(c => {
+      customerMap.set(c.customerId, `${c.firstName} ${c.lastName}`.trim());
+    });
+
     const data: AdminListTransactionsResultDTO[] = docs.map((doc) => ({
       transactionId: doc.transactionId,
       transactionDate: doc.createdAt,
       transactionAmount: doc.amount,
       creditorId: doc.creditor === "SYSTEM" ? null : doc.creditor,
-      creditorName: doc.creditor,
+      creditorName: doc.creditor === "SYSTEM" ? "SYSTEM" : (customerMap.get(doc.creditor) || doc.creditor),
       debitorId: doc.debitor === "SYSTEM" ? null : doc.debitor,
-      debitorName: doc.debitor,
+      debitorName: doc.debitor === "SYSTEM" ? "SYSTEM" : (customerMap.get(doc.debitor) || doc.debitor),
       paymentMethod: doc.paymentMethod,
       transactionType: doc.transactionType,
       transactionCategory: doc.transactionCategory,
