@@ -8,6 +8,6 @@
       "&#/*": ["./tests/*"]
     }
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.mjs"],
   "exclude": ["node_modules"]
 }

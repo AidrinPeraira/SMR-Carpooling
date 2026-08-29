@@ -1,6 +1,6 @@
 import { CreateNewMemberRequestDTO } from "#/application/dto/MemberDTO";
-import { IMemberRepository } from "#/application/interfaces/repository/IUserRepository";
-import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/ICreateMemberUseCase";
+import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
+import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/members/ICreateMemberUseCase";
 
 /**
  * This class implements the use case that creates
@@ -17,6 +17,7 @@ export class CreateMemberUseCase implements ICreateMemberUseCase {
       firstName: dto.firstName,
       lastName: dto.lastName,
       memberId: dto.userId,
+      activeTrips: [],
       createdAt: now,
       updatedAt: now,
     });

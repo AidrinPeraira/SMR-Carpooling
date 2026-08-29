@@ -7,6 +7,8 @@ import QueryProvider from "@/components/Provider/QueryProvider";
 import { ReactNode } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapProvider } from "@/features/map/context/MapProvider";
+import { VoiceCallProvider } from "@/features/voice-call/context/VoiceCallContext";
+import { CallModals } from "@/features/voice-call/components/CallModals";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,9 +46,12 @@ export default function RootLayout({
         <QueryProvider>
           <ToastProvider>
             <MapProvider>
-              <QueryToastListener />
-              {children}
-              {modal}
+              <VoiceCallProvider>
+                <QueryToastListener />
+                {children}
+                {modal}
+                <CallModals />
+              </VoiceCallProvider>
             </MapProvider>
           </ToastProvider>
         </QueryProvider>

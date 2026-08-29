@@ -135,6 +135,8 @@ export class BookingMapper {
   ): PassengerBookingDetailsDTO {
     return {
       booking_id: dto.bookingId,
+      trip_id: dto.tripId,
+      driver_id: dto.driverId,
       driver_name: dto.driverName,
       trip_date: dto.tripDate instanceof Date ? dto.tripDate.toISOString() : String(dto.tripDate),
       trip_vehicle: dto.tripVehicle,

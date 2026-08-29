@@ -7,14 +7,17 @@ import {
   ShieldCheck,
   XCircle,
   MessageSquare,
-  Phone,
 } from "lucide-react";
 import { OnlinePaymentButton } from "./OnlinePaymentButton";
 import { WalletPaymentButton } from "./WalletPaymentButton";
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
+import { CallButton } from "@/features/voice-call/components/CallButton";
 
 interface BookingDetailsActionCardProps {
   bookingId: string;
+  tripId?: string;
+  driverId?: string;
   amount: number;
   status: string;
   onWithdraw: () => Promise<void>;
@@ -25,6 +28,8 @@ interface BookingDetailsActionCardProps {
 
 export function BookingDetailsActionCard({
   bookingId,
+  tripId,
+  driverId,
   amount,
   status,
   onWithdraw,
@@ -137,22 +142,27 @@ export function BookingDetailsActionCard({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 w-full pt-2">
-            <Button
-              variant="secondary"
-              className="w-full sm:flex-1 text-xs py-2 font-medium flex items-center justify-center gap-2"
-              onClick={() => alert("Chat feature coming soon!")}
+            <Link
+              href={`/passenger/bookings/${bookingId}/chat${tripId ? `?tripId=${tripId}` : ''}`}
+              className="w-full sm:flex-1"
             >
-              <MessageSquare className="w-4 h-4" />
-              Chat
-            </Button>
-            <Button
-              variant="secondary"
-              className="w-full sm:flex-1 text-xs py-2 font-medium flex items-center justify-center gap-2"
-              onClick={() => alert("Call feature coming soon!")}
-            >
-              <Phone className="w-4 h-4" />
-              Call
-            </Button>
+              <Button
+                variant="secondary"
+                className="w-full text-xs py-2 font-medium flex items-center justify-center gap-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Chat
+              </Button>
+            </Link>
+            {tripId && driverId && (
+              <CallButton
+                tripId={tripId}
+                receiverId={driverId}
+                variant="secondary"
+                className="w-full sm:flex-1 text-xs py-2 font-medium"
+                showText
+              />
+            )}
           </div>
 
           <Button

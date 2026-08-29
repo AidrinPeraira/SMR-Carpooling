@@ -13,4 +13,4 @@ export * from "./TripDTO";
 export * from "./BookingDTO";
 export * from "./PaymentDTO";
 export * from "./WalletDTO";
-
+export * from "./ChatDTO";

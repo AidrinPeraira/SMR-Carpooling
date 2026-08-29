@@ -1,6 +1,6 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
-import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/ICreateMemberUseCase";
+import { ICreateMemberUseCase } from "#/application/interfaces/use-cases/members/ICreateMemberUseCase";
 
 /**
  * This class implemnts the event handler that

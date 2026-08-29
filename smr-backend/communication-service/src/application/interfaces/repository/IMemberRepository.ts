@@ -4,5 +4,7 @@ import { MemberEntity } from "#/domain/entities/MemeberEntity";
 /**
  * This is the repository interface for users' data
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface IMemberRepository extends IBaseRepository<MemberEntity> {}
+export interface IMemberRepository extends IBaseRepository<MemberEntity> {
+  addActiveTrip(userId: string, tripId: string): Promise<void>;
+  removeActiveTrip(userId: string, tripId: string): Promise<void>;
+}
