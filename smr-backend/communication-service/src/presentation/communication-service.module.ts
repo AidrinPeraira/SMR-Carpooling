@@ -19,6 +19,7 @@ import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handle
 import { NewTripEventHandler } from "#/presentation/v1/messaging/event-handlers/NewTripEventHandler";
 import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
 import { PassengerCancelBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerCancelBookingEventHandler";
+import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 
 /**
  * Composition Root for the Communication Service.
@@ -29,12 +30,19 @@ const consolaLogger = new ConsolaLogger();
 // Repositories
 const memberRepository = new MemberRespository(MemberModel);
 const chatRepository = new ChatRepository(ChatModel);
+
+//infra services
+const uidGenereator = new CryptoUIDService();
+
 // Use Cases
 const createMemberUseCase = new CreateMemberUseCase(memberRepository);
 const addActiveTripUseCase = new AddActiveTripUseCase(memberRepository);
 const removeActiveTripUseCase = new RemoveActiveTripUseCase(memberRepository);
 
-const createNewChatUseCase = new CreateNewChatUseCase(chatRepository);
+const createNewChatUseCase = new CreateNewChatUseCase(
+  chatRepository,
+  uidGenereator,
+);
 const addChatMemberUseCase = new AddChatMemberUseCase(chatRepository);
 const removeChatMembersUseCase = new RemoveChatMembersUseCase(chatRepository);
 const closeChatUseCase = new CloseChatUseCase(chatRepository);
@@ -67,11 +75,12 @@ const driverCancelTripEventHandler = new DriverCancelTripEventHandler(
   closeChatUseCase,
 );
 
-const passengerCancelBookingEventHandler = new PassengerCancelBookingEventHandler(
-  consolaLogger,
-  removeActiveTripUseCase,
-  removeChatMembersUseCase,
-);
+const passengerCancelBookingEventHandler =
+  new PassengerCancelBookingEventHandler(
+    consolaLogger,
+    removeActiveTripUseCase,
+    removeChatMembersUseCase,
+  );
 
 await eventDispatcher.register(
   EventName.AUTH_USER_SIGNUP,
@@ -83,10 +92,7 @@ await eventDispatcher.register(
   newBookingEventHandler,
 );
 
-await eventDispatcher.register(
-  EventName.TRIP_NEW_TRIP,
-  newTripEventHandler,
-);
+await eventDispatcher.register(EventName.TRIP_NEW_TRIP, newTripEventHandler);
 
 await eventDispatcher.register(
   EventName.TRIP_CANCELLED_BY_DRIVER,

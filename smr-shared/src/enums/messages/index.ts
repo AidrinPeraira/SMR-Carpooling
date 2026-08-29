@@ -6,3 +6,4 @@ export * from "./ConfigMessages";
 export * from "./ApplicationMessages";
 export * from "./PaymentMessages";
 export * from "./ChatMessages";
+export * from "./CallMessages";
