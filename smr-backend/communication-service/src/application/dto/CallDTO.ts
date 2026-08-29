@@ -11,3 +11,10 @@ export interface AcceptCallRequestDTO {
 export interface RejectCallRequestDTO {
   callSessionId: string;
 }
+
+export interface RelayCallSignalRequestDTO {
+  callSessionId: string;
+  senderUserId: string;
+  signalType: "sdp_offer" | "sdp_answer" | "ice_candidate";
+  signalData: any;
+}

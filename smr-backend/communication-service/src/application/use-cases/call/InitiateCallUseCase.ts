@@ -55,28 +55,18 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
     }
 
     // Check if receiver is already in an active or ringing call
-    const receiverActiveCalls = await this._callSessionRepository.find({
-      filters: {
-        receiverId: receiverId,
-        callStatus: CallStatus.ACTIVE_CALL,
-      },
+    const receiverCalls = await this._callSessionRepository.find({
+      filterField: "receiverId",
+      filterValue: receiverId,
       page: 1,
-      limit: 1,
+      limit: 10,
     });
 
-    const receiverRingingCalls = await this._callSessionRepository.find({
-      filters: {
-        receiverId: receiverId,
-        callStatus: CallStatus.RINGING,
-      },
-      page: 1,
-      limit: 1,
-    });
+    const isBusy = receiverCalls.data?.some(
+      (c) => c.callStatus === CallStatus.ACTIVE_CALL || c.callStatus === CallStatus.RINGING
+    );
 
-    if (
-      (receiverActiveCalls.data && receiverActiveCalls.data.length > 0) ||
-      (receiverRingingCalls.data && receiverRingingCalls.data.length > 0)
-    ) {
+    if (isBusy) {
       await this._socketGateway.emitToUser(callerId, "call-busy", {
         message: "Receiver is currently busy on another call.",
       });

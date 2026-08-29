@@ -9,6 +9,8 @@ import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { ChatModel } from "#/infrastructure/database/models/MongoChatModel";
 import { ChatRepository } from "#/infrastructure/repository/ChatRepository";
+import { CallSessionModel } from "#/infrastructure/database/models/MongoCallSessionModel";
+import { CallSessionRepository } from "#/infrastructure/repository/CallSessionRepository";
 import { CreateNewChatUseCase } from "#/application/use-cases/chat/CreateNewChatUseCase";
 import { AddChatMemberUseCase } from "#/application/use-cases/chat/AddChatMemberUseCase";
 import { RemoveChatMembersUseCase } from "#/application/use-cases/chat/RemoveChatMembersUseCase";
@@ -30,6 +32,7 @@ const consolaLogger = new ConsolaLogger();
 // Repositories
 const memberRepository = new MemberRespository(MemberModel);
 const chatRepository = new ChatRepository(ChatModel);
+const callSessionRepository = new CallSessionRepository(CallSessionModel);
 
 //infra services
 const uidGenereator = new CryptoUIDService();
@@ -122,4 +125,6 @@ export {
   closeChatUseCase,
   memberRepository,
   chatRepository,
+  callSessionRepository,
+  uidGenereator,
 };

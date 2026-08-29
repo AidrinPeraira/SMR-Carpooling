@@ -7,5 +7,5 @@ export interface CallSessionEntity {
   receiverId: string;
   callStatus: CallStatus;
   joinedAt: Date;
-  leftAt: Date;
+  leftAt?: Date;
 }

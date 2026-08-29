@@ -1,3 +1,5 @@
+import { RelayCallSignalRequestDTO } from "#/application/dto/CallDTO";
+
 export interface IRelayCallSignalUseCase {
-  execute(userId: string): Promise<void>;
+  execute(dto: RelayCallSignalRequestDTO): Promise<void>;
 }

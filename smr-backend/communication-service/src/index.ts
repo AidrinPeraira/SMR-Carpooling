@@ -11,7 +11,13 @@ import { HandleUserDisconnectUseCase } from "#/application/use-cases/chat-messag
 import { JoinChatUseCase } from "#/application/use-cases/chat-messaging/JoinChatUseCase";
 import { SendMessageUseCase } from "#/application/use-cases/chat-messaging/SendMessageUseCase";
 import { SyncChatHistoryUseCase } from "#/application/use-cases/chat-messaging/SyncChatHistoryUseCase";
+import { InitiateCallUseCase } from "#/application/use-cases/call/InitiateCallUseCase";
+import { AcceptCallUseCase } from "#/application/use-cases/call/AcceptCallUseCase";
+import { RejectCallUseCase } from "#/application/use-cases/call/RejectCallUseCase";
+import { EndCallUseCase } from "#/application/use-cases/call/EndCallUseCase";
+import { RelayCallSignalUseCase } from "#/application/use-cases/call/RelayCallSignalUseCase";
 import { createSocketServer } from "#/presentation/v1/sockets/CreateSocketServer";
+import { callSessionRepository, uidGenereator } from "#/presentation/communication-service.module";
 import { Server } from "socket.io";
 import { SocketIOGateway } from "#/infrastructure/services/SocketIOGateway";
 
@@ -45,6 +51,12 @@ async function startServer(): Promise<void> {
   const sendMessageUseCase = new SendMessageUseCase(chatRepository, memberRepository, messageRepository, socketGateway);
   const syncChatHistoryUseCase = new SyncChatHistoryUseCase(chatRepository, messageRepository);
 
+  const initiateCallUseCase = new InitiateCallUseCase(memberRepository, callSessionRepository, socketGateway, uidGenereator);
+  const acceptCallUseCase = new AcceptCallUseCase(callSessionRepository, socketGateway);
+  const rejectCallUseCase = new RejectCallUseCase(callSessionRepository, socketGateway);
+  const endCallUseCase = new EndCallUseCase(callSessionRepository, socketGateway);
+  const relayCallSignalUseCase = new RelayCallSignalUseCase(callSessionRepository, socketGateway);
+
   createSocketServer(
     io,
     socketGateway,
@@ -52,7 +64,12 @@ async function startServer(): Promise<void> {
     handleUserDisconnectUseCase,
     joinChatUseCase,
     sendMessageUseCase,
-    syncChatHistoryUseCase
+    syncChatHistoryUseCase,
+    initiateCallUseCase,
+    acceptCallUseCase,
+    rejectCallUseCase,
+    endCallUseCase,
+    relayCallSignalUseCase
   );
 }
 
