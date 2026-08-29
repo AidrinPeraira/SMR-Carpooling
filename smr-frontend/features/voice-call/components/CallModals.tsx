@@ -8,9 +8,9 @@ import { useState } from "react";
 
 // ─── Incoming Call Overlay ──────────────────────────────────────────────────
 function IncomingCallOverlay() {
-  const { incomingCall, acceptCall, rejectCall } = useVoiceCall();
+  const { incomingCall, callState, acceptCall, rejectCall } = useVoiceCall();
 
-  if (!incomingCall) return null;
+  if (!incomingCall || callState !== "RINGING") return null;
 
   return createPortal(
     <div

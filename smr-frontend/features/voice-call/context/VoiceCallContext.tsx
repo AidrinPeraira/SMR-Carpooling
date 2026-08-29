@@ -81,6 +81,11 @@ export function VoiceCallProvider({ children }: { children: React.ReactNode }) {
       currentCallSessionId.current = payload.callSessionId;
     });
 
+    // ─── Call Initiated (Caller only) ─────────────────────────────────────────
+    socket.onCallInitiated(({ callSessionId }) => {
+      currentCallSessionId.current = callSessionId;
+    });
+
     // ─── Call Accepted ───────────────────────────────────────────────────────
     // Backend sends this to BOTH caller and receiver.
     // Only the caller (role = "caller") should now create & send the SDP offer.

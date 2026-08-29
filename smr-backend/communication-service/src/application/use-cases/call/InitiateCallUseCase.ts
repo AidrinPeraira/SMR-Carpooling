@@ -100,5 +100,9 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
       callerId,
       tripId,
     });
+
+    await this._socketGateway.emitToUser(callerId, "call-initiated", {
+      callSessionId,
+    });
   }
 }

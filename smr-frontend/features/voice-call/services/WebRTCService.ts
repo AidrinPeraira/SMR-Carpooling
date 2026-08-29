@@ -1,6 +1,7 @@
 export class WebRTCService {
   private peerConnection: RTCPeerConnection | null = null;
   private localStream: MediaStream | null = null;
+  private iceCandidateQueue: RTCIceCandidateInit[] = [];
 
   constructor(
     private readonly onIceCandidate: (candidate: RTCIceCandidate) => void,
@@ -54,6 +55,7 @@ export class WebRTCService {
   async handleOffer(offer: unknown): Promise<RTCSessionDescriptionInit> {
     if (!this.peerConnection) this.createPeerConnection();
     await this.peerConnection!.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
+    await this.processIceCandidateQueue();
     const answer = await this.peerConnection!.createAnswer();
     await this.peerConnection!.setLocalDescription(answer);
     return answer;
@@ -62,12 +64,28 @@ export class WebRTCService {
   async handleAnswer(answer: unknown): Promise<void> {
     if (this.peerConnection) {
       await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer as RTCSessionDescriptionInit));
+      await this.processIceCandidateQueue();
     }
   }
 
   async handleIceCandidate(candidateInit: unknown): Promise<void> {
-    if (this.peerConnection) {
+    if (this.peerConnection?.remoteDescription) {
       await this.peerConnection.addIceCandidate(new RTCIceCandidate(candidateInit as RTCIceCandidateInit));
+    } else {
+      this.iceCandidateQueue.push(candidateInit as RTCIceCandidateInit);
+    }
+  }
+
+  private async processIceCandidateQueue() {
+    if (this.peerConnection?.remoteDescription) {
+      for (const candidate of this.iceCandidateQueue) {
+        try {
+          await this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.error("Error adding queued ICE candidate", e);
+        }
+      }
+      this.iceCandidateQueue = [];
     }
   }
 
@@ -80,5 +98,6 @@ export class WebRTCService {
       this.peerConnection.close();
       this.peerConnection = null;
     }
+    this.iceCandidateQueue = [];
   }
 }

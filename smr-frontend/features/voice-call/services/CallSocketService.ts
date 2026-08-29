@@ -65,6 +65,10 @@ export class CallSocketService {
     if (this.socket) this.socket.on("call-incoming", callback);
   }
 
+  onCallInitiated(callback: (payload: { callSessionId: string }) => void): void {
+    if (this.socket) this.socket.on("call-initiated", callback);
+  }
+
   onCallAccepted(callback: (payload: { callSessionId: string; receiverId?: string; callerId?: string }) => void): void {
     if (this.socket) this.socket.on("call-accepted", callback);
   }
@@ -92,6 +96,7 @@ export class CallSocketService {
   offAll(): void {
     if (this.socket) {
       this.socket.removeAllListeners("call-incoming");
+      this.socket.removeAllListeners("call-initiated");
       this.socket.removeAllListeners("call-accepted");
       this.socket.removeAllListeners("call-rejected");
       this.socket.removeAllListeners("call-ended");
