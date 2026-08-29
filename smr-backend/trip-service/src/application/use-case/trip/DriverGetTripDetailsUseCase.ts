@@ -65,6 +65,7 @@ export class DriverGetTripDetailsUseCase
       tripStatus: tripDetails.tripStatus,
       tripBookings: bookingDetails.map((b) => ({
         bookingId: b.bookingId,
+        passengerId: (b as any).passengerId || b.passengerId,
         passengerName: b.passengerName || "Passenger",
         bookingStatus: b.status,
         seatCount: b.seatCount,

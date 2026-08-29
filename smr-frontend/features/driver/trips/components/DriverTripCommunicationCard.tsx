@@ -1,11 +1,13 @@
 "use client";
 
 import { Button, Card } from "@sharemyride/ui";
-import { MessageSquare, Phone } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import Link from "next/link";
+import { CallButton } from "@/features/voice-call/components/CallButton";
 
 interface Booking {
   booking_id: string;
+  passenger_id: string;
   passenger_name: string;
   booking_status: string;
 }
@@ -60,14 +62,13 @@ export function DriverTripCommunicationCard({
                 <span className="text-sm font-medium text-content-primary truncate mr-2">
                   {booking.passenger_name}
                 </span>
-                <Button
+                <CallButton
+                  tripId={tripId}
+                  receiverId={booking.passenger_id}
                   variant="secondary"
-                  className="text-xs py-1 px-3 flex items-center gap-1.5 shrink-0"
-                  onClick={() => alert(`Calling ${booking.passenger_name}...`)}
-                >
-                  <Phone className="w-3 h-3" />
-                  Call
-                </Button>
+                  className="text-xs py-1 px-3 shrink-0"
+                  showText
+                />
               </div>
             ))}
           </div>

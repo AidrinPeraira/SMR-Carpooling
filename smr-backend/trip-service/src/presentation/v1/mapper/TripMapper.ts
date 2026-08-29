@@ -184,6 +184,7 @@ export class TripMapper {
       trip_status: dto.tripStatus,
       trip_bookings: dto.tripBookings.map((b) => ({
         booking_id: b.bookingId,
+        passenger_id: b.passengerId,
         passenger_name: b.passengerName,
         booking_status: b.bookingStatus,
         seat_count: b.seatCount,

@@ -68,6 +68,7 @@ export interface DriverTripItemDTO {
 
 export interface DriverTripBookingDetailsDTO {
   booking_id: string;
+  passenger_id: string;
   passenger_name: string;
   booking_status: BookingStatus;
   seat_count: number;

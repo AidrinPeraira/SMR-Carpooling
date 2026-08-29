@@ -352,6 +352,7 @@ export function PassengerBookingDetailsView({
             <BookingDetailsActionCard
               bookingId={booking.booking_id}
               tripId={booking.trip_id}
+              driverId={booking.driver_id}
               amount={booking.total_price}
               status={booking.status}
               onWithdraw={handleWithdraw}

@@ -2,18 +2,26 @@ import { IRejectCallUseCase } from "#/application/interfaces/use-cases/call/IRej
 import { RejectCallRequestDTO } from "#/application/dto/CallDTO";
 import { ICallSessionRepository } from "#/application/interfaces/repository/ICallSessionRepository";
 import { ISocketGateway } from "#/application/interfaces/services/ISocketGateway";
-import { CallStatus, ApplicationError, ErrorCode, HttpStatusCodes, ErrorDetails, CallErrorMessage } from "@sharemyride/shared";
+import {
+  CallStatus,
+  ApplicationError,
+  ErrorCode,
+  HttpStatusCodes,
+  ErrorDetails,
+  CallErrorMessage,
+} from "@sharemyride/shared";
 
 export class RejectCallUseCase implements IRejectCallUseCase {
   constructor(
     private readonly _callSessionRepository: ICallSessionRepository,
-    private readonly _socketGateway: ISocketGateway
+    private readonly _socketGateway: ISocketGateway,
   ) {}
 
   async execute(dto: RejectCallRequestDTO): Promise<void> {
     const { callSessionId } = dto;
 
-    const session = await this._callSessionRepository.findByCustomId(callSessionId);
+    const session =
+      await this._callSessionRepository.findByCustomId(callSessionId);
     if (!session) {
       throw new ApplicationError(
         CallErrorMessage.CALL_SESSION_NOT_FOUND,
@@ -23,7 +31,7 @@ export class RejectCallUseCase implements IRejectCallUseCase {
         {
           location: "RejectCallUseCase",
           description: `Call session not found for id: ${callSessionId}`,
-        }
+        },
       );
     }
 
@@ -36,7 +44,7 @@ export class RejectCallUseCase implements IRejectCallUseCase {
         {
           location: "RejectCallUseCase",
           description: `Cannot reject a call that is not ringing: ${callSessionId}`,
-        }
+        },
       );
     }
 

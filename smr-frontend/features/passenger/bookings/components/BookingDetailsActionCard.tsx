@@ -7,33 +7,35 @@ import {
   ShieldCheck,
   XCircle,
   MessageSquare,
-  Phone,
 } from "lucide-react";
 import { OnlinePaymentButton } from "./OnlinePaymentButton";
 import { WalletPaymentButton } from "./WalletPaymentButton";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { CallButton } from "@/features/voice-call/components/CallButton";
 
 interface BookingDetailsActionCardProps {
   bookingId: string;
+  tripId?: string;
+  driverId?: string;
   amount: number;
   status: string;
   onWithdraw: () => Promise<void>;
   isWithdrawing: boolean;
   onCancel?: () => Promise<void>;
   isCancelling?: boolean;
-  tripId?: string;
 }
 
 export function BookingDetailsActionCard({
   bookingId,
+  tripId,
+  driverId,
   amount,
   status,
   onWithdraw,
   isWithdrawing,
   onCancel,
   isCancelling = false,
-  tripId,
 }: BookingDetailsActionCardProps) {
   const queryClient = useQueryClient();
   const normalizedStatus = status.toLowerCase();
@@ -152,14 +154,15 @@ export function BookingDetailsActionCard({
                 Chat
               </Button>
             </Link>
-            <Button
-              variant="secondary"
-              className="w-full sm:flex-1 text-xs py-2 font-medium flex items-center justify-center gap-2"
-              onClick={() => alert("Call feature coming soon!")}
-            >
-              <Phone className="w-4 h-4" />
-              Call
-            </Button>
+            {tripId && driverId && (
+              <CallButton
+                tripId={tripId}
+                receiverId={driverId}
+                variant="secondary"
+                className="w-full sm:flex-1 text-xs py-2 font-medium"
+                showText
+              />
+            )}
           </div>
 
           <Button

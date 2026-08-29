@@ -77,6 +77,7 @@ export class GetPassengerBookingDetailsUseCase
     return {
       bookingId: booking.bookingId,
       tripId: trip.tripId,
+      driverId: driver ? driver.driverId : "",
       driverName: driver
         ? `${driver.firstName} ${driver.lastName}`.trim()
         : "Driver",

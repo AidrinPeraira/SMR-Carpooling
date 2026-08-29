@@ -25,6 +25,7 @@ export interface DriverListTripsResponseDTO {
 
 export interface BookingDetails {
   bookingId: string;
+  passengerId: string;
   passengerName: string;
   bookingStatus: BookingStatus;
   seatCount: number;

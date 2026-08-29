@@ -4,14 +4,21 @@ import { IMemberRepository } from "#/application/interfaces/repository/IMemberRe
 import { ICallSessionRepository } from "#/application/interfaces/repository/ICallSessionRepository";
 import { ISocketGateway } from "#/application/interfaces/services/ISocketGateway";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
-import { CallStatus, ApplicationError, ErrorCode, HttpStatusCodes, ErrorDetails, CallErrorMessage } from "@sharemyride/shared";
+import {
+  CallStatus,
+  ApplicationError,
+  ErrorCode,
+  HttpStatusCodes,
+  ErrorDetails,
+  CallErrorMessage,
+} from "@sharemyride/shared";
 
 export class InitiateCallUseCase implements IInitiateCallUseCase {
   constructor(
     private readonly _memberRepository: IMemberRepository,
     private readonly _callSessionRepository: ICallSessionRepository,
     private readonly _socketGateway: ISocketGateway,
-    private readonly _uniqueIdGenerator: IUniqueIdGenerator
+    private readonly _uniqueIdGenerator: IUniqueIdGenerator,
   ) {}
 
   async execute(dto: InitiateCallRequestDTO): Promise<void> {
@@ -27,7 +34,7 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
         {
           location: "InitiateCallUseCase",
           description: `Caller ${callerId} is not authorized or not in trip ${tripId}.`,
-        }
+        },
       );
     }
 
@@ -41,12 +48,13 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
         {
           location: "InitiateCallUseCase",
           description: `Receiver ${receiverId} is not authorized or not in trip ${tripId}.`,
-        }
+        },
       );
     }
 
     // Check if receiver is online
-    const isReceiverOnline = await this._socketGateway.isUserConnected(receiverId);
+    const isReceiverOnline =
+      await this._socketGateway.isUserConnected(receiverId);
     if (!isReceiverOnline) {
       await this._socketGateway.emitToUser(callerId, "call-error", {
         message: "Receiver is currently offline.",
@@ -63,7 +71,9 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
     });
 
     const isBusy = receiverCalls.data?.some(
-      (c) => c.callStatus === CallStatus.ACTIVE_CALL || c.callStatus === CallStatus.RINGING
+      (c) =>
+        c.callStatus === CallStatus.ACTIVE_CALL ||
+        c.callStatus === CallStatus.RINGING,
     );
 
     if (isBusy) {
