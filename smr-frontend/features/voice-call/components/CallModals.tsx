@@ -6,7 +6,6 @@ import { PhoneCall, PhoneOff, Phone, X, Mic, MicOff } from "lucide-react";
 import { useVoiceCall } from "../context/VoiceCallContext";
 import { useState } from "react";
 
-// ─── Incoming Call Overlay ──────────────────────────────────────────────────
 function IncomingCallOverlay() {
   const { incomingCall, callState, acceptCall, rejectCall } = useVoiceCall();
 
@@ -43,7 +42,9 @@ function IncomingCallOverlay() {
           <p className="text-xs font-semibold uppercase tracking-widest text-content-secondary">
             Incoming Voice Call
           </p>
-          <h2 className="text-2xl font-bold text-content-primary">Trip Partner</h2>
+          <h2 className="text-2xl font-bold text-content-primary">
+            Trip Partner
+          </h2>
           <p className="text-sm text-content-secondary">
             Calling about your active trip
           </p>
@@ -59,7 +60,9 @@ function IncomingCallOverlay() {
             <span className="w-14 h-14 rounded-full bg-error-surface border border-error-border flex items-center justify-center group-hover:bg-error-content/10 transition-colors">
               <PhoneOff className="w-6 h-6 text-error-content" />
             </span>
-            <span className="text-xs font-medium text-error-content">Decline</span>
+            <span className="text-xs font-medium text-error-content">
+              Decline
+            </span>
           </button>
 
           <button
@@ -70,16 +73,17 @@ function IncomingCallOverlay() {
             <span className="w-14 h-14 rounded-full bg-success-surface border border-success-border flex items-center justify-center group-hover:bg-success-content/10 transition-colors">
               <PhoneCall className="w-6 h-6 text-success-content" />
             </span>
-            <span className="text-xs font-medium text-success-content">Accept</span>
+            <span className="text-xs font-medium text-success-content">
+              Accept
+            </span>
           </button>
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
-// ─── Active / Calling Status Bar ────────────────────────────────────────────
 function ActiveCallBar() {
   const { callState, endCall, remoteStream } = useVoiceCall();
   const [isMuted, setIsMuted] = useState(false);
@@ -157,11 +161,10 @@ function ActiveCallBar() {
         </button>
       </div>
     </>,
-    document.body
+    document.body,
   );
 }
 
-// ─── Call Notification Toast ─────────────────────────────────────────────────
 function CallNotificationToast() {
   const { notification, dismissNotification } = useVoiceCall();
 
@@ -190,20 +193,23 @@ function CallNotificationToast() {
       role="alert"
     >
       <span className="flex-1 text-sm font-medium">{notification.message}</span>
-      <button onClick={dismissNotification} className="shrink-0 opacity-60 hover:opacity-100">
+      <button
+        onClick={dismissNotification}
+        className="shrink-0 opacity-60 hover:opacity-100"
+      >
         <X className="w-4 h-4" />
       </button>
     </div>,
-    document.body
+    document.body,
   );
 }
 
-// ─── Composed export ─────────────────────────────────────────────────────────
 export function CallModals() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const t = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(t);
   }, []);
 
   if (!mounted) return null;
