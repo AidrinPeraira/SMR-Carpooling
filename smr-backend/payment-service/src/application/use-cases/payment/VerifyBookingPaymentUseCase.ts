@@ -95,7 +95,10 @@ export class VerifyBookingPaymentUseCase implements IVerifyBookingPaymentUseCase
         transactionCategory: TransactionCategory.BOOKING_PAYMENT,
         paymentMethod: bookingPayment.paymentMethod,
         recordId: bookingPayment.id,
+        amount: bookingPayment.amount,
+        createdAt: new Date(),
       });
+
 
       const successEvent: BookingPaymentSuccessEvent = {
         eventName: EventName.BOOKING_PAYMENT_SUCCESS,

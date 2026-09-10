@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ApplicationResult,
@@ -10,14 +10,18 @@ import {
 import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
 import { InlineError } from "@/components/InlineError";
 import { getUserApplicationsRequest } from "../api/requests/getUserApplicationsRequest";
+import { Search } from "@/components/UserInput/Search";
 
 export function UserApplicationsView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["userApplications"],
+    queryKey: ["userApplications", searchQuery],
     queryFn: async () => {
-      return await getUserApplicationsRequest();
+      const params = searchQuery ? { search: searchQuery } : undefined;
+      return await getUserApplicationsRequest(params);
     },
   });
 
@@ -119,7 +123,8 @@ export function UserApplicationsView() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-4">
+          <Search />
           <Button
             onClick={() => router.push("/application/add-vehicle")}
             variant="secondary"

@@ -363,7 +363,7 @@ const v1Router = express.Router();
 v1Router.use("/auth", authRouterV1);
 v1Router.use(
   "/profile",
-  AuthMiddleware(UserRole.DRIVER, UserRole.PASSENGER),
+  AuthMiddleware(UserRole.DRIVER, UserRole.PASSENGER, UserRole.ADMIN),
   profileRouterV1,
 );
 v1Router.use(

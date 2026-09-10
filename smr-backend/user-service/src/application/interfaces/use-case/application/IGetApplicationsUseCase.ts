@@ -4,5 +4,5 @@ import { GetApplicationsResultDTO } from "#/application/dto/application/GetAppli
  * This user case gets all applications belongin to a user, using user id
  */
 export interface IGetApplicationsUseCase {
-  execute(userId: string): Promise<GetApplicationsResultDTO[]>;
+  execute(userId: string, search?: string): Promise<GetApplicationsResultDTO[]>;
 }

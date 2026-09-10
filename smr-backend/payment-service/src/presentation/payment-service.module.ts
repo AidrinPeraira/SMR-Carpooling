@@ -10,6 +10,7 @@ import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomer
 import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
 import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWalletUseCase";
 import { GetWalletTransactionsUseCase } from "#/application/use-cases/wallet/GetWalletTransactionsUseCase";
+import { AdminListTransactionsUseCase } from "#/application/use-cases/admin/AdminListTransactions";
 import { MongoBookingPaymentRepository } from "#/infrastructure/repository/MongoBookingPaymentRepository";
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
 import { MongoTransactionRepository } from "#/infrastructure/repository/MongoTransactionRepository";
@@ -20,6 +21,7 @@ import { EventBus } from "#/infrastructure/services/EventBus";
 import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { RazorPayPaymentProvider } from "#/infrastructure/services/RazorPayPaymentProvider";
 import { PaymentControllerV1 } from "#/presentation/v1/controllers/PaymentControllerV1";
+import { AdminControllerV1 } from "#/presentation/v1/controllers/AdminControllerV1";
 import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
 import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
 import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
@@ -31,6 +33,7 @@ import { WalletControllerV1 } from "#/presentation/v1/controllers/WalletControll
 import { createPaymentRouterV1 } from "#/presentation/v1/routes/PaymentRouterV1";
 import { createWalletRouterV1 } from "#/presentation/v1/routes/WalletRouterV1";
 import { createWebhookRouterV1 } from "#/presentation/v1/routes/WebhookRouterV1";
+import { createAdminRouterV1 } from "#/presentation/v1/routes/AdminRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
 // Logger
@@ -60,6 +63,10 @@ const createWalletUseCase = new CreateWalletUseCase(
 );
 const getWalletTransactionsUseCase = new GetWalletTransactionsUseCase(
   walletRepository,
+);
+
+const adminListTransactionsUseCase = new AdminListTransactionsUseCase(
+  transactionRepository,
 );
 
 const newUserEventHandler = new NewUserEventHandler(
@@ -177,15 +184,22 @@ const walletControllerV1 = new WalletControllerV1(
   getWalletTransactionsUseCase,
 );
 
+const adminControllerV1 = new AdminControllerV1(
+  consolaLogger,
+  adminListTransactionsUseCase,
+);
+
 const paymentRouterV1 = createPaymentRouterV1(paymentControllerV1);
 const webhookRouterV1 = createWebhookRouterV1(webhookControllerV1);
 const walletRouterV1 = createWalletRouterV1(walletControllerV1);
+const adminRouterV1 = createAdminRouterV1(adminControllerV1);
 
 // Routers setup
 const v1Router = express.Router();
 v1Router.use("/payments", paymentRouterV1);
 v1Router.use("/webhooks", webhookRouterV1);
 v1Router.use("/wallet", walletRouterV1);
+v1Router.use("/admin", adminRouterV1);
 
 export const paymentServiceRouters = {
   v1: v1Router,

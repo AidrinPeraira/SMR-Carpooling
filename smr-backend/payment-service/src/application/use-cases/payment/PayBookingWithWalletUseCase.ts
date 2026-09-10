@@ -217,7 +217,10 @@ export class PayBookingWithWalletUseCase implements IPayBookingWithWalletUseCase
         transactionCategory: TransactionCategory.BOOKING_PAYMENT,
         paymentMethod: PaymentMethod.WALLET,
         recordId: bookingPayment.id,
+        amount,
+        createdAt: new Date(),
       });
+
 
       const firstName = customer.firstName ?? "";
       const lastName = customer.lastName ?? "";

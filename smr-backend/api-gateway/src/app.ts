@@ -110,6 +110,7 @@ export function createApp(logger: ILogger) {
     changeOrigin: true,
     pathFilter: [
       "/api/*/payments/**",
+      "/api/*/admin/transactions/**",
       "/api/*/wallet/**",
       "/api/*/webhook/payments/**",
     ],

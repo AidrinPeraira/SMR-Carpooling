@@ -2,7 +2,9 @@ export enum PaymentSuccessMessage {
   ORDER_CREATED = "Payment order created successfully",
   PAYMENT_VERIFIED = "Payment verified successfully",
   PAYMENT_COMPLETED = "Payment completed successfully",
+  TRANSACTIONS_FETCHED = "Transactions fetched successfully",
 }
+
 
 export enum PaymentErrorMessage {
   PAYMENT_ALREADY_COMPLETED = "Payment already completed",

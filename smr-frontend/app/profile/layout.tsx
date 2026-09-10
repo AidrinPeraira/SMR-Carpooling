@@ -15,6 +15,9 @@ interface Props {
   children: ReactNode;
 }
 
+import { VoiceCallProvider } from "@/features/voice-call/context/VoiceCallContext";
+import { CallModals } from "@/features/voice-call/components/CallModals";
+
 export default function ProfileLayout({ children }: Props) {
   const toast = useToast();
   const router = useRouter();
@@ -69,15 +72,18 @@ export default function ProfileLayout({ children }: Props) {
   ];
 
   return (
-    <div className="h-screen w-screen overflow-hidden">
-      <SideNav
-        items={profileNavItems}
-        header={<PortalNavbar userRole={activeRole} />}
-        onLogout={handleLogout}
-      >
-        {children}
-      </SideNav>
-    </div>
+    <VoiceCallProvider>
+      <div className="h-screen w-screen overflow-hidden">
+        <SideNav
+          items={profileNavItems}
+          header={<PortalNavbar userRole={activeRole} />}
+          onLogout={handleLogout}
+        >
+          {children}
+        </SideNav>
+      </div>
+      <CallModals />
+    </VoiceCallProvider>
   );
 }
 

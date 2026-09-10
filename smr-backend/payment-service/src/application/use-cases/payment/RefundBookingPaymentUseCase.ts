@@ -81,7 +81,10 @@ export class RefundBookingPaymentUseCase implements IRefundBookingPaymentUseCase
         transactionCategory: TransactionCategory.REFUND,
         paymentMethod: PaymentMethod.WALLET,
         recordId: successfulBooking.id,
+        amount: successfulBooking.amount,
+        createdAt: now,
       });
+
 
       //upate booking payment status
       await this._bookingPaymentRespository.updateById(successfulBooking.id, {
