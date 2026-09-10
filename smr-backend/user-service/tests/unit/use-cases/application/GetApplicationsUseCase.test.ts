@@ -31,6 +31,8 @@ describe("GetApplicationsUseCase", () => {
       filterValue: "user-1",
       page: 1,
       limit: 100,
+      search: undefined,
+      searchFields: ["applicationId", "applicationType"],
     });
     expect(result).toEqual([
       {

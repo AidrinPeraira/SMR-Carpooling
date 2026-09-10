@@ -43,6 +43,39 @@ export class CreateTripUseCase implements ICreateTripUseCase {
       );
     }
 
+    const scheduledTrips = await this._tripRepository.findTripsByDriverId(
+      driver.driverId,
+      {
+        tripStatus: TripStatus.SCHEDULED,
+      },
+    );
+
+    if (scheduledTrips.data.length > 0) {
+      //check for trips starting on the same day
+      const conflictingTrip = scheduledTrips.data.filter((v) => {
+        const newTripDate = data.startTime;
+        const oldTripDate = v.tripDetails.startTime;
+        return (
+          oldTripDate.getDate() == newTripDate.getDate() &&
+          oldTripDate.getMonth() == newTripDate.getMonth() &&
+          oldTripDate.getFullYear() == newTripDate.getFullYear()
+        );
+      });
+
+      if (conflictingTrip.length > 0) {
+        throw new ApplicationError(
+          "A trip already exists for the same date",
+          HttpStatusCodes.Conflict,
+          ErrorCode.DOMAIN_CONFLICT,
+          ErrorDetails.DOMAIN_CONFLICT,
+          {
+            location: "Create trip use case",
+            details: "Driver has a trip for the same date",
+          },
+        );
+      }
+    }
+
     const now = new Date();
     const trip: TripEntity = {
       tripId: crypto.randomUUID(),
