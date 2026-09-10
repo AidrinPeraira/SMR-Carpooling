@@ -49,8 +49,8 @@ export class MongoTransactionRepository
     if (query.search && query.searchFields && query.searchFields.length > 0) {
       const searchConditions: any[] = [];
       const hasCustomerField =
-        query.searchFields.includes("creditor" as any) ||
-        query.searchFields.includes("debitor" as any);
+        query.searchFields.includes("creditor" as keyof AdminListTransactionsResultDTO) ||
+        query.searchFields.includes("debitor" as keyof AdminListTransactionsResultDTO);
 
       let matchingCustomerIds: string[] = [];
       if (hasCustomerField) {

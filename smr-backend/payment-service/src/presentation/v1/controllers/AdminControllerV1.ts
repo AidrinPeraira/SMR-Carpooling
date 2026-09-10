@@ -5,10 +5,6 @@ import { AdminMapper } from "#/presentation/v1/mapper/AdminMapper";
 import {
   AdminListTransactionsSchema,
   AdminListTransactionsSchemaType,
-  ApplicationError,
-  ErrorCode,
-  ErrorDetails,
-  GenericErrorMessage,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
