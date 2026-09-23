@@ -177,7 +177,6 @@ export function createApp(logger: ILogger) {
         success: false,
         message: err.message,
         errorCode: err.errorCode,
-        details: err.details,
       });
     }
 

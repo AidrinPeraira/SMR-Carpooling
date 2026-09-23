@@ -48,13 +48,7 @@ export function createApp(logger: ILogger) {
 
     res
       .status(mappedError.statusCode)
-      .json(
-        makeFailedResponse(
-          mappedError.message,
-          mappedError.errorCode,
-          mappedError.details,
-        ),
-      );
+      .json(makeFailedResponse(mappedError.message, mappedError.errorCode));
   });
 
   return app;
