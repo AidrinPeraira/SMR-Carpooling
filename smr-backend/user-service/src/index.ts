@@ -5,9 +5,10 @@ import { ConsolaLogger } from "@sharemyride/shared";
 import { eventBus } from "#/presentation/user-service.module";
 import { connectMongoDB } from "#/infrastructure/database/connect-mongodb";
 import { connectRedis } from "#/infrastructure/database/connect-redis";
+import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 
 async function startServer(): Promise<void> {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
 
   //Connect MongoDB
   await connectMongoDB(logger);

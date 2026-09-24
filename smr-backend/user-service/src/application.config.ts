@@ -51,4 +51,11 @@ export const AppConfig = {
   S3_ACCESS_ID: String(process.env.S3_ACCESS_ID) || "123",
   S3_SECRET_KEY: String(process.env.S3_SECRET_KEY) || "asdf",
   S3_PUBLIC_DOMAIN: String(process.env.S3_PUBLIC_DOMAIN) || "",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };
