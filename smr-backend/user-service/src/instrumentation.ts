@@ -10,6 +10,7 @@ import {
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 import { AppConfig } from "#/application.config";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
@@ -19,8 +20,13 @@ const sdk = new NodeSDK({
   traceExporter: new ConsoleSpanExporter(),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new ConsoleMetricExporter(),
-    exportIntervalMillis: AppConfig.NODE_ENV == "production" ? 10000 : 1000,
+    exportIntervalMillis: AppConfig.NODE_ENV == "production" ? 10000 : 10000,
   }),
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      "@opentelemetry/instrumentation-host-metrics": { enabled: true },
+    }),
+  ],
 });
 
 sdk.start();
