@@ -1,16 +1,16 @@
 import { TripCancellationMailDTO } from "#/application/dto/email/TripCancellationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendTripCancellationEmailUseCase } from "#/application/interfaces/use-case/ISendTripCancellationEmail";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { DriverCancelTripEvent, ILogger } from "@sharemyride/shared";
 
-export class TripCancellationEventHandler
-  implements IEventHandler<DriverCancelTripEvent>
-{
+export class TripCancellationEventHandler implements IEventHandler<DriverCancelTripEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _sendTripCancellationEmailUseCase: ISendTripCancellationEmailUseCase,
   ) {}
 
+  @Trace("notification-service-event-handler")
   async handle(event: DriverCancelTripEvent): Promise<void> {
     const dto: TripCancellationMailDTO = {
       tripId: event.payload.tripId,

@@ -1,10 +1,12 @@
 import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
-import { ConsolaLogger } from "@sharemyride/shared";
 import { connectMongoDB } from "#/infrastructure/database/connect-mongodb";
 import { eventBus } from "#/presentation/communication-service.module";
-import { memberRepository, chatRepository } from "#/presentation/communication-service.module";
+import {
+  memberRepository,
+  chatRepository,
+} from "#/presentation/communication-service.module";
 import { MessageRepository } from "#/infrastructure/repository/MessageRepository";
 import { HandleUserConnectUseCase } from "#/application/use-cases/chat-messaging/HandleUserConnectUseCase";
 import { HandleUserDisconnectUseCase } from "#/application/use-cases/chat-messaging/HandleUserDisconnectUseCase";
@@ -17,12 +19,16 @@ import { RejectCallUseCase } from "#/application/use-cases/call/RejectCallUseCas
 import { EndCallUseCase } from "#/application/use-cases/call/EndCallUseCase";
 import { RelayCallSignalUseCase } from "#/application/use-cases/call/RelayCallSignalUseCase";
 import { createSocketServer } from "#/presentation/v1/sockets/CreateSocketServer";
-import { callSessionRepository, uidGenereator } from "#/presentation/communication-service.module";
+import {
+  callSessionRepository,
+  uidGenereator,
+} from "#/presentation/communication-service.module";
 import { Server } from "socket.io";
 import { SocketIOGateway } from "#/infrastructure/services/SocketIOGateway";
+import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 
 async function startServer(): Promise<void> {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
 
   await connectMongoDB(logger);
   await eventBus.connect();
@@ -35,7 +41,7 @@ async function startServer(): Promise<void> {
   });
 
   const messageRepository = new MessageRepository();
-  
+
   const io = new Server(httpServer, {
     cors: {
       origin: "*",
@@ -45,17 +51,48 @@ async function startServer(): Promise<void> {
 
   const socketGateway = new SocketIOGateway(io);
 
-  const handleUserConnectUseCase = new HandleUserConnectUseCase(memberRepository, chatRepository, socketGateway);
-  const handleUserDisconnectUseCase = new HandleUserDisconnectUseCase(socketGateway);
+  const handleUserConnectUseCase = new HandleUserConnectUseCase(
+    memberRepository,
+    chatRepository,
+    socketGateway,
+  );
+  const handleUserDisconnectUseCase = new HandleUserDisconnectUseCase(
+    socketGateway,
+  );
   const joinChatUseCase = new JoinChatUseCase(chatRepository, socketGateway);
-  const sendMessageUseCase = new SendMessageUseCase(chatRepository, memberRepository, messageRepository, socketGateway);
-  const syncChatHistoryUseCase = new SyncChatHistoryUseCase(chatRepository, messageRepository);
+  const sendMessageUseCase = new SendMessageUseCase(
+    chatRepository,
+    memberRepository,
+    messageRepository,
+    socketGateway,
+  );
+  const syncChatHistoryUseCase = new SyncChatHistoryUseCase(
+    chatRepository,
+    messageRepository,
+  );
 
-  const initiateCallUseCase = new InitiateCallUseCase(memberRepository, callSessionRepository, socketGateway, uidGenereator);
-  const acceptCallUseCase = new AcceptCallUseCase(callSessionRepository, socketGateway);
-  const rejectCallUseCase = new RejectCallUseCase(callSessionRepository, socketGateway);
-  const endCallUseCase = new EndCallUseCase(callSessionRepository, socketGateway);
-  const relayCallSignalUseCase = new RelayCallSignalUseCase(callSessionRepository, socketGateway);
+  const initiateCallUseCase = new InitiateCallUseCase(
+    memberRepository,
+    callSessionRepository,
+    socketGateway,
+    uidGenereator,
+  );
+  const acceptCallUseCase = new AcceptCallUseCase(
+    callSessionRepository,
+    socketGateway,
+  );
+  const rejectCallUseCase = new RejectCallUseCase(
+    callSessionRepository,
+    socketGateway,
+  );
+  const endCallUseCase = new EndCallUseCase(
+    callSessionRepository,
+    socketGateway,
+  );
+  const relayCallSignalUseCase = new RelayCallSignalUseCase(
+    callSessionRepository,
+    socketGateway,
+  );
 
   createSocketServer(
     io,
@@ -69,12 +106,12 @@ async function startServer(): Promise<void> {
     acceptCallUseCase,
     rejectCallUseCase,
     endCallUseCase,
-    relayCallSignalUseCase
+    relayCallSignalUseCase,
   );
 }
 
 startServer().catch((error: unknown) => {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
   logger.error("Failed to start the communication-service server", {
     error: error instanceof Error ? error.message : String(error),
   });

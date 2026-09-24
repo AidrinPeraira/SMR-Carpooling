@@ -10,6 +10,7 @@ import {
   makeSuccessResponse,
   SortOrder,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
   constructor(
@@ -18,6 +19,7 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
     private readonly _adminGetBookingDetailsUseCase: IAdminGetBookingDetailsUseCase,
   ) {}
 
+  @Trace("admin-booking-module")
   async listAllBookings(
     req: Request,
     res: Response,
@@ -25,8 +27,12 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
   ): Promise<void> {
     try {
       const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
-      const search = req.query.search ? (req.query.search as string) : undefined;
+      const limit = req.query.limit
+        ? parseInt(req.query.limit as string, 10)
+        : 10;
+      const search = req.query.search
+        ? (req.query.search as string)
+        : undefined;
       const filterField = req.query.filterField
         ? (req.query.filterField as any)
         : undefined;
@@ -40,7 +46,11 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
         ? (req.query.sortValue as SortOrder)
         : undefined;
 
-      this._logger.info("Admin fetching all bookings list", { page, limit, search });
+      this._logger.info("Admin fetching all bookings list", {
+        page,
+        limit,
+        search,
+      });
 
       const result = await this._adminListAllBookingsUseCase.execute({
         page,
@@ -67,6 +77,7 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
     }
   }
 
+  @Trace("admin-booking-module")
   async getBookingDetails(
     req: Request,
     res: Response,
@@ -75,10 +86,14 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
     try {
       const bookingId = req.params.bookingId as string;
 
-      this._logger.info("Admin fetching booking details for bookingId:", { bookingId });
+      this._logger.info("Admin fetching booking details for bookingId:", {
+        bookingId,
+      });
 
-      const details = await this._adminGetBookingDetailsUseCase.execute(bookingId);
-      const response = AdminBookingMapper.toAdminBookingDetailsResponse(details);
+      const details =
+        await this._adminGetBookingDetailsUseCase.execute(bookingId);
+      const response =
+        AdminBookingMapper.toAdminBookingDetailsResponse(details);
 
       res
         .status(HttpStatusCodes.Ok)

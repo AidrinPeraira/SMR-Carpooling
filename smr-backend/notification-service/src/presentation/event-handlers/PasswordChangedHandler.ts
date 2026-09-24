@@ -1,6 +1,7 @@
 import { PasswordChangedMailDTO } from "#/application/dto/email/PasswordChangeMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendPasswordChangedMailUseCase } from "#/application/interfaces/use-case/ISendPasswordChangedMailUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, PasswordChangedEvent } from "@sharemyride/shared";
 
 export class PasswordChangedHandler implements IEventHandler<PasswordChangedEvent> {
@@ -9,6 +10,7 @@ export class PasswordChangedHandler implements IEventHandler<PasswordChangedEven
     private readonly _sendPasswordChangedMailUseCase: ISendPasswordChangedMailUseCase,
   ) {}
 
+  @Trace("notification-service-event-handler")
   async handle(event: PasswordChangedEvent): Promise<void> {
     const dto: PasswordChangedMailDTO = {
       userName: event.payload.firstName + " " + event.payload.lastName,

@@ -26,4 +26,14 @@ export const AppConfig = {
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
   REDIS_URL: String(process.env.REDIS_URL || "redis://localhost:6379"),
+
+  SERVICE_NAME: String(process.env.SERVICE_NAME) || "api-gateway-service",
+  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

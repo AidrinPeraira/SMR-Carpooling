@@ -103,3 +103,10 @@
 - postgress is the recomended db for complex transactions and fool proof atmocity.
 - trip service methods align with the postgress requirements and hence prism
 - prisma is a common orm that allows usage of postgress like mongoose
+
+## Observability: Opentelemetry, Graphana (Loki, Prometheus, Tempo)
+
+- Observability for System metrics, Request Metrics, Traces and Logs
+- Metrics expoorted using open telemetry
+- Data stored in Loki, Promiethus and Tempo in Graphana cloud
+- Info dashboards in the graphana cloud

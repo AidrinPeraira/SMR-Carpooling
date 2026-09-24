@@ -1,16 +1,16 @@
 import { ApplicationReturnedMailDTO } from "#/application/dto/email/ApplicationNotificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendApplicationReturnedMailUseCase } from "#/application/interfaces/use-case/ISendApplicationReturnedMailUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ApplicationReturnEvent, ILogger } from "@sharemyride/shared";
 
-export class ApplicationReturnedHandler
-  implements IEventHandler<ApplicationReturnEvent>
-{
+export class ApplicationReturnedHandler implements IEventHandler<ApplicationReturnEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _sendApplicationReturnedMailUseCase: ISendApplicationReturnedMailUseCase,
   ) {}
 
+  @Trace("notification-service-event-handler")
   async handle(event: ApplicationReturnEvent): Promise<void> {
     const dto: ApplicationReturnedMailDTO = {
       userName: `${event.payload.firstName} ${event.payload.lastName}`,

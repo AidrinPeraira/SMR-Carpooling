@@ -1,18 +1,18 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { IConfirmBookingPaymentUseCase } from "#/application/interfaces/use-case/booking/IConfirmBookingPayementUseCase";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { BookingPaymentSuccessEvent, ILogger } from "@sharemyride/shared";
 
 /*
  * This event handler calls the use case to confirm booking
  */
-export class BookingPaymentSuccessEventHandler
-  implements IEventHandler<BookingPaymentSuccessEvent>
-{
+export class BookingPaymentSuccessEventHandler implements IEventHandler<BookingPaymentSuccessEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _confirmBookingPaymentUseCase: IConfirmBookingPaymentUseCase,
   ) {}
 
+  @Trace("trip-service-event=handler")
   async handle(event: BookingPaymentSuccessEvent): Promise<void> {
     this._logger.info(
       "Handling booking payment success event: ",

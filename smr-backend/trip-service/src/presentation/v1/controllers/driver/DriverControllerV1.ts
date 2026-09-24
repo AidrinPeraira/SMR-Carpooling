@@ -7,6 +7,7 @@ import {
   ILogger,
   makeSuccessResponse,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class DriverControllerV1 implements IDriverControllerV1 {
   constructor(
@@ -14,6 +15,7 @@ export class DriverControllerV1 implements IDriverControllerV1 {
     private readonly _getDriverDetailsUseCase: IGetDriverDetailsUseCase,
   ) {}
 
+  @Trace("driver-module")
   async getDriverDetails(
     req: Request,
     res: Response,
@@ -29,7 +31,9 @@ export class DriverControllerV1 implements IDriverControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Driver details retrieved successfully", mapped));
+        .json(
+          makeSuccessResponse("Driver details retrieved successfully", mapped),
+        );
     } catch (error) {
       next(error);
     }

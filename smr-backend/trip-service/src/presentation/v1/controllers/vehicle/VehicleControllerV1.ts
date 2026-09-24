@@ -7,6 +7,7 @@ import {
   ILogger,
   makeSuccessResponse,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class VehicleControllerV1 implements IVehicleControllerV1 {
   constructor(
@@ -14,6 +15,7 @@ export class VehicleControllerV1 implements IVehicleControllerV1 {
     private readonly _getDriverVehiclesUseCase: IGetDriverVehiclesUseCase,
   ) {}
 
+  @Trace("vehicle-module")
   async getDriverVehicles(
     req: Request,
     res: Response,
@@ -29,7 +31,9 @@ export class VehicleControllerV1 implements IVehicleControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Driver vehicles retrieved successfully", mapped));
+        .json(
+          makeSuccessResponse("Driver vehicles retrieved successfully", mapped),
+        );
     } catch (error) {
       next(error);
     }

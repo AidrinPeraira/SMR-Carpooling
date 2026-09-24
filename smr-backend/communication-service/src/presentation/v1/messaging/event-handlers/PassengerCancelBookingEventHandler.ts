@@ -2,6 +2,7 @@ import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler"
 import { ILogger, PassengerCancelBookingEvent } from "@sharemyride/shared";
 import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/members/IRemoveActiveTripUseCase";
 import { IRemoveChatMembersUseCase } from "#/application/interfaces/use-cases/chat/IRemoveChatMembersUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 
 /**
  * This class implements the event handler that
@@ -15,12 +16,16 @@ export class PassengerCancelBookingEventHandler implements IEventHandler<Passeng
     private readonly _removeChatMembersUseCase: IRemoveChatMembersUseCase,
   ) {}
 
+  @Trace("communication-service-event-handler")
   async handle(event: PassengerCancelBookingEvent): Promise<void> {
     try {
-      this._logger.info("Handling passenger cancel booking event in communication service", {
-        bookingId: event.payload.bookingId,
-        tripId: event.payload.tripId,
-      });
+      this._logger.info(
+        "Handling passenger cancel booking event in communication service",
+        {
+          bookingId: event.payload.bookingId,
+          tripId: event.payload.tripId,
+        },
+      );
 
       // Remove from passenger
       await this._removeActiveTripUseCase.execute({
@@ -29,9 +34,14 @@ export class PassengerCancelBookingEventHandler implements IEventHandler<Passeng
       });
 
       // Remove from chat
-      await this._removeChatMembersUseCase.execute(event.payload.tripId, event.payload.passengerId);
+      await this._removeChatMembersUseCase.execute(
+        event.payload.tripId,
+        event.payload.passengerId,
+      );
 
-      this._logger.info("Successfully removed active trip from passenger cancel booking event");
+      this._logger.info(
+        "Successfully removed active trip from passenger cancel booking event",
+      );
     } catch (error: unknown) {
       this._logger.error("Failed to handle passenger cancel booking event", {
         error: error instanceof Error ? error.message : String(error),

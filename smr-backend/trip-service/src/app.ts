@@ -15,6 +15,7 @@ import {
 import { tripServiceRouters } from "#/presentation/trip-service.module";
 import { mapError } from "#/presentation/utils/error-mapper";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
+import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -30,6 +31,7 @@ export function createApp(logger: ILogger) {
       },
     }),
   );
+  app.use(metricsMiddleware);
 
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });

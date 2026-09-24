@@ -14,6 +14,7 @@ import {
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
 import { paymentServiceRouters } from "#/presentation/payment-service.module";
 import { mapError } from "#/presentation/utils/error-mapper";
+import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -22,6 +23,8 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
+
+  app.use(metricsMiddleware);
 
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });

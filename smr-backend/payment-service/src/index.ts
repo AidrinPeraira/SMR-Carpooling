@@ -3,10 +3,10 @@ import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
 import { connectMongoDB } from "#/infrastructure/database/connect-mongodb";
 import { eventBus } from "#/presentation/payment-service.module";
-import { ConsolaLogger } from "@sharemyride/shared";
+import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 
 async function startServer(): Promise<void> {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
   const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
 
@@ -26,6 +26,6 @@ async function startServer(): Promise<void> {
 }
 
 startServer().catch((error: unknown) => {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
   logger.error("Failed to start the payment-service server", { error });
 });

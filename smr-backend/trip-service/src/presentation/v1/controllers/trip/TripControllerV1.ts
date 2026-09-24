@@ -22,6 +22,7 @@ import {
   SearchTripSchema,
   zodParser,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class TripControllerV1 implements ITripControllerV1 {
   constructor(
@@ -34,6 +35,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _cancelTripUseCase: ICancelTripUseCas,
   ) {}
 
+  @Trace("trip-module")
   async createTrip(
     req: Request,
     res: Response,
@@ -55,16 +57,14 @@ export class TripControllerV1 implements ITripControllerV1 {
       res
         .status(HttpStatusCodes.Created)
         .json(
-          makeSuccessResponse(
-            GenericSuccessMessage.OPERATION_SUCCESSFUL,
-            null,
-          ),
+          makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, null),
         );
     } catch (error) {
       next(error);
     }
   }
 
+  @Trace("trip-module")
   async listMatchingTrips(
     req: Request,
     res: Response,
@@ -99,6 +99,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     }
   }
 
+  @Trace("trip-module")
   async getJourneyDetails(
     req: Request,
     res: Response,
@@ -135,6 +136,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     }
   }
 
+  @Trace("trip-module")
   async getDriverTrips(
     req: Request,
     res: Response,
@@ -162,17 +164,13 @@ export class TripControllerV1 implements ITripControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(
-          makeSuccessResponse(
-            "Driver trips fetched successfully",
-            mapped,
-          ),
-        );
+        .json(makeSuccessResponse("Driver trips fetched successfully", mapped));
     } catch (error) {
       next(error);
     }
   }
 
+  @Trace("trip-module")
   async getDriverTripDetails(
     req: Request,
     res: Response,
@@ -204,6 +202,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     }
   }
 
+  @Trace("trip-module")
   async cancelTrip(
     req: Request,
     res: Response,
@@ -215,19 +214,11 @@ export class TripControllerV1 implements ITripControllerV1 {
 
       this._logger.info("Canceling trip:", { driverId, tripId });
 
-      await this._cancelTripUseCase.execute(
-        tripId as string,
-        driverId,
-      );
+      await this._cancelTripUseCase.execute(tripId as string, driverId);
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(
-          makeSuccessResponse(
-            "Trip cancelled successfully",
-            null,
-          ),
-        );
+        .json(makeSuccessResponse("Trip cancelled successfully", null));
     } catch (error) {
       next(error);
     }

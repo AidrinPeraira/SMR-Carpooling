@@ -24,6 +24,7 @@ import {
   UpdateVehicleSchema,
   zodParser,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class AdminConfigurationControllerV1 implements IAdminConfigurationControllerV1 {
   constructor(
@@ -38,18 +39,29 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
   /**
    * Fetches system configuration settings including pricing rules and vehicles list.
    */
+  @Trace("configuration-module")
   async getConfigurations(req: Request, res: Response): Promise<void> {
     this._logger.info("Fetching admin configurations", {
       adminUserId: req.headers["x-user-id"],
     });
 
     const search = req.query.search ? (req.query.search as string) : undefined;
-    const filterField = req.query.filterField ? (req.query.filterField as any) : undefined;
-    const filterValue = req.query.filterValue ? (req.query.filterValue as any) : undefined;
-    const sortField = req.query.sortField ? (req.query.sortField as any) : undefined;
-    const sortValue = req.query.sortValue ? (req.query.sortValue as any) : undefined;
+    const filterField = req.query.filterField
+      ? (req.query.filterField as any)
+      : undefined;
+    const filterValue = req.query.filterValue
+      ? (req.query.filterValue as any)
+      : undefined;
+    const sortField = req.query.sortField
+      ? (req.query.sortField as any)
+      : undefined;
+    const sortValue = req.query.sortValue
+      ? (req.query.sortValue as any)
+      : undefined;
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 10;
 
     const result = await this._getConfigurationsUseCase.execute({
       page,
@@ -74,6 +86,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
   /**
    * Creates a new pricing rule configuration.
    */
+  @Trace("configuration-module")
   async createPricing(req: Request, res: Response): Promise<void> {
     const validatedBody = zodParser<CreatePricingRequest>(
       CreatePricingSchema,
@@ -85,7 +98,8 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       vehicleType: validatedBody.vehicle_type,
     });
 
-    const dto = AdminConfigurationMapper.toCreatePricingRequestDTO(validatedBody);
+    const dto =
+      AdminConfigurationMapper.toCreatePricingRequestDTO(validatedBody);
     const result = await this._createNewPricingUseCase.execute(dto);
 
     res
@@ -101,6 +115,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
   /**
    * Updates an existing pricing rule configuration.
    */
+  @Trace("configuration-module")
   async updatePricing(req: Request, res: Response): Promise<void> {
     const id = req.params.id as string;
     if (!id) {
@@ -125,7 +140,10 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       pricingId: id,
     });
 
-    const dto = AdminConfigurationMapper.toUpdatePricingRequestDTO(id, validatedBody);
+    const dto = AdminConfigurationMapper.toUpdatePricingRequestDTO(
+      id,
+      validatedBody,
+    );
     const result = await this._updatePricingUseCase.execute(dto);
 
     res
@@ -141,6 +159,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
   /**
    * Creates a new vehicle in the vehicle configurations list.
    */
+  @Trace("configuration-module")
   async createVehicle(req: Request, res: Response): Promise<void> {
     const validatedBody = zodParser<CreateVehicleRequest>(
       CreateVehicleSchema,
@@ -153,7 +172,8 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       vehicleModel: validatedBody.vehicle_model,
     });
 
-    const dto = AdminConfigurationMapper.toCreateVehicleRequestDTO(validatedBody);
+    const dto =
+      AdminConfigurationMapper.toCreateVehicleRequestDTO(validatedBody);
     const result = await this._createNewVehicleUseCase.execute(dto);
 
     res
@@ -169,6 +189,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
   /**
    * Updates an existing vehicle configuration.
    */
+  @Trace("configuration-module")
   async updateVehicle(req: Request, res: Response): Promise<void> {
     const id = req.params.id as string;
     if (!id) {
@@ -193,7 +214,10 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       vehicleId: id,
     });
 
-    const dto = AdminConfigurationMapper.toUpdateVehicleRequestDTO(id, validatedBody);
+    const dto = AdminConfigurationMapper.toUpdateVehicleRequestDTO(
+      id,
+      validatedBody,
+    );
     const result = await this._updateVehicleUseCase.execute(dto);
 
     res

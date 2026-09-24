@@ -1,6 +1,7 @@
 import { NewBookingMailDTO } from "#/application/dto/email/NewBookingMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/ISendNewBookingEmailUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, NewBookingEvent } from "@sharemyride/shared";
 
 export class NewBookingHandler implements IEventHandler<NewBookingEvent> {
@@ -9,6 +10,7 @@ export class NewBookingHandler implements IEventHandler<NewBookingEvent> {
     private readonly _sendNewBookingEmailUseCase: ISendNewBookingEmailUseCase,
   ) {}
 
+  @Trace("notification-service-event-handler")
   async handle(event: NewBookingEvent): Promise<void> {
     const dto: NewBookingMailDTO = {
       bookingId: event.payload.bookingId,
