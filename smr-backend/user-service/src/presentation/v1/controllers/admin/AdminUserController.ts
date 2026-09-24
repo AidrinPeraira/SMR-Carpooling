@@ -20,6 +20,7 @@ import {
 } from "@sharemyride/shared";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
 import { IGetFullUserProfileUseCase } from "#/application/interfaces/use-case/admin/users/IGetFullUserProfileUseCase";
+import { Trace } from "#/presentation/utils/traces-decorator";
 
 export class AdminUserControllerV1 implements IAdminUserControllerV1 {
   constructor(
@@ -37,6 +38,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
    * @param req - Express request object
    * @param res - Express response object
    */
+  @Trace("admin-user-module")
   async getAllUsers(req: Request, res: Response): Promise<void> {
     const queryParams = zodParser<QueryRequest>(QuerySchema, req.query);
     const query = AdminUsersMapper.toGetAllUsersRequestQuery(queryParams);
@@ -49,7 +51,9 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
 
     res.status(HttpStatusCodes.Ok).json(
       makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, {
-        data: result.data.map((user) => AdminUsersMapper.toGetAllUsersResult(user)),
+        data: result.data.map((user) =>
+          AdminUsersMapper.toGetAllUsersResult(user),
+        ),
         paginationMeta: result.paginationMeta,
       }),
     );
@@ -63,6 +67,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
    * @param req - Express request object
    * @param res - Express response object
    */
+  @Trace("admin-user-module")
   async getFullUserProfile(req: Request, res: Response): Promise<void> {
     const { userId } = zodParser<UserIdParamSchemaType>(
       UserIdParamSchema,
@@ -93,6 +98,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
    * @param req - Express request object
    * @param res - Express response object
    */
+  @Trace("admin-user-module")
   async blockUser(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
 
@@ -125,6 +131,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
    * @param req - Express request object
    * @param res - Express response object
    */
+  @Trace("admin-user-module")
   async unBlockUser(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
 

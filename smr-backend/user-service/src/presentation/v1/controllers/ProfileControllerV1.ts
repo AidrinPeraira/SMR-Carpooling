@@ -3,6 +3,7 @@ import { IGetUserUseCase } from "#/application/interfaces/use-case/profile/IGetU
 import { ISwitchUserRoleUseCase } from "#/application/interfaces/use-case/profile/ISwitchUserRoleUseCase";
 import { IUpdateAvatarUseCase } from "#/application/interfaces/use-case/profile/IUpdateAvatarUseCase";
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
+import { Trace } from "#/presentation/utils/traces-decorator";
 import { IProfileControllerV1 } from "#/presentation/v1/interfaces/IProfileControllerV1";
 import { AuthMapper } from "#/presentation/v1/mapper/AuthMapper";
 import { ProfileMapper } from "#/presentation/v1/mapper/ProfileMapper";
@@ -39,6 +40,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
     private readonly _switchUserRoleUseCase: ISwitchUserRoleUseCase,
   ) {}
 
+  @Trace("profile-module")
   async getUser(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
@@ -60,6 +62,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   /*
    * This method verifies if the user is updating own profile and then calls the updatet profile use case
    */
+  @Trace("profile-module")
   async updateUser(req: Request, res: Response): Promise<void> {
     const headerUserId = req.headers["x-user-id"] as string;
 
@@ -92,6 +95,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       );
   }
 
+  @Trace("profile-module")
   async getAvatarUploadUrl(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
@@ -112,6 +116,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       );
   }
 
+  @Trace("profile-module")
   async updateAvatar(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
@@ -129,6 +134,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       );
   }
 
+  @Trace("profile-module")
   async switchUserRole(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 

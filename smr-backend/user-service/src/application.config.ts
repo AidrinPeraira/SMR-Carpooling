@@ -3,6 +3,10 @@ import "dotenv/config";
 export const AppConfig = {
   PORT: Number(process.env.PORT) || 4000,
   NODE_ENV: String(process.env.NODE_ENV || "development"),
+
+  SERVICE_NAME: String(process.env.SERVICE_NAME) || "user-service",
+  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+
   CUSTOM_ID_LENGTH: Number(process.env.CUSTOM_ID_LENGTH) || 6,
   TOKEN_LIFE_MINUTES: Number(process.env.TOKEN_LIFE_MINUTES) || 10,
 

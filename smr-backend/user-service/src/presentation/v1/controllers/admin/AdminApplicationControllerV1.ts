@@ -1,6 +1,7 @@
 import { IGetAllApplicationsUseCase } from "#/application/interfaces/use-case/admin/application/IGetAllApplicationsUseCase";
 import { IPocessApplicationUseCase } from "#/application/interfaces/use-case/admin/application/IProcessApplicationUseCase";
 import { IGetApplicationDetailsUseCase } from "#/application/interfaces/use-case/application/IGetApplicationDetailsUseCase";
+import { Trace } from "#/presentation/utils/traces-decorator";
 import { IAdminApplicationControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminApplicationControllerV1";
 import { AdminApplicationMapper } from "#/presentation/v1/mapper/admin/AdminApplicationMapper";
 import { ApplicationMapper } from "#/presentation/v1/mapper/ApplicationMapper";
@@ -29,12 +30,14 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
     private readonly _processApplicationUseCase: IPocessApplicationUseCase,
   ) {}
 
+  @Trace("admin-application-module")
   async getAllApplications(req: Request, res: Response): Promise<void> {
     const adminId = req.headers["x-user-id"] as string;
     this._logger.info("Admin fetching all applications: ", { adminId });
 
     const queryParams = zodParser<QueryRequest>(QuerySchema, req.query);
-    const query = AdminApplicationMapper.toGetAllApplicationsRequestQuery(queryParams);
+    const query =
+      AdminApplicationMapper.toGetAllApplicationsRequestQuery(queryParams);
     const result = await this._getAllApplicationsUseCase.execute(query);
 
     res.status(HttpStatusCodes.Ok).json(
@@ -47,6 +50,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
     );
   }
 
+  @Trace("admin-application-module")
   async getApplicationDetails(req: Request, res: Response): Promise<void> {
     const { applicationId } = zodParser<ApplicationIdParamSchemaType>(
       ApplicationIdParamSchema,
@@ -58,7 +62,8 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       applicationId,
     });
 
-    const result = await this._getApplicationDetailsUseCase.execute(applicationId);
+    const result =
+      await this._getApplicationDetailsUseCase.execute(applicationId);
 
     res
       .status(HttpStatusCodes.Ok)
@@ -70,6 +75,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       );
   }
 
+  @Trace("admin-application-module")
   async processApplication(req: Request, res: Response): Promise<void> {
     const adminId = req.headers["x-user-id"] as string;
 
@@ -83,11 +89,16 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       status: body.application_status,
     });
 
-    const dto = AdminApplicationMapper.toProcessApplicationRequestDTO(body, adminId);
+    const dto = AdminApplicationMapper.toProcessApplicationRequestDTO(
+      body,
+      adminId,
+    );
     await this._processApplicationUseCase.execute(dto);
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_PROCESSED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_PROCESSED),
+      );
   }
 }
