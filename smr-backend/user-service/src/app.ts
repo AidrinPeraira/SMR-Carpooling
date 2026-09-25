@@ -11,6 +11,7 @@ import { userServiceRouters } from "#/presentation/user-service.module";
 import morgan from "morgan";
 import { mapError } from "#/presentation/utils/error-mapper";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
+import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
 
 /**
  * Express Application Factory.
@@ -26,6 +27,8 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
+  app.use(metricsMiddleware);
+
   app.use(
     morgan("dev", {
       stream: {
@@ -58,13 +61,7 @@ export function createApp(logger: ILogger) {
     });
     res
       .status(mappedError.statusCode)
-      .json(
-        makeFailedResponse(
-          mappedError.message,
-          mappedError.errorCode,
-          mappedError.details,
-        ),
-      );
+      .json(makeFailedResponse(mappedError.message, mappedError.errorCode));
   });
 
   return app;

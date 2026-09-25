@@ -1,16 +1,16 @@
 import { ApplicationRejectedMailDTO } from "#/application/dto/email/ApplicationNotificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendApplicationRejectedMailUseCase } from "#/application/interfaces/use-case/ISendApplicationRejectedMailUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ApplicationRejectEvent, ILogger } from "@sharemyride/shared";
 
-export class ApplicationRejectedHandler
-  implements IEventHandler<ApplicationRejectEvent>
-{
+export class ApplicationRejectedHandler implements IEventHandler<ApplicationRejectEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _sendApplicationRejectedMailUseCase: ISendApplicationRejectedMailUseCase,
   ) {}
 
+  @Trace("notification-service-event-handler")
   async handle(event: ApplicationRejectEvent): Promise<void> {
     const dto: ApplicationRejectedMailDTO = {
       userName: `${event.payload.firstName} ${event.payload.lastName}`,

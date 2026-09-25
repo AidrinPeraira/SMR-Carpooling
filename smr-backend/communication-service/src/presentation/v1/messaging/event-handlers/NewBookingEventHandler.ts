@@ -2,6 +2,7 @@ import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler"
 import { ILogger, NewBookingEvent } from "@sharemyride/shared";
 import { IAddActiveTripUseCase } from "#/application/interfaces/use-cases/members/IAddActiveTripUseCase";
 import { IAddChatMembersUseCase } from "#/application/interfaces/use-cases/chat/IAddChatMembersUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 
 /**
  * This class implements the event handler that
@@ -15,6 +16,7 @@ export class NewBookingEventHandler implements IEventHandler<NewBookingEvent> {
     private readonly _addChatMembersUseCase: IAddChatMembersUseCase,
   ) {}
 
+  @Trace("communication-service-event-handler")
   async handle(event: NewBookingEvent): Promise<void> {
     try {
       this._logger.info("Handling new booking event in communication service", {
@@ -28,9 +30,14 @@ export class NewBookingEventHandler implements IEventHandler<NewBookingEvent> {
       });
 
       // Add to chat
-      await this._addChatMembersUseCase.execute(event.payload.tripId, event.payload.passengerId);
+      await this._addChatMembersUseCase.execute(
+        event.payload.tripId,
+        event.payload.passengerId,
+      );
 
-      this._logger.info("Successfully added active trips from new booking event");
+      this._logger.info(
+        "Successfully added active trips from new booking event",
+      );
     } catch (error: unknown) {
       this._logger.error("Failed to handle new booking event", {
         error: error instanceof Error ? error.message : String(error),

@@ -18,6 +18,7 @@ import {
   zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class PaymentControllerV1 implements IPaymentControllerV1 {
   constructor(
@@ -27,6 +28,7 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     private readonly _payBookingWithWalletUseCase: IPayBookingWithWalletUseCase,
   ) {}
 
+  @Trace("payment-module")
   async createBookingPaymentOrder(req: Request, res: Response): Promise<void> {
     const body = zodParser<CreateBookingPaymentOrderRequest>(
       CreateBookingPaymentOrderSchema,
@@ -52,6 +54,7 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
       );
   }
 
+  @Trace("payment-module")
   async verifyBookingPayment(req: Request, res: Response): Promise<void> {
     const body = zodParser<VerifyBookingPaymentOrderRequest>(
       VerifyBookingPaymentOrderSchema,
@@ -75,6 +78,7 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
       .json(makeSuccessResponse(PaymentSuccessMessage.PAYMENT_VERIFIED));
   }
 
+  @Trace("payment-module")
   async payBookingWithWallet(req: Request, res: Response): Promise<void> {
     const body = zodParser<PayBookingWithWalletRequest>(
       PayBookingWithWalletSchema,

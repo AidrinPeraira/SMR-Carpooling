@@ -1,6 +1,7 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { INewCustomerUseCase } from "#/application/interfaces/use-cases/customer/INewCustomerUseCase";
 import { ICreateWalletUseCase } from "#/application/interfaces/use-cases/wallet/ICreateWalletUseCase";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
 
 export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
@@ -10,6 +11,7 @@ export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
     private readonly _createWalletUseCase: ICreateWalletUseCase,
   ) {}
 
+  @Trace("payment-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
     this._logger.info(
       "Handling new user event for payment service: ",

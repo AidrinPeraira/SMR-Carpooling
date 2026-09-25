@@ -1,11 +1,11 @@
 import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
-import { ConsolaLogger } from "@sharemyride/shared";
 import { messageConsumer } from "#/presentation/notification-service.module";
+import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 
 async function startServer(): Promise<void> {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
   const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
 
@@ -20,6 +20,6 @@ async function startServer(): Promise<void> {
 }
 
 startServer().catch((error: unknown) => {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
   logger.error("Failed to start the notification-service server", { error });
 });

@@ -7,6 +7,7 @@ import {
   ILogger,
   makeSuccessResponse,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class AdminVehicleControllerV1 implements IAdminVehicleControllerV1 {
   constructor(
@@ -14,6 +15,7 @@ export class AdminVehicleControllerV1 implements IAdminVehicleControllerV1 {
     private readonly _getDriverVehiclesUseCase: IGetDriverVehiclesUseCase,
   ) {}
 
+  @Trace("admin-vehicle-module")
   async getDriverVehicles(
     req: Request,
     res: Response,
@@ -22,14 +24,19 @@ export class AdminVehicleControllerV1 implements IAdminVehicleControllerV1 {
     try {
       const driverId = req.params.driverId as string;
 
-      this._logger.info("Admin fetching driver vehicles for user:", { driverId });
+      this._logger.info("Admin fetching driver vehicles for user:", {
+        driverId,
+      });
 
-      const vehiclesDTO = await this._getDriverVehiclesUseCase.execute(driverId);
+      const vehiclesDTO =
+        await this._getDriverVehiclesUseCase.execute(driverId);
       const mapped = VehicleMapper.toDriverVehiclesResponse(vehiclesDTO);
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Driver vehicles retrieved successfully", mapped));
+        .json(
+          makeSuccessResponse("Driver vehicles retrieved successfully", mapped),
+        );
     } catch (error) {
       next(error);
     }

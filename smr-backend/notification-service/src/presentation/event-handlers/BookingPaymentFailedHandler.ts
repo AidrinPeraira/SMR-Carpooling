@@ -1,16 +1,16 @@
 import { BookingPaymentMailDTO } from "#/application/dto/email/BookingPaymentMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ISendBookingPaymentFailedMailUseCase } from "#/application/interfaces/use-case/ISendBookingPaymentFailedMailUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { BookingPaymentFailureEvent, ILogger } from "@sharemyride/shared";
 
-export class BookingPaymentFailedHandler
-  implements IEventHandler<BookingPaymentFailureEvent>
-{
+export class BookingPaymentFailedHandler implements IEventHandler<BookingPaymentFailureEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _sendBookingPaymentFailedMailUseCase: ISendBookingPaymentFailedMailUseCase,
   ) {}
 
+  @Trace("notification-service-event-handler")
   async handle(event: BookingPaymentFailureEvent): Promise<void> {
     const dto: BookingPaymentMailDTO = {
       passengerId: event.payload.passengerId,

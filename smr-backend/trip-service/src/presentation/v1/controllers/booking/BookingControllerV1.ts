@@ -24,6 +24,7 @@ import {
   PassengerGetBookingsQuerySchema,
   zodParser,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class BookingControllerV1 implements IBookingControllerV1 {
   constructor(
@@ -40,6 +41,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     private readonly _cancelBookingUseCase: ICancelBookingUseCase,
   ) {}
 
+  @Trace("booking-module")
   async createBooking(
     req: Request,
     res: Response,
@@ -71,6 +73,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async getDriverBookings(
     req: Request,
     res: Response,
@@ -103,6 +106,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async getDriverBookingDetails(
     req: Request,
     res: Response,
@@ -133,6 +137,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async acceptBooking(
     req: Request,
     res: Response,
@@ -159,6 +164,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async rejectBooking(
     req: Request,
     res: Response,
@@ -185,6 +191,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async getPassengerBookings(
     req: Request,
     res: Response,
@@ -221,6 +228,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async getPassengerBookingDetails(
     req: Request,
     res: Response,
@@ -254,6 +262,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async withdrawBooking(
     req: Request,
     res: Response,
@@ -283,6 +292,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async initiateBookingPayment(
     req: Request,
     res: Response,
@@ -314,6 +324,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     }
   }
 
+  @Trace("booking-module")
   async cancelBooking(
     req: Request,
     res: Response,
@@ -335,9 +346,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
 
       res
         .status(HttpStatusCodes.Ok)
-        .json(
-          makeSuccessResponse("Booking cancelled successfully", null),
-        );
+        .json(makeSuccessResponse("Booking cancelled successfully", null));
     } catch (error) {
       next(error);
     }

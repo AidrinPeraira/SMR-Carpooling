@@ -15,4 +15,14 @@ export const AppConfig = {
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
+
+  SERVICE_NAME: String(process.env.SERVICE_NAME) || "communication-service",
+  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

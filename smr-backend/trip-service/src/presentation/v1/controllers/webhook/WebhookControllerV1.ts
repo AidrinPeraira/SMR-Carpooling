@@ -7,6 +7,7 @@ import {
   ILogger,
   makeSuccessResponse,
 } from "@sharemyride/shared";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class WebhookControllerV1 implements IWebhookControllerV1 {
   constructor(
@@ -15,6 +16,7 @@ export class WebhookControllerV1 implements IWebhookControllerV1 {
     private readonly _cleanUpTripsIndexingUseCase: ICleanUpTripsIndexingUseCase,
   ) {}
 
+  @Trace("webhook-module")
   async cleanupBookingPayment(
     req: Request,
     res: Response,

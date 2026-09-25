@@ -3,6 +3,7 @@ import { ILogger, NewTripEvent } from "@sharemyride/shared";
 import { IAddActiveTripUseCase } from "#/application/interfaces/use-cases/members/IAddActiveTripUseCase";
 import { ICreateNewChatUseCase } from "#/application/interfaces/use-cases/chat/ICreateNewChatUseCase";
 import { IAddChatMembersUseCase } from "#/application/interfaces/use-cases/chat/IAddChatMembersUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 
 /**
  * This class implements the event handler that
@@ -17,6 +18,7 @@ export class NewTripEventHandler implements IEventHandler<NewTripEvent> {
     private readonly _addChatMembersUseCase: IAddChatMembersUseCase,
   ) {}
 
+  @Trace("communication-service-event-handler")
   async handle(event: NewTripEvent): Promise<void> {
     try {
       this._logger.info("Handling new trip event in communication service", {
@@ -31,9 +33,14 @@ export class NewTripEventHandler implements IEventHandler<NewTripEvent> {
 
       // Initialize chat and add driver
       await this._createNewChatUseCase.execute(event.payload.tripId);
-      await this._addChatMembersUseCase.execute(event.payload.tripId, event.payload.driverId);
+      await this._addChatMembersUseCase.execute(
+        event.payload.tripId,
+        event.payload.driverId,
+      );
 
-      this._logger.info("Successfully added active trip for driver and initialized chat from new trip event");
+      this._logger.info(
+        "Successfully added active trip for driver and initialized chat from new trip event",
+      );
     } catch (error: unknown) {
       this._logger.error("Failed to handle new trip event", {
         error: error instanceof Error ? error.message : String(error),

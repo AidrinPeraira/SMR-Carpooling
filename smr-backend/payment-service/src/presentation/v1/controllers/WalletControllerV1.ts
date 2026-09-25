@@ -15,6 +15,7 @@ import {
   GenericErrorMessage,
 } from "@sharemyride/shared";
 import { NextFunction, Request, Response } from "express";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class WalletControllerV1 implements IWalletControllerV1 {
   constructor(
@@ -22,6 +23,7 @@ export class WalletControllerV1 implements IWalletControllerV1 {
     private readonly _getWalletTransactionsUseCase: IGetWalletTransactionsUseCase,
   ) {}
 
+  @Trace("wallet-module")
   async getWalletTransactions(
     req: Request,
     res: Response,

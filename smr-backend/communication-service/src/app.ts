@@ -9,7 +9,8 @@ import {
 } from "@sharemyride/shared";
 import morgan from "morgan";
 import { keyMiddleware } from "#/presentation/middlewares/key.middleware";
-
+import { mapError } from "#/presentation/utils/error-mapper";
+import { metricsMiddleware } from "#/presentation/middlewares/http-metrics.middleware";
 
 /**
  * Express Application Factory.
@@ -25,6 +26,9 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
+
+  app.use(metricsMiddleware);
+
   app.use(
     morgan("dev", {
       stream: {
@@ -41,19 +45,20 @@ export function createApp(logger: ILogger) {
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
-    logger.error("Unhandled error", {
-      error: err instanceof Error ? err.message : String(err),
+    const mappedError = mapError(err);
+
+    logger.error(mappedError.message, {
+      errorCode: mappedError.errorCode,
+      details: mappedError.details,
+      statusCode: mappedError.statusCode,
+      stack: mappedError.stack,
+      internalError: mappedError.cause,
       url: req.url,
       method: req.method,
     });
     res
-      .status(HttpStatusCodes.InternalServerError)
-      .json(
-        makeFailedResponse(
-          "Internal Server Error",
-          "INTERNAL_ERROR",
-        ),
-      );
+      .status(mappedError.statusCode)
+      .json(makeFailedResponse(mappedError.message, mappedError.errorCode));
   });
 
   return app;

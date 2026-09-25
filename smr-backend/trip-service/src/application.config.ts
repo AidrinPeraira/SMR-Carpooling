@@ -31,4 +31,14 @@ export const AppConfig = {
   ),
 
   PAYMENT_SECRET: String(process.env.PAYMENT_SECRET || "secret_key"),
+
+  SERVICE_NAME: String(process.env.SERVICE_NAME) || "trip-service",
+  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

@@ -20,4 +20,14 @@ export const AppConfig = {
     process.env.API_GATEWAY_KEY ||
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
+
+  SERVICE_NAME: String(process.env.SERVICE_NAME) || "notification-service",
+  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

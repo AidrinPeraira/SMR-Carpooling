@@ -9,6 +9,7 @@ import { IResubmitOnboardingApplicationUseCase } from "#/application/interfaces/
 import { IResubmitRenewDriverApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewDriverApplicationUseCase";
 import { IResubmitRenewVehicleApplicationUseCase } from "#/application/interfaces/use-case/application/IResubmitRenewVehicleApplicationUseCase";
 import { IGetFileUploadUrlUseCase } from "#/application/interfaces/use-case/IGetFileUploadUrlUseCase";
+import { Trace } from "#/presentation/utils/traces-decorator";
 import { IApplicationControllerV1 } from "#/presentation/v1/interfaces/IApplicationControllerV1";
 import { ApplicationMapper } from "#/presentation/v1/mapper/ApplicationMapper";
 import {
@@ -59,6 +60,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
     private readonly _getApplicationDetailsUseCase: IGetApplicationDetailsUseCase,
   ) {}
 
+  @Trace("applications-module")
   async getFileUploadUrl(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Getting file upload URL for userId: ", userId);
@@ -80,6 +82,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       );
   }
 
+  @Trace("applications-module")
   async onboardingApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
     this._logger.info("Submitting onboarding application for userId: ", userId);
@@ -88,63 +91,99 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       OnboardingApplicationSchema,
       req.body,
     );
-    const dto = ApplicationMapper.toOnboardingApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toOnboardingApplicationRequestDTO(
+      body,
+      userId,
+    );
     await this._onboardingApplicationUseCase.execute(dto);
 
     res
       .status(HttpStatusCodes.Created)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
+  @Trace("applications-module")
   async newVehicleApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info("Submitting new vehicle application for userId: ", userId);
+    this._logger.info(
+      "Submitting new vehicle application for userId: ",
+      userId,
+    );
 
     const body = zodParser<NewVehicleApplicationRequest>(
       NewVehicleApplicationSchema,
       req.body,
     );
-    const dto = ApplicationMapper.toNewVehicleApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toNewVehicleApplicationRequestDTO(
+      body,
+      userId,
+    );
     await this._newVehicleApplicationUseCase.execute(dto);
 
     res
       .status(HttpStatusCodes.Created)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
+  @Trace("applications-module")
   async renewDriverApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info("Submitting renew driver application for userId: ", userId);
+    this._logger.info(
+      "Submitting renew driver application for userId: ",
+      userId,
+    );
 
     const body = zodParser<RenewDriverApplicationRequest>(
       RenewDriverApplicationSchema,
       req.body,
     );
-    const dto = ApplicationMapper.toRenewDriverApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toRenewDriverApplicationRequestDTO(
+      body,
+      userId,
+    );
     await this._renewDriverApplicationUseCase.execute(dto);
 
     res
       .status(HttpStatusCodes.Created)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
+  @Trace("applications-module")
   async renewVehicleApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info("Submitting renew vehicle application for userId: ", userId);
+    this._logger.info(
+      "Submitting renew vehicle application for userId: ",
+      userId,
+    );
 
     const body = zodParser<RenewVehicleApplicationRequest>(
       RenewVehicleApplicationSchema,
       req.body,
     );
-    const dto = ApplicationMapper.toRenewVehicleApplicationRequestDTO(body, userId);
+    const dto = ApplicationMapper.toRenewVehicleApplicationRequestDTO(
+      body,
+      userId,
+    );
     await this._renewVehicleApplicationUseCase.execute(dto);
 
     res
       .status(HttpStatusCodes.Created)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
-  async resubmitOnboardingApplication(req: Request, res: Response): Promise<void> {
+  @Trace("applications-module")
+  async resubmitOnboardingApplication(
+    req: Request,
+    res: Response,
+  ): Promise<void> {
     const { applicationId } = zodParser<ApplicationIdParamSchemaType>(
       ApplicationIdParamSchema,
       req.params,
@@ -164,10 +203,16 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
-  async resubmitNewVehicleApplication(req: Request, res: Response): Promise<void> {
+  @Trace("applications-module")
+  async resubmitNewVehicleApplication(
+    req: Request,
+    res: Response,
+  ): Promise<void> {
     const { applicationId } = zodParser<ApplicationIdParamSchemaType>(
       ApplicationIdParamSchema,
       req.params,
@@ -187,10 +232,16 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
-  async resubmitRenewDriverApplication(req: Request, res: Response): Promise<void> {
+  @Trace("applications-module")
+  async resubmitRenewDriverApplication(
+    req: Request,
+    res: Response,
+  ): Promise<void> {
     const { applicationId } = zodParser<ApplicationIdParamSchemaType>(
       ApplicationIdParamSchema,
       req.params,
@@ -210,16 +261,25 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
-  async resubmitRenewVehicleApplication(req: Request, res: Response): Promise<void> {
+  @Trace("applications-module")
+  async resubmitRenewVehicleApplication(
+    req: Request,
+    res: Response,
+  ): Promise<void> {
     const { applicationId } = zodParser<ApplicationIdParamSchemaType>(
       ApplicationIdParamSchema,
       req.params,
     );
 
-    this._logger.info("Resubmitting renew vehicle application: ", applicationId);
+    this._logger.info(
+      "Resubmitting renew vehicle application: ",
+      applicationId,
+    );
 
     const body = zodParser<ResubmitRenewVehicleApplicationRequest>(
       ResubmitRenewVehicleApplicationSchema,
@@ -233,9 +293,12 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED));
+      .json(
+        makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_SUBMITTED),
+      );
   }
 
+  @Trace("applications-module")
   async getApplications(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
     const search = req.query.search as string;
@@ -248,9 +311,12 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, result));
+      .json(
+        makeSuccessResponse(GenericSuccessMessage.OPERATION_SUCCESSFUL, result),
+      );
   }
 
+  @Trace("applications-module")
   async getApplicationDetails(req: Request, res: Response): Promise<void> {
     const { applicationId } = zodParser<ApplicationIdParamSchemaType>(
       ApplicationIdParamSchema,
@@ -262,9 +328,8 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       applicationId,
     );
 
-    const details = await this._getApplicationDetailsUseCase.execute(
-      applicationId,
-    );
+    const details =
+      await this._getApplicationDetailsUseCase.execute(applicationId);
     const result = ApplicationMapper.toApplicationDetailsResult(details);
 
     res

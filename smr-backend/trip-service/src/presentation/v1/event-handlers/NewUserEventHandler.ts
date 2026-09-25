@@ -1,5 +1,6 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ICreateNewPassengerUseCase } from "#/application/interfaces/use-case/passenger/ICreateNewPassengerUseCase";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
 
 export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
@@ -8,6 +9,7 @@ export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
     private readonly createNewPassengerUseCase: ICreateNewPassengerUseCase,
   ) {}
 
+  @Trace("trip-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
     this._logger.info("Handling new user event: ", event.payload.userId);
 

@@ -1,5 +1,6 @@
 import { AdminListTransactionsQueryDTO } from "#/application/dto/admin/AdminPaymentsDTO";
 import { IAdminListTransactionsUseCase } from "#/application/interfaces/use-cases/admin/IAdminListTransactionsUseCase";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { IAdminControllerV1 } from "#/presentation/v1/interfaces/IAdminControllerV1";
 import { AdminMapper } from "#/presentation/v1/mapper/AdminMapper";
 import {
@@ -39,6 +40,7 @@ export class AdminControllerV1 implements IAdminControllerV1 {
    *   - filterField (string) — field to filter by
    *   - filterValue (string) — exact value to match
    */
+  @Trace("admin-module")
   async listTransactions(req: Request, res: Response): Promise<void> {
     const query = zodParser<AdminListTransactionsSchemaType>(
       AdminListTransactionsSchema,
@@ -57,10 +59,12 @@ export class AdminControllerV1 implements IAdminControllerV1 {
       limit: query.limit,
       page: query.page,
       search: query.search,
-      searchFields: query.searchFields as AdminListTransactionsQueryDTO["searchFields"],
+      searchFields:
+        query.searchFields as AdminListTransactionsQueryDTO["searchFields"],
       sortField: query.sortField as AdminListTransactionsQueryDTO["sortField"],
       sortValue: query.sortValue,
-      filterField: query.filterField as AdminListTransactionsQueryDTO["filterField"],
+      filterField:
+        query.filterField as AdminListTransactionsQueryDTO["filterField"],
       filterValue: query.filterValue,
     };
 
@@ -70,11 +74,13 @@ export class AdminControllerV1 implements IAdminControllerV1 {
       totalItems: result.paginationMeta.totalItems,
     });
 
-    res.status(HttpStatusCodes.Ok).json(
-      makeSuccessResponse(
-        PaymentSuccessMessage.TRANSACTIONS_FETCHED,
-        AdminMapper.toListTransactionsResult(result),
-      ),
-    );
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          PaymentSuccessMessage.TRANSACTIONS_FETCHED,
+          AdminMapper.toListTransactionsResult(result),
+        ),
+      );
   }
 }

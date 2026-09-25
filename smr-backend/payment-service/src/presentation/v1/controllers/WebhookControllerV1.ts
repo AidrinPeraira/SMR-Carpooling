@@ -1,4 +1,5 @@
 import { IFailedBookingPaymentUseCase } from "#/application/interfaces/use-cases/payment/IFailedBookingPaymentUseCase";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { IWebhookControllerV1 } from "#/presentation/v1/interfaces/IWebhookControllerV1";
 import {
   HttpStatusCodes,
@@ -13,6 +14,7 @@ export class WebhookControllerV1 implements IWebhookControllerV1 {
     private readonly _failedBookingPaymentUseCase: IFailedBookingPaymentUseCase,
   ) {}
 
+  @Trace("webhook-module")
   async clearBookingPayment(req: Request, res: Response): Promise<void> {
     const { bookingPaymentID } = req.body;
     const resolvedBookingPaymentId = bookingPaymentID as string;

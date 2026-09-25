@@ -3,6 +3,7 @@ import { IAddDriverUseCase } from "#/application/interfaces/use-case/driver/IAdd
 import { IUpdateDriverUseCase } from "#/application/interfaces/use-case/driver/IUpdateDriverUseCase";
 import { IAddVehicleUseCase } from "#/application/interfaces/use-case/vehicle/IAddVehicleUseCase";
 import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/vehicle/IUpdateVehicleUseCase";
+import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import {
   ApplicationApprovedEvent,
   ApplicationType,
@@ -24,6 +25,7 @@ export class ApplicationApprovedHandler implements IEventHandler<ApplicationAppr
     private readonly _updateDriverUseCase: IUpdateDriverUseCase,
   ) {}
 
+  @Trace("trip-service-event-handler")
   async handle(event: ApplicationApprovedEvent): Promise<void> {
     const { userId, applicationId, applicationType, driverData, vehicleData } =
       event.payload;
