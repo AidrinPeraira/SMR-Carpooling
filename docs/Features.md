@@ -78,4 +78,5 @@
 
 //list transactions in profile
 //list transactions for admin
-//chat call
+//chat call history. Where to see that?
+//
