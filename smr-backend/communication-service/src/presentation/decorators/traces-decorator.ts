@@ -12,16 +12,19 @@ import { Span, SpanStatusCode, trace } from "@opentelemetry/api";
 export function Trace(moduleName: string) {
   //we use factory pattern to return the actual decorator method
   return function (
-    originalMethod: Function,
-    context: ClassMethodDecoratorContext,
+    _target: unknown,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
   ) {
+    const originalMethod = descriptor.value as Function;
+
     //first we get ourselves the otel instance to trace requests
     const tracer = trace.getTracer(moduleName);
 
     //we replace the original fucntion logic to add our own
     function replacementMethod(this: unknown, ...args: unknown[]) {
       //extract the method name to keep things simple
-      const methodName = String(context.name);
+      const methodName = propertyKey;
 
       return tracer.startActiveSpan(methodName, (span: Span) => {
         try {
@@ -38,6 +41,7 @@ export function Trace(moduleName: string) {
       });
     }
 
-    return replacementMethod;
+    descriptor.value = replacementMethod;
+    return descriptor;
   };
 }
