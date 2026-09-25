@@ -11,7 +11,7 @@ export class UserUnblockedEventHandler implements IEventHandler<UserUnblockedEve
     private readonly _unblockPassengerUseCase: IUnblockPassengerUseCase,
   ) {}
 
-  @Trace("trip-service-event=handler")
+  @Trace("trip-service-event-handler")
   async handle(event: UserUnblockedEvent): Promise<void> {
     const { userId, isDriver } = event.payload;
 

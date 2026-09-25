@@ -9,7 +9,7 @@ export class BookingPaymentFailedEventHandler implements IEventHandler<BookingPa
     private readonly _cleanUpBookingPaymentUseCase: ICleanUpBookingPaymentUseCase,
   ) {}
 
-  @Trace("trip-service-event=handler")
+  @Trace("trip-service-event-handler")
   async handle(event: BookingPaymentFailureEvent): Promise<void> {
     this._logger.info(
       "Handling booking payment failure event: ",

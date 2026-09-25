@@ -11,7 +11,7 @@ export class UserBlockedEventHandler implements IEventHandler<UserBlockedEvent> 
     private readonly _blockPassengerUseCase: IBlockPassengerUseCase,
   ) {}
 
-  @Trace("trip-service-event=handler")
+  @Trace("trip-service-event-handler")
   async handle(event: UserBlockedEvent): Promise<void> {
     const { userId, isDriver } = event.payload;
 

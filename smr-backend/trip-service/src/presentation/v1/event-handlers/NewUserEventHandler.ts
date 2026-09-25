@@ -9,7 +9,7 @@ export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
     private readonly createNewPassengerUseCase: ICreateNewPassengerUseCase,
   ) {}
 
-  @Trace("trip-service-event=handler")
+  @Trace("trip-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
     this._logger.info("Handling new user event: ", event.payload.userId);
 

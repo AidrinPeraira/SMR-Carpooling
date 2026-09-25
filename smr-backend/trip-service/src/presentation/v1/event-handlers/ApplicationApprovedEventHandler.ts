@@ -25,7 +25,7 @@ export class ApplicationApprovedHandler implements IEventHandler<ApplicationAppr
     private readonly _updateDriverUseCase: IUpdateDriverUseCase,
   ) {}
 
-  @Trace("trip-service-event=handler")
+  @Trace("trip-service-event-handler")
   async handle(event: ApplicationApprovedEvent): Promise<void> {
     const { userId, applicationId, applicationType, driverData, vehicleData } =
       event.payload;

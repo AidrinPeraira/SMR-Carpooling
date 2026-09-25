@@ -12,7 +12,7 @@ export class BookingPaymentSuccessEventHandler implements IEventHandler<BookingP
     private readonly _confirmBookingPaymentUseCase: IConfirmBookingPaymentUseCase,
   ) {}
 
-  @Trace("trip-service-event=handler")
+  @Trace("trip-service-event-handler")
   async handle(event: BookingPaymentSuccessEvent): Promise<void> {
     this._logger.info(
       "Handling booking payment success event: ",
