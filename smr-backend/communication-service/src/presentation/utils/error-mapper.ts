@@ -5,7 +5,6 @@ import {
   ErrorCode,
   ErrorDetails,
   GenericErrorMessage,
-  UserErrorMessage,
 } from "@sharemyride/shared";
 
 export const mapError = (err: unknown): ApplicationError => {
