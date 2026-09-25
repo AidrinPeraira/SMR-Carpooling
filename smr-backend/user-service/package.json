@@ -45,7 +45,7 @@
     "@opentelemetry/sdk-trace-node": "^2.11.0",
     "@opentelemetry/semantic-conventions": "^1.43.0",
     "@opentelemetry/winston-transport": "^0.32.0",
-    "@sharemyride/shared": "^0.0.9",
+    "@sharemyride/shared": "^0.1.0",
     "add": "^2.0.6",
     "amqplib": "^2.0.1",
     "cors": "^2.8.6",
