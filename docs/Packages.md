@@ -104,6 +104,20 @@
 - trip service methods align with the postgress requirements and hence prism
 - prisma is a common orm that allows usage of postgress like mongoose
 
+## Upstash Q-Stash
+
+- Lets us publish schedule jobs into a queue
+- The scheduled jobs will run using webhooks to our server.
+- No need to manage seperate worker process
+
+## socket.io
+
+- Realtime
+
+## WebRTC
+
+- voice call
+
 ## Observability: Opentelemetry, Graphana (Loki, Prometheus, Tempo)
 
 - Observability for System metrics, Request Metrics, Traces and Logs
