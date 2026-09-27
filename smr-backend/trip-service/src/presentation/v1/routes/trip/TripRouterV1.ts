@@ -37,6 +37,27 @@ export function createTripRouterV1(
     (req, res, next) => tripController.driverArrivedAtStop(req, res, next),
   );
 
+  // Driver: Verify a passenger pickup with the pickup OTP
+  router.patch(
+    "/driver/journey/pickup",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.verifyPickup(req, res, next),
+  );
+
+  // Driver: Mark a passenger as dropped off
+  router.patch(
+    "/driver/journey/dropoff",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.markDropOff(req, res, next),
+  );
+
+  // Driver: Complete the journey and the trip it tracks
+  router.patch(
+    "/driver/journey/complete",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.completeJourney(req, res, next),
+  );
+
   // Driver: Get specific trip details
   router.get(
     "/driver/:tripId",

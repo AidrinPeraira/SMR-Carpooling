@@ -1,0 +1,121 @@
+info:
+  name: complete-journey
+  type: http
+  seq: 11
+
+http:
+  method: PATCH
+  url: http://localhost:4000/api/v1/trips/driver/journey/complete
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY1ODg0NSwiZXhwIjoxNzg2NjU5NzQ1fQ.JvCgVxF6Ra33cJQ-RpNvr1SB76cMDpFeykRk8noR8fI
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |-
+      {
+        "journey_id": "f23a4192-8051-4091-a129-f12a32c25679"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/trips/driver/journey/complete
+      method: PATCH
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY1ODg0NSwiZXhwIjoxNzg2NjU5NzQ1fQ.JvCgVxF6Ra33cJQ-RpNvr1SB76cMDpFeykRk8noR8fI
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |-
+          {
+            "journey_id": "f23a4192-8051-4091-a129-f12a32c25679"
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Trip marked as completed.",
+            "payload": null
+          }
+  - name: example-passengers-still-onboard
+    request:
+      url: http://localhost:4000/api/v1/trips/driver/journey/complete
+      method: PATCH
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY1ODg0NSwiZXhwIjoxNzg2NjU5NzQ1fQ.JvCgVxF6Ra33cJQ-RpNvr1SB76cMDpFeykRk8noR8fI
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |-
+          {
+            "journey_id": "f23a4192-8051-4091-a129-f12a32c25679"
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Drop off every passenger before completing the trip.",
+            "error": {
+              "code": "ERR_INPUT_FORBIDDEN",
+              "details": "This action is not allowed."
+            }
+          }
+  - name: example-journey-not-ongoing
+    request:
+      url: http://localhost:4000/api/v1/trips/driver/journey/complete
+      method: PATCH
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY1ODg0NSwiZXhwIjoxNzg2NjU5NzQ1fQ.JvCgVxF6Ra33cJQ-RpNvr1SB76cMDpFeykRk8noR8fI
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      body:
+        type: json
+        data: |-
+          {
+            "journey_id": "f23a4192-8051-4091-a129-f12a32c25679"
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "This trip is no longer ongoing.",
+            "error": {
+              "code": "ERR_INPUT_FORBIDDEN",
+              "details": "This action is not allowed."
+            }
+          }

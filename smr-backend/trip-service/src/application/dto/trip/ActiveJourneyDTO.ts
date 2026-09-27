@@ -32,6 +32,26 @@ export interface DriverGetActiveJourneyResponseDTO {
   passengers: ActiveJourneyPassengerDetails[];
 }
 
+export interface DriverVerifyPickupRequestDTO {
+  journeyId: string;
+  driverId: string;
+  passengerId: string;
+  pickupOTP: string;
+}
+
+export interface DriverMarkDropOffRequestDTO {
+  journeyId: string;
+  driverId: string;
+  passengerId: string;
+  driverLat: number;
+  driverLng: number;
+}
+
+export interface DriverCompleteJourneyRequestDTO {
+  journeyId: string;
+  driverId: string;
+}
+
 export interface DriverArrivedAtStopRequestDTO {
   journeyId: string;
   driverId: string;

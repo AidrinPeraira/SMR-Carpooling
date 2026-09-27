@@ -42,4 +42,11 @@ export interface ITripControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+  verifyPickup(req: Request, res: Response, next: NextFunction): Promise<void>;
+  markDropOff(req: Request, res: Response, next: NextFunction): Promise<void>;
+  completeJourney(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

@@ -55,6 +55,35 @@ export type DriverArrivedAtStopSchemaType = z.infer<
   typeof DriverArrivedAtStopSchema
 >;
 
+export const DriverVerifyPickupSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+  pickup_otp: z.string().min(1),
+});
+
+export type DriverVerifyPickupSchemaType = z.infer<
+  typeof DriverVerifyPickupSchema
+>;
+
+export const DriverMarkDropOffSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+  driver_lat: z.number(),
+  driver_lng: z.number(),
+});
+
+export type DriverMarkDropOffSchemaType = z.infer<
+  typeof DriverMarkDropOffSchema
+>;
+
+export const DriverCompleteJourneySchema = z.object({
+  journey_id: z.string().min(1),
+});
+
+export type DriverCompleteJourneySchemaType = z.infer<
+  typeof DriverCompleteJourneySchema
+>;
+
 export const CreateBookingSchema = z.object({
   trip_id: z.string().min(1),
   pickup_point: TripStopSchema,

@@ -3,8 +3,10 @@ import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IJourneyPassengerRepository } from "#/application/interfaces/repository/IJourneyPassengerRepository";
 import { IJourneyRepository } from "#/application/interfaces/repository/IJourneyRepository";
 import { IDriverArrivedAtStopUseCase } from "#/application/interfaces/use-case/trip/IDriverArrivedAtStopUseCase";
+import { ARRIVAL_RANGE_METERS } from "#/domain/constants/journey";
 import {
   ApplicationError,
+  distanceInMeters,
   DriverArrivedAtStopEvent,
   ErrorCode,
   ErrorDetails,
@@ -14,11 +16,6 @@ import {
   TripErrorMessage,
   TripStatus,
 } from "@sharemyride/shared";
-
-//how close the driver has to be to a stop to mark it as reached
-const ARRIVAL_RANGE_METERS = 200;
-
-const EARTH_RADIUS_METERS = 6371000;
 
 /**
  * This class implements the use case that handles
@@ -119,7 +116,7 @@ export class DriverArrivedAtStopUseCase implements IDriverArrivedAtStopUseCase {
     if (stop.arrivedAt) return;
 
     //the driver has to be within range of the stop to mark it reached
-    const distance = this._distanceInMeters(
+    const distance = distanceInMeters(
       dto.driverLat,
       dto.driverLng,
       stop.stopLat,
@@ -173,30 +170,5 @@ export class DriverArrivedAtStopUseCase implements IDriverArrivedAtStopUseCase {
     };
 
     await this._eventBus.publish(arrivedEvent);
-  }
-
-  /**
-   * Distance between two coordinates in meters, used to check the driver
-   * is actually at the stop they are marking as reached.
-   */
-  private _distanceInMeters(
-    fromLat: number,
-    fromLng: number,
-    toLat: number,
-    toLng: number,
-  ): number {
-    const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
-
-    const deltaLat = toRadians(toLat - fromLat);
-    const deltaLng = toRadians(toLng - fromLng);
-
-    const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(toRadians(fromLat)) *
-        Math.cos(toRadians(toLat)) *
-        Math.sin(deltaLng / 2) *
-        Math.sin(deltaLng / 2);
-
-    return EARTH_RADIUS_METERS * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 }

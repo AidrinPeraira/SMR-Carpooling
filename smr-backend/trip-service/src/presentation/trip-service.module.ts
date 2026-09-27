@@ -69,6 +69,9 @@ import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase
 import { DriverStartTripUseCase } from "#/application/use-case/trip/DriverStartTripUseCase";
 import { DriverGetActiveJourneyUseCase } from "#/application/use-case/trip/DriverGetActiveJourneyUseCase";
 import { DriverArrivedAtStopUseCase } from "#/application/use-case/trip/DriverArrivedAtStopUseCase";
+import { DriverVerifyPickupUseCase } from "#/application/use-case/trip/DriverVerifyPickupUseCase";
+import { DriverMarkDropOffUseCase } from "#/application/use-case/trip/DriverMarkDropOffUseCase";
+import { DriverCompleteJourneyUseCase } from "#/application/use-case/trip/DriverCompleteJourneyUseCase";
 import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
 import { JourneyPassengerRepository } from "#/infrastructure/repository/JourneyPassengerRepository";
 
@@ -362,6 +365,23 @@ const driverArrivedAtStopUseCase = new DriverArrivedAtStopUseCase(
   eventBusInstance,
 );
 
+const driverVerifyPickupUseCase = new DriverVerifyPickupUseCase(
+  journeyRepository,
+  journeyPassengerRepository,
+);
+
+const driverMarkDropOffUseCase = new DriverMarkDropOffUseCase(
+  journeyRepository,
+  journeyPassengerRepository,
+);
+
+const driverCompleteJourneyUseCase = new DriverCompleteJourneyUseCase(
+  journeyRepository,
+  journeyPassengerRepository,
+  tripsRepository,
+  bookingsRepository,
+);
+
 const getDriverOverviewUseCase = new GetDriverOverviewUseCase(
   driverRepository,
   bookingsRepository,
@@ -423,6 +443,9 @@ const tripControllerV1 = new TripControllerV1(
   driverStartTripUseCase,
   driverGetActiveJourneyUseCase,
   driverArrivedAtStopUseCase,
+  driverVerifyPickupUseCase,
+  driverMarkDropOffUseCase,
+  driverCompleteJourneyUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(
