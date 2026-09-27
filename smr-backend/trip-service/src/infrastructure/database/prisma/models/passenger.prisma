@@ -7,6 +7,5 @@ model Passenger {
   createdAt   DateTime
   updatedAt   DateTime
 
-  bookings          Bookings[]
-  journeyPassengers JourneyPassenger[]
+  bookings Bookings[]
 }

@@ -7,7 +7,6 @@ enum BookingStatus {
   rejected
   withdrawn
   cancelled
-  completed
 }
 
 model Bookings {
@@ -38,6 +37,4 @@ model Bookings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  journeyPassenger JourneyPassenger?
 }

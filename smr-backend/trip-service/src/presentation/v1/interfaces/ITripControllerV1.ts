@@ -27,26 +27,4 @@ export interface ITripControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
-  startTrip(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void>;
-  getDriverActiveJourney(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void>;
-  driverArrivedAtStop(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void>;
-  verifyPickup(req: Request, res: Response, next: NextFunction): Promise<void>;
-  markDropOff(req: Request, res: Response, next: NextFunction): Promise<void>;
-  completeJourney(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void>;
 }

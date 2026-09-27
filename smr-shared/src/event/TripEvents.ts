@@ -1,4 +1,3 @@
-import { StopType } from "../enums";
 import { DomainEvent } from "./DomainEvent";
 
 export interface DriverCancelTripEventPayload {
@@ -25,16 +24,3 @@ export interface NewTripEventPayload {
 }
 
 export type NewTripEvent = DomainEvent<NewTripEventPayload>;
-
-export interface DriverArrivedAtStopEventPayload {
-  journeyId: string;
-  driverId: string;
-  passengerId: string;
-  passengerName: string;
-  stopType: StopType;
-  stopName: string;
-  arrivedAt: Date;
-}
-
-export type DriverArrivedAtStopEvent =
-  DomainEvent<DriverArrivedAtStopEventPayload>;

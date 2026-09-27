@@ -5,25 +5,11 @@ import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICrea
 import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
-import { IDriverStartTripUseCase } from "#/application/interfaces/use-case/trip/IDriverStartTripUseCase";
-import { IDriverGetActiveJourneyUseCase } from "#/application/interfaces/use-case/trip/IDriverGetActiveJourneyUseCase";
-import { IDriverArrivedAtStopUseCase } from "#/application/interfaces/use-case/trip/IDriverArrivedAtStopUseCase";
-import { IDriverVerifyPickupUseCase } from "#/application/interfaces/use-case/trip/IDriverVerifyPickupUseCase";
-import { IDriverMarkDropOffUseCase } from "#/application/interfaces/use-case/trip/IDriverMarkDropOffUseCase";
-import { IDriverCompleteJourneyUseCase } from "#/application/interfaces/use-case/trip/IDriverCompleteJourneyUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
   CreateTripRequest,
   CreateTripSchema,
-  DriverArrivedAtStopSchema,
-  DriverArrivedAtStopSchemaType,
-  DriverCompleteJourneySchema,
-  DriverCompleteJourneySchemaType,
-  DriverMarkDropOffSchema,
-  DriverMarkDropOffSchemaType,
-  DriverVerifyPickupSchema,
-  DriverVerifyPickupSchemaType,
   DriverGetTripsQueryRequest,
   DriverGetTripsQuerySchema,
   GenericSuccessMessage,
@@ -34,7 +20,6 @@ import {
   makeSuccessResponse,
   SearchTripRequest,
   SearchTripSchema,
-  TripSuccessMessage,
   zodParser,
 } from "@sharemyride/shared";
 import { Trace } from "#/presentation/utils/decorators/traces-decorator";
@@ -48,12 +33,6 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _driverListTripsUseCase: IDriverListTripsUseCase,
     private readonly _driverGetTripDetailsUseCase: IDriverGetTripDetailsUseCase,
     private readonly _cancelTripUseCase: ICancelTripUseCas,
-    private readonly _driverStartTripUseCase: IDriverStartTripUseCase,
-    private readonly _driverGetActiveJourneyUseCase: IDriverGetActiveJourneyUseCase,
-    private readonly _driverArrivedAtStopUseCase: IDriverArrivedAtStopUseCase,
-    private readonly _driverVerifyPickupUseCase: IDriverVerifyPickupUseCase,
-    private readonly _driverMarkDropOffUseCase: IDriverMarkDropOffUseCase,
-    private readonly _driverCompleteJourneyUseCase: IDriverCompleteJourneyUseCase,
   ) {}
 
   @Trace("trip-module")
@@ -240,194 +219,6 @@ export class TripControllerV1 implements ITripControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(makeSuccessResponse("Trip cancelled successfully", null));
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  @Trace("trip-module")
-  async startTrip(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const driverId = req.headers["x-user-id"] as string;
-      const { tripId } = req.params;
-
-      this._logger.info("Starting trip:", { driverId, tripId });
-
-      await this._driverStartTripUseCase.execute(tripId as string, driverId);
-
-      res
-        .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse(TripSuccessMessage.STARTED, null));
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  @Trace("trip-module")
-  async getDriverActiveJourney(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const driverId = req.headers["x-user-id"] as string;
-
-      this._logger.info("Fetching active journey for driver:", { driverId });
-
-      const result =
-        await this._driverGetActiveJourneyUseCase.execute(driverId);
-      const mapped = TripMapper.toDriverActiveJourneyResponse(result);
-
-      res
-        .status(HttpStatusCodes.Ok)
-        .json(
-          makeSuccessResponse("Active journey fetched successfully", mapped),
-        );
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  @Trace("trip-module")
-  async driverArrivedAtStop(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const driverId = req.headers["x-user-id"] as string;
-
-      const validatedBody = zodParser<DriverArrivedAtStopSchemaType>(
-        DriverArrivedAtStopSchema,
-        req.body,
-      );
-
-      this._logger.info("Marking stop as reached by driver:", {
-        driverId,
-        journeyId: validatedBody.journey_id,
-        passengerId: validatedBody.passenger_id,
-        stopType: validatedBody.stop_type,
-      });
-
-      await this._driverArrivedAtStopUseCase.execute({
-        journeyId: validatedBody.journey_id,
-        driverId,
-        passengerId: validatedBody.passenger_id,
-        stopType: validatedBody.stop_type,
-        driverLat: validatedBody.driver_lat,
-        driverLng: validatedBody.driver_lng,
-      });
-
-      res
-        .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Stop marked as reached", null));
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  @Trace("trip-module")
-  async verifyPickup(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const driverId = req.headers["x-user-id"] as string;
-
-      const validatedBody = zodParser<DriverVerifyPickupSchemaType>(
-        DriverVerifyPickupSchema,
-        req.body,
-      );
-
-      this._logger.info("Verifying passenger pickup:", {
-        driverId,
-        journeyId: validatedBody.journey_id,
-        passengerId: validatedBody.passenger_id,
-      });
-
-      await this._driverVerifyPickupUseCase.execute({
-        journeyId: validatedBody.journey_id,
-        driverId,
-        passengerId: validatedBody.passenger_id,
-        pickupOTP: validatedBody.pickup_otp,
-      });
-
-      res
-        .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Passenger picked up", null));
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  @Trace("trip-module")
-  async markDropOff(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const driverId = req.headers["x-user-id"] as string;
-
-      const validatedBody = zodParser<DriverMarkDropOffSchemaType>(
-        DriverMarkDropOffSchema,
-        req.body,
-      );
-
-      this._logger.info("Marking passenger drop off:", {
-        driverId,
-        journeyId: validatedBody.journey_id,
-        passengerId: validatedBody.passenger_id,
-      });
-
-      await this._driverMarkDropOffUseCase.execute({
-        journeyId: validatedBody.journey_id,
-        driverId,
-        passengerId: validatedBody.passenger_id,
-        driverLat: validatedBody.driver_lat,
-        driverLng: validatedBody.driver_lng,
-      });
-
-      res
-        .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse("Passenger dropped off", null));
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  @Trace("trip-module")
-  async completeJourney(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const driverId = req.headers["x-user-id"] as string;
-
-      const validatedBody = zodParser<DriverCompleteJourneySchemaType>(
-        DriverCompleteJourneySchema,
-        req.body,
-      );
-
-      this._logger.info("Completing journey:", {
-        driverId,
-        journeyId: validatedBody.journey_id,
-      });
-
-      await this._driverCompleteJourneyUseCase.execute({
-        journeyId: validatedBody.journey_id,
-        driverId,
-      });
-
-      res
-        .status(HttpStatusCodes.Ok)
-        .json(makeSuccessResponse(TripSuccessMessage.COMPLETED, null));
     } catch (error) {
       next(error);
     }

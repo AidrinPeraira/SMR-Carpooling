@@ -63,17 +63,6 @@ import { InitiateBookingPaymentUseCase } from "#/application/use-case/booking/In
 import { ConfirmBookingPaymentUseCase } from "#/application/use-case/booking/ConfirmBookingPaymentUseCase";
 import { CleanUpBookingPaymentUseCase } from "#/application/use-case/booking/CleanUpBookingPaymentUseCase";
 import { CleanUpTripsIndexingUseCase } from "#/application/use-case/trip/CleanUpTripsIndexingUseCase";
-import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
-import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
-import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
-import { DriverStartTripUseCase } from "#/application/use-case/trip/DriverStartTripUseCase";
-import { DriverGetActiveJourneyUseCase } from "#/application/use-case/trip/DriverGetActiveJourneyUseCase";
-import { DriverArrivedAtStopUseCase } from "#/application/use-case/trip/DriverArrivedAtStopUseCase";
-import { DriverVerifyPickupUseCase } from "#/application/use-case/trip/DriverVerifyPickupUseCase";
-import { DriverMarkDropOffUseCase } from "#/application/use-case/trip/DriverMarkDropOffUseCase";
-import { DriverCompleteJourneyUseCase } from "#/application/use-case/trip/DriverCompleteJourneyUseCase";
-import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
-import { JourneyPassengerRepository } from "#/infrastructure/repository/JourneyPassengerRepository";
 
 /**
  * Composition Root for the Trip Service.
@@ -97,8 +86,6 @@ const tripsRepository = new TripsRepository(
   geoIndexingService,
   placesCacheStore,
 );
-const journeyRepository = new JourneyRepository();
-const journeyPassengerRepository = new JourneyPassengerRepository();
 
 // Driver & User Vehicle Use Cases
 const addDriverUseCase = new AddDriverUseCase(
@@ -292,7 +279,6 @@ import { AdminTripControllerV1 } from "#/presentation/v1/controllers/admin/Admin
 import { AdminBookingControllerV1 } from "#/presentation/v1/controllers/admin/AdminBookingControllerV1";
 import { createAdminTripRouterV1 } from "#/presentation/v1/routes/admin/AdminTripRouterV1";
 import { createAdminBookingRouterV1 } from "#/presentation/v1/routes/admin/AdminBookingRouterV1";
-import { GetDriverOverviewUseCase } from "#/application/use-case/driver/GetDriverOverviewUseCase";
 
 // Admin Trip & Booking Use Cases
 const adminListAllTripsUseCase = new AdminListAllTripsUseCase(tripsRepository);
@@ -335,60 +321,6 @@ const updateVehicleUseCase = new UpdateVehicleUseCase(
   eventBusInstance,
 );
 
-const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
-const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
-  tripsRepository,
-);
-const cancelTripUseCase = new CancelTripUseCase(
-  tripsRepository,
-  bookingsRepository,
-  driverRepository,
-  eventBusInstance,
-);
-
-const driverStartTripUseCase = new DriverStartTripUseCase(
-  driverRepository,
-  tripsRepository,
-  passengerRepository,
-  journeyRepository,
-  journeyPassengerRepository,
-);
-
-const driverGetActiveJourneyUseCase = new DriverGetActiveJourneyUseCase(
-  journeyRepository,
-  journeyPassengerRepository,
-);
-
-const driverArrivedAtStopUseCase = new DriverArrivedAtStopUseCase(
-  journeyRepository,
-  journeyPassengerRepository,
-  eventBusInstance,
-);
-
-const driverVerifyPickupUseCase = new DriverVerifyPickupUseCase(
-  journeyRepository,
-  journeyPassengerRepository,
-);
-
-const driverMarkDropOffUseCase = new DriverMarkDropOffUseCase(
-  journeyRepository,
-  journeyPassengerRepository,
-);
-
-const driverCompleteJourneyUseCase = new DriverCompleteJourneyUseCase(
-  journeyRepository,
-  journeyPassengerRepository,
-  tripsRepository,
-  bookingsRepository,
-);
-
-const getDriverOverviewUseCase = new GetDriverOverviewUseCase(
-  driverRepository,
-  bookingsRepository,
-  tripsRepository,
-  vehicleRepository,
-);
-
 // Controllers
 const adminConfigurationControllerV1 = new AdminConfigurationControllerV1(
   consolaLogger,
@@ -424,12 +356,26 @@ const adminBookingControllerV1 = new AdminBookingControllerV1(
 const driverControllerV1 = new DriverControllerV1(
   consolaLogger,
   getDriverDetailsUseCase,
-  getDriverOverviewUseCase,
 );
 
 const vehicleControllerV1 = new VehicleControllerV1(
   consolaLogger,
   getDriverVehiclesUseCase,
+);
+
+import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
+import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
+import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
+
+const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
+const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
+  tripsRepository,
+);
+const cancelTripUseCase = new CancelTripUseCase(
+  tripsRepository,
+  bookingsRepository,
+  driverRepository,
+  eventBusInstance,
 );
 
 const tripControllerV1 = new TripControllerV1(
@@ -440,12 +386,6 @@ const tripControllerV1 = new TripControllerV1(
   driverListTripsUseCase,
   driverGetTripDetailsUseCase,
   cancelTripUseCase,
-  driverStartTripUseCase,
-  driverGetActiveJourneyUseCase,
-  driverArrivedAtStopUseCase,
-  driverVerifyPickupUseCase,
-  driverMarkDropOffUseCase,
-  driverCompleteJourneyUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(

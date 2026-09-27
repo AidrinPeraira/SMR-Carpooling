@@ -1,34 +1,22 @@
 "use client";
 
 import { Button, Card, CardBody, Tag } from "@sharemyride/ui";
-import { AlertCircle, PlayCircle, XCircle } from "lucide-react";
+import { AlertCircle, XCircle } from "lucide-react";
 
 interface DriverTripActionCardProps {
   tripStatus: string;
-  tripDate: string;
   onCancelTrip?: () => void;
-  onStartTrip?: () => void;
   isCancelling?: boolean;
 }
 
 export function DriverTripActionCard({
   tripStatus,
-  tripDate,
   onCancelTrip,
-  onStartTrip,
   isCancelling = false,
 }: DriverTripActionCardProps) {
   const normalizedStatus = tripStatus.toLowerCase();
   const canCancel =
     normalizedStatus === "scheduled" || normalizedStatus === "fully_booked";
-
-  const today = new Date();
-  const tripDay = new Date(tripDate);
-  const isTripToday =
-    today.getFullYear() === tripDay.getFullYear() &&
-    today.getMonth() === tripDay.getMonth() &&
-    today.getDate() === tripDay.getDate();
-  const canStartTrip = canCancel && isTripToday;
 
   if (canCancel) {
     return (
@@ -46,32 +34,17 @@ export function DriverTripActionCard({
             </div>
           </div>
 
-          <div className="flex gap-2 w-full sm:w-auto">
-            {canStartTrip && (
-              <Button
-                variant="primary"
-                className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2 shrink-0"
-                onClick={
-                  onStartTrip ||
-                  (() => alert("Start trip feature coming soon!"))
-                }
-              >
-                <PlayCircle className="w-4 h-4" />
-                Start Trip
-              </Button>
-            )}
-            <Button
-              variant="danger"
-              className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2 shrink-0"
-              disabled={isCancelling}
-              onClick={
-                onCancelTrip || (() => alert("Cancel trip feature coming soon!"))
-              }
-            >
-              <XCircle className="w-4 h-4" />
-              {isCancelling ? "Cancelling..." : "Cancel Trip"}
-            </Button>
-          </div>
+          <Button
+            variant="danger"
+            className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2 shrink-0"
+            disabled={isCancelling}
+            onClick={
+              onCancelTrip || (() => alert("Cancel trip feature coming soon!"))
+            }
+          >
+            <XCircle className="w-4 h-4" />
+            {isCancelling ? "Cancelling..." : "Cancel Trip"}
+          </Button>
         </CardBody>
       </Card>
     );
