@@ -5,6 +5,7 @@ import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICrea
 import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
+import { IDriverStartTripUseCase } from "#/application/interfaces/use-case/trip/IDriverStartTripUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
@@ -20,6 +21,7 @@ import {
   makeSuccessResponse,
   SearchTripRequest,
   SearchTripSchema,
+  TripSuccessMessage,
   zodParser,
 } from "@sharemyride/shared";
 import { Trace } from "#/presentation/utils/decorators/traces-decorator";
@@ -33,6 +35,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _driverListTripsUseCase: IDriverListTripsUseCase,
     private readonly _driverGetTripDetailsUseCase: IDriverGetTripDetailsUseCase,
     private readonly _cancelTripUseCase: ICancelTripUseCas,
+    private readonly _driverStartTripUseCase: IDriverStartTripUseCase,
   ) {}
 
   @Trace("trip-module")
@@ -219,6 +222,28 @@ export class TripControllerV1 implements ITripControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(makeSuccessResponse("Trip cancelled successfully", null));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("trip-module")
+  async startTrip(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+      const { tripId } = req.params;
+
+      this._logger.info("Starting trip:", { driverId, tripId });
+
+      await this._driverStartTripUseCase.execute(tripId as string, driverId);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(makeSuccessResponse(TripSuccessMessage.STARTED, null));
     } catch (error) {
       next(error);
     }

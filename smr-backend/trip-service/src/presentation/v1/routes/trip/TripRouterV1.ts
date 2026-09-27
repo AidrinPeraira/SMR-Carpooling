@@ -50,5 +50,12 @@ export function createTripRouterV1(
     (req, res, next) => tripController.cancelTrip(req, res, next),
   );
 
+  // Driver: Start trip
+  router.patch(
+    "/driver/:tripId/start",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.startTrip(req, res, next),
+  );
+
   return router;
 }

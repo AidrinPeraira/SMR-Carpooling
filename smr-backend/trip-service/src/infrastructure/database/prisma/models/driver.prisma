@@ -18,4 +18,5 @@ model Driver {
 
   vehicles Vehicle[]
   trips    Trip[]
+  journeys Journey[]
 }

@@ -27,4 +27,9 @@ export interface ITripControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+  startTrip(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

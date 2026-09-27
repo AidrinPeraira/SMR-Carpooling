@@ -66,6 +66,9 @@ import { CleanUpTripsIndexingUseCase } from "#/application/use-case/trip/CleanUp
 import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
 import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
 import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
+import { DriverStartTripUseCase } from "#/application/use-case/trip/DriverStartTripUseCase";
+import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
+import { JourneyPassengerRepository } from "#/infrastructure/repository/JourneyPassengerRepository";
 
 /**
  * Composition Root for the Trip Service.
@@ -89,6 +92,8 @@ const tripsRepository = new TripsRepository(
   geoIndexingService,
   placesCacheStore,
 );
+const journeyRepository = new JourneyRepository();
+const journeyPassengerRepository = new JourneyPassengerRepository();
 
 // Driver & User Vehicle Use Cases
 const addDriverUseCase = new AddDriverUseCase(
@@ -336,6 +341,14 @@ const cancelTripUseCase = new CancelTripUseCase(
   eventBusInstance,
 );
 
+const driverStartTripUseCase = new DriverStartTripUseCase(
+  driverRepository,
+  tripsRepository,
+  passengerRepository,
+  journeyRepository,
+  journeyPassengerRepository,
+);
+
 const getDriverOverviewUseCase = new GetDriverOverviewUseCase(
   driverRepository,
   bookingsRepository,
@@ -394,6 +407,7 @@ const tripControllerV1 = new TripControllerV1(
   driverListTripsUseCase,
   driverGetTripDetailsUseCase,
   cancelTripUseCase,
+  driverStartTripUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(

@@ -3,6 +3,7 @@ export enum TripSuccessMessage {
   JOINED = "You have successfully joined the trip.",
   CANCELLED = "The trip has been cancelled.",
   COMPLETED = "Trip marked as completed.",
+  STARTED = "Trip started successfully.",
 }
 
 export enum TripErrorMessage {
@@ -14,4 +15,8 @@ export enum TripErrorMessage {
   CANCELLED = "The trip has been cancelled.",
   UNAUTHORIZED_CANCELLATION = "Only the trip creator can cancel this trip.",
   PAST_DATE = "Cannot schedule a trip for a past date.",
+  CANNOT_START = "Trip cannot be started right now",
+  ALREADY_STARTED = "This trip has already been started.",
+  UNAUTHORIZED_START = "Only the trip creator can start this trip.",
+  NOT_TRIP_DATE = "A trip can only be started on its scheduled date.",
 }

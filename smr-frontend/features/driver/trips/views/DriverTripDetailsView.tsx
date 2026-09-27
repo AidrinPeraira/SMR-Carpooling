@@ -464,6 +464,7 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
         />
         <DriverTripActionCard
           tripStatus={tripDetails.trip_status}
+          tripDate={tripDetails.start_time}
           onCancelTrip={() => setIsCancelDialogOpen(true)}
           isCancelling={isCancelling}
         />

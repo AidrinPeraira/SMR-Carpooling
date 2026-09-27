@@ -415,6 +415,29 @@ export class TripsRepository implements ITripRepository {
   }
 
   /**
+   * Finds the position of every place touched by a trip along its route
+   * @param tripId Trip ID
+   */
+  async findTripPlaceSequence(tripId: string): Promise<Map<string, number>> {
+    const places = await this._tripPlacesModel.findMany({
+      where: { tripId },
+      select: { placeIndex: true, seqNumber: true },
+    });
+
+    const sequenceByPlace = new Map<string, number>();
+
+    for (const place of places) {
+      // a place is reached at the earliest sequence number covering it
+      const current = sequenceByPlace.get(place.placeIndex);
+      if (current === undefined || place.seqNumber < current) {
+        sequenceByPlace.set(place.placeIndex, place.seqNumber);
+      }
+    }
+
+    return sequenceByPlace;
+  }
+
+  /**
    * Match data with trips that match using the indexed tables
    * @param dto Search parameters
    */

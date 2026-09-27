@@ -87,6 +87,14 @@ export interface ITripRepository {
   findByTripId(tripId: string): Promise<TripEntity | null>;
 
   /**
+   * Finds the position of every place touched by a trip along its route
+   *
+   * @param tripId Trip ID
+   * @return Map of place index to its sequence number on the route
+   */
+  findTripPlaceSequence(tripId: string): Promise<Map<string, number>>;
+
+  /**
    * Updates fields of a trip by tripId
    *
    * @param tripId Trip ID
