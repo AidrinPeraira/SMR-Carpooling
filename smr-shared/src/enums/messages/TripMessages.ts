@@ -19,4 +19,5 @@ export enum TripErrorMessage {
   ALREADY_STARTED = "This trip has already been started.",
   UNAUTHORIZED_START = "Only the trip creator can start this trip.",
   NOT_TRIP_DATE = "A trip can only be started on its scheduled date.",
+  NO_ACTIVE_JOURNEY = "You do not have an ongoing trip right now.",
 }

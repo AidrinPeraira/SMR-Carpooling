@@ -22,6 +22,14 @@ export function createTripRouterV1(
     (req, res, next) => tripController.getDriverTrips(req, res, next),
   );
 
+  // Driver: Get the journey the driver is currently on
+  // declared before "/driver/:tripId" so it is not read as a tripId
+  router.get(
+    "/driver/active-journey",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.getDriverActiveJourney(req, res, next),
+  );
+
   // Driver: Get specific trip details
   router.get(
     "/driver/:tripId",

@@ -4,6 +4,7 @@ import {
   DriverListTripsResponseDTO,
 } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import { CreateTripRequestDTO } from "#/application/dto/trip/CreateTripRequestDTO";
+import { DriverGetActiveJourneyResponseDTO } from "#/application/dto/trip/ActiveJourneyDTO";
 import {
   GetJourneyDetailsResponseDTO,
   ListTripsRequestDTO,
@@ -11,6 +12,7 @@ import {
 } from "#/application/dto/trip/PassengerListTripsDTO";
 import {
   CreateTripRequest,
+  DriverActiveJourneyDTO,
   DriverGetTripsQueryRequest,
   DriverTripDetailsDTO,
   DriverTripItemDTO,
@@ -188,6 +190,44 @@ export class TripMapper {
         passenger_name: b.passengerName,
         booking_status: b.bookingStatus,
         seat_count: b.seatCount,
+      })),
+    };
+  }
+
+  static toDriverActiveJourneyResponse(
+    dto: DriverGetActiveJourneyResponseDTO,
+  ): DriverActiveJourneyDTO {
+    return {
+      journey_id: dto.journeyId,
+      origin: this.toTripStopDTO(dto.origin),
+      destination: this.toTripStopDTO(dto.destination),
+      intermediate_stops: dto.intermediateStops.map((stop) => ({
+        stop_lat: stop.stopLat,
+        stop_lng: stop.stopLng,
+        stop_name: stop.stopName,
+        stop_address: stop.stopAddress,
+        arrived_at: stop.arrivedAt ? stop.arrivedAt.toISOString() : null,
+        departed_at: stop.departedAt ? stop.departedAt.toISOString() : null,
+        passenger_id: stop.passengerId,
+        stop_type: stop.stopType,
+      })),
+      journey_status: dto.journeyStatus,
+      started_at: dto.startedAt.toISOString(),
+      passengers: dto.passengers.map((passenger) => ({
+        journey_passenger_id: passenger.journeyPassengerId,
+        passenger_id: passenger.passengerId,
+        passenger_name: passenger.passengerName,
+        booking_id: passenger.bookingId,
+        passenger_status: passenger.passengerStatus,
+        pickup_location: this.toTripStopDTO(passenger.pickupLocation),
+        drop_off_location: this.toTripStopDTO(passenger.dropOffLocation),
+        pickup_time: passenger.pickupTime
+          ? passenger.pickupTime.toISOString()
+          : null,
+        dropoff_time: passenger.dropoffTime
+          ? passenger.dropoffTime.toISOString()
+          : null,
+        pickup_verified: passenger.pickupVerified,
       })),
     };
   }

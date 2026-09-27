@@ -6,6 +6,7 @@ import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/tri
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
 import { IDriverStartTripUseCase } from "#/application/interfaces/use-case/trip/IDriverStartTripUseCase";
+import { IDriverGetActiveJourneyUseCase } from "#/application/interfaces/use-case/trip/IDriverGetActiveJourneyUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
@@ -36,6 +37,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _driverGetTripDetailsUseCase: IDriverGetTripDetailsUseCase,
     private readonly _cancelTripUseCase: ICancelTripUseCas,
     private readonly _driverStartTripUseCase: IDriverStartTripUseCase,
+    private readonly _driverGetActiveJourneyUseCase: IDriverGetActiveJourneyUseCase,
   ) {}
 
   @Trace("trip-module")
@@ -244,6 +246,31 @@ export class TripControllerV1 implements ITripControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(makeSuccessResponse(TripSuccessMessage.STARTED, null));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("trip-module")
+  async getDriverActiveJourney(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+
+      this._logger.info("Fetching active journey for driver:", { driverId });
+
+      const result =
+        await this._driverGetActiveJourneyUseCase.execute(driverId);
+      const mapped = TripMapper.toDriverActiveJourneyResponse(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse("Active journey fetched successfully", mapped),
+        );
     } catch (error) {
       next(error);
     }

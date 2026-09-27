@@ -11,4 +11,5 @@ export interface IJourneyPassengerRepository {
     data: Partial<JourneyPassengerEntity>,
   ): Promise<JourneyPassengerEntity>;
   findById(journeyPassengerId: string): Promise<JourneyPassengerEntity | null>;
+  findByJourneyId(journeyId: string): Promise<JourneyPassengerEntity[]>;
 }

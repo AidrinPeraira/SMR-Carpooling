@@ -67,6 +67,7 @@ import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverG
 import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
 import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
 import { DriverStartTripUseCase } from "#/application/use-case/trip/DriverStartTripUseCase";
+import { DriverGetActiveJourneyUseCase } from "#/application/use-case/trip/DriverGetActiveJourneyUseCase";
 import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
 import { JourneyPassengerRepository } from "#/infrastructure/repository/JourneyPassengerRepository";
 
@@ -349,6 +350,11 @@ const driverStartTripUseCase = new DriverStartTripUseCase(
   journeyPassengerRepository,
 );
 
+const driverGetActiveJourneyUseCase = new DriverGetActiveJourneyUseCase(
+  journeyRepository,
+  journeyPassengerRepository,
+);
+
 const getDriverOverviewUseCase = new GetDriverOverviewUseCase(
   driverRepository,
   bookingsRepository,
@@ -408,6 +414,7 @@ const tripControllerV1 = new TripControllerV1(
   driverGetTripDetailsUseCase,
   cancelTripUseCase,
   driverStartTripUseCase,
+  driverGetActiveJourneyUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(

@@ -32,4 +32,9 @@ export interface ITripControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+  getDriverActiveJourney(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

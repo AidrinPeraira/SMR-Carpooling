@@ -11,4 +11,5 @@ export interface IJourneyRepository {
     journey: Partial<JourneyEntity>,
   ): Promise<JourneyEntity>;
   findById(journeyId: string): Promise<JourneyEntity | null>;
+  findOngoingByDriverId(driverId: string): Promise<JourneyEntity | null>;
 }

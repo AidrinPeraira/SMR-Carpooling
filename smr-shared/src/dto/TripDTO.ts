@@ -1,4 +1,10 @@
-import { BookingStatus, TripStatus, VehicleTypes } from "../enums";
+import {
+  BookingStatus,
+  PassengerRideStatus,
+  StopType,
+  TripStatus,
+  VehicleTypes,
+} from "../enums";
 import { Route } from "../types";
 import { QueryRequest } from "./QueryDTO";
 
@@ -86,6 +92,40 @@ export interface DriverTripDetailsDTO {
   start_time: string;
   trip_status: TripStatus;
   trip_bookings: DriverTripBookingDetailsDTO[];
+}
+
+export interface JourneyStopDTO {
+  stop_lat: number;
+  stop_lng: number;
+  stop_name: string;
+  stop_address: string;
+  arrived_at: string | null;
+  departed_at: string | null;
+  passenger_id: string;
+  stop_type: StopType;
+}
+
+export interface DriverActiveJourneyPassengerDTO {
+  journey_passenger_id: string;
+  passenger_id: string;
+  passenger_name: string;
+  booking_id: string;
+  passenger_status: PassengerRideStatus;
+  pickup_location: TripStopDTO;
+  drop_off_location: TripStopDTO;
+  pickup_time: string | null;
+  dropoff_time: string | null;
+  pickup_verified: boolean;
+}
+
+export interface DriverActiveJourneyDTO {
+  journey_id: string;
+  origin: TripStopDTO;
+  destination: TripStopDTO;
+  intermediate_stops: JourneyStopDTO[];
+  journey_status: TripStatus;
+  started_at: string;
+  passengers: DriverActiveJourneyPassengerDTO[];
 }
 
 export type DriverTripItemResult = DriverTripItemDTO;

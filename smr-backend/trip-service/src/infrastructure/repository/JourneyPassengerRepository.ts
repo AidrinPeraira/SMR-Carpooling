@@ -113,6 +113,19 @@ export class JourneyPassengerRepository implements IJourneyPassengerRepository {
   }
 
   /**
+   * Finds every passenger of a journey
+   *
+   * @param journeyId Journey ID, same as the tripId
+   */
+  async findByJourneyId(journeyId: string): Promise<JourneyPassengerEntity[]> {
+    const journeyPassengers = await this._journeyPassengerModel.findMany({
+      where: { journeyId },
+    });
+
+    return journeyPassengers.map((passenger) => this._toEntity(passenger));
+  }
+
+  /**
    * Maps a journey passenger database record to the entity
    */
   private _toEntity(

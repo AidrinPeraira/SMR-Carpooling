@@ -96,6 +96,23 @@ export class JourneyRepository implements IJourneyRepository {
   }
 
   /**
+   * Finds the journey a driver is currently on. A driver can only run one
+   * trip at a time, so at most one ongoing journey exists.
+   *
+   * @param driverId Driver ID (userId)
+   */
+  async findOngoingByDriverId(driverId: string): Promise<JourneyEntity | null> {
+    const journey = await this._journeyModel.findFirst({
+      where: { driverId, journeyStatus: TripStatus.ONGOING },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!journey) return null;
+
+    return this._toEntity(journey);
+  }
+
+  /**
    * Maps a journey database record to the journey entity
    */
   private _toEntity(record: JourneyRecord): JourneyEntity {
