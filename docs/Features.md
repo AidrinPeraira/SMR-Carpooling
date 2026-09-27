@@ -66,7 +66,12 @@
 - [ ] Payouts for drivers
 - [x] wallet
 - [x] Cancellation & Refunds
-- [ ] Transaction history
+- [ ] Transaction history in Profile
+- [ ] Transaction history in Admin
+
+## Realtime Module
+
+- [ ] chat call history. Where to see that?
 
 ## Common Features
 
@@ -76,7 +81,8 @@
 
 - [x] Query validation prevents mongo db query injection via the query params
 
-//list transactions in profile
-//list transactions for admin
-//chat call history. Where to see that?
-//
+## To do: Active Trip
+
+- [ ] Driver home page data
+- [ ] Passenger home page data
+- [ ] Driver Start trip

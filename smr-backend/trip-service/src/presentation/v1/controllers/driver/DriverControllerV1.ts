@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IGetDriverDetailsUseCase } from "#/application/interfaces/use-case/driver/IGetDriverDetailsUseCase";
+import { IGetDriverOverviewUseCase } from "#/application/interfaces/use-case/driver/IGetDriverOverviewUseCase";
 import { IDriverControllerV1 } from "#/presentation/v1/interfaces/IDriverControllerV1";
 import { DriverMapper } from "#/presentation/v1/mapper/DriverMapper";
 import {
@@ -13,6 +14,7 @@ export class DriverControllerV1 implements IDriverControllerV1 {
   constructor(
     private readonly _logger: ILogger,
     private readonly _getDriverDetailsUseCase: IGetDriverDetailsUseCase,
+    private readonly _getDriverOverviewUseCase: IGetDriverOverviewUseCase,
   ) {}
 
   @Trace("driver-module")
@@ -33,6 +35,30 @@ export class DriverControllerV1 implements IDriverControllerV1 {
         .status(HttpStatusCodes.Ok)
         .json(
           makeSuccessResponse("Driver details retrieved successfully", mapped),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("driver-module")
+  async getOverview(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+
+      this._logger.info("Fetching driver overview for user:", { userId });
+
+      const overviewDTO = await this._getDriverOverviewUseCase.execute(userId);
+      const mapped = DriverMapper.toDriverOverviewResponse(overviewDTO);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse("Driver overview retrieved successfully", mapped),
         );
     } catch (error) {
       next(error);
