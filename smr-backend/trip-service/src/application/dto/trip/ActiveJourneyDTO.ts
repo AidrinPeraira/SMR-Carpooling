@@ -1,6 +1,7 @@
 import {
   JourneyStop,
   PassengerRideStatus,
+  StopType,
   TripStatus,
   TripStop,
 } from "@sharemyride/shared";
@@ -29,4 +30,13 @@ export interface DriverGetActiveJourneyResponseDTO {
 
   //journey passenger details
   passengers: ActiveJourneyPassengerDetails[];
+}
+
+export interface DriverArrivedAtStopRequestDTO {
+  journeyId: string;
+  driverId: string;
+  passengerId: string;
+  driverLng: number;
+  driverLat: number;
+  stopType: StopType;
 }

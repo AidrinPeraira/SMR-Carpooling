@@ -7,11 +7,14 @@ import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListT
 import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
 import { IDriverStartTripUseCase } from "#/application/interfaces/use-case/trip/IDriverStartTripUseCase";
 import { IDriverGetActiveJourneyUseCase } from "#/application/interfaces/use-case/trip/IDriverGetActiveJourneyUseCase";
+import { IDriverArrivedAtStopUseCase } from "#/application/interfaces/use-case/trip/IDriverArrivedAtStopUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
 import {
   CreateTripRequest,
   CreateTripSchema,
+  DriverArrivedAtStopSchema,
+  DriverArrivedAtStopSchemaType,
   DriverGetTripsQueryRequest,
   DriverGetTripsQuerySchema,
   GenericSuccessMessage,
@@ -38,6 +41,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _cancelTripUseCase: ICancelTripUseCas,
     private readonly _driverStartTripUseCase: IDriverStartTripUseCase,
     private readonly _driverGetActiveJourneyUseCase: IDriverGetActiveJourneyUseCase,
+    private readonly _driverArrivedAtStopUseCase: IDriverArrivedAtStopUseCase,
   ) {}
 
   @Trace("trip-module")
@@ -271,6 +275,44 @@ export class TripControllerV1 implements ITripControllerV1 {
         .json(
           makeSuccessResponse("Active journey fetched successfully", mapped),
         );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("trip-module")
+  async driverArrivedAtStop(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+
+      const validatedBody = zodParser<DriverArrivedAtStopSchemaType>(
+        DriverArrivedAtStopSchema,
+        req.body,
+      );
+
+      this._logger.info("Marking stop as reached by driver:", {
+        driverId,
+        journeyId: validatedBody.journey_id,
+        passengerId: validatedBody.passenger_id,
+        stopType: validatedBody.stop_type,
+      });
+
+      await this._driverArrivedAtStopUseCase.execute({
+        journeyId: validatedBody.journey_id,
+        driverId,
+        passengerId: validatedBody.passenger_id,
+        stopType: validatedBody.stop_type,
+        driverLat: validatedBody.driver_lat,
+        driverLng: validatedBody.driver_lng,
+      });
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(makeSuccessResponse("Stop marked as reached", null));
     } catch (error) {
       next(error);
     }

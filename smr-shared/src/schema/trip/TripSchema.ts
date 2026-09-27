@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { QuerySchema } from "../query/QuerySchema";
+import { StopType } from "../../enums";
 
 export const TripStopSchema = z.object({
   stop_lat: z.number(),
@@ -40,6 +41,18 @@ export const GetJourneyDetailsSchema = z.object({
 
 export type GetJourneyDetailsSchemaType = z.infer<
   typeof GetJourneyDetailsSchema
+>;
+
+export const DriverArrivedAtStopSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+  stop_type: z.enum(StopType),
+  driver_lat: z.number(),
+  driver_lng: z.number(),
+});
+
+export type DriverArrivedAtStopSchemaType = z.infer<
+  typeof DriverArrivedAtStopSchema
 >;
 
 export const CreateBookingSchema = z.object({

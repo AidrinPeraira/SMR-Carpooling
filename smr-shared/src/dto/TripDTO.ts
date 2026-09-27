@@ -103,6 +103,8 @@ export interface JourneyStopDTO {
   departed_at: string | null;
   passenger_id: string;
   stop_type: StopType;
+  arrived_lat: number | null;
+  arrived_lng: number | null;
 }
 
 export interface DriverActiveJourneyPassengerDTO {

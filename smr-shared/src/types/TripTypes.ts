@@ -18,4 +18,8 @@ export interface JourneyStop {
   departedAt: Date | null;
   passengerId: string;
   stopType: StopType;
+  //where the driver actually was when they marked the stop arrived,
+  //kept apart from the planned stop so the two can be compared later
+  arrivedLat?: number | null;
+  arrivedLng?: number | null;
 }

@@ -30,6 +30,13 @@ export function createTripRouterV1(
     (req, res, next) => tripController.getDriverActiveJourney(req, res, next),
   );
 
+  // Driver: Mark a journey stop as reached
+  router.patch(
+    "/driver/journey/arrived",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.driverArrivedAtStop(req, res, next),
+  );
+
   // Driver: Get specific trip details
   router.get(
     "/driver/:tripId",

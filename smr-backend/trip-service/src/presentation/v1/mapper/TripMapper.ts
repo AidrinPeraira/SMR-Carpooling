@@ -210,6 +210,8 @@ export class TripMapper {
         departed_at: stop.departedAt ? stop.departedAt.toISOString() : null,
         passenger_id: stop.passengerId,
         stop_type: stop.stopType,
+        arrived_lat: stop.arrivedLat ?? null,
+        arrived_lng: stop.arrivedLng ?? null,
       })),
       journey_status: dto.journeyStatus,
       started_at: dto.startedAt.toISOString(),
