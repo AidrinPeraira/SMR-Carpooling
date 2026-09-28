@@ -135,8 +135,8 @@ export function createApp(logger: ILogger) {
     },
   });
 
-  const communicationServiceProxy = createProxyMiddleware<Request, Response>({
-    target: AppConfig.COMMUNICATION_SERVICE_URL,
+  const realtimeServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.REALTIME_SERVICE_URL,
     changeOrigin: true,
     ws: true,
     pathFilter: ["/socket.io/**"],
@@ -149,11 +149,11 @@ export function createApp(logger: ILogger) {
         proxyReqWs.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
       },
       error: (error: unknown, _req, res) => {
-        logger.error("Communication service proxy error: ", error);
+        logger.error("Realtime service proxy error: ", error);
         if ("status" in res) {
           res
             .status(HttpStatusCodes.BadGateway)
-            .json(makeFailedResponse("Communication service is unavailable"));
+            .json(makeFailedResponse("Realtime service is unavailable"));
         }
       },
     },
@@ -162,7 +162,7 @@ export function createApp(logger: ILogger) {
   app.use(userServiceProxy);
   app.use(tripServiceProxy);
   app.use(paymentServiceProxy);
-  app.use(communicationServiceProxy);
+  app.use(realtimeServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

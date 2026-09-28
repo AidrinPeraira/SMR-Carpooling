@@ -1,10 +1,9 @@
-import { TripChatView } from "@/features/chat/view/TripChatView";
-
-export default async function PassengerBookingChatPage({ searchParams }: { searchParams: Promise<{ tripId: string }> }) {
-  const resolvedSearchParams = await searchParams;
+export default function PassengerBookingChatPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <TripChatView chatId={resolvedSearchParams.tripId} />
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-content-secondary">
+        <p className="text-sm">Chat coming soon</p>
+      </div>
     </div>
   );
 }

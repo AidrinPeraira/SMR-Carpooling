@@ -1,11 +1,9 @@
 import { Modal } from "@sharemyride/ui";
-import { TripChatView } from "@/features/chat/view/TripChatView";
 
-export default async function PassengerBookingChatDialog({ searchParams }: { searchParams: Promise<{ tripId: string }> }) {
-  const resolvedSearchParams = await searchParams;
+export default function PassengerBookingChatDialog() {
   return (
-    <Modal className="p-0 overflow-hidden sm:max-w-2xl w-full h-[80vh]">
-      <TripChatView chatId={resolvedSearchParams.tripId} />
+    <Modal className="p-6 sm:max-w-2xl w-full">
+      <p className="text-sm text-content-secondary text-center">Chat coming soon</p>
     </Modal>
   );
 }

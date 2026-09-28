@@ -16,7 +16,7 @@ export const AppConfig = {
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
 
-  SERVICE_NAME: String(process.env.SERVICE_NAME) || "communication-service",
+  SERVICE_NAME: String(process.env.SERVICE_NAME) || "realtime-service",
   SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
 
   OTEL_EXPORTER_OTLP_ENDPOINT: String(

@@ -67,11 +67,11 @@ services:
     environment:
       - NODE_ENV=production
 
-  communication-service:
+  realtime-service:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      target: communication-service-prod
+      target: realtime-service-prod
     restart: unless-stopped
     ports:
       - "4005:4005"
@@ -79,7 +79,7 @@ services:
       - redis
       - rabbitmq
     env_file:
-      - ./smr-backend/communication-service/.env
+      - ./smr-backend/realtime-service/.env
     environment:
       - NODE_ENV=production
 

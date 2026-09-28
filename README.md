@@ -28,14 +28,14 @@ For detailed technical information, please refer to the following guides:
 
 ## Services Overview
 
-| Service                   | Responsibility                                                       |
-| :------------------------ | :------------------------------------------------------------------- |
-| **API Gateway**           | Request orchestration, proxying, and session validation.             |
-| **User Service**          | Identity, Authentication, Profile management, and Driver validation. |
-| **Trip Service**          | Trip creation, discovery, and management logic.                      |
-| **Notification Service**  | Asynchronous email and push notification delivery.                   |
-| **Communication Service** | Real-time chat and voice signaling.                                  |
-| **Payment Service**       | Financial transaction processing via Stripe/Razorpay.                |
+| Service                  | Responsibility                                                       |
+| :----------------------- | :------------------------------------------------------------------- |
+| **API Gateway**          | Request orchestration, proxying, and session validation.             |
+| **User Service**         | Identity, Authentication, Profile management, and Driver validation. |
+| **Trip Service**         | Trip creation, discovery, and management logic.                      |
+| **Notification Service** | Asynchronous email and push notification delivery.                   |
+| **Realtime Service**     | Real-time chat and voice signaling.                                  |
+| **Payment Service**      | Financial transaction processing via Stripe/Razorpay.                |
 
 ## Installation & Setup
 
