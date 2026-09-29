@@ -15,7 +15,7 @@ import { IBookingRepository } from "#/application/interfaces/repository/IBooking
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { prisma } from "#/infrastructure/database/prisma";
-import { Prisma } from "#/infrastructure/database/generated/prisma/client";
+import { Prisma, BookingStatus as PrismaBookingStatus } from "#/infrastructure/database/generated/prisma/client";
 import { BookingStatus, PaginatedPayload, Route, TripStop } from "@sharemyride/shared";
 
 export class BookingsRepository implements IBookingRepository {
@@ -51,7 +51,7 @@ export class BookingsRepository implements IBookingRepository {
         distanceKm: booking.distanceKm,
         seatCount: booking.seatCount,
         totalPrice: booking.totalPrice,
-        status: booking.status,
+        status: booking.status as PrismaBookingStatus,
         ...(booking.paymentKey !== undefined ? { paymentKey: booking.paymentKey } : {}),
         ...(booking.paymentKeyExpiry !== undefined ? { paymentKeyExpiry: booking.paymentKeyExpiry } : {}),
       },
@@ -92,7 +92,7 @@ export class BookingsRepository implements IBookingRepository {
       trip: {
         driverId,
       },
-      ...(query?.bookingStatus ? { status: query.bookingStatus } : {}),
+      ...(query?.bookingStatus ? { status: query.bookingStatus as PrismaBookingStatus } : {}),
     };
 
     const [totalItems, records] = await Promise.all([
@@ -180,7 +180,7 @@ export class BookingsRepository implements IBookingRepository {
   ): Promise<BookingEntity> {
     const updateData: Prisma.BookingsUpdateInput = {};
 
-    if (data.status !== undefined) updateData.status = data.status;
+    if (data.status !== undefined) updateData.status = data.status as PrismaBookingStatus;
     if (data.paymentKey !== undefined) updateData.paymentKey = data.paymentKey;
     if (data.paymentKeyExpiry !== undefined) updateData.paymentKeyExpiry = data.paymentKeyExpiry;
     if (data.totalPrice !== undefined) updateData.totalPrice = data.totalPrice;

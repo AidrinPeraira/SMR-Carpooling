@@ -28,7 +28,6 @@ interface BookingDetailsActionCardProps {
 export function BookingDetailsActionCard({
   bookingId,
   tripId,
-  driverId,
   amount,
   status,
   onWithdraw,
@@ -142,7 +141,7 @@ export function BookingDetailsActionCard({
 
           <div className="flex flex-col sm:flex-row gap-2 w-full pt-2">
             <Link
-              href={`/passenger/bookings/${bookingId}/chat${tripId ? `?tripId=${tripId}` : ''}`}
+              href={`/passenger/bookings/${bookingId}/chat${tripId ? `?tripId=${tripId}` : ""}`}
               className="w-full sm:flex-1"
             >
               <Button
