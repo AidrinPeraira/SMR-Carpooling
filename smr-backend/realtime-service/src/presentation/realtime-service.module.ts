@@ -1,9 +1,16 @@
 import { AppConfig } from "#/application.config";
-import { AddActiveTripUseCase } from "#/application/use-cases/AddActiveTripUseCase";
-import { CreateMemberUseCase } from "#/application/use-cases/CreateMemeberUseCase";
-import { RemoveActiveTripUseCase } from "#/application/use-cases/RemoveActiveTripUseCase";
+import { AddChatMemberUseCase } from "#/application/use-cases/chat/AddChatMemberUseCase";
+import { CloseChatUseCase } from "#/application/use-cases/chat/CloseChatUseCase";
+import { CreateNewChatUseCase } from "#/application/use-cases/chat/CreateNewChatUseCase";
+import { RemoveChatMembersUseCase } from "#/application/use-cases/chat/RemoveChatMembersUseCase";
+import { AddActiveTripUseCase } from "#/application/use-cases/members/AddActiveTripUseCase";
+import { CreateMemberUseCase } from "#/application/use-cases/members/CreateMemeberUseCase";
+import { RemoveActiveTripUseCase } from "#/application/use-cases/members/RemoveActiveTripUseCase";
+import { ChatModel } from "#/infrastructure/database/model/MongoChatModel";
 import { MemberModel } from "#/infrastructure/database/model/MongoMemberModel";
+import { ChatRepository } from "#/infrastructure/repository/ChatRepository";
 import { MemberRespository } from "#/infrastructure/repository/MemberRepository";
+import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
@@ -14,15 +21,31 @@ import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handle
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { EventName } from "@sharemyride/shared";
 
+/**
+ * Composition Root for the Communication Service.
+ */
+
 const logger = new WinstonLoggerService();
 
 // Repositories
 const memberRepository = new MemberRespository(MemberModel);
+const chatRepository = new ChatRepository(ChatModel);
+
+//infra services
+const uidGenereator = new CryptoUIDService();
 
 // Use Cases
 const createMemberUseCase = new CreateMemberUseCase(memberRepository);
 const addActiveTripUseCase = new AddActiveTripUseCase(memberRepository);
 const removeActiveTripUseCase = new RemoveActiveTripUseCase(memberRepository);
+
+const addChatMemberUseCase = new AddChatMemberUseCase(chatRepository);
+const closeChatUseCase = new CloseChatUseCase(chatRepository);
+const createNewChatUseCase = new CreateNewChatUseCase(
+  chatRepository,
+  uidGenereator,
+);
+const removeChatMembersUseCase = new RemoveChatMembersUseCase(chatRepository);
 
 // Messaging
 const eventDispatcher = new EventDispatcher(logger);
@@ -32,24 +55,28 @@ const userSignupEventHandler = new UserSignupEventHandler(
   logger,
   createMemberUseCase,
 );
-
 const newBookingEventHandler = new NewBookingEventHandler(
   logger,
   addActiveTripUseCase,
+  addChatMemberUseCase,
 );
-
 const newTripEventHandler = new NewTripEventHandler(
   logger,
   addActiveTripUseCase,
+  createNewChatUseCase,
+  addChatMemberUseCase,
 );
-
 const driverCancelTripEventHandler = new DriverCancelTripEventHandler(
   logger,
   removeActiveTripUseCase,
+  closeChatUseCase,
 );
-
 const passengerCancelBookingEventHandler =
-  new PassengerCancelBookingEventHandler(logger, removeActiveTripUseCase);
+  new PassengerCancelBookingEventHandler(
+    logger,
+    removeActiveTripUseCase,
+    removeChatMembersUseCase,
+  );
 
 await eventDispatcher.register(
   EventName.AUTH_USER_SIGNUP,

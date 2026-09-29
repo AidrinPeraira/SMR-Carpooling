@@ -1,29 +1,38 @@
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
 import { ILogger, DriverCancelTripEvent } from "@sharemyride/shared";
 import { IRemoveActiveTripUseCase } from "#/application/interfaces/use-cases/members/IRemoveActiveTripUseCase";
+import { ICloseChatUseCase } from "#/application/interfaces/use-cases/chat/ICloseChatUseCase";
 import { Trace } from "#/presentation/utils/traces-decorator";
 
+/**
+ * This class implements the event handler that
+ * handles driver cancel trip events to remove the trip id
+ * from the active trips of the driver and all passengers.
+ */
 export class DriverCancelTripEventHandler implements IEventHandler<DriverCancelTripEvent> {
   constructor(
     private readonly _logger: ILogger,
     private readonly _removeActiveTripUseCase: IRemoveActiveTripUseCase,
+    private readonly _closeChatUseCase: ICloseChatUseCase,
   ) {}
 
   @Trace("realtime-service-event-handler")
   async handle(event: DriverCancelTripEvent): Promise<void> {
     try {
       this._logger.info(
-        "Handling driver cancel trip event in realtime service",
+        "Handling driver cancel trip event in communication service",
         {
           tripId: event.payload.tripId,
         },
       );
 
+      // Remove from driver
       await this._removeActiveTripUseCase.execute({
         userId: event.payload.driverId,
         tripId: event.payload.tripId,
       });
 
+      // Remove from all cancelled bookings (passengers)
       if (
         event.payload.cancelledBookings &&
         event.payload.cancelledBookings.length > 0
@@ -35,6 +44,9 @@ export class DriverCancelTripEventHandler implements IEventHandler<DriverCancelT
           });
         }
       }
+
+      // Close the chat
+      await this._closeChatUseCase.execute(event.payload.tripId);
 
       this._logger.info(
         "Successfully removed active trips for driver and passengers from cancel trip event",

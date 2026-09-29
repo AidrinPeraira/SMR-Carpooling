@@ -15,10 +15,10 @@ export class UserSignupEventHandler implements IEventHandler<UserSignUpEvent> {
     private readonly _createMemberUseCase: ICreateMemberUseCase,
   ) {}
 
-  @Trace("realtime-service-event-handler")
+  @Trace("communication-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
     try {
-      this._logger.info("Handling user signup event in realtime service", {
+      this._logger.info("Handling user signup event in communication service", {
         userId: event.payload.userId,
       });
 
