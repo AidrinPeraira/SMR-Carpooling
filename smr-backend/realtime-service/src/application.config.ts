@@ -11,6 +11,10 @@ export const AppConfig = {
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
 
+  FRONTEND_KEY: String(
+    process.env.FRONTEND_KEY || "smr_frontend_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
+
   RABBITMQ_URL: String(process.env.RABBITMQ_URL || "amqp://localhost:5672"),
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
