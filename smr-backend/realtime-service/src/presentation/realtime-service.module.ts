@@ -111,7 +111,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
 
   const chatSocketHandler = new ChatSocketHandler("/chat", logger);
 
-  const io = createSocketServer(httpServer, [chatSocketHandler], logger);
+  const io = await createSocketServer(httpServer, [chatSocketHandler], logger);
 
   const chatSocketEmitter = new SocketIOEmitter(
     io,

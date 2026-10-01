@@ -5,6 +5,7 @@ export const AppConfig = {
   NODE_ENV: String(process.env.NODE_ENV || "development"),
 
   MONGO_DB_URL: String(process.env.MONGO_DB_URL),
+  REDIS_URL: String(process.env.REDIS_URL) || "redis://localhost:6379",
 
   API_GATEWAY_KEY: String(
     process.env.API_GATEWAY_KEY ||

@@ -5,11 +5,13 @@ import { connectMongoDB } from "#/infrastructure/database/connect-mongodb";
 import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 import { setUpRealtimeModule } from "#/presentation/realtime-service.module";
 import { createServer } from "node:http";
+import { connectRedis } from "#/infrastructure/store/connect-redis";
 
 async function startServer(): Promise<void> {
   const logger = new WinstonLoggerService();
 
   await connectMongoDB(logger);
+  await connectRedis(logger);
 
   const app = createApp();
   const PORT = Number(AppConfig.PORT);
