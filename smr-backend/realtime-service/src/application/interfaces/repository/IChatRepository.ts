@@ -6,4 +6,6 @@ import { ChatEntity } from "#/domain/entities/ChatEntity";
  * chat aggregate. Chat and Chat messages
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface IChatRepository extends IBaseRepository<ChatEntity> {}
+export interface IChatRepository extends IBaseRepository<ChatEntity> {
+  findByTripId(tripId: string): Promise<ChatEntity | null>;
+}

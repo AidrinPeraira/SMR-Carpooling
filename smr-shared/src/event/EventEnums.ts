@@ -20,5 +20,3 @@ export enum EventName {
   BOOKING_CANCELLED_BY_PASSENGER = "booking.cancelled_by_passenger",
   TRIP_NEW_TRIP = "trip.new_trip",
 }
-
-export enum SocketEvents {}

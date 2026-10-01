@@ -12,7 +12,7 @@ import { ChatRepository } from "#/infrastructure/repository/ChatRepository";
 import { MemberRespository } from "#/infrastructure/repository/MemberRepository";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { EventBus } from "#/infrastructure/services/EventBus";
-import { SocketIOEmitter } from "#/infrastructure/sockets/ChatSocketEmitter";
+import { SocketIOEmitter } from "#/infrastructure/sockets/SocketIOEmitter";
 import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
 import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/NewBookingEventHandler";
 import { NewTripEventHandler } from "#/presentation/v1/messaging/event-handlers/NewTripEventHandler";
@@ -113,10 +113,8 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
 
   const io = await createSocketServer(httpServer, [chatSocketHandler], logger);
 
-  const chatSocketEmitter = new SocketIOEmitter(
-    io,
-    chatSocketHandler.nameSpace,
-  );
+  // const chatSocketEmitter =
+  new SocketIOEmitter(io, chatSocketHandler.nameSpace);
 
   return { eventBus };
 }
