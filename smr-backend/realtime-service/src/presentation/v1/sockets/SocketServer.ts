@@ -1,36 +1,44 @@
 import { gatewayKeyMiddleware } from "#/presentation/middleware/gateway-key.middleware";
+import { ISocketHandler } from "#/presentation/v1/sockets/interfaces/ISocketHandler";
 import { socketAuthMiddleware } from "#/presentation/v1/sockets/middlewares/socket-auth.middleware";
 import { ILogger } from "@sharemyride/shared";
-import { Server as HttpServer } from "http";
+import { Server as HttpServer } from "node:http";
 import { Server } from "socket.io";
 
-export function createSocketServer(httpServer: HttpServer, logger: ILogger) {
-  //create a new socket instance
+export function createSocketServer(
+  httpServer: HttpServer,
+  handlers: ISocketHandler[],
+  logger: ILogger,
+) {
+  // create a new socket server
   const io = new Server(httpServer, {
-    cors: { origin: "*" },
+    cors: {
+      allowedHeaders: "*",
+    },
   });
 
   //directly using the express middleware
   io.engine.use(gatewayKeyMiddleware);
 
-  //custom middleware for scoket requests
-  io.use(socketAuthMiddleware);
+  //since we are using routing of socket connections using
+  //namespaces we set up each handler with its namesapce
+  for (const handler of handlers) {
+    //add middleware
+    //custom middleware for scoket requests
+    io.of(handler.nameSpace).use(socketAuthMiddleware);
 
-  io.on("connection", (socket) => {
-    logger.info(`Socket connected: ${socket.id}`);
+    io.of(handler.nameSpace).on("connection", (socket) => {
+      logger.info("Socket connection established: ", {
+        socketId: socket.id,
+      });
 
-    //the socket object we get from the callback is for
-    //each connection to the socket server.
-    //(io represents the server itself, socket is the connection)
-    socket.on("disconnect", () => {
-      logger.info(`Socket disconnected: ${socket.id}`);
+      socket.on("connection_error", (error) => {
+        logger.error("Socket connection failed. Error: ", { error: error });
+      });
+
+      handler.register(socket);
     });
-
-    //error handling
-    socket.on("connect_error", (err) => {
-      logger.error(err.message);
-    });
-  });
+  }
 
   return io;
 }

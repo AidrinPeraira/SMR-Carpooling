@@ -3,4 +3,6 @@
  * It defines the methods needed by the use cases to emit socket
  * events irrespective of the payload
  */
-export interface ISocketEmitter {}
+export interface ISocketEmitter {
+  //emitToSocket, emitTORoom
+}

@@ -13,7 +13,7 @@ Infrastructure ───► Application ───► Domain (Core / Pure TypeScr
 1. **Domain**: Pure business rules and entities. Zero dependencies on Socket.IO, Redis, Mongo, or Express.
 2. **Application**: Orchestration layer containing use cases, application DTOs (`camelCase`), and interface contracts (`IRepository`, `ISocketEmitter`, `ILocationStore`).
 3. **Infrastructure**: Technical implementations (Redis Geo repositories, Socket.IO adapter, MongoDB models, RabbitMQ event bus, Logger).
-4. **Presentation**: External entry points (Socket.IO event handlers, REST health-check routes, manual Dependency Injection module).
+4. **Presentation**: External entry points (Socket.IO event handlers, REST health-check routes, RabbitMQ event handlers, manual Dependency Injection module).
 
 ---
 
@@ -24,93 +24,103 @@ smr-backend/realtime-service/
 ├── .env.example
 ├── package.json
 ├── tsconfig.json
-├── vitest.config.ts
 └── src/
     ├── application.config.ts                  # Validated environment variables (Zod)
     ├── app.ts                                 # Express app setup (health checks, CORS)
-    ├── index.ts                               # HTTP + Socket.IO server bootstrap & DI wiring
+    ├── index.ts                               # HTTP + Socket.IO server bootstrap
     ├── instrumentation.ts                     # OpenTelemetry / tracing (consistent with other services)
     │
     ├── domain/                                # ─── LAYER 1: PURE BUSINESS RULES ───
-    │   ├── entities/
-    │   │   ├── DriverLocation.ts              # Location entity (lat, lng, heading, speed, timestamp)
-    │   │   ├── CallSession.ts                 # Call state machine (IDLE, RINGING, ACTIVE, ENDED)
-    │   │   └── ChatMessage.ts                 # Message entity with timestamps and delivery state
-    │   └── value-objects/
-    │       ├── Coordinates.ts                 # Validated latitude [-90, 90] & longitude [-180, 180]
-    │       └── CallSessionId.ts               # Unique session identifier value object
+    │   └── entities/
+    │       ├── CallSessionEntity.ts           # Call state entity
+    │       ├── ChatEntity.ts                  # Chat room entity
+    │       ├── ChatMessageEntity.ts           # Message entity with timestamps and delivery state
+    │       └── MemeberEntity.ts               # Member entity (user presence/active trips)
     │
     ├── application/                           # ─── LAYER 2: USE CASES & INTERFACES ───
     │   ├── dto/
-    │   │   ├── location/
-    │   │   │   ├── UpdateLocationInputDTO.ts  # Internal camelCase application DTO
-    │   │   │   └── BroadcastLocationDTO.ts
-    │   │   ├── call/
-    │   │   │   ├── InitiateCallInputDTO.ts
-    │   │   │   └── RelaySignalInputDTO.ts
-    │   │   └── chat/
-    │   │       └── SendMessageInputDTO.ts
+    │   │   └── MemberDTO.ts                   # Internal camelCase application DTO
     │   │
     │   ├── interfaces/
-    │   │   ├── store/
-    │   │   │   └── ILocationStore.ts          # Contract for Redis Geospatial caching
+    │   │   ├── messaging/
+    │   │   │   ├── IEventBus.ts               # Contract for RabbitMQ publishing/consumption
+    │   │   │   ├── IEventDispatcher.ts         # Contract for routing events to handlers
+    │   │   │   └── IEventHandler.ts            # Contract for individual event handlers
     │   │   ├── repository/
-    │   │   │   ├── ICallSessionRepository.ts  # Contract for call session persistence/state
-    │   │   │   └── IMessageRepository.ts      # Contract for MongoDB chat storage
+    │   │   │   ├── IBaseRepository.ts          # Generic repository contract
+    │   │   │   ├── ICallSessionRepository.ts   # Contract for call session persistence/state
+    │   │   │   ├── IChatRepository.ts          # Contract for chat room persistence
+    │   │   │   ├── IMemberRepository.ts        # Contract for member persistence
+    │   │   │   └── IMessageRepository.ts       # Contract for MongoDB chat message storage
     │   │   ├── services/
-    │   │   │   ├── ISocketEmitter.ts          # Contract to emit events to rooms/users
-    │   │   │   └── ITokenVerifier.ts          # Contract to verify client JWT on connection
-    │   │   └── messaging/
-    │   │       └── IEventBus.ts               # Contract for RabbitMQ publishing/consumption
+    │   │   │   └── IUniqueIDGenerator.ts       # Contract for UID generation
+    │   │   ├── sockets/
+    │   │   │   └── ISocketEmitter.ts           # Contract to emit events to rooms/users
+    │   │   └── use-cases/
+    │   │       ├── chat/
+    │   │       │   ├── IAddChatMembersUseCase.ts
+    │   │       │   ├── ICloseChatUseCase.ts
+    │   │       │   ├── ICreateNewChatUseCase.ts
+    │   │       │   └── IRemoveChatMembersUseCase.ts
+    │   │       └── members/
+    │   │           ├── IAddActiveTripUseCase.ts
+    │   │           ├── ICreateMemberUseCase.ts
+    │   │           └── IRemoveActiveTripUseCase.ts
     │   │
     │   └── use-cases/
-    │       ├── location/
-    │       │   ├── UpdateDriverLocationUseCase.ts
-    │       │   └── GetLatestTripLocationUseCase.ts
-    │       ├── call/
-    │       │   ├── InitiateCallUseCase.ts
-    │       │   ├── AcceptCallUseCase.ts
-    │       │   ├── RejectCallUseCase.ts
-    │       │   ├── EndCallUseCase.ts
-    │       │   └── RelayCallSignalUseCase.ts
-    │       └── chat/
-    │           ├── SendMessageUseCase.ts
-    │           ├── SyncChatHistoryUseCase.ts
-    │           └── JoinChatUseCase.ts
+    │       ├── chat/
+    │       │   ├── AddChatMemberUseCase.ts
+    │       │   ├── CloseChatUseCase.ts
+    │       │   ├── CreateNewChatUseCase.ts
+    │       │   └── RemoveChatMembersUseCase.ts
+    │       └── members/
+    │           ├── AddActiveTripUseCase.ts
+    │           ├── CreateMemeberUseCase.ts
+    │           └── RemoveActiveTripUseCase.ts
     │
     ├── infrastructure/                        # ─── LAYER 3: FRAMEWORKS & DRIVERS ───
-    │   ├── store/
-    │   │   ├── connect-redis.ts               # Redis client connection
-    │   │   └── RedisLocationStore.ts          # Implements ILocationStore (GEOADD, GEOPOS, HSET)
     │   ├── database/
-    │   │   ├── connect-mongodb.ts             # MongoDB client connection (for Chat history)
-    │   │   └── models/
-    │   │       ├── ChatMessageModel.ts
-    │   │       └── CallSessionModel.ts
+    │   │   ├── connect-mongodb.ts             # MongoDB client connection
+    │   │   └── model/
+    │   │       ├── MongoCallSessionModel.ts
+    │   │       ├── MongoChatModel.ts
+    │   │       ├── MongoMemberModel.ts
+    │   │       └── MongoMessageModel.ts
     │   ├── repository/
-    │   │   ├── MongoMessageRepository.ts      # Implements IMessageRepository
-    │   │   └── MongoCallSessionRepository.ts  # Implements ICallSessionRepository
+    │   │   ├── BaseRepository.ts              # Generic Mongo repository base
+    │   │   ├── CallSessionRepository.ts       # Implements ICallSessionRepository
+    │   │   ├── ChatRepository.ts              # Implements IChatRepository
+    │   │   ├── MemberRepository.ts            # Implements IMemberRepository
+    │   │   └── MessageRepository.ts           # Implements IMessageRepository
     │   └── services/
-    │       ├── SocketIOEmitter.ts             # Implements ISocketEmitter using io.to(room)
-    │       ├── JwtTokenVerifier.ts            # Implements ITokenVerifier (Jose / JWT verification)
-    │       ├── RabbitMQEventBus.ts            # Implements IEventBus
-    │       └── WinstonLoggerService.ts        # Implements ILogger from @sharemyride/shared
+    │       ├── CryptoUIDService.ts            # Implements IUniqueIDGenerator
+    │       ├── EventBus.ts                    # Implements IEventBus (RabbitMQ)
+    │       └── LoggerService.ts               # Implements ILogger from @sharemyride/shared
     │
     └── presentation/                          # ─── LAYER 4: ENTRY POINTS & SOCKETS ───
-        ├── realtime-service.module.ts         # Manual DI container (instantiates and wires repos & use cases)
-        ├── http/
-        │   ├── routes/
-        │   │   └── health.route.ts            # GET /health, GET /metrics
-        │   └── controllers/
-        │       └── HealthController.ts
-        └── sockets/
-            ├── SocketServer.ts                # Socket.IO setup + Redis Adapter attachment
-            ├── middlewares/
-            │   └── socket-auth.middleware.ts  # Verifies JWT on handshake before allowing socket connection
-            └── handlers/                      # Dispatches socket events to application use cases
-                ├── LocationSocketHandler.ts   # Handles 'location:update', 'trip:join_tracking'
-                ├── CallSocketHandler.ts       # Handles 'initiate_call', 'accept_call', 'relay_signal'
-                └── ChatSocketHandler.ts       # Handles 'send_message', 'sync_history', 'join_chat'
+        ├── realtime-service.module.ts         # Manual DI container (instantiates and wires everything)
+        ├── middleware/
+        │   ├── gateway-key.middleware.ts       # Validates API gateway key on requests
+        │   └── http-metrics.middleware.ts      # HTTP metrics collection
+        ├── utils/
+        │   └── traces-decorator.ts            # @Trace decorator for OpenTelemetry spans
+        └── v1/
+            ├── messaging/
+            │   ├── EventDispatcher.ts         # Routes domain events to registered handlers
+            │   └── event-handlers/
+            │       ├── DriverCancelTripEventHandler.ts
+            │       ├── NewBookingEventHandler.ts
+            │       ├── NewTripEventHandler.ts
+            │       ├── PassengerCancelBookingEventHandler.ts
+            │       └── UserSignupEventHandler.ts
+            └── sockets/
+                ├── SocketServer.ts            # Socket.IO setup, CORS, middleware attachment
+                ├── interfaces/
+                │   └── ISocketHandler.ts      # register(socket) contract for socket handlers
+                ├── middlewares/
+                │   └── socket-auth.middleware.ts  # Verifies JWT on socket handshake
+                └── handlers/
+                    └── ChatSocketHandler.ts   # Handles chat socket events (send_message, etc.)
 ```
 
 ---
@@ -162,10 +172,8 @@ export class UpdateDriverLocationUseCase {
       input.timestamp,
     );
 
-    // 1. Cache latest in-memory coordinate
     await this.locationStore.saveDriverLocation(location);
 
-    // 2. Broadcast to passengers in this trip's tracking room
     await this.socketEmitter.emitToRoom(
       `trip_tracking_${input.tripId}`,
       "trip:location_tick",
@@ -201,7 +209,6 @@ export class RedisLocationStore implements ILocationStore {
       speed: location.speed.toString(),
       timestamp: location.timestamp.toString(),
     });
-    // Set 15-minute TTL so abandoned trips clean up automatically
     await this.redis.expire(key, 900);
   }
 }
@@ -210,37 +217,91 @@ export class RedisLocationStore implements ILocationStore {
 ---
 
 ### 3.4 Presentation Layer (`src/presentation/`)
-Thin routing/dispatching layer that attaches Socket.IO events to use cases.
+
+#### Socket Handlers
+Each handler is a class that implements `ISocketHandler` with a `register(socket)` method. Dependencies (use cases, logger) are constructor-injected. One instance is created at startup and reused across all connections.
 
 ```typescript
-// src/presentation/sockets/handlers/LocationSocketHandler.ts
-export class LocationSocketHandler {
-  constructor(private readonly updateLocationUseCase: UpdateDriverLocationUseCase) {}
+// src/presentation/v1/sockets/handlers/ChatSocketHandler.ts
+export class ChatSocketHandler implements ISocketHandler {
+  constructor(
+    private readonly _logger: ILogger,
+    private readonly _sendMessageUseCase: ISendMessageUseCase,
+  ) {}
 
   register(socket: Socket): void {
-    socket.on("location:update", async (data: DriverLocationUpdateDTO) => {
-      try {
-        await this.updateLocationUseCase.execute({
-          tripId: data.trip_id,
-          driverId: socket.data.userId,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          heading: data.heading ?? 0,
-          speed: data.speed ?? 0,
-          timestamp: data.timestamp ?? Date.now(),
-        });
-      } catch (err: unknown) {
-        socket.emit("error", { message: "Failed to process location tick" });
-      }
+    socket.on("chat:send", (data) => this.onSendMessage(socket, data));
+    socket.on("chat:typing", (data) => this.onTyping(socket, data));
+  }
+
+  private async onSendMessage(socket: Socket, data: unknown): Promise<void> {
+    // DTO mapping, validation, call use case
+  }
+
+  private async onTyping(socket: Socket, data: unknown): Promise<void> {
+    // ...
+  }
+}
+```
+
+#### Socket Server
+The `SocketServer` receives an array of `ISocketHandler` instances and calls `register(socket)` on each when a new connection arrives.
+
+```typescript
+// src/presentation/v1/sockets/SocketServer.ts
+export function createSocketServer(
+  httpServer: HttpServer,
+  logger: ILogger,
+  handlers: ISocketHandler[],
+) {
+  const io = new Server(httpServer, { cors: { origin: "*" } });
+
+  io.engine.use(gatewayKeyMiddleware);
+  io.use(socketAuthMiddleware);
+
+  io.on("connection", (socket) => {
+    logger.info(`Socket connected: ${socket.id}`);
+
+    for (const handler of handlers) {
+      handler.register(socket);
+    }
+
+    socket.on("disconnect", () => {
+      logger.info(`Socket disconnected: ${socket.id}`);
     });
 
-    socket.on("trip:join_tracking", ({ tripId }: { tripId: string }) => {
-      void socket.join(`trip_tracking_${tripId}`);
+    socket.on("connect_error", (err) => {
+      logger.error(err.message);
+    });
+  });
+
+  return io;
+}
+```
+
+#### RabbitMQ Event Handlers
+Each handler is a class implementing `IEventHandler<T>` with a `handle(event)` method. The `EventDispatcher` routes incoming domain events to the matching handler by `EventName`.
+
+```typescript
+// src/presentation/v1/messaging/event-handlers/NewBookingEventHandler.ts
+export class NewBookingEventHandler implements IEventHandler<NewBookingEvent> {
+  constructor(
+    private readonly _logger: ILogger,
+    private readonly _addActiveTripUseCase: IAddActiveTripUseCase,
+    private readonly _addChatMembersUseCase: IAddChatMembersUseCase,
+  ) {}
+
+  @Trace("realtime-service-event-handler")
+  async handle(event: NewBookingEvent): Promise<void> {
+    await this._addActiveTripUseCase.execute({
+      userId: event.payload.passengerId,
+      tripId: event.payload.tripId,
     });
 
-    socket.on("trip:leave_tracking", ({ tripId }: { tripId: string }) => {
-      void socket.leave(`trip_tracking_${tripId}`);
-    });
+    await this._addChatMembersUseCase.execute(
+      event.payload.tripId,
+      event.payload.passengerId,
+    );
   }
 }
 ```
