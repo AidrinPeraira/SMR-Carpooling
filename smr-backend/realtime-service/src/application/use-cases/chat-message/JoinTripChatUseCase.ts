@@ -77,6 +77,6 @@ export class JoinTripChatUseCase implements IJoinTripChatUseCase {
       );
     }
 
-    await this._socketEmitter.joinRoom(dto.tripId, chat.chatId);
+    await this._socketEmitter.joinRoom(chat.chatId, socketId);
   }
 }

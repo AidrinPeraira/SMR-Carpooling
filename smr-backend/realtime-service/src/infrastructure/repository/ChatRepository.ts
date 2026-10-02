@@ -9,7 +9,7 @@ export class ChatRepository
   implements IChatRepository
 {
   constructor(_chatModel: Model<ChatDoc>) {
-    super("tripId", _chatModel);
+    super("chatId", _chatModel);
   }
 
   protected toDomainEntityMapper(data: ChatDoc): ChatEntity {
@@ -20,5 +20,9 @@ export class ChatRepository
       isActive: data.isActive,
       members: data.members ?? [],
     };
+  }
+
+  async findByTripId(tripId: string): Promise<ChatEntity | null> {
+    return this.model.findOne({ tripId: tripId });
   }
 }

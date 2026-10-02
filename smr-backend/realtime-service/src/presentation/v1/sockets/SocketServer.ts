@@ -7,11 +7,7 @@ import { createAdapter } from "@socket.io/redis-adapter";
 import { Server as HttpServer } from "node:http";
 import { Server } from "socket.io";
 
-export async function createSocketServer(
-  httpServer: HttpServer,
-  handlers: ISocketHandler[],
-  logger: ILogger,
-) {
+export async function createSocketServer(httpServer: HttpServer) {
   //clone the redis client instances for socket room pub sub
   const masterRedisClient = getRedisClient();
   const pubClient = masterRedisClient.duplicate();
@@ -31,11 +27,18 @@ export async function createSocketServer(
   //directly using the express middleware
   io.engine.use(gatewayKeyMiddleware);
 
+  return io;
+}
+
+export async function registerSocketHandlers(
+  io: Server,
+  handlers: ISocketHandler[],
+  logger: ILogger,
+) {
   //since we are using routing of socket connections using
   //namespaces we set up each handler with its namesapce
   for (const handler of handlers) {
-    //add middleware
-    //custom middleware for scoket requests
+    //custom middleware for socket requests
     io.of(handler.nameSpace).use(socketAuthMiddleware);
 
     io.of(handler.nameSpace).on("connection", (socket) => {
@@ -47,9 +50,7 @@ export async function createSocketServer(
         logger.error("Socket connection failed. Error: ", { error: error });
       });
 
-      handler.register(socket);
+      await handler.register(socket);
     });
   }
-
-  return io;
 }

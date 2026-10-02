@@ -11,14 +11,14 @@ export class SocketIOEmitter implements ISocketEmitter {
   async joinRoom(roomId: string, socketId: string): Promise<void> {
     const socket = this._socketServer.of(this._nameSpace).sockets.get(socketId);
     if (socket) {
-      socket.join(roomId);
+      await socket.join(roomId);
     }
   }
 
   async leaveRoom(roomId: string, socketId: string): Promise<void> {
     const socket = this._socketServer.of(this._nameSpace).sockets.get(socketId);
     if (socket) {
-      socket.leave(roomId);
+      await socket.leave(roomId);
     }
   }
 

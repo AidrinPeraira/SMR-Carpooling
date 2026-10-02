@@ -1,0 +1,20 @@
+info:
+  name: leave-chat
+  type: websocket
+  seq: 3
+
+websocket:
+  url: ws://localhost:4005/chat
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+  message:
+    type: json
+    data: |-
+      {
+        "chat_id": "chat_xyz789"
+      }
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0

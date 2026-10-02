@@ -18,7 +18,9 @@ async function startServer(): Promise<void> {
 
   const httpServer = createServer(app);
 
-  const { eventBus } = await setUpRealtimeModule(httpServer, logger);
+  const { eventBus, v1Router } = await setUpRealtimeModule(httpServer, logger);
+
+  app.use("/v1", v1Router);
 
   await eventBus.connect();
 

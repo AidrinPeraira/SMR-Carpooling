@@ -16,6 +16,8 @@ export const AppConfig = {
     process.env.FRONTEND_KEY || "smr_frontend_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
 
+  ACCESS_TOKEN_SECRET: String(process.env.ACCESS_TOKEN_SECRET),
+
   RABBITMQ_URL: String(process.env.RABBITMQ_URL || "amqp://localhost:5672"),
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",

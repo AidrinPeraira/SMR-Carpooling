@@ -1,18 +1,28 @@
 import { ExtendedError, Socket } from "socket.io";
+import jwt from "jsonwebtoken";
+import { AppConfig } from "#/application.config";
 
-/**
- * This middleware checks the custom secret key header
- */
 export function socketAuthMiddleware(
   socket: Socket,
   next: (err?: ExtendedError) => void,
 ) {
-  const token = socket.handshake.auth.token;
+  const token = socket.handshake.auth.token as string | undefined;
 
-  //add code to check and verify the auth token
   if (!token) {
-    next(new Error("Invalid Token"));
+    return next(new Error("Authorization token is missing"));
   }
 
-  next();
+  try {
+    const secret = AppConfig.ACCESS_TOKEN_SECRET;
+    const payload = jwt.verify(token, secret) as {
+      user: { userId: string; firstName: string; lastName: string };
+    };
+
+    socket.data.userId = payload.user.userId;
+    socket.data.userName = `${payload.user.firstName} ${payload.user.lastName}`;
+
+    next();
+  } catch {
+    next(new Error("Invalid or expired authorization token"));
+  }
 }
