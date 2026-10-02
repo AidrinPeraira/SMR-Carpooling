@@ -46,3 +46,12 @@ export interface HandleCallTimeoutRequestDTO {
 export interface CallTimeoutPayloadDTO {
   callSessionId: string;
 }
+
+export interface EndCallRequestDTO {
+  callSessionId: string;
+  userId: string;
+}
+
+export interface EndCallPayloadDTO {
+  callSessionId: string;
+}

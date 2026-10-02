@@ -8,4 +8,5 @@ export enum CallErrorMessage {
   RECEIVER_NOT_IN_TRIP = "Receiver is not a member of the specified trip.",
   RECEIVER_OFFLINE = "Receiver is currently offline.",
   RECEIVER_BUSY = "Receiver is currently on another call.",
+  CALL_NOT_ACTIVE = "Call is not currently active.",
 }
