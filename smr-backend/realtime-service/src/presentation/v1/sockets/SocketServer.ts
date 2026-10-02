@@ -50,7 +50,11 @@ export async function registerSocketHandlers(
         logger.error("Socket connection failed. Error: ", { error: error });
       });
 
-      await handler.register(socket);
+      handler.register(socket);
+
+      //to track if user is connected
+      //this enables tracking the same user across multiple devices also
+      socket.join(`user:${socket.data.userId}`);
     });
   }
 }

@@ -2,7 +2,7 @@ import { IJoinTripChatUseCase } from "#/application/interfaces/use-cases/chat-me
 import { ILeaveTripChatUseCase } from "#/application/interfaces/use-cases/chat-message/ILeaveTripChatUseCase";
 import { ISendMessageUseCase } from "#/application/interfaces/use-cases/chat-message/ISendMessageUseCase";
 import { IChatSocketHandler } from "#/presentation/v1/sockets/interfaces/IChatSocketHandler";
-import { ChatSocketMapper } from "#/presentation/v1/sockets/mapper/ChatSocketMapper";
+import { ChatSocketMapper } from "#/application/mapper/ChatSocketMapper";
 import { Trace } from "#/presentation/utils/traces-decorator";
 import {
   ILogger,

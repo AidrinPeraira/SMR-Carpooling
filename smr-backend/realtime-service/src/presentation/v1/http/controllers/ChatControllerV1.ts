@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ISyncMessagesUseCase } from "#/application/interfaces/use-cases/chat-message/ISyncMessagesUseCase";
 import { IChatControllerV1 } from "#/presentation/v1/http/interfaces/IChatControllerV1";
-import { ChatSocketMapper } from "#/presentation/v1/sockets/mapper/ChatSocketMapper";
+import { ChatSocketMapper } from "#/application/mapper/ChatSocketMapper";
 import { Trace } from "#/presentation/utils/traces-decorator";
 import {
   HttpStatusCodes,

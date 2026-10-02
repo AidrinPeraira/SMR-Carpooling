@@ -29,4 +29,14 @@ export class SocketIOEmitter implements ISocketEmitter {
   ): Promise<void> {
     this._socketServer.of(this._nameSpace).to(roomId).emit(`${event}`, data);
   }
+
+  async isUserConnected(userId: string): Promise<boolean> {
+    const roomId = `user:${userId}`;
+    const sockets = await this._socketServer
+      .of(this._nameSpace)
+      .in(roomId)
+      .fetchSockets();
+
+    return sockets.length > 0;
+  }
 }

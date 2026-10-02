@@ -4,4 +4,8 @@ export enum SocketEvents {
   SEND_MESSAGE = "send_message",
   NEW_MESSAGE = "new_message",
   CHAT_ERROR = "chat_error",
+  CALL_INCOMING = "call_incoming",
+  CALL_INITIATED = "call_initiated",
+  CALL_ACCEPTED = "call_accepted",
+  CALL_REJECTED = "call_rejected",
 }

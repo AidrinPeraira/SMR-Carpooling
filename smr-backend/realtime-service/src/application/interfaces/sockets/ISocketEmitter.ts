@@ -9,4 +9,5 @@ export interface ISocketEmitter {
   joinRoom(roomId: string, socketId: string): Promise<void>;
   leaveRoom(roomId: string, socketId: string): Promise<void>;
   emitToRoom(roomId: string, event: SocketEvents, data: unknown): Promise<void>;
+  isUserConnected(userId: string): Promise<boolean>;
 }
