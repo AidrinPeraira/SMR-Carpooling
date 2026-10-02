@@ -11,6 +11,8 @@ import {
   CallTimeoutPayloadDTO,
   EndCallRequestDTO,
   EndCallPayloadDTO,
+  RelayCallSignalRequestDTO,
+  RelayCallSignalPayloadDTO,
 } from "#/application/dto/CallDTO";
 import {
   AcceptCallCallerPayload,
@@ -25,6 +27,8 @@ import {
   CallTimeoutPayload,
   EndCallDTO,
   EndCallPayload,
+  RelayCallSignalDTO,
+  RelayCallSignalPayload,
 } from "@sharemyride/shared";
 
 export class CallSocketMapper {
@@ -136,6 +140,28 @@ export class CallSocketMapper {
   ): EndCallPayload {
     return {
       call_session_id: dto.callSessionId,
+    };
+  }
+
+  static toRelayCallSignalRequestDTO(
+    payload: RelayCallSignalDTO,
+    userId: string,
+  ): RelayCallSignalRequestDTO {
+    return {
+      callSessionId: payload.call_session_id,
+      userId,
+      signalType: payload.signal_type,
+      signalData: payload.signal_data,
+    };
+  }
+
+  static toRelayCallSignalPayload(
+    dto: RelayCallSignalPayloadDTO,
+  ): RelayCallSignalPayload {
+    return {
+      call_session_id: dto.callSessionId,
+      signal_type: dto.signalType,
+      signal_data: dto.signalData,
     };
   }
 }

@@ -9,4 +9,5 @@ export enum CallErrorMessage {
   RECEIVER_OFFLINE = "Receiver is currently offline.",
   RECEIVER_BUSY = "Receiver is currently on another call.",
   CALL_NOT_ACTIVE = "Call is not currently active.",
+  INVALID_SIGNAL_TYPE = "Invalid call signal type.",
 }

@@ -51,3 +51,15 @@ export interface EndCallDTO {
 export interface EndCallPayload {
   call_session_id: string;
 }
+
+export interface RelayCallSignalDTO {
+  call_session_id: string;
+  signal_type: string;
+  signal_data: unknown;
+}
+
+export interface RelayCallSignalPayload {
+  call_session_id: string;
+  signal_type: string;
+  signal_data: unknown;
+}
