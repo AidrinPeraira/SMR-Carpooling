@@ -9,7 +9,7 @@ import {
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
 import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
-import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
+import { TripMapper } from "#/application/mapper/TripMapper";
 import { InitaiteBookingPaymentResponseDTO } from "#/application/dto/booking/BookingPaymentsDTO";
 import {
   CreateBookingRequest,

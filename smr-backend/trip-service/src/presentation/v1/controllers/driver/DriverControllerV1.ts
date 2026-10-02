@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { IGetDriverDetailsUseCase } from "#/application/interfaces/use-case/driver/IGetDriverDetailsUseCase";
 import { IDriverControllerV1 } from "#/presentation/v1/interfaces/IDriverControllerV1";
-import { DriverMapper } from "#/presentation/v1/mapper/DriverMapper";
+import { DriverMapper } from "#/application/mapper/DriverMapper";
 import {
   HttpStatusCodes,
   ILogger,

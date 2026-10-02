@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { IAdminListAllBookingsUseCase } from "#/application/interfaces/use-case/admin/booking/IAdminListAllBookingsUseCase";
 import { IAdminGetBookingDetailsUseCase } from "#/application/interfaces/use-case/admin/booking/IAdminGetBookingDetailsUseCase";
 import { IAdminBookingControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminBookingControllerV1";
-import { AdminBookingMapper } from "#/presentation/v1/mapper/admin/AdminBookingMapper";
+import { AdminBookingMapper } from "#/application/mapper/admin/AdminBookingMapper";
 import {
   GenericSuccessMessage,
   HttpStatusCodes,

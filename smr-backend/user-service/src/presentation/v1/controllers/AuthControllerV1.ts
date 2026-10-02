@@ -6,7 +6,7 @@ import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/aut
 import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/auth/IGeneratePasswordChangeToken";
 import { IChangePasswordUseCase } from "#/application/interfaces/use-case/auth/IChangePasswordUseCase";
 import { IAuthControllerV1 } from "#/presentation/v1/interfaces/IAuthControllerV1";
-import { AuthMapper } from "#/presentation/v1/mapper/AuthMapper";
+import { AuthMapper } from "#/application/mapper/AuthMapper";
 import {
   ChangePasswordRequest,
   ChangePasswordSchema,

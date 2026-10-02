@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { IGetAllUsersUseCase } from "#/application/interfaces/use-case/admin/users/IGetAllUsersUseCase";
 import { IAdminUserControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminUserControllerV1";
-import { AdminUsersMapper } from "#/presentation/v1/mapper/admin/AdminUsersMapper";
+import { AdminUsersMapper } from "#/application/mapper/admin/AdminUsersMapper";
 import {
   AccountStatus,
   ApplicationError,

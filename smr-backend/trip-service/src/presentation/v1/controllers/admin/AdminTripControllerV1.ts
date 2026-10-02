@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { IAdminListAllTripsUseCase } from "#/application/interfaces/use-case/admin/trip/IAdminListAllTripsUseCase";
 import { IAdminGetTripDetailsUseCase } from "#/application/interfaces/use-case/admin/trip/IAdminGetTripDetailsUseCase";
 import { IAdminTripControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminTripControllerV1";
-import { AdminTripMapper } from "#/presentation/v1/mapper/admin/AdminTripMapper";
+import { AdminTripMapper } from "#/application/mapper/admin/AdminTripMapper";
 import {
   GenericSuccessMessage,
   HttpStatusCodes,

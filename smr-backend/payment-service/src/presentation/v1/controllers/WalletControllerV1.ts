@@ -1,7 +1,7 @@
 import { IGetWalletTransactionsUseCase } from "#/application/interfaces/use-cases/wallet/IGetWalletTransactionDetails";
 import { GetWalletTransactionsQueryDTO } from "#/application/dto/wallet/WalletTransactionsDTO";
 import { IWalletControllerV1 } from "#/presentation/v1/interfaces/IWalletControllerV1";
-import { WalletMapper } from "#/presentation/v1/mapper/WalletMapper";
+import { WalletMapper } from "#/application/mapper/WalletMapper";
 import {
   HttpStatusCodes,
   ILogger,

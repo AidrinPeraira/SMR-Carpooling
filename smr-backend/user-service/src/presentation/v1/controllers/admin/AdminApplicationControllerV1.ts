@@ -3,8 +3,8 @@ import { IPocessApplicationUseCase } from "#/application/interfaces/use-case/adm
 import { IGetApplicationDetailsUseCase } from "#/application/interfaces/use-case/application/IGetApplicationDetailsUseCase";
 import { Trace } from "#/presentation/utils/traces-decorator";
 import { IAdminApplicationControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminApplicationControllerV1";
-import { AdminApplicationMapper } from "#/presentation/v1/mapper/admin/AdminApplicationMapper";
-import { ApplicationMapper } from "#/presentation/v1/mapper/ApplicationMapper";
+import { AdminApplicationMapper } from "#/application/mapper/admin/AdminApplicationMapper";
+import { ApplicationMapper } from "#/application/mapper/ApplicationMapper";
 import {
   ApplicationDetailsResult,
   ApplicationIdParamSchema,

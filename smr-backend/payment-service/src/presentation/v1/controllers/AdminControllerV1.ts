@@ -2,7 +2,7 @@ import { AdminListTransactionsQueryDTO } from "#/application/dto/admin/AdminPaym
 import { IAdminListTransactionsUseCase } from "#/application/interfaces/use-cases/admin/IAdminListTransactionsUseCase";
 import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { IAdminControllerV1 } from "#/presentation/v1/interfaces/IAdminControllerV1";
-import { AdminMapper } from "#/presentation/v1/mapper/AdminMapper";
+import { AdminMapper } from "#/application/mapper/AdminMapper";
 import {
   AdminListTransactionsSchema,
   AdminListTransactionsSchemaType,

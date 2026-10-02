@@ -113,6 +113,7 @@
 ## socket.io
 
 - Realtime
+- with redis for scaling
 
 ## WebRTC
 

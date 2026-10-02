@@ -2,7 +2,7 @@ import { ICreateBookingPaymentOrderUseCase } from "#/application/interfaces/use-
 import { IVerifyBookingPaymentUseCase } from "#/application/interfaces/use-cases/payment/IVerifyBookingPaymentUseCase";
 import { IPayBookingWithWalletUseCase } from "#/application/interfaces/use-cases/payment/IPayBookingWithWalletUseCase";
 import { IPaymentControllerV1 } from "#/presentation/v1/interfaces/IPaymentControllerV1";
-import { PaymentMapper } from "#/presentation/v1/mapper/PaymentMapper";
+import { PaymentMapper } from "#/application/mapper/PaymentMapper";
 import {
   CreateBookingPaymentOrderRequest,
   CreateBookingPaymentOrderResult,

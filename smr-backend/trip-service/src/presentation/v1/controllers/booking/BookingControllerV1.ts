@@ -10,7 +10,7 @@ import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/booki
 import { IInitiateBookingPaymentUseCase } from "#/application/interfaces/use-case/booking/IInitiateBookingPaymentUseCase";
 import { ICancelBookingUseCase } from "#/application/interfaces/use-case/booking/ICancelBookingUseCase";
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
-import { BookingMapper } from "#/presentation/v1/mapper/BookingMapper";
+import { BookingMapper } from "#/application/mapper/BookingMapper";
 import {
   CreateBookingRequest,
   CreateBookingSchema,

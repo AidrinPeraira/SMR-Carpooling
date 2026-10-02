@@ -2,7 +2,7 @@ import {
   AdminGetAllTripsResponseDTO,
   AdminGetTripDetailsResponseDTO,
 } from "#/application/dto/admin/AdminTripsDTO";
-import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
+import { TripMapper } from "#/application/mapper/TripMapper";
 import {
   AdminTripDetailsDTO,
   AdminTripItemDTO,

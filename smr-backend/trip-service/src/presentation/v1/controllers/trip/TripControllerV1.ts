@@ -6,7 +6,7 @@ import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/tri
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
-import { TripMapper } from "#/presentation/v1/mapper/TripMapper";
+import { TripMapper } from "#/application/mapper/TripMapper";
 import {
   CreateTripRequest,
   CreateTripSchema,

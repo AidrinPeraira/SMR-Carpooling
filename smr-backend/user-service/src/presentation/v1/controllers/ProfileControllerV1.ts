@@ -5,8 +5,8 @@ import { IUpdateAvatarUseCase } from "#/application/interfaces/use-case/profile/
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
 import { Trace } from "#/presentation/utils/traces-decorator";
 import { IProfileControllerV1 } from "#/presentation/v1/interfaces/IProfileControllerV1";
-import { AuthMapper } from "#/presentation/v1/mapper/AuthMapper";
-import { ProfileMapper } from "#/presentation/v1/mapper/ProfileMapper";
+import { AuthMapper } from "#/application/mapper/AuthMapper";
+import { ProfileMapper } from "#/application/mapper/ProfileMapper";
 import {
   ApplicationError,
   ErrorCode,
