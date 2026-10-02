@@ -12,4 +12,5 @@ export enum SocketEvents {
   CALL_MISSED = "call_missed",
   CALL_ENDED = "call_ended",
   CALL_SIGNAL = "call_signal",
+  CALL_ERROR = "call_error",
 }

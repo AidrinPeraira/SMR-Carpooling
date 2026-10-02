@@ -10,8 +10,16 @@ import { SyncChatMessagesUseCase } from "#/application/use-cases/chat-message/Sy
 import { AddActiveTripUseCase } from "#/application/use-cases/members/AddActiveTripUseCase";
 import { CreateMemberUseCase } from "#/application/use-cases/members/CreateMemeberUseCase";
 import { RemoveActiveTripUseCase } from "#/application/use-cases/members/RemoveActiveTripUseCase";
+import { AcceptCallUseCase } from "#/application/use-cases/call/AcceptCallUseCase";
+import { EndCallUseCase } from "#/application/use-cases/call/EndCallUseCase";
+import { HandleCallTimeoutUseCase } from "#/application/use-cases/call/HandleCallTimeoutUseCase";
+import { InitiateCallUseCase } from "#/application/use-cases/call/InitiateCallUseCase";
+import { RejectCallUseCase } from "#/application/use-cases/call/RejectCallUseCase";
+import { RelayCallSignalUseCase } from "#/application/use-cases/call/RelayCallSignalUseCase";
+import { CallSessionModel } from "#/infrastructure/database/model/MongoCallSessionModel";
 import { ChatModel } from "#/infrastructure/database/model/MongoChatModel";
 import { MemberModel } from "#/infrastructure/database/model/MongoMemberModel";
+import { CallSessionRepository } from "#/infrastructure/repository/CallSessionRepository";
 import { ChatRepository } from "#/infrastructure/repository/ChatRepository";
 import { MemberRespository } from "#/infrastructure/repository/MemberRepository";
 import { MessageRepository } from "#/infrastructure/repository/MessageRepository";
@@ -26,6 +34,7 @@ import { NewTripEventHandler } from "#/presentation/v1/messaging/event-handlers/
 import { PassengerCancelBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerCancelBookingEventHandler";
 import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handlers/UserSignupEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
+import { CallSocketHandler } from "#/presentation/v1/sockets/handlers/CallSocketHandler";
 import { ChatSocketHandler } from "#/presentation/v1/sockets/handlers/ChatSocketHandler";
 import {
   createSocketServer,
@@ -43,6 +52,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const memberRepository = new MemberRespository(MemberModel);
   const chatRepository = new ChatRepository(ChatModel);
   const messageRepository = new MessageRepository();
+  const callSessionRepository = new CallSessionRepository(CallSessionModel);
 
   //infra services
   const uidGenereator = new CryptoUIDService();
@@ -71,6 +81,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const io = await createSocketServer(httpServer);
 
   const chatSocketEmitter = new SocketIOEmitter(io, "/chat");
+  const callSocketEmitter = new SocketIOEmitter(io, "/call");
 
   const joinTripChatUseCase = new JoinTripChatUseCase(
     memberRepository,
@@ -83,6 +94,34 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     chatSocketEmitter,
   );
 
+  // Use Cases — call
+  const initiateCallUseCase = new InitiateCallUseCase(
+    memberRepository,
+    callSessionRepository,
+    uidGenereator,
+    callSocketEmitter,
+  );
+  const acceptCallUseCase = new AcceptCallUseCase(
+    callSessionRepository,
+    callSocketEmitter,
+  );
+  const rejectCallUseCase = new RejectCallUseCase(
+    callSessionRepository,
+    callSocketEmitter,
+  );
+  const handleCallTimeoutUseCase = new HandleCallTimeoutUseCase(
+    callSessionRepository,
+    callSocketEmitter,
+  );
+  const endCallUseCase = new EndCallUseCase(
+    callSessionRepository,
+    callSocketEmitter,
+  );
+  const relayCallSignalUseCase = new RelayCallSignalUseCase(
+    callSessionRepository,
+    callSocketEmitter,
+  );
+
   // Socket handlers — created after use cases, registered after creation
   const chatSocketHandler = new ChatSocketHandler(
     "/chat",
@@ -92,7 +131,18 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     sendMessageUseCase,
   );
 
-  await registerSocketHandlers(io, [chatSocketHandler], logger);
+  const callSocketHandler = new CallSocketHandler(
+    "/call",
+    logger,
+    initiateCallUseCase,
+    acceptCallUseCase,
+    rejectCallUseCase,
+    handleCallTimeoutUseCase,
+    endCallUseCase,
+    relayCallSignalUseCase,
+  );
+
+  await registerSocketHandlers(io, [chatSocketHandler, callSocketHandler], logger);
 
   // Messaging
   const eventDispatcher = new EventDispatcher(logger);

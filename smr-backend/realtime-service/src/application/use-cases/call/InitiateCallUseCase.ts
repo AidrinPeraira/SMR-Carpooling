@@ -114,7 +114,7 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
         ErrorDetails.DOMAIN_CONFLICT,
         {
           location: "InitiateCallUseCase",
-          details: `Receiver ${receiverId} is already in call session ${receiverActiveCall}`,
+          details: `Receiver ${receiverId} is already in call session ${receiverActiveCall.callSessionId}`,
         },
       );
     }

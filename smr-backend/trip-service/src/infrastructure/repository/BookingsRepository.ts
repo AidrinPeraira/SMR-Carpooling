@@ -15,8 +15,13 @@ import { IBookingRepository } from "#/application/interfaces/repository/IBooking
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { prisma } from "#/infrastructure/database/prisma";
-import { Prisma, BookingStatus as PrismaBookingStatus } from "#/infrastructure/database/generated/prisma/client";
-import { BookingStatus, PaginatedPayload, Route, TripStop } from "@sharemyride/shared";
+import { Prisma } from "#/infrastructure/database/generated/prisma/client";
+import {
+  BookingStatus,
+  PaginatedPayload,
+  Route,
+  TripStop,
+} from "@sharemyride/shared";
 
 export class BookingsRepository implements IBookingRepository {
   private readonly _bookingsModel = prisma.bookings;
@@ -51,9 +56,13 @@ export class BookingsRepository implements IBookingRepository {
         distanceKm: booking.distanceKm,
         seatCount: booking.seatCount,
         totalPrice: booking.totalPrice,
-        status: booking.status as PrismaBookingStatus,
-        ...(booking.paymentKey !== undefined ? { paymentKey: booking.paymentKey } : {}),
-        ...(booking.paymentKeyExpiry !== undefined ? { paymentKeyExpiry: booking.paymentKeyExpiry } : {}),
+        status: booking.status,
+        ...(booking.paymentKey !== undefined
+          ? { paymentKey: booking.paymentKey }
+          : {}),
+        ...(booking.paymentKeyExpiry !== undefined
+          ? { paymentKeyExpiry: booking.paymentKeyExpiry }
+          : {}),
       },
     });
 
@@ -92,7 +101,7 @@ export class BookingsRepository implements IBookingRepository {
       trip: {
         driverId,
       },
-      ...(query?.bookingStatus ? { status: query.bookingStatus as PrismaBookingStatus } : {}),
+      ...(query?.bookingStatus ? { status: query.bookingStatus } : {}),
     };
 
     const [totalItems, records] = await Promise.all([
@@ -180,9 +189,10 @@ export class BookingsRepository implements IBookingRepository {
   ): Promise<BookingEntity> {
     const updateData: Prisma.BookingsUpdateInput = {};
 
-    if (data.status !== undefined) updateData.status = data.status as PrismaBookingStatus;
+    if (data.status !== undefined) updateData.status = data.status;
     if (data.paymentKey !== undefined) updateData.paymentKey = data.paymentKey;
-    if (data.paymentKeyExpiry !== undefined) updateData.paymentKeyExpiry = data.paymentKeyExpiry;
+    if (data.paymentKeyExpiry !== undefined)
+      updateData.paymentKeyExpiry = data.paymentKeyExpiry;
     if (data.totalPrice !== undefined) updateData.totalPrice = data.totalPrice;
     if (data.seatCount !== undefined) updateData.seatCount = data.seatCount;
     if (data.distanceKm !== undefined) updateData.distanceKm = data.distanceKm;
@@ -316,7 +326,12 @@ export class BookingsRepository implements IBookingRepository {
       ];
     }
 
-    if (query?.filterField && query?.filterValue && (query.filterField as any) !== "None" && (query.filterValue as any) !== "None") {
+    if (
+      query?.filterField &&
+      query?.filterValue &&
+      (query.filterField as any) !== "None" &&
+      (query.filterValue as any) !== "None"
+    ) {
       const field = String(query.filterField);
       const val = String(query.filterValue);
       if (field === "status") {
@@ -331,9 +346,12 @@ export class BookingsRepository implements IBookingRepository {
       }
     }
 
-    let orderBy: Prisma.BookingsOrderByWithRelationInput = { createdAt: "desc" };
+    let orderBy: Prisma.BookingsOrderByWithRelationInput = {
+      createdAt: "desc",
+    };
     if (query?.sortField && (query.sortField as any) !== "None") {
-      const sortOrder = query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
+      const sortOrder =
+        query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
       const field = String(query.sortField);
 
       if (field === "passengerName") {
@@ -452,4 +470,3 @@ export class BookingsRepository implements IBookingRepository {
     };
   }
 }
-

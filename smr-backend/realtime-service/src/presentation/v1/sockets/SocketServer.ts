@@ -41,7 +41,7 @@ export async function registerSocketHandlers(
     //custom middleware for socket requests
     io.of(handler.nameSpace).use(socketAuthMiddleware);
 
-    io.of(handler.nameSpace).on("connection", (socket) => {
+    io.of(handler.nameSpace).on("connection", async (socket) => {
       logger.info("Socket connection established: ", {
         socketId: socket.id,
       });
@@ -50,11 +50,11 @@ export async function registerSocketHandlers(
         logger.error("Socket connection failed. Error: ", { error: error });
       });
 
-      handler.register(socket);
+      await handler.register(socket);
 
       //to track if user is connected
       //this enables tracking the same user across multiple devices also
-      socket.join(`user:${socket.data.userId}`);
+      await socket.join(`user:${socket.data.userId}`);
     });
   }
 }
