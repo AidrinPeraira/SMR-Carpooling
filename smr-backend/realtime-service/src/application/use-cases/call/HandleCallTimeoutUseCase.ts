@@ -1,10 +1,10 @@
 import {
-  RejectCallPayloadDTO,
-  RejectCallRequestDTO,
+  CallTimeoutPayloadDTO,
+  HandleCallTimeoutRequestDTO,
 } from "#/application/dto/CallDTO";
 import { ICallSessionRepository } from "#/application/interfaces/repository/ICallSessionRepository";
 import { ISocketEmitter } from "#/application/interfaces/sockets/ISocketEmitter";
-import { IRejectCallUseCase } from "#/application/interfaces/use-cases/call/IRejectCallUseCase";
+import { IHandleCallTimeoutUseCase } from "#/application/interfaces/use-cases/call/IHandleCallTimeoutUseCase";
 import { CallSocketMapper } from "#/application/mapper/CallSocketMapper";
 import {
   ApplicationError,
@@ -16,18 +16,13 @@ import {
   SocketEvents,
 } from "@sharemyride/shared";
 
-/**
- * This class implements the use case that handles
- * a call rejection from the receiver. It relays
- * the rejection evnet to the caller
- */
-export class RejectCallUseCase implements IRejectCallUseCase {
+export class HandleCallTimeoutUseCase implements IHandleCallTimeoutUseCase {
   constructor(
     private readonly _callSessionRepository: ICallSessionRepository,
     private readonly _socketEmitter: ISocketEmitter,
   ) {}
 
-  async execute(dto: RejectCallRequestDTO): Promise<void> {
+  async execute(dto: HandleCallTimeoutRequestDTO): Promise<void> {
     const { callSessionId, userId } = dto;
 
     const callSession =
@@ -40,21 +35,24 @@ export class RejectCallUseCase implements IRejectCallUseCase {
         ErrorCode.DOMAIN_NOT_FOUND,
         ErrorDetails.DOMAIN_NOT_FOUND,
         {
-          location: "RejectCallUseCase",
+          location: "HandleCallTimeoutUseCase",
           details: `Call session not found: ${callSessionId}`,
         },
       );
     }
 
-    if (callSession.receiverId !== userId) {
+    if (
+      callSession.callerId !== userId &&
+      callSession.receiverId !== userId
+    ) {
       throw new ApplicationError(
         CallErrorMessage.NOT_AUTHORIZED,
         HttpStatusCodes.Forbidden,
         ErrorCode.DOMAIN_ACCESS_DENIED,
         ErrorDetails.DOMAIN_ACCESS_DENIED,
         {
-          location: "RejectCallUseCase",
-          details: `User ${userId} is not the receiver of call session ${callSessionId}`,
+          location: "HandleCallTimeoutUseCase",
+          details: `User ${userId} is not part of call session ${callSessionId}`,
         },
       );
     }
@@ -66,7 +64,7 @@ export class RejectCallUseCase implements IRejectCallUseCase {
         ErrorCode.DOMAIN_CONFLICT,
         ErrorDetails.DOMAIN_CONFLICT,
         {
-          location: "RejectCallUseCase",
+          location: "HandleCallTimeoutUseCase",
           details: `Call session ${callSessionId} is in status ${callSession.callStatus}, expected ${CallStatus.RINGING}`,
         },
       );
@@ -77,11 +75,18 @@ export class RejectCallUseCase implements IRejectCallUseCase {
       leftAt: new Date(),
     });
 
-    const rejectPayload: RejectCallPayloadDTO = { callSessionId };
+    const timeoutPayload: CallTimeoutPayloadDTO = { callSessionId };
+
     await this._socketEmitter.emitToRoom(
       `user:${callSession.callerId}`,
-      SocketEvents.CALL_REJECTED,
-      CallSocketMapper.toRejectCallPayload(rejectPayload),
+      SocketEvents.CALL_NO_ANSWER,
+      CallSocketMapper.toCallTimeoutPayload(timeoutPayload),
+    );
+
+    await this._socketEmitter.emitToRoom(
+      `user:${callSession.receiverId}`,
+      SocketEvents.CALL_MISSED,
+      CallSocketMapper.toCallTimeoutPayload(timeoutPayload),
     );
   }
 }

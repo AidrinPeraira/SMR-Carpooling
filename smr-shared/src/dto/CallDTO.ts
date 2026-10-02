@@ -35,3 +35,11 @@ export interface RejectCallDTO {
 export interface RejectCallPayload {
   call_session_id: string;
 }
+
+export interface HandleCallTimeoutDTO {
+  call_session_id: string;
+}
+
+export interface CallTimeoutPayload {
+  call_session_id: string;
+}

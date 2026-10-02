@@ -8,4 +8,6 @@ export enum SocketEvents {
   CALL_INITIATED = "call_initiated",
   CALL_ACCEPTED = "call_accepted",
   CALL_REJECTED = "call_rejected",
+  CALL_NO_ANSWER = "call_no_answer",
+  CALL_MISSED = "call_missed",
 }

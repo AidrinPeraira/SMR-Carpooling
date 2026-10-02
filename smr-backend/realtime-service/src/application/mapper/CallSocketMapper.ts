@@ -7,6 +7,8 @@ import {
   InitiateCallRequestDTO,
   RejectCallPayloadDTO,
   RejectCallRequestDTO,
+  HandleCallTimeoutRequestDTO,
+  CallTimeoutPayloadDTO,
 } from "#/application/dto/CallDTO";
 import {
   AcceptCallCallerPayload,
@@ -17,6 +19,8 @@ import {
   InitiateCallOutgoingPayload,
   RejectCallDTO,
   RejectCallPayload,
+  HandleCallTimeoutDTO,
+  CallTimeoutPayload,
 } from "@sharemyride/shared";
 
 export class CallSocketMapper {
@@ -90,6 +94,24 @@ export class CallSocketMapper {
   static toRejectCallPayload(
     dto: RejectCallPayloadDTO,
   ): RejectCallPayload {
+    return {
+      call_session_id: dto.callSessionId,
+    };
+  }
+
+  static toHandleCallTimeoutRequestDTO(
+    payload: HandleCallTimeoutDTO,
+    userId: string,
+  ): HandleCallTimeoutRequestDTO {
+    return {
+      callSessionId: payload.call_session_id,
+      userId,
+    };
+  }
+
+  static toCallTimeoutPayload(
+    dto: CallTimeoutPayloadDTO,
+  ): CallTimeoutPayload {
     return {
       call_session_id: dto.callSessionId,
     };
