@@ -29,6 +29,8 @@ export interface DriverBookingItemDTO {
   passenger_name: string;
   trip_date: string;
   trip_vehicle: string;
+  trip_origin: string;
+  trip_destination: string;
   pickup_point_name: string;
   pickup_point_address: string;
   drop_off_point_name: string;

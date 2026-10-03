@@ -67,6 +67,8 @@ export class BookingMapper {
         passenger_name: item.passngerName,
         trip_date: item.tripDate instanceof Date ? item.tripDate.toISOString() : String(item.tripDate),
         trip_vehicle: item.tripVehicle,
+        trip_origin: item.tripOrigin,
+        trip_destination: item.tripDestination,
         pickup_point_name: item.pickupPointName,
         pickup_point_address: item.pickupPointAddress,
         drop_off_point_name: item.dropOffPointName,

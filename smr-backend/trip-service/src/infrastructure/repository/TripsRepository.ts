@@ -201,7 +201,7 @@ export class TripsRepository implements ITripRepository {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
+        orderBy: { startTime: "desc" },
         include: {
           vehicle: true,
           bookings: {

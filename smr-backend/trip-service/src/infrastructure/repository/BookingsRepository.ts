@@ -130,6 +130,8 @@ export class BookingsRepository implements IBookingRepository {
       tripDate: b.trip.startTime,
       tripVehicle:
         `${b.trip.vehicle.vehicleMake} ${b.trip.vehicle.vehicleModel}`.trim(),
+      tripOrigin: (b.trip.tripOrigin as any)?.stopName || "",
+      tripDestination: (b.trip.tripDestination as any)?.stopName || "",
       pickupPointName: (b.pickupPoint as any)?.stopName || "",
       pickupPointAddress: (b.pickupPoint as any)?.stopAddress || "",
       dropOffPointName: (b.dropOffPoint as any)?.stopName || "",

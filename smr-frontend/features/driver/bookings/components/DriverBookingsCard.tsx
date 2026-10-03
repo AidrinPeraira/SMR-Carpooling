@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { DriverBookingItem } from "../api/getDriverBookingsRequest";
 import { Button, Tag } from "@sharemyride/ui";
+import { ArrowRight } from "lucide-react";
 
 interface DriverBookingsCardProps {
   booking: DriverBookingItem;
@@ -114,6 +115,14 @@ export function DriverBookingsCard({ booking }: DriverBookingsCardProps) {
                 {booking.trip_vehicle}
               </span>
             </p>
+            {booking.trip_origin && booking.trip_destination && (
+              <p className="flex items-center gap-1.5 font-medium text-content-primary">
+                <ArrowRight className="w-3.5 h-3.5 text-accent" />
+                <span>{booking.trip_origin}</span>
+                <span className="text-content-secondary">to</span>
+                <span>{booking.trip_destination}</span>
+              </p>
+            )}
           </div>
         </div>
 
