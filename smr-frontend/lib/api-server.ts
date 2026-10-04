@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 /**
  * helper function to refresh tokens
  */
-async function getNewTokens(
+export async function getNewTokens(
   refreshToken: string,
 ): Promise<{ access_token: string; refresh_token: string }> {
   const response = await fetch(
