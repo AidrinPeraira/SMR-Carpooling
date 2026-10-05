@@ -1,19 +1,11 @@
 "use client";
 
 import { createContext, useContext } from "react";
-
-export type CallState = "IDLE" | "CALLING" | "RINGING" | "IN_CALL";
-
-export interface IncomingCall {
-  callSessionId: string;
-  callerId: string;
-  tripId: string;
-}
-
-export interface CallNotification {
-  type: "rejected" | "busy" | "error";
-  message: string;
-}
+import {
+  CallState,
+  IncomingCall,
+  CallNotification,
+} from "@/features/realtime/types/VoiceCallTypes";
 
 export interface VoiceCallContextValue {
   callState: CallState;

@@ -2,14 +2,15 @@
 
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useCallSocket } from "@/features/realtime/hooks/useCallSocket";
+import { VoiceCallContext } from "@/features/realtime/context/VoiceCallContext";
 import {
-  VoiceCallContext,
   CallState,
   IncomingCall,
   CallNotification,
-} from "@/features/realtime/context/VoiceCallContext";
+} from "@/features/realtime/types/VoiceCallTypes";
 import {
   SocketEvents,
+  CallSignalType,
   InitiateCallOutgoingPayload,
   InitiateCallConfirmationPayload,
   AcceptCallCallerPayload,
@@ -75,7 +76,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
         if (e.candidate) {
           callSocket.emit(SocketEvents.CALL_SIGNAL, {
             call_session_id: callSessionId,
-            signal_type: "ice_candidate",
+            signal_type: CallSignalType.ICE_CANDIDATE,
             signal_data: e.candidate,
           });
         }
@@ -206,7 +207,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
 
           callSocket.emit(SocketEvents.CALL_SIGNAL, {
             call_session_id: callSessionId,
-            signal_type: "offer",
+            signal_type: CallSignalType.OFFER,
             signal_data: offer,
           });
 
@@ -250,7 +251,7 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       const pc = pcRef.current;
       if (!pc) return;
 
-      if (data.signal_type === "offer") {
+      if (data.signal_type === CallSignalType.OFFER) {
         await pc.setRemoteDescription(
           new RTCSessionDescription(
             data.signal_data as RTCSessionDescriptionInit,
@@ -261,17 +262,17 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
         await pc.setLocalDescription(answer);
         callSocket.emit(SocketEvents.CALL_SIGNAL, {
           call_session_id: data.call_session_id,
-          signal_type: "answer",
+          signal_type: CallSignalType.ANSWER,
           signal_data: answer,
         });
-      } else if (data.signal_type === "answer") {
+      } else if (data.signal_type === CallSignalType.ANSWER) {
         await pc.setRemoteDescription(
           new RTCSessionDescription(
             data.signal_data as RTCSessionDescriptionInit,
           ),
         );
         await flushIceCandidates(pc);
-      } else if (data.signal_type === "ice_candidate") {
+      } else if (data.signal_type === CallSignalType.ICE_CANDIDATE) {
         if (!pc.remoteDescription) {
           iceCandidateQueue.current.push(
             data.signal_data as RTCIceCandidateInit,
