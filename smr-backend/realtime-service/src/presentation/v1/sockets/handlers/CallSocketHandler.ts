@@ -84,7 +84,6 @@ export class CallSocketHandler implements ICallSocketHandler {
     } catch (error) {
       this._logger.error("CallSocketHandler.onInitiateCall error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -102,7 +101,6 @@ export class CallSocketHandler implements ICallSocketHandler {
     } catch (error) {
       this._logger.error("CallSocketHandler.onAcceptCall error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -120,7 +118,6 @@ export class CallSocketHandler implements ICallSocketHandler {
     } catch (error) {
       this._logger.error("CallSocketHandler.onRejectCall error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -141,7 +138,6 @@ export class CallSocketHandler implements ICallSocketHandler {
     } catch (error) {
       this._logger.error("CallSocketHandler.onCallTimeout error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -159,7 +155,6 @@ export class CallSocketHandler implements ICallSocketHandler {
     } catch (error) {
       this._logger.error("CallSocketHandler.onEndCall error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -180,7 +175,6 @@ export class CallSocketHandler implements ICallSocketHandler {
     } catch (error) {
       this._logger.error("CallSocketHandler.onRelaySignal error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 

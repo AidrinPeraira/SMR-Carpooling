@@ -8,6 +8,7 @@ import {
   XCircle,
   MessageSquare,
 } from "lucide-react";
+import { CallButton } from "@/features/call/CallButton";
 import { OnlinePaymentButton } from "./OnlinePaymentButton";
 import { WalletPaymentButton } from "./WalletPaymentButton";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,6 +29,7 @@ interface BookingDetailsActionCardProps {
 export function BookingDetailsActionCard({
   bookingId,
   tripId,
+  driverId,
   amount,
   status,
   onWithdraw,
@@ -152,6 +154,15 @@ export function BookingDetailsActionCard({
                 Chat
               </Button>
             </Link>
+            {tripId && driverId && (
+              <CallButton
+                tripId={tripId}
+                receiverId={driverId}
+                variant="secondary"
+                className="w-full sm:flex-1 text-xs py-2 font-medium"
+                showText
+              />
+            )}
           </div>
 
           <Button

@@ -2,6 +2,7 @@
 
 import { Button, Card } from "@sharemyride/ui";
 import { MessageSquare } from "lucide-react";
+import { CallButton } from "@/features/call/CallButton";
 import Link from "next/link";
 interface Booking {
   booking_id: string;
@@ -60,6 +61,12 @@ export function DriverTripCommunicationCard({
                 <span className="text-sm font-medium text-content-primary truncate mr-2">
                   {booking.passenger_name}
                 </span>
+                <CallButton
+                  tripId={tripId}
+                  receiverId={booking.passenger_id}
+                  variant="ghost"
+                  className="shrink-0"
+                />
               </div>
             ))}
           </div>
