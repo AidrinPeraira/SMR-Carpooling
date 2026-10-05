@@ -109,9 +109,10 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 
 **Base Path:** `/api/v1/driver`
 
-| Method | Endpoint   | Description                         | Auth Required |
-| :----- | :--------- | :---------------------------------- | :------------ |
-| `GET`  | `/details` | Get the authenticated driver's details. | Yes       |
+| Method | Endpoint   | Description                              | Auth Required  |
+| :----- | :--------- | :--------------------------------------- | :------------- |
+| `GET`  | `/details` | Get the authenticated driver's details.  | Yes (Driver)   |
+| `GET`  | `/stats`   | Get aggregated trip stats for the driver. | Yes (Driver)  |
 
 ### Vehicles
 

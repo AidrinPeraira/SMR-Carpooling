@@ -8,6 +8,7 @@ import { UpdateVehicleUseCase } from "#/application/use-case/admin/configuration
 import { AddDriverUseCase } from "#/application/use-case/driver/AddDriverUseCase";
 import { ChangeDriverStatusUseCase } from "#/application/use-case/driver/ChangeDriverStatusUseCase";
 import { GetDriverDetailsUseCase } from "#/application/use-case/driver/GetDriverDetailsUseCase";
+import { GetDriverTripStatsUseCase } from "#/application/use-case/driver/GetDriverTripStatsUseCase";
 import { UpdateDriverUseCase } from "#/application/use-case/driver/UpdateDriverUseCase";
 import { AddVehicleUseCase as AddUserVehicleUseCase } from "#/application/use-case/vehicle/AddVehicleUseCase";
 import { GetDriverVehiclesUseCase } from "#/application/use-case/vehicle/GetDriverVehiclesUseCase";
@@ -97,6 +98,7 @@ const changeDriverStatusUseCase = new ChangeDriverStatusUseCase(
   driverRepository,
 );
 const getDriverDetailsUseCase = new GetDriverDetailsUseCase(driverRepository);
+const getDriverTripStatsUseCase = new GetDriverTripStatsUseCase(bookingsRepository);
 
 const addUserVehicleUseCase = new AddUserVehicleUseCase(vehicleRepository);
 const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(
@@ -356,6 +358,7 @@ const adminBookingControllerV1 = new AdminBookingControllerV1(
 const driverControllerV1 = new DriverControllerV1(
   consolaLogger,
   getDriverDetailsUseCase,
+  getDriverTripStatsUseCase,
 );
 
 const vehicleControllerV1 = new VehicleControllerV1(

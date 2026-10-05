@@ -1,5 +1,6 @@
 import { DriverDetailsDTO } from "#/application/dto/driver/DriverDetailsDTO";
-import { GetDriverDetailsResult } from "@sharemyride/shared";
+import { DriverTripStatsResponseDTO } from "#/application/dto/driver/DriverTripStatsResponseDTO";
+import { DriverTripStatsResult, GetDriverDetailsResult } from "@sharemyride/shared";
 
 export class DriverMapper {
   static toDriverDetailsResponse(
@@ -15,6 +16,16 @@ export class DriverMapper {
       driver_status: dto.driverStatus,
       created_at: dto.createdAt,
       updated_at: dto.updatedAt,
+    };
+  }
+
+  static toDriverTripStatsResponse(
+    dto: DriverTripStatsResponseDTO,
+  ): DriverTripStatsResult {
+    return {
+      total_trips: dto.totalTrips,
+      trips_this_month: dto.tripsThisMonth,
+      total_passengers: dto.totalPassengers,
     };
   }
 }

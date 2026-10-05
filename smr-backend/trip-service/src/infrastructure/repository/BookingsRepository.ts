@@ -471,4 +471,54 @@ export class BookingsRepository implements IBookingRepository {
       totalPrice: booking.totalPrice,
     };
   }
+
+  async getDriverTripStats(driverId: string): Promise<{
+    totalTrips: number;
+    tripsThisMonth: number;
+    totalPassengers: number;
+  }> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const completedStatuses: BookingStatus[] = [
+      BookingStatus.CONFIRMED,
+    ];
+
+    const baseWhere: Prisma.BookingsWhereInput = {
+      trip: { driverId },
+      status: { in: completedStatuses },
+    };
+
+    const [totalTrips, tripsThisMonth, passengersAgg] = await Promise.all([
+      this._bookingsModel
+        .findMany({
+          where: baseWhere,
+          select: { tripId: true },
+          distinct: ["tripId"],
+        })
+        .then((rows) => rows.length),
+
+      this._bookingsModel
+        .findMany({
+          where: {
+            ...baseWhere,
+            trip: { driverId, startTime: { gte: startOfMonth } },
+          },
+          select: { tripId: true },
+          distinct: ["tripId"],
+        })
+        .then((rows) => rows.length),
+
+      this._bookingsModel.aggregate({
+        where: baseWhere,
+        _sum: { seatCount: true },
+      }),
+    ]);
+
+    return {
+      totalTrips,
+      tripsThisMonth,
+      totalPassengers: passengersAgg._sum.seatCount ?? 0,
+    };
+  }
 }
