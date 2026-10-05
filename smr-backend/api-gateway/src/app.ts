@@ -139,7 +139,10 @@ export function createApp(logger: ILogger) {
     target: AppConfig.REALTIME_SERVICE_URL,
     changeOrigin: true,
     ws: true,
-    pathFilter: ["/socket.io/**"],
+    pathFilter: ["/socket.io/**", "/api/*/chat/**"],
+    pathRewrite: {
+      "^/api": "",
+    },
     on: {
       proxyReq: (proxyReq, req) => {
         proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);

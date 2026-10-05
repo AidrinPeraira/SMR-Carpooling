@@ -7,6 +7,7 @@ import QueryProvider from "@/components/Provider/QueryProvider";
 import { ReactNode } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapProvider } from "@/features/map/context/MapProvider";
+import { SocketIOProvider } from "@/features/realtime/context/SocketIOProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,9 +45,11 @@ export default function RootLayout({
         <QueryProvider>
           <ToastProvider>
             <MapProvider>
-              <QueryToastListener />
-              {children}
-              {modal}
+              <SocketIOProvider>
+                <QueryToastListener />
+                {children}
+                {modal}
+              </SocketIOProvider>
             </MapProvider>
           </ToastProvider>
         </QueryProvider>

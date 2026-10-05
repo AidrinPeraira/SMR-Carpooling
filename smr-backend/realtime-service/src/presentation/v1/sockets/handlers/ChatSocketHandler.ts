@@ -60,7 +60,6 @@ export class ChatSocketHandler implements IChatSocketHandler {
     } catch (error) {
       this._logger.error("ChatSocketHandler.onJoinChat error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -78,7 +77,6 @@ export class ChatSocketHandler implements IChatSocketHandler {
     } catch (error) {
       this._logger.error("ChatSocketHandler.onLeaveChat error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 
@@ -100,7 +98,6 @@ export class ChatSocketHandler implements IChatSocketHandler {
     } catch (error) {
       this._logger.error("ChatSocketHandler.onSendMessage error", { error });
       this.emitError(socket, error);
-      throw error;
     }
   }
 

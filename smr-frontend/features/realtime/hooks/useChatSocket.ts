@@ -23,7 +23,8 @@ export function useChatSocket() {
   useEffect(() => {
     const onConnect = () => logger.info("Chat socket connected");
     const onDisconnect = () => logger.info("Chat socket disconnected");
-    const onError = (error: Error) => logger.error("Chat socket error: ", error);
+    const onError = (error: Error) =>
+      logger.error("Chat socket error: ", error.message ?? error);
 
     chatSocket.on("connect", onConnect);
     chatSocket.on("disconnect", onDisconnect);

@@ -10,7 +10,8 @@ export function gatewayKeyMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  if (req.path === "/health" || req.path.startsWith("/v1/webhook")) {
+  const path = req.path ?? req.url ?? "";
+  if (path === "/health" || path.startsWith("/v1/webhook")) {
     return next();
   }
 

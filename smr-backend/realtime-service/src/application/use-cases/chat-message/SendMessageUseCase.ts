@@ -27,8 +27,12 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     });
 
     await this._socketEmitter.emitToRoom(dto.chatId, SocketEvents.NEW_MESSAGE, {
-      ...dto,
       id: savedMessage.id,
+      chat_id: dto.chatId,
+      body: dto.message,
+      sender_id: dto.senderId,
+      sender_name: dto.senderName,
+      created_at: now.toISOString(),
     });
   }
 }
