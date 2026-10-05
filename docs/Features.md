@@ -1,82 +1,228 @@
-# Features Tracker
+# Features & Tech Stack
 
-> This file tracks implemented, ongoing, and planned features for each module.
-> Keep it updated regularly based on [API Documentation](./API.md).
+> This document showcases the features built into the ShareMyRide platform and the technology choices behind them.
 
-## Status Legend
-
-- [x] Completed
-- [ ] Planned
-- [~] In Progress
-
-# Features
+---
 
 ## User Service
 
-### Auth
+### Authentication & Session Management
 
-- [x] Email and password signup
-- [x] Email Verification (link-based)
-- [x] Resend verification email - ?
-- [x] Email and password login
-- [x] Token Management (Access & Refresh tokens)
-- [x] Session Management (Redis-backed)
-- [x] Logout
-- [x] Google OAuth Integration
-- [x] Password Reset flow (Forgot/Verify/Reset)
-- [x] Role Switching (Passenger ↔ Driver)
+| Feature                          | Tech / Approach                                            |
+| :------------------------------- | :--------------------------------------------------------- |
+| Email/password signup            | `crypto` module (Node.js built-in) for password hashing    |
+| Email verification (link-based)  | Verification tokens, email via **Resend**                  |
+| Email/password login             | JWT access + refresh tokens via `jsonwebtoken`             |
+| Google OAuth integration         | Google Auth library for server-side token verification     |
+| Token management                 | JWT access tokens (short-lived) + refresh tokens (long-lived) |
+| Session management               | **Redis**-backed session store for active session tracking |
+| Logout                           | Session invalidation via Redis                             |
+| Password reset flow              | Token-based forgot → verify → reset flow with email notifications |
+| Role switching (Passenger ↔ Driver) | In-session role toggle with token reissue               |
+| User blacklisting                | Redis blacklist checked at the API Gateway level           |
 
-### Profile
+### Profile Management
 
-- [x] Get current user profile
-- [x] Update profile details (Name, Bio, Phone, etc.)
-- [x] Profile Picture Upload
+| Feature                 | Tech / Approach                                                  |
+| :---------------------- | :--------------------------------------------------------------- |
+| Get/update user profile | MongoDB document with flexible schema                            |
+| Profile picture upload  | **AWS S3** presigned URL generation → client-side direct upload  |
+| Avatar management       | Separate upload URL generation and avatar confirmation endpoints |
 
-### Driver & Vehicle Registration
+### Driver & Vehicle Applications
 
-- [x] Submit Driver Application (License details, etc.)
-- [x] Check status of pending driver application
-- [x] Submit Vehicle Registration Application
-- [x] Veiw Submitted Applications and status. (Track / View Application history)
+| Feature                                  | Tech / Approach                                          |
+| :--------------------------------------- | :------------------------------------------------------- |
+| Driver onboarding application            | Multi-step application with document uploads (S3)        |
+| Vehicle registration application         | New vehicle + renewal workflows                          |
+| Application resubmission                 | Returned applications can be corrected and resubmitted   |
+| Application tracking                     | View application history, status, and details            |
+| File upload for documents                | S3 presigned URLs for license, registration, etc.        |
 
-### Admin
+### Admin Operations
 
-- [x] View all registered users
-- [x] Toggle user status (Activate/Deactivate/Block)
-- [x] Force log-out / Clear sessions (use redis blacklist)
-- [x] Review and process Driver applications (Approve/Reject)
-- [x] Review and process Vehicle applications (Approve/Reject)
-- [x] View all driver applications
-- [x] View all vehicle applications
+| Feature                          | Tech / Approach                                             |
+| :------------------------------- | :---------------------------------------------------------- |
+| View all users                   | Paginated user listing                                      |
+| View full user profile           | Detailed admin view of any user's complete profile          |
+| Block/unblock users              | Status change propagated via **RabbitMQ** to all services   |
+| Review & process applications    | Approve/reject/return with admin comments                   |
+| Application details              | Full application details view for admin review              |
 
-## Trip Module (Trip Service)
+---
 
-- [x] Create a new trip (Driver)
-- [x] Search for trips (Passenger)
-- [x] View trip details (Passenger, Driver)
-- [x] Request to join a trip (Passenger)
-- [x] Accept/Reject trip requests (Driver)
-- [ ] Manage trip status (Started/Completed/Cancelled)
-- [ ] Route navigation integration (MapBox)
+## Trip Service
 
-## Payment Module (Payment Service)
+### Trip Management
 
-- [x] Secure payment processing (Stripe)
-- [x] Expense sharing calculation
-- [ ] Payouts for drivers
-- [x] wallet
-- [x] Cancellation & Refunds
-- [ ] Transaction history
+| Feature                     | Tech / Approach                                                     |
+| :-------------------------- | :------------------------------------------------------------------ |
+| Create a new trip           | Driver specifies route, date/time, seats, vehicle. Stored in **PostgreSQL** via **Prisma** |
+| Search for trips            | Passenger search using **H3 geo-indexing** (Uber's hexagonal spatial index) for route matching |
+| View trip details           | Driver and passenger views with different detail levels             |
+| Journey details             | Passenger-specific journey view with pickup/dropoff information     |
+| Cancel trip                 | Driver cancellation triggers refunds and notifications via events   |
+| Trip geo-index cleanup      | Scheduled via **Upstash QStash** webhooks for expired trips        |
 
-## Common Features
+### Booking Management
 
-- [ ] System wide config with redundant db across services
+| Feature                     | Tech / Approach                                                     |
+| :-------------------------- | :------------------------------------------------------------------ |
+| Create booking request      | Passenger requests to join a trip                                   |
+| Accept/reject bookings      | Driver approval workflow                                            |
+| Withdraw booking            | Passenger can withdraw before acceptance                            |
+| Initiate booking payment    | Creates a payment order via the Payment Service                     |
+| Cancel confirmed booking    | Triggers refund to wallet via **RabbitMQ** event                   |
+| Booking payment cleanup     | Unpaid bookings auto-cleaned via scheduled **QStash** webhooks     |
 
-## Security Feature
+### Vehicle & Driver
 
-- [x] Query validation prevents mongo db query injection via the query params
+| Feature                | Tech / Approach                                        |
+| :--------------------- | :----------------------------------------------------- |
+| Get driver vehicles    | Vehicle listing for authenticated drivers              |
+| Get driver details     | Driver profile and status                              |
 
-//list transactions in profile
-//list transactions for admin
-//chat call history. Where to see that?
-//
+### Admin (Trip Service)
+
+| Feature                    | Tech / Approach                                              |
+| :------------------------- | :----------------------------------------------------------- |
+| Configuration management   | Pricing rules and vehicle type configs (**Redis** cached)    |
+| List/view all trips        | Admin paginated listing with trip details                    |
+| List/view all bookings     | Admin paginated listing with booking details                 |
+| Driver details             | Admin view of any driver's details                           |
+| Driver vehicles            | Admin view of any driver's vehicles                          |
+| Places management          | Manage known places/locations with Redis cache               |
+
+---
+
+## Payment Service
+
+### Payment Processing
+
+| Feature                     | Tech / Approach                                                    |
+| :-------------------------- | :----------------------------------------------------------------- |
+| Create booking payment order | **RazorPay** order creation for booking payments                  |
+| Verify payment              | RazorPay signature verification for payment confirmation           |
+| Pay with wallet             | Direct wallet balance deduction for bookings                       |
+| Failed payment handling     | Automatic cleanup and status update                                |
+| Booking payment cleanup     | Stale payment orders cleaned via scheduled **QStash** webhooks    |
+
+### Wallet System
+
+| Feature                | Tech / Approach                                   |
+| :--------------------- | :------------------------------------------------ |
+| Auto-creation          | Wallet created on user signup via event            |
+| Wallet transactions    | Transaction history with balance tracking          |
+| Refund to wallet       | Cancellation refunds credited automatically        |
+
+### Admin (Payment Service)
+
+| Feature               | Tech / Approach                           |
+| :-------------------- | :---------------------------------------- |
+| List transactions     | Paginated transaction listing for admins  |
+
+---
+
+## Notification Service
+
+### Email Notifications
+
+| Trigger Event               | Email Sent To | Tech / Approach        |
+| :-------------------------- | :------------ | :--------------------- |
+| User signup                 | User          | **Resend** with custom domain |
+| Password change request     | User          | Token-based verification link |
+| Password changed            | User          | Confirmation email     |
+| Application approved        | User          | Status notification    |
+| Application rejected        | User          | Status notification    |
+| Application returned        | User          | Resubmission prompt    |
+| New booking request         | Driver        | Booking alert          |
+| Booking payment success     | Passenger     | Payment confirmation   |
+| Booking payment failed      | Passenger     | Payment failure alert  |
+| Booking cancellation        | Driver + Passenger | Cancellation notice |
+| Trip cancellation           | All passengers | Cancellation + refund notice |
+
+**Architecture**: Pure event consumer — no REST API. Subscribes to **RabbitMQ** queues and dispatches emails via Resend.
+
+---
+
+## Realtime Service
+
+### Chat System
+
+| Feature               | Tech / Approach                                                    |
+| :-------------------- | :----------------------------------------------------------------- |
+| Trip chat             | **Socket.IO** with namespace-based rooms per trip                  |
+| Join/leave chat       | Socket events for trip chat room management                        |
+| Send messages         | Real-time message broadcast via Socket.IO                          |
+| Message sync          | HTTP endpoint for loading chat history (MongoDB)                   |
+| Chat lifecycle        | Auto-created on trip creation, closed on trip cancellation (via events) |
+
+### Voice Calling
+
+| Feature               | Tech / Approach                                                    |
+| :-------------------- | :----------------------------------------------------------------- |
+| Initiate call         | **WebRTC** signaling via Socket.IO                                 |
+| Accept/reject call    | Signaling events with session tracking (MongoDB)                   |
+| End call              | Call session cleanup                                               |
+| Relay ICE/SDP signals | Peer-to-peer connection setup relay                                |
+| Call timeout          | Automatic timeout handling for unanswered calls                    |
+
+### Member Management
+
+| Feature                  | Tech / Approach                                             |
+| :----------------------- | :---------------------------------------------------------- |
+| Auto member creation     | On user signup event from **RabbitMQ**                      |
+| Active trip tracking     | Members associated with active trips (added/removed via events) |
+
+---
+
+## Cross-Cutting Features
+
+### API Gateway
+
+| Feature                  | Tech / Approach                                                   |
+| :----------------------- | :---------------------------------------------------------------- |
+| Request proxying         | **http-proxy-middleware** (supports WebSocket for realtime)       |
+| Auth verification        | JWT token verification at the gateway level                       |
+| User blacklisting        | **Redis**-backed blacklist check before proxying                 |
+| API versioning           | Path-based versioning (`/api/v1/...`)                            |
+| WebSocket proxying       | Socket.IO connections proxied to Realtime Service                |
+
+### Event-Driven Architecture
+
+| Feature                  | Tech / Approach                                                   |
+| :----------------------- | :---------------------------------------------------------------- |
+| Async communication      | **RabbitMQ** topic exchange with pattern-based routing            |
+| Dead lettering           | Dead letter exchange + queue for failed message recovery          |
+| Event propagation        | User/booking/trip/payment lifecycle events broadcast to all interested services |
+
+### Observability
+
+| Feature                  | Tech / Approach                                                   |
+| :----------------------- | :---------------------------------------------------------------- |
+| Metrics                  | **OpenTelemetry** → **Prometheus** (Grafana Cloud)               |
+| Logs                     | **OpenTelemetry** → **Loki** (Grafana Cloud)                     |
+| Traces                   | **OpenTelemetry** → **Tempo** (Grafana Cloud)                    |
+| HTTP metrics             | Custom middleware in each service for request-level metrics        |
+| Dashboards               | Grafana Cloud dashboards for system and request metrics           |
+
+### Security
+
+| Feature                     | Tech / Approach                                               |
+| :-------------------------- | :------------------------------------------------------------ |
+| Query injection prevention  | MongoDB query parameter validation to prevent injection attacks |
+| Helmet                      | HTTP security headers on all services                          |
+| CORS                        | Configured on all services                                     |
+| Gateway key                 | Inter-service communication secured with shared key            |
+| Role-based access           | Middleware-enforced role checks (Admin, Driver, Passenger)     |
+
+### Infrastructure
+
+| Feature                  | Tech / Approach                                                   |
+| :----------------------- | :---------------------------------------------------------------- |
+| Containerization         | **Docker** multi-stage builds (dev + prod) with build caching    |
+| Monorepo                 | **pnpm** workspaces                                              |
+| Shared packages          | `@sharemyride/shared` (DTOs, enums, errors), `@sharemyride/ui` (Storybook components) |
+| UI component library     | **Storybook** + Vite for isolated component development          |
+| Testing                  | **Vitest** + **Testcontainers** (temp Docker containers for integration tests) |
+| API testing              | **Bruno** (offline, CLI-capable, lives alongside project)        |
