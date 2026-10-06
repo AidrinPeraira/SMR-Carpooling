@@ -13,6 +13,7 @@ import { getDriverTripStatsRequest } from "../api/getDriverTripStatsRequest";
 import { getDriverEarningsRequest } from "../api/getDriverEarningsRequest";
 import { getDriverTodayTripRequest } from "../api/getDriverTodayTripRequest";
 import { getDriverRecentBookingsRequest } from "../api/getDriverRecentBookingsRequest";
+import Link from "next/link";
 
 export function DriverHomeView() {
   const { data: stats, isLoading: statsLoading } = useQuery({
@@ -57,10 +58,12 @@ export function DriverHomeView() {
               </Tag>
             </div>
           </div>
-          <Button className="flex items-center gap-1">
-            <PlusCircle className="w-4 h-4" />
-            Offer a Ride
-          </Button>
+          <Link href={"/driver/trips/new-trip"}>
+            <Button className="flex items-center gap-1">
+              <PlusCircle className="w-4 h-4" />
+              Offer a Ride
+            </Button>
+          </Link>
         </div>
 
         {/* Stats row */}
