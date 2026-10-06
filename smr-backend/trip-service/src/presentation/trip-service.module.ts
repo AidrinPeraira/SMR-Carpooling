@@ -98,7 +98,7 @@ const changeDriverStatusUseCase = new ChangeDriverStatusUseCase(
   driverRepository,
 );
 const getDriverDetailsUseCase = new GetDriverDetailsUseCase(driverRepository);
-const getDriverTripStatsUseCase = new GetDriverTripStatsUseCase(bookingsRepository);
+const getDriverTripStatsUseCase = new GetDriverTripStatsUseCase(tripsRepository);
 
 const addUserVehicleUseCase = new AddUserVehicleUseCase(vehicleRepository);
 const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(

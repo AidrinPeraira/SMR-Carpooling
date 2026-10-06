@@ -1,5 +1,6 @@
 import { Card } from "@sharemyride/ui";
-import { UserPlus, Wallet, Headset, ChevronRight } from "lucide-react";
+import { UserPlus, Wallet, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const shortcuts = [
   {
@@ -7,12 +8,14 @@ const shortcuts = [
     title: "Manage Requests",
     subtitle: "Pending ride approvals",
     color: "text-accent bg-accent/10",
+    navPath: "/driver/bookings",
   },
   {
     icon: Wallet,
     title: "Payouts & Wallet",
     subtitle: "Weekly auto-transfer",
     color: "text-accent bg-accent/10",
+    navPath: "/profile/wallet",
   },
 ];
 
@@ -24,9 +27,9 @@ export function QuickShortcutsCard() {
       </h3>
       <div className="space-y-2">
         {shortcuts.map((s) => (
-          <a
+          <Link
             key={s.title}
-            href="#"
+            href={s.navPath}
             className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-muted transition-colors border border-border-strong group"
           >
             <div className="flex items-center gap-3">
@@ -45,7 +48,7 @@ export function QuickShortcutsCard() {
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-content-tertiary group-hover:text-accent transition-colors" />
-          </a>
+          </Link>
         ))}
       </div>
     </Card>

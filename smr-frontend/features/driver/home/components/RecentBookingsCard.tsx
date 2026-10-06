@@ -1,54 +1,44 @@
-import { Avatar, Button, Table, Tag } from "@sharemyride/ui";
+import { Button, Table, Tag } from "@sharemyride/ui";
 import type { Column } from "@sharemyride/ui";
-
-interface Booking {
-  id: string;
-  passengerName: string;
-  passengerInitials: string;
-  bookedAt: string;
-  routeFrom: string;
-  routeTo: string;
-  seats: number;
-  status: "pending" | "confirmed" | "completed";
-  fare: number;
-}
+import { DriverBookingItemDTO } from "@sharemyride/shared";
+import Link from "next/link";
 
 interface Props {
-  bookings: Booking[];
+  bookings: DriverBookingItemDTO[];
 }
 
-const statusVariant: Record<Booking["status"], "muted" | "accent"> = {
-  pending: "muted",
+const statusVariant: Record<string, "muted" | "accent"> = {
+  requested: "muted",
+  payment_pending: "muted",
   confirmed: "accent",
   completed: "muted",
+  cancelled: "muted",
+  rejected: "muted",
+  withdrawn: "muted",
 };
 
-const statusLabel: Record<Booking["status"], string> = {
-  pending: "Pending",
-  confirmed: "Confirmed",
-  completed: "Completed",
-};
-
-const columns: Column<Booking>[] = [
+const columns: Column<DriverBookingItemDTO>[] = [
   {
     headerName: "Booking ID",
     customRender: (_, row) => (
-      <span className="font-mono text-content-secondary">#{row.id}</span>
+      <span className="font-mono text-content-secondary">
+        #{row.booking_id.slice(0, 8)}
+      </span>
     ),
   },
   {
     headerName: "Passenger",
     customRender: (_, row) => (
-      <div className="flex items-center gap-2">
-        <Avatar initials={row.passengerInitials} size="sm" />
-        <div>
-          <span className="font-semibold text-content-primary block">
-            {row.passengerName}
-          </span>
-          <span className="text-[11px] text-content-secondary">
-            {row.bookedAt}
-          </span>
-        </div>
+      <div>
+        <span className="font-semibold text-content-primary block">
+          {row.passenger_name}
+        </span>
+        <span className="text-[11px] text-content-secondary">
+          {new Date(row.trip_date).toLocaleDateString("en-IN", {
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
       </div>
     ),
   },
@@ -57,10 +47,10 @@ const columns: Column<Booking>[] = [
     customRender: (_, row) => (
       <div>
         <span className="font-medium text-content-primary block">
-          {row.routeFrom}
+          {row.pickup_point_name || row.pickup_point_address}
         </span>
         <span className="text-[11px] text-content-secondary">
-          → {row.routeTo}
+          → {row.drop_off_point_name || row.drop_off_point_address}
         </span>
       </div>
     ),
@@ -69,21 +59,23 @@ const columns: Column<Booking>[] = [
     headerName: "Seats",
     customRender: (_, row) => (
       <span className="text-content-secondary font-medium">
-        {row.seats} Seat{row.seats > 1 ? "s" : ""}
+        {row.seat_count} Seat{row.seat_count > 1 ? "s" : ""}
       </span>
     ),
   },
   {
     headerName: "Status",
     customRender: (_, row) => (
-      <Tag variant={statusVariant[row.status]}>{statusLabel[row.status]}</Tag>
+      <Tag variant={statusVariant[row.status] || "muted"}>
+        {row.status.replace("_", " ")}
+      </Tag>
     ),
   },
   {
     headerName: "Fare",
     customRender: (_, row) => (
       <span className="font-bold text-content-primary">
-        ₹{row.fare.toLocaleString("en-IN")}
+        ₹{row.total_price.toLocaleString("en-IN")}
       </span>
     ),
   },
@@ -91,20 +83,28 @@ const columns: Column<Booking>[] = [
     headerName: "Actions",
     align: "right",
     customRender: (_, row) => {
-      if (row.status === "pending") {
-        return <Button className="text-xs px-2.5 py-1">Review</Button>;
+      if (row.status === "requested") {
+        return (
+          <Link href={`/driver/bookings/${row.booking_id}`}>
+            <Button className="text-xs px-2.5 py-1">Review</Button>
+          </Link>
+        );
       }
       if (row.status === "completed") {
         return (
-          <Button variant="secondary" className="text-xs px-2.5 py-1">
-            Receipt
-          </Button>
+          <Link href={`/driver/bookings/${row.booking_id}`}>
+            <Button variant="secondary" className="text-xs px-2.5 py-1">
+              Receipt
+            </Button>
+          </Link>
         );
       }
       return (
-        <Button variant="secondary" className="text-xs px-2.5 py-1">
-          View
-        </Button>
+        <Link href={`/driver/bookings/${row.booking_id}`}>
+          <Button variant="secondary" className="text-xs px-2.5 py-1">
+            View
+          </Button>
+        </Link>
       );
     },
   },
@@ -122,14 +122,14 @@ export function RecentBookingsCard({ bookings }: Props) {
             Latest passenger requests and reservations
           </p>
         </div>
-        <a
-          href="#"
+        <Link
+          href="/driver/bookings"
           className="text-accent text-xs font-semibold hover:underline"
         >
           View All Bookings
-        </a>
+        </Link>
       </div>
-      <Table<Booking> columnNames={columns} data={bookings} />
+      <Table<DriverBookingItemDTO> columnNames={columns} data={bookings} />
     </section>
   );
 }

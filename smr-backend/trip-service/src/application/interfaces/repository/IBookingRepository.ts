@@ -44,10 +44,4 @@ export interface IBookingRepository {
   findAdminBookingDetails(
     bookingId: string,
   ): Promise<AdminBookingDetiailsResponseDTO | null>;
-
-  getDriverTripStats(driverId: string): Promise<{
-    totalTrips: number;
-    tripsThisMonth: number;
-    totalPassengers: number;
-  }>;
 }

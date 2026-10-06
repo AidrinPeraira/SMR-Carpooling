@@ -137,6 +137,15 @@ export interface ITripRepository {
   findDriverTodayTrip(driverId: string): Promise<TripResultPayload | null>;
 
   /**
+   * Aggregates trip stats for a driver: total trips, trips this month, total passengers
+   */
+  getDriverTripStats(driverId: string): Promise<{
+    totalTrips: number;
+    tripsThisMonth: number;
+    totalPassengers: number;
+  }>;
+
+  /**
    * this method deletes the rversed indexed items
    * for the trips in the past
    */

@@ -1,27 +1,23 @@
 import { Card, Button, Tag } from "@sharemyride/ui";
 import { Clock, Users, IndianRupee, Navigation } from "lucide-react";
+import { DriverTodayTripResult } from "@sharemyride/shared";
 
 interface Props {
-  startTime: string;
-  availableSeats: number;
-  totalSeats: number;
-  estimatedFare: number;
-  pickupLocation: string;
-  dropoffLocation: string;
-  confirmedPassengers: number;
-  departureIn: string;
+  trip: DriverTodayTripResult;
 }
 
-export function TodayTripCard({
-  startTime,
-  availableSeats,
-  totalSeats,
-  estimatedFare,
-  pickupLocation,
-  dropoffLocation,
-  confirmedPassengers,
-  departureIn,
-}: Props) {
+export function TodayTripCard({ trip }: Props) {
+  const startTime = new Date(trip.start_time);
+  const formattedTime = startTime.toLocaleString("en-IN", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const vacantSeats = trip.total_seats - trip.confirmed_seats;
+
   return (
     <section>
       <div className="flex justify-between items-center mb-4">
@@ -29,11 +25,8 @@ export function TodayTripCard({
           <h2 className="text-xl font-semibold text-content-primary">
             Today&apos;s Trip
           </h2>
-          <Tag variant="accent">SCHEDULED</Tag>
+          <Tag variant="accent">{trip.status.toUpperCase()}</Tag>
         </div>
-        <span className="text-sm text-content-secondary font-medium">
-          Departure in {departureIn}
-        </span>
       </div>
 
       <Card>
@@ -47,7 +40,7 @@ export function TodayTripCard({
                 Start Time
               </span>
               <span className="font-semibold text-content-primary">
-                {startTime}
+                {formattedTime}
               </span>
             </div>
           </div>
@@ -61,7 +54,7 @@ export function TodayTripCard({
                 Available Seats
               </span>
               <span className="font-bold text-accent">
-                {availableSeats} / {totalSeats} Seats Vacant
+                {vacantSeats} / {trip.total_seats} Seats Vacant
               </span>
             </div>
           </div>
@@ -72,10 +65,10 @@ export function TodayTripCard({
             </div>
             <div>
               <span className="text-xs font-semibold text-content-secondary uppercase tracking-wider block">
-                Estimated Fare
+                Estimated Earnings
               </span>
               <span className="font-bold text-content-primary">
-                ₹{estimatedFare.toLocaleString("en-IN")}
+                ₹{trip.estimated_earnings.toLocaleString("en-IN")}
               </span>
             </div>
           </div>
@@ -93,7 +86,7 @@ export function TodayTripCard({
                 Pickup Location
               </span>
               <span className="font-semibold text-content-primary">
-                {pickupLocation}
+                {trip.start_location.stop_name || trip.start_location.stop_address}
               </span>
             </div>
             <div>
@@ -101,7 +94,7 @@ export function TodayTripCard({
                 Drop-off Destination
               </span>
               <span className="font-semibold text-content-primary">
-                {dropoffLocation}
+                {trip.end_location.stop_name || trip.end_location.stop_address}
               </span>
             </div>
           </div>
@@ -110,7 +103,7 @@ export function TodayTripCard({
         <div className="pt-4 border-t border-border-strong flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm text-content-secondary">
             <Users className="w-4 h-4 text-accent" />
-            <span>{confirmedPassengers} confirmed passengers on board</span>
+            <span>{trip.confirmed_seats} confirmed passengers on board</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary">Manage Trip / Passengers</Button>

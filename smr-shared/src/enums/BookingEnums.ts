@@ -4,6 +4,7 @@ export enum BookingStatus {
   PAYMENT_PROCESSING = "payment_processing",
   PAYMENT_FAILED = "payment_failed",
   CONFIRMED = "confirmed",
+  COMPLETED = "complelted",
   REJECTED = "rejected",
   WITHDRAWN = "withdrawn",
   CANCELLED = "cancelled",

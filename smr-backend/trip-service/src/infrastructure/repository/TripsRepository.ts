@@ -1140,6 +1140,39 @@ export class TripsRepository implements ITripRepository {
     return { tripDetails, vehicleDetails, bookingDetails };
   }
 
+  async getDriverTripStats(driverId: string): Promise<{
+    totalTrips: number;
+    tripsThisMonth: number;
+    totalPassengers: number;
+  }> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [totalTrips, tripsThisMonth, completedTrips] = await Promise.all([
+      this._tripModel.count({ where: { driverId } }),
+
+      this._tripModel.count({
+        where: { driverId, startTime: { gte: startOfMonth } },
+      }),
+
+      this._tripModel.findMany({
+        where: { driverId, tripStatus: TripStatus.COMPLETED },
+        select: { availableSeats: true, vacantSeats: true },
+      }),
+    ]);
+
+    const totalPassengers = completedTrips.reduce(
+      (sum, t) => sum + (t.availableSeats - t.vacantSeats),
+      0,
+    );
+
+    return {
+      totalTrips,
+      tripsThisMonth,
+      totalPassengers,
+    };
+  }
+
   async cleanIndices(): Promise<void> {
     const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000; // UTC+05:30
     const dtoInIST = new Date(new Date().getTime() + IST_OFFSET_MS);
