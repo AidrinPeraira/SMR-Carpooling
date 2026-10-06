@@ -17,5 +17,7 @@ export interface ITransactionRepository extends IBaseRepository<TransactionEntit
   findAllPaginated(
     query: AdminListTransactionsQueryDTO,
   ): Promise<PaginatedPayload<AdminListTransactionsResultDTO[]>>;
+
+  getCustomerEarnings(customerId: string): Promise<number>;
 }
 

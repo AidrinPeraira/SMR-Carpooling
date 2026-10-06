@@ -162,6 +162,7 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `POST` | `/booking/order`   | Create a RazorPay order for a booking.     | Yes           |
 | `POST` | `/booking/verify`  | Verify a completed RazorPay payment.       | Yes           |
 | `POST` | `/booking/wallet`  | Pay for a booking using wallet balance.    | Yes           |
+| `GET`  | `/earnings`        | Get total earnings for the customer.     | Yes           |
 
 ### Wallet
 

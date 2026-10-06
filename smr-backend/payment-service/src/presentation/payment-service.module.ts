@@ -10,6 +10,7 @@ import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomer
 import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
 import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWalletUseCase";
 import { GetWalletTransactionsUseCase } from "#/application/use-cases/wallet/GetWalletTransactionsUseCase";
+import { GetCustomerEarningsUseCase } from "#/application/use-cases/customer/GetCustomerEarningsUseCase";
 import { AdminListTransactionsUseCase } from "#/application/use-cases/admin/AdminListTransactions";
 import { MongoBookingPaymentRepository } from "#/infrastructure/repository/MongoBookingPaymentRepository";
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
@@ -66,6 +67,9 @@ const getWalletTransactionsUseCase = new GetWalletTransactionsUseCase(
 );
 
 const adminListTransactionsUseCase = new AdminListTransactionsUseCase(
+  transactionRepository,
+);
+const getCustomerEarningsUseCase = new GetCustomerEarningsUseCase(
   transactionRepository,
 );
 
@@ -173,6 +177,7 @@ const paymentControllerV1 = new PaymentControllerV1(
   createBookingPaymentOrderUseCase,
   verifyBookingPaymentUseCase,
   payBookingWithWalletUseCase,
+  getCustomerEarningsUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(
