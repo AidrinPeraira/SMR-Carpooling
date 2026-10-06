@@ -11,6 +11,10 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
+import {
+  PassengerBookingStatsResponseDTO,
+  PassengerTodayTripResponseDTO,
+} from "#/application/dto/booking/PassengerHomeDTO";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { PaginatedPayload } from "@sharemyride/shared";
 
@@ -44,4 +48,12 @@ export interface IBookingRepository {
   findAdminBookingDetails(
     bookingId: string,
   ): Promise<AdminBookingDetiailsResponseDTO | null>;
+
+  getPassengerBookingStats(
+    passengerId: string,
+  ): Promise<PassengerBookingStatsResponseDTO>;
+
+  findPassengerTodayTrip(
+    passengerId: string,
+  ): Promise<PassengerTodayTripResponseDTO | null>;
 }

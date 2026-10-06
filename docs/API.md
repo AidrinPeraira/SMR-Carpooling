@@ -100,6 +100,8 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `GET`   | `/driver/:bookingId`             | Get details of a specific driver booking.      | Yes (Driver)     |
 | `PATCH` | `/:bookingId/accept`             | Accept a booking request.                      | Yes (Driver)     |
 | `PATCH` | `/:bookingId/reject`             | Reject a booking request.                      | Yes (Driver)     |
+| `GET`   | `/passenger/stats`               | Get aggregated booking stats for the passenger. | Yes (Passenger) |
+| `GET`   | `/passenger/today`               | Get the passenger's confirmed trip for today.  | Yes (Passenger)  |
 | `GET`   | `/passenger`                     | List all bookings for the passenger.           | Yes (Passenger)  |
 | `GET`   | `/passenger/:bookingId`          | Get details of a specific passenger booking.   | Yes (Passenger)  |
 | `PATCH` | `/:bookingId/withdraw`           | Withdraw a booking request.                    | Yes (Passenger)  |

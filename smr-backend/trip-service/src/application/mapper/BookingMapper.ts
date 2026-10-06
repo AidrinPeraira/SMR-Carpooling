@@ -8,6 +8,10 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
+import {
+  PassengerBookingStatsResponseDTO,
+  PassengerTodayTripResponseDTO,
+} from "#/application/dto/booking/PassengerHomeDTO";
 import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { TripMapper } from "#/application/mapper/TripMapper";
 import { InitaiteBookingPaymentResponseDTO } from "#/application/dto/booking/BookingPaymentsDTO";
@@ -20,7 +24,9 @@ import {
   PaginatedPayload,
   PassengerBookingDetailsDTO,
   PassengerBookingItemDTO,
+  PassengerBookingStatsResult,
   PassengerGetBookingsQueryRequest,
+  PassengerTodayTripResult,
 } from "@sharemyride/shared";
 
 export class BookingMapper {
@@ -150,6 +156,31 @@ export class BookingMapper {
       seat_count: dto.seatCount,
       status: dto.status,
       total_price: dto.totalPrice,
+    };
+  }
+
+  static toPassengerBookingStatsResponse(
+    dto: PassengerBookingStatsResponseDTO,
+  ): PassengerBookingStatsResult {
+    return {
+      total_bookings: dto.totalBookings,
+      bookings_this_month: dto.bookingsThisMonth,
+    };
+  }
+
+  static toPassengerTodayTripResponse(
+    dto: PassengerTodayTripResponseDTO,
+  ): PassengerTodayTripResult {
+    return {
+      booking_id: dto.bookingId,
+      driver_name: dto.driverName,
+      trip_start_time: dto.tripStartTime,
+      vehicle_name: dto.vehicleName,
+      pickup_point: TripMapper.toTripStopDTO(dto.pickupPoint),
+      drop_off_point: TripMapper.toTripStopDTO(dto.dropOffPoint),
+      seat_count: dto.seatCount,
+      total_price: dto.totalPrice,
+      status: dto.status,
     };
   }
 }

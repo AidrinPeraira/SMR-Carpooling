@@ -226,6 +226,8 @@ import { GetPassengerBookingDetailsUseCase } from "#/application/use-case/bookin
 import { PassengerListBookingsUseCase } from "#/application/use-case/booking/PassengerListBookingsUseCase";
 import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
 import { CancelBookingUseCase } from "#/application/use-case/booking/CancelBookingUseCase";
+import { GetPassengerBookingStatsUseCase } from "#/application/use-case/booking/GetPassengerBookingStatsUseCase";
+import { GetPassengerTodayTripUseCase } from "#/application/use-case/booking/GetPassengerTodayTripUseCase";
 
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,
@@ -271,6 +273,12 @@ const cancelBookingUseCase = new CancelBookingUseCase(
   passengerRepository,
   driverRepository,
   eventBusInstance,
+);
+const getPassengerBookingStatsUseCase = new GetPassengerBookingStatsUseCase(
+  bookingsRepository,
+);
+const getPassengerTodayTripUseCase = new GetPassengerTodayTripUseCase(
+  bookingsRepository,
 );
 
 import { AdminListAllTripsUseCase } from "#/application/use-case/admin/trip/AdminListAllTripsUseCase";
@@ -408,6 +416,8 @@ const bookingControllerV1 = new BookingControllerV1(
   withdrawBookingUseCase,
   initiateBookingPaymentUseCase,
   cancelBookingUseCase,
+  getPassengerBookingStatsUseCase,
+  getPassengerTodayTripUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(

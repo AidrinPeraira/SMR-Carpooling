@@ -9,6 +9,8 @@ import { IPassengerListBookingsUseCase } from "#/application/interfaces/use-case
 import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/booking/IWithdrawBookingUseCase";
 import { IInitiateBookingPaymentUseCase } from "#/application/interfaces/use-case/booking/IInitiateBookingPaymentUseCase";
 import { ICancelBookingUseCase } from "#/application/interfaces/use-case/booking/ICancelBookingUseCase";
+import { IGetPassengerBookingStatsUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerBookingStatsUseCase";
+import { IGetPassengerTodayTripUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerTodayTripUseCase";
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
 import { BookingMapper } from "#/application/mapper/BookingMapper";
 import {
@@ -39,6 +41,8 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     private readonly _withdrawBookingUseCase: IWithdrawBookingUseCase,
     private readonly _initiateBookingPaymentUseCase: IInitiateBookingPaymentUseCase,
     private readonly _cancelBookingUseCase: ICancelBookingUseCase,
+    private readonly _getPassengerBookingStatsUseCase: IGetPassengerBookingStatsUseCase,
+    private readonly _getPassengerTodayTripUseCase: IGetPassengerTodayTripUseCase,
   ) {}
 
   @Trace("booking-module")
@@ -347,6 +351,65 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       res
         .status(HttpStatusCodes.Ok)
         .json(makeSuccessResponse("Booking cancelled successfully", null));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("booking-module")
+  async getPassengerBookingStats(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const passengerId = req.headers["x-user-id"] as string;
+
+      this._logger.info("Fetching passenger booking stats:", { passengerId });
+
+      const result =
+        await this._getPassengerBookingStatsUseCase.execute(passengerId);
+      const mapped = BookingMapper.toPassengerBookingStatsResponse(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Passenger booking stats retrieved successfully",
+            mapped,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("booking-module")
+  async getPassengerTodayTrip(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const passengerId = req.headers["x-user-id"] as string;
+
+      this._logger.info("Fetching passenger today trip:", { passengerId });
+
+      const result =
+        await this._getPassengerTodayTripUseCase.execute(passengerId);
+
+      const mapped = result
+        ? BookingMapper.toPassengerTodayTripResponse(result)
+        : null;
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            "Passenger today trip retrieved successfully",
+            mapped,
+          ),
+        );
     } catch (error) {
       next(error);
     }

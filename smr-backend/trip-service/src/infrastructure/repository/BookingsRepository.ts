@@ -11,6 +11,10 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
+import {
+  PassengerBookingStatsResponseDTO,
+  PassengerTodayTripResponseDTO,
+} from "#/application/dto/booking/PassengerHomeDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
@@ -20,6 +24,7 @@ import {
   BookingStatus,
   PaginatedPayload,
   Route,
+  TripStatus,
   TripStop,
 } from "@sharemyride/shared";
 
@@ -469,6 +474,86 @@ export class BookingsRepository implements IBookingRepository {
       distanceKm: booking.distanceKm,
       seatCount: booking.seatCount,
       totalPrice: booking.totalPrice,
+    };
+  }
+
+  async getPassengerBookingStats(
+    passengerId: string,
+  ): Promise<PassengerBookingStatsResponseDTO> {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(Date.now() + IST_OFFSET_MS);
+    const startOfMonth = new Date(
+      Date.UTC(nowIST.getUTCFullYear(), nowIST.getUTCMonth(), 1),
+    );
+    const startOfMonthUTC = new Date(
+      startOfMonth.getTime() - IST_OFFSET_MS,
+    );
+
+    const [totalBookings, bookingsThisMonth] = await Promise.all([
+      this._bookingsModel.count({ where: { passengerId } }),
+      this._bookingsModel.count({
+        where: { passengerId, createdAt: { gte: startOfMonthUTC } },
+      }),
+    ]);
+
+    return { totalBookings, bookingsThisMonth };
+  }
+
+  async findPassengerTodayTrip(
+    passengerId: string,
+  ): Promise<PassengerTodayTripResponseDTO | null> {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(Date.now() + IST_OFFSET_MS);
+    nowIST.setUTCHours(0, 0, 0, 0);
+    const startOfDayUTC = new Date(nowIST.getTime() - IST_OFFSET_MS);
+    const endOfDayUTC = new Date(
+      startOfDayUTC.getTime() + 24 * 60 * 60 * 1000,
+    );
+
+    const booking = await this._bookingsModel.findFirst({
+      where: {
+        passengerId,
+        status: BookingStatus.CONFIRMED,
+        trip: {
+          startTime: { gte: startOfDayUTC, lt: endOfDayUTC },
+          tripStatus: {
+            in: [TripStatus.SCHEDULED, TripStatus.FULLY_BOOKED],
+          },
+        },
+      },
+      orderBy: { trip: { startTime: "asc" } },
+      include: {
+        trip: {
+          include: {
+            driver: true,
+            vehicle: true,
+          },
+        },
+      },
+    });
+
+    if (!booking) return null;
+
+    const trip = (booking as any).trip;
+    const driver = trip?.driver;
+    const vehicle = trip?.vehicle;
+
+    return {
+      bookingId: booking.bookingId,
+      driverName: driver
+        ? `${driver.firstName} ${driver.lastName}`.trim()
+        : "Driver",
+      tripStartTime: trip?.startTime instanceof Date
+        ? trip.startTime.toISOString()
+        : String(trip?.startTime),
+      vehicleName: vehicle
+        ? `${vehicle.vehicleMake} ${vehicle.vehicleModel}`.trim()
+        : "Vehicle",
+      pickupPoint: booking.pickupPoint as unknown as TripStop,
+      dropOffPoint: booking.dropOffPoint as unknown as TripStop,
+      seatCount: booking.seatCount,
+      totalPrice: booking.totalPrice,
+      status: booking.status as BookingStatus,
     };
   }
 
