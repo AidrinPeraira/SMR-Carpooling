@@ -9,9 +9,11 @@ import {
   ListTripsRequestDTO,
   ListTripsResultDTO,
 } from "#/application/dto/trip/PassengerListTripsDTO";
+import { DriverTodayTripResponseDTO } from "#/application/dto/trip/DriverTripDTO";
 import {
   CreateTripRequest,
   DriverGetTripsQueryRequest,
+  DriverTodayTripResult,
   DriverTripDetailsDTO,
   DriverTripItemDTO,
   GetJourneyDetailsResult,
@@ -159,6 +161,21 @@ export class TripMapper {
         trip_status: item.tripStatus,
       })),
       paginationMeta: payload.paginationMeta,
+    };
+  }
+
+  static toDriverTodayTripResponse(
+    dto: DriverTodayTripResponseDTO,
+  ): DriverTodayTripResult {
+    return {
+      trip_id: dto.tripId,
+      start_time: dto.startTime,
+      confirmed_seats: dto.confirmedSeats,
+      total_seats: dto.totalSeats,
+      estimated_earnings: dto.estimatedEarnings,
+      start_location: this.toTripStopDTO(dto.startLocation),
+      end_location: this.toTripStopDTO(dto.endLocation),
+      status: dto.status,
     };
   }
 

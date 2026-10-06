@@ -22,6 +22,13 @@ export function createTripRouterV1(
     (req, res, next) => tripController.getDriverTrips(req, res, next),
   );
 
+  // Driver: Get today's upcoming trip
+  router.get(
+    "/driver/today",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => tripController.getDriverTodayTrip(req, res, next),
+  );
+
   // Driver: Get specific trip details
   router.get(
     "/driver/:tripId",

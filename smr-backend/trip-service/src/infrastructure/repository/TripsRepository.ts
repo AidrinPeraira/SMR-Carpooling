@@ -1047,6 +1047,99 @@ export class TripsRepository implements ITripRepository {
       };
     });
   }
+
+  async findDriverTodayTrip(
+    driverId: string,
+  ): Promise<TripResultPayload | null> {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(Date.now() + IST_OFFSET_MS);
+    nowIST.setUTCHours(0, 0, 0, 0);
+    const startOfDayUTC = new Date(nowIST.getTime() - IST_OFFSET_MS);
+    const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000);
+
+    const trip = await this._tripModel.findFirst({
+      where: {
+        driverId,
+        startTime: { gte: startOfDayUTC, lt: endOfDayUTC },
+        tripStatus: {
+          in: [TripStatus.SCHEDULED, TripStatus.FULLY_BOOKED],
+        },
+      },
+      orderBy: { startTime: "asc" },
+      include: {
+        vehicle: true,
+        bookings: {
+          where: { status: BookingStatus.CONFIRMED },
+          include: { passenger: true },
+        },
+      },
+    });
+
+    if (!trip || !trip.vehicle) return null;
+
+    const vehicle = trip.vehicle;
+
+    const tripDetails: TripEntity = {
+      tripId: trip.tripId,
+      driverId: trip.driverId,
+      vehicleId: trip.vehicleId,
+      tripOrigin: trip.tripOrigin as unknown as TripStop,
+      tripDestination: trip.tripDestination as unknown as TripStop,
+      tripStops: trip.tripStops as unknown as TripStop[],
+      tripRoute: trip.tripRoute as unknown as Route,
+      tripDistance: trip.tripDistance,
+      availableSeats: trip.availableSeats,
+      vacantSeats: trip.vacantSeats,
+      tripTags: trip.tripTags,
+      startTime: trip.startTime,
+      totalSeats: trip.totalSeats,
+      tripStatus: trip.tripStatus as TripStatus,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    };
+
+    const vehicleDetails: VehicleEntity = {
+      vehicleId: vehicle.vehicleId,
+      driverId: vehicle.driverId,
+      recordId: vehicle.recordId,
+      vehicleType: vehicle.vehicleType as VehicleTypes,
+      vehicleModel: vehicle.vehicleModel,
+      vehicleMake: vehicle.vehicleMake,
+      vehicleCapacity: vehicle.vehicleCapacity,
+      registrationNumber: vehicle.registrationNumber,
+      vehicleImage: vehicle.vehicleImage,
+      vehicleStatus: vehicle.vehicleStatus as VehicleStatus,
+      createdAt: vehicle.createdAt,
+      updatedAt: vehicle.updatedAt,
+    };
+
+    const bookingDetails: BookingEntityWithPassenger[] = trip.bookings.map(
+      (b: BookingWithPassengerRecord) => ({
+        bookingId: b.bookingId,
+        passengerId: b.passengerId,
+        tripId: b.tripId,
+        pickupPoint: b.pickupPoint as TripStop,
+        dropOffPoint: b.dropOffPoint as TripStop,
+        pickupPlaceId: b.pickupPlaceId,
+        dropOffPlaceId: b.dropOffPlaceId,
+        distanceKm: b.distanceKm,
+        seatCount: b.seatCount,
+        totalPrice: b.totalPrice,
+        status: b.status as BookingStatus,
+        paymentKey: b.paymentKey ?? undefined,
+        paymentKeyExpiry: b.paymentKeyExpiry ?? undefined,
+        passengerName: b.passenger
+          ? `${b.passenger.firstName} ${b.passenger.lastName}`
+          : undefined,
+        passengerEmail: b.passenger ? b.passenger.emailId : undefined,
+        createdAt: b.createdAt,
+        updatedAt: b.updatedAt,
+      }),
+    );
+
+    return { tripDetails, vehicleDetails, bookingDetails };
+  }
+
   async cleanIndices(): Promise<void> {
     const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000; // UTC+05:30
     const dtoInIST = new Date(new Date().getTime() + IST_OFFSET_MS);

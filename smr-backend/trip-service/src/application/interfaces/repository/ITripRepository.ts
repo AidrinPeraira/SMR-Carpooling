@@ -132,6 +132,11 @@ export interface ITripRepository {
   ): Promise<TripEntity | null>;
 
   /**
+   * Finds the driver's next upcoming trip for today with confirmed bookings
+   */
+  findDriverTodayTrip(driverId: string): Promise<TripResultPayload | null>;
+
+  /**
    * this method deletes the rversed indexed items
    * for the trips in the past
    */

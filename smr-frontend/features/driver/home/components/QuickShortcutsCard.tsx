@@ -14,12 +14,6 @@ const shortcuts = [
     subtitle: "Weekly auto-transfer",
     color: "text-accent bg-accent/10",
   },
-  {
-    icon: Headset,
-    title: "Driver Support",
-    subtitle: "24/7 dedicated helpline",
-    color: "text-content-secondary bg-surface-muted",
-  },
 ];
 
 export function QuickShortcutsCard() {

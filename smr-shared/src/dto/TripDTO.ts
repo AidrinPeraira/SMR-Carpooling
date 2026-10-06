@@ -88,6 +88,17 @@ export interface DriverTripDetailsDTO {
   trip_bookings: DriverTripBookingDetailsDTO[];
 }
 
+export interface DriverTodayTripResult {
+  trip_id: string;
+  start_time: string;
+  confirmed_seats: number;
+  total_seats: number;
+  estimated_earnings: number;
+  start_location: TripStopDTO;
+  end_location: TripStopDTO;
+  status: TripStatus;
+}
+
 export type DriverTripItemResult = DriverTripItemDTO;
 export type DriverTripBookingDetailsResult = DriverTripBookingDetailsDTO;
 export type DriverTripDetailsResult = DriverTripDetailsDTO;

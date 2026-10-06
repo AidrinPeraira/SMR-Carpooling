@@ -5,6 +5,7 @@ import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICrea
 import { IGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/trip/IGetJourneyDetailsUseCase";
 import { IListTripsUseCase } from "#/application/interfaces/use-case/trip/IListTripsUseCase";
 import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
+import { IGetDriverTodayTripUseCase } from "#/application/interfaces/use-case/trip/IGetDriverTodayTrip";
 import { ITripControllerV1 } from "#/presentation/v1/interfaces/ITripControllerV1";
 import { TripMapper } from "#/application/mapper/TripMapper";
 import {
@@ -33,6 +34,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     private readonly _driverListTripsUseCase: IDriverListTripsUseCase,
     private readonly _driverGetTripDetailsUseCase: IDriverGetTripDetailsUseCase,
     private readonly _cancelTripUseCase: ICancelTripUseCas,
+    private readonly _getDriverTodayTripUseCase: IGetDriverTodayTripUseCase,
   ) {}
 
   @Trace("trip-module")
@@ -194,6 +196,35 @@ export class TripControllerV1 implements ITripControllerV1 {
         .json(
           makeSuccessResponse(
             "Driver trip details fetched successfully",
+            mapped,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("trip-module")
+  async getDriverTodayTrip(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const driverId = req.headers["x-user-id"] as string;
+
+      this._logger.info("Fetching driver today trip:", { driverId });
+
+      const result = await this._getDriverTodayTripUseCase.execute(driverId);
+      const mapped = result
+        ? TripMapper.toDriverTodayTripResponse(result)
+        : null;
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            GenericSuccessMessage.OPERATION_SUCCESSFUL,
             mapped,
           ),
         );

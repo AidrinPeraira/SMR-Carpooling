@@ -369,6 +369,7 @@ const vehicleControllerV1 = new VehicleControllerV1(
 import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverGetTripDetailsUseCase";
 import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
 import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
+import { GetDriverTodayTripUseCase } from "#/application/use-case/trip/GetDriverTodayTripUseCase";
 
 const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
 const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
@@ -380,6 +381,9 @@ const cancelTripUseCase = new CancelTripUseCase(
   driverRepository,
   eventBusInstance,
 );
+const getDriverTodayTripUseCase = new GetDriverTodayTripUseCase(
+  tripsRepository,
+);
 
 const tripControllerV1 = new TripControllerV1(
   consolaLogger,
@@ -389,6 +393,7 @@ const tripControllerV1 = new TripControllerV1(
   driverListTripsUseCase,
   driverGetTripDetailsUseCase,
   cancelTripUseCase,
+  getDriverTodayTripUseCase,
 );
 
 const bookingControllerV1 = new BookingControllerV1(

@@ -83,6 +83,7 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | :----- | :-------------------------- | :--------------------------------------------- | :--------------- |
 | `POST` | `/`                         | Create a new trip.                             | Yes (Driver)     |
 | `GET`  | `/driver`                   | List all trips for the driver.                 | Yes (Driver)     |
+| `GET`  | `/driver/today`             | Get the driver's next upcoming trip for today. | Yes (Driver)     |
 | `GET`  | `/driver/:tripId`           | Get details of a specific driver trip.         | Yes (Driver)     |
 | `PATCH`| `/driver/:tripId/cancel`    | Cancel a trip.                                 | Yes (Driver)     |
 | `POST` | `/search`                   | Search for matching trips.                     | Yes (Passenger)  |
