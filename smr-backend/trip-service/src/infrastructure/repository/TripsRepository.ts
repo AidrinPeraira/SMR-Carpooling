@@ -199,9 +199,9 @@ export class TripsRepository implements ITripRepository {
       this._tripModel.count({ where }),
       this._tripModel.findMany({
         where,
+        orderBy: { startTime: "desc" },
         skip,
         take: limit,
-        orderBy: { startTime: "desc" },
         include: {
           vehicle: true,
           bookings: {

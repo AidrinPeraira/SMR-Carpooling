@@ -16,12 +16,6 @@ export class DriverListTripsUseCase implements IDriverListTripsUseCase {
     driverId: string,
     query?: DriverGetAllTripsQueryDTO,
   ): Promise<PaginatedPayload<DriverListTripsResponseDTO[]>> {
-    if (!this._tripRepository.findTripsByDriverId) {
-      throw new Error(
-        "Repository method findTripsByDriverId is not implemented.",
-      );
-    }
-
     const payload = await this._tripRepository.findTripsByDriverId(
       driverId,
       query,

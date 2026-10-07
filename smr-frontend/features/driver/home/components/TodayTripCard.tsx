@@ -1,6 +1,7 @@
 import { Card, Button, Tag } from "@sharemyride/ui";
 import { Clock, Users, IndianRupee, Navigation } from "lucide-react";
 import { DriverTodayTripResult } from "@sharemyride/shared";
+import Link from "next/link";
 
 interface Props {
   trip: DriverTodayTripResult;
@@ -86,7 +87,8 @@ export function TodayTripCard({ trip }: Props) {
                 Pickup Location
               </span>
               <span className="font-semibold text-content-primary">
-                {trip.start_location.stop_name || trip.start_location.stop_address}
+                {trip.start_location.stop_name ||
+                  trip.start_location.stop_address}
               </span>
             </div>
             <div>
@@ -106,7 +108,9 @@ export function TodayTripCard({ trip }: Props) {
             <span>{trip.confirmed_seats} confirmed passengers on board</span>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="secondary">Manage Trip / Passengers</Button>
+            <Link href={`/driver/trips/${trip.trip_id}`}>
+              <Button variant="secondary">Manage Trip</Button>
+            </Link>
             <Button className="flex items-center gap-1">
               <Navigation className="w-4 h-4" />
               Start Trip
