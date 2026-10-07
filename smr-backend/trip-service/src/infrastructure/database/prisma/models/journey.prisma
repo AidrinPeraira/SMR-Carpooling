@@ -1,0 +1,78 @@
+enum JourneyStatus {
+  ongoing
+  completed
+}
+
+enum PassengerJourneyStatus {
+  not_boarded
+  ended
+  picked_up
+  no_show
+  dropped_off
+}
+
+enum StopType {
+  pickup
+  dropoff
+}
+
+model Journey {
+  journeyId String @id
+  driverId  String
+
+  origin      Json //TripStop as Json
+  destination Json //TripStop as Json
+
+  journeyStatus JourneyStatus @default(ongoing)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  trip       Trip               @relation(fields: [journeyId], references: [tripId])
+  passengers JourneyPassenger[]
+  stops      JourneyStop[]
+}
+
+model JourneyPassenger {
+  journeyId     String
+  passengerId   String
+  passengerName String
+  bookingId     String @unique
+
+  passengerStatus PassengerJourneyStatus @default(not_boarded)
+
+  pickupLocation  Json //TripStop as Json
+  dropOffLocation Json //TripStop as Json
+
+  pickupOTP      String?
+  pickupTime     DateTime?
+  dropoffTime    DateTime?
+  pickupVerified Boolean   @default(false)
+
+  journey   Journey   @relation(fields: [journeyId], references: [journeyId])
+  passenger Passenger @relation(fields: [passengerId], references: [passengerId])
+  booking   Bookings  @relation(fields: [bookingId], references: [bookingId])
+
+  @@id([journeyId, passengerId])
+}
+
+model JourneyStop {
+  journeyId   String
+  passengerId String
+  stopType    StopType
+
+  stopLat     Float
+  stopLng     Float
+  stopName    String
+  stopAddress String
+
+  arrivedAt  DateTime?
+  departedAt DateTime?
+
+  arrivedLat Float? //where the driver actually was when they marked the stop arrived
+  arrivedLng Float? //where the driver actually was when they marked the stop arrived
+
+  journey Journey @relation(fields: [journeyId], references: [journeyId])
+
+  @@id([journeyId, passengerId, stopType])
+  @@index([journeyId])
+}

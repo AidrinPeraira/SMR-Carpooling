@@ -89,6 +89,14 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `POST` | `/search`                   | Search for matching trips.                     | Yes (Passenger)  |
 | `POST` | `/journey-details`          | Get journey details for a trip.                | Yes (Passenger)  |
 
+### Journey
+
+**Base Path:** `/api/v1/journey`
+
+| Method | Endpoint            | Description                                    | Auth Required    |
+| :----- | :------------------ | :--------------------------------------------- | :--------------- |
+| `POST` | `/:tripId/start`    | Start a journey for a scheduled trip.          | Yes (Driver)     |
+
 ### Bookings
 
 **Base Path:** `/api/v1/bookings`

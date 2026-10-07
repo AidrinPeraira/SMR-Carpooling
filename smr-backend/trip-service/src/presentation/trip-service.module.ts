@@ -378,6 +378,16 @@ import { DriverGetTripDetailsUseCase } from "#/application/use-case/trip/DriverG
 import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTripsUseCase";
 import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
 import { GetDriverTodayTripUseCase } from "#/application/use-case/trip/GetDriverTodayTripUseCase";
+import { StartTripJourneyUseCas } from "#/application/use-case/journey/StartTripJourneyUseCase";
+import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
+import { JourneyControllerV1 } from "#/presentation/v1/controllers/journey/JourneyControllerV1";
+import { createJourneyRouterV1 } from "#/presentation/v1/routes/journey/JourneyRouterV1";
+
+const journeyRepository = new JourneyRepository();
+const startTripJourneyUseCase = new StartTripJourneyUseCas(
+  tripsRepository,
+  journeyRepository,
+);
 
 const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
 const driverGetTripDetailsUseCase = new DriverGetTripDetailsUseCase(
@@ -420,6 +430,11 @@ const bookingControllerV1 = new BookingControllerV1(
   getPassengerTodayTripUseCase,
 );
 
+const journeyControllerV1 = new JourneyControllerV1(
+  consolaLogger,
+  startTripJourneyUseCase,
+);
+
 const webhookControllerV1 = new WebhookControllerV1(
   consolaLogger,
   cleanUpBookingPaymentUseCase,
@@ -443,6 +458,7 @@ const driverRoutesV1 = createDriverRouterV1(driverControllerV1);
 const vehicleRoutesV1 = createVehicleRouterV1(vehicleControllerV1);
 const tripRoutesV1 = createTripRouterV1(tripControllerV1);
 const bookingRoutesV1 = createBookingRouterV1(bookingControllerV1);
+const journeyRoutesV1 = createJourneyRouterV1(journeyControllerV1);
 const webhookRoutesV1 = createWebhookRouterV1(webhookControllerV1);
 
 const v1Router = express.Router();
@@ -456,6 +472,7 @@ v1Router.use("/driver", driverRoutesV1);
 v1Router.use("/vehicles", vehicleRoutesV1);
 v1Router.use("/trips", tripRoutesV1);
 v1Router.use("/bookings", bookingRoutesV1);
+v1Router.use("/journey", journeyRoutesV1);
 v1Router.use("/webhook/trips", webhookRoutesV1);
 
 export const tripServiceRouters = {
