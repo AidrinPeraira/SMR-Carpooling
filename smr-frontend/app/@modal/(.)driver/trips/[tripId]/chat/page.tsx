@@ -3,7 +3,7 @@ import { Modal } from "@sharemyride/ui";
 
 export default function DriverTripChatModal() {
   return (
-    <Modal className="p-6 sm:max-w-2xl w-full">
+    <Modal className="p-6 sm:max-w-2xl w-full overflow-hidden">
       <TripChatView />
     </Modal>
   );

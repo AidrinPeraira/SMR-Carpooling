@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader } from "@sharemyride/ui";
 import {
@@ -77,8 +77,11 @@ export function TripChatView() {
     };
   }, [chatSocket, tripId]);
 
-  useLayoutEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [chatData?.messages]);
 
   const handleSendMessage = useCallback(
@@ -111,7 +114,7 @@ export function TripChatView() {
   }
 
   return (
-    <div className="flex flex-col h-[600px] max-h-[80vh] w-full bg-surface-card rounded-lg overflow-hidden flex-1">
+    <div className="flex flex-col h-[600px] max-h-[80vh] w-full bg-surface-card rounded-lg overflow-hidden">
       <div className="p-4 border-b border-border-subtle bg-surface-secondary shadow-sm">
         <h2 className="text-lg font-bold text-content-primary">Trip Chat</h2>
         <p className="text-xs text-content-secondary">
