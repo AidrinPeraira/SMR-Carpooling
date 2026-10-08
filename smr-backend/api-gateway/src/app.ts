@@ -86,6 +86,7 @@ export function createApp(logger: ILogger) {
       "/api/*/driver/**",
       "/api/*/vehicles/**",
       "/api/*/trips/**",
+      "/api/*/journey/**",
       "/api/*/bookings/**",
       "/api/*/webhook/trips/**",
     ],

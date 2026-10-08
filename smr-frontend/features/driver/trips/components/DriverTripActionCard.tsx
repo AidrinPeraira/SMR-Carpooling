@@ -22,7 +22,7 @@ export function DriverTripActionCard({
   isStarting = false,
 }: DriverTripActionCardProps) {
   const canCancel =
-    tripStatus == TripStatus.SCHEDULED || TripStatus.FULLY_BOOKED;
+    tripStatus === TripStatus.SCHEDULED || tripStatus === TripStatus.FULLY_BOOKED;
 
   const today = new Date();
   const trip = new Date(tripDate);

@@ -1,13 +1,37 @@
-import { Card, Button, Tag } from "@sharemyride/ui";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, Button, Tag, useToast } from "@sharemyride/ui";
 import { Clock, Users, IndianRupee, Navigation } from "lucide-react";
 import { DriverTodayTripResult } from "@sharemyride/shared";
 import Link from "next/link";
+import { startTripJourneyRequest } from "@/features/driver/journey/api/startTripJourneyRequest";
 
 interface Props {
   trip: DriverTodayTripResult;
 }
 
 export function TodayTripCard({ trip }: Props) {
+  const router = useRouter();
+  const toast = useToast();
+  const [isStarting, setIsStarting] = useState(false);
+
+  async function handleStartTrip() {
+    try {
+      setIsStarting(true);
+      await startTripJourneyRequest(trip.trip_id);
+      toast("Journey started successfully!", { variant: "success" });
+      router.push(`/driver/journey/${trip.trip_id}`);
+    } catch (error) {
+      toast(
+        error instanceof Error ? error.message : "Failed to start journey",
+        { variant: "error" },
+      );
+    } finally {
+      setIsStarting(false);
+    }
+  }
   const startTime = new Date(trip.start_time);
   const formattedTime = startTime.toLocaleString("en-IN", {
     month: "short",
@@ -111,9 +135,13 @@ export function TodayTripCard({ trip }: Props) {
             <Link href={`/driver/trips/${trip.trip_id}`}>
               <Button variant="secondary">Manage Trip</Button>
             </Link>
-            <Button className="flex items-center gap-1">
+            <Button
+              className="flex items-center gap-1"
+              disabled={isStarting}
+              onClick={handleStartTrip}
+            >
               <Navigation className="w-4 h-4" />
-              Start Trip
+              {isStarting ? "Starting..." : "Start Trip"}
             </Button>
           </div>
         </div>

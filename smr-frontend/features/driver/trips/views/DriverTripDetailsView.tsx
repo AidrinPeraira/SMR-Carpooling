@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getDriverTripDetailsRequest } from "../api/getDriverTripDetailsRequest";
 import { cancelDriverTripRequest } from "../api/cancelDriverTripRequest";
+import { startTripJourneyRequest } from "@/features/driver/journey/api/startTripJourneyRequest";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint } from "@/features/map/types/MapTypes";
@@ -27,9 +29,11 @@ interface DriverTripDetailsViewProps {
 
 export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
   const map = useMap();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
   const {
@@ -269,6 +273,21 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
     }
   };
 
+  const handleStartTrip = async () => {
+    try {
+      setIsStarting(true);
+      await startTripJourneyRequest(tripId);
+      toast("Journey started successfully!", { variant: "success" });
+      router.push(`/driver/journey/${tripId}`);
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : "Failed to start journey", {
+        variant: "error",
+      });
+    } finally {
+      setIsStarting(false);
+    }
+  };
+
   const formattedDate = tripDetails.start_time
     ? new Date(tripDetails.start_time).toLocaleString(undefined, {
         dateStyle: "full",
@@ -466,6 +485,8 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
           tripStatus={tripDetails.trip_status}
           onCancelTrip={() => setIsCancelDialogOpen(true)}
           isCancelling={isCancelling}
+          onStartTrip={handleStartTrip}
+          isStarting={isStarting}
         />
       </div>
 
