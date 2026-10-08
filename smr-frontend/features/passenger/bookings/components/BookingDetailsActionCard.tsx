@@ -7,7 +7,9 @@ import {
   ShieldCheck,
   XCircle,
   MessageSquare,
+  MapPin,
 } from "lucide-react";
+import { TripStatus } from "@sharemyride/shared";
 import { CallButton } from "@/features/call/CallButton";
 import { OnlinePaymentButton } from "./OnlinePaymentButton";
 import { WalletPaymentButton } from "./WalletPaymentButton";
@@ -20,6 +22,7 @@ interface BookingDetailsActionCardProps {
   driverId?: string;
   amount: number;
   status: string;
+  tripStatus?: string;
   onWithdraw: () => Promise<void>;
   isWithdrawing: boolean;
   onCancel?: () => Promise<void>;
@@ -32,6 +35,7 @@ export function BookingDetailsActionCard({
   driverId,
   amount,
   status,
+  tripStatus,
   onWithdraw,
   isWithdrawing,
   onCancel,
@@ -141,6 +145,18 @@ export function BookingDetailsActionCard({
             </div>
           </div>
 
+          {tripStatus === TripStatus.ONGOING && tripId && (
+            <Link href={`/passenger/journey/${tripId}`} className="w-full">
+              <Button
+                variant="primary"
+                className="w-full text-xs py-2 font-medium flex items-center justify-center gap-2"
+              >
+                <MapPin className="w-4 h-4" />
+                View Journey
+              </Button>
+            </Link>
+          )}
+
           <div className="flex flex-col sm:flex-row gap-2 w-full pt-2">
             <Link
               href={`/passenger/bookings/${bookingId}/chat${tripId ? `?tripId=${tripId}` : ""}`}
@@ -165,14 +181,16 @@ export function BookingDetailsActionCard({
             )}
           </div>
 
-          <Button
-            variant="danger"
-            className="w-full text-xs py-2 font-medium"
-            disabled={isCancelling}
-            onClick={handleCancel}
-          >
-            {isCancelling ? "Cancelling Booking..." : "Cancel Booking"}
-          </Button>
+          {tripStatus !== TripStatus.ONGOING && (
+            <Button
+              variant="danger"
+              className="w-full text-xs py-2 font-medium"
+              disabled={isCancelling}
+              onClick={handleCancel}
+            >
+              {isCancelling ? "Cancelling Booking..." : "Cancel Booking"}
+            </Button>
+          )}
         </CardBody>
       </Card>
     );

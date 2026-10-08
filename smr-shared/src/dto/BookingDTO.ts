@@ -84,6 +84,7 @@ export interface PassengerBookingDetailsDTO {
   booking_distance: number;
   seat_count: number;
   status: string;
+  trip_status: string;
   total_price: number;
 }
 
@@ -98,6 +99,7 @@ export interface PassengerBookingStatsResult {
 
 export interface PassengerTodayTripResult {
   booking_id: string;
+  trip_id: string;
   driver_name: string;
   trip_start_time: string;
   vehicle_name: string;
@@ -106,6 +108,7 @@ export interface PassengerTodayTripResult {
   seat_count: number;
   total_price: number;
   status: string;
+  trip_status: string;
 }
 
 export type DriverBookingItemResult = DriverBookingItemDTO;
@@ -113,4 +116,3 @@ export type DriverBookingDetailsResult = DriverBookingDetailsDTO;
 export type PassengerBookingItemResult = PassengerBookingItemDTO;
 export type PassengerBookingDetailsResult = PassengerBookingDetailsDTO;
 export type InitiateBookingPaymentResult = InitiateBookingPaymentResponseDTO;
-

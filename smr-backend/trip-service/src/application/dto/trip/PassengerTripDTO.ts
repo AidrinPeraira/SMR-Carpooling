@@ -1,8 +1,9 @@
-import { BookingStatus, TripStop } from "@sharemyride/shared";
+import { BookingStatus, TripStatus, TripStop } from "@sharemyride/shared";
 
 export interface PassengerTodayTripResponseDTO {
   bookingId: string;
   driverName: string;
+  tripId: string;
   tripStartTime: string;
   vehicleName: string;
   pickupPoint: TripStop;
@@ -10,4 +11,5 @@ export interface PassengerTodayTripResponseDTO {
   seatCount: number;
   totalPrice: number;
   status: BookingStatus;
+  tripStatus: TripStatus;
 }

@@ -538,6 +538,7 @@ export class BookingsRepository implements IBookingRepository {
 
     return {
       bookingId: booking.bookingId,
+      tripId: trip.tripId,
       driverName: driver
         ? `${driver.firstName} ${driver.lastName}`.trim()
         : "Driver",
@@ -553,6 +554,7 @@ export class BookingsRepository implements IBookingRepository {
       seatCount: booking.seatCount,
       totalPrice: booking.totalPrice,
       status: booking.status as BookingStatus,
+      tripStatus: trip.tripStatus as TripStatus,
     };
   }
 }

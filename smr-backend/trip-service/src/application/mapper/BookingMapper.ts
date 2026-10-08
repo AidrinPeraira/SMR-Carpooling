@@ -69,7 +69,10 @@ export class BookingMapper {
       data: payload.data.map((item) => ({
         booking_id: item.bookingId,
         passenger_name: item.passngerName,
-        trip_date: item.tripDate instanceof Date ? item.tripDate.toISOString() : String(item.tripDate),
+        trip_date:
+          item.tripDate instanceof Date
+            ? item.tripDate.toISOString()
+            : String(item.tripDate),
         trip_vehicle: item.tripVehicle,
         trip_origin: item.tripOrigin,
         trip_destination: item.tripDestination,
@@ -92,7 +95,10 @@ export class BookingMapper {
     return {
       booking_id: dto.bookingId,
       passenger_name: dto.passngerName,
-      trip_date: dto.tripDate instanceof Date ? dto.tripDate.toISOString() : String(dto.tripDate),
+      trip_date:
+        dto.tripDate instanceof Date
+          ? dto.tripDate.toISOString()
+          : String(dto.tripDate),
       trip_vehicle: dto.tripVehicle,
       trip_route: dto.tripRoute,
       pickup_point: TripMapper.toTripStopDTO(dto.pickupPoint),
@@ -121,7 +127,10 @@ export class BookingMapper {
       data: payload.data.map((item) => ({
         booking_id: item.bookingId,
         driver_name: item.driverName,
-        trip_date: item.tripDate instanceof Date ? item.tripDate.toISOString() : String(item.tripDate),
+        trip_date:
+          item.tripDate instanceof Date
+            ? item.tripDate.toISOString()
+            : String(item.tripDate),
         trip_vehicle: item.tripVehicle,
         pickup_point_name: item.pickupPointName,
         pickup_point_address: item.pickupPointAddress,
@@ -144,7 +153,10 @@ export class BookingMapper {
       trip_id: dto.tripId,
       driver_id: dto.driverId,
       driver_name: dto.driverName,
-      trip_date: dto.tripDate instanceof Date ? dto.tripDate.toISOString() : String(dto.tripDate),
+      trip_date:
+        dto.tripDate instanceof Date
+          ? dto.tripDate.toISOString()
+          : String(dto.tripDate),
       trip_vehicle: dto.tripVehicle,
       trip_vehicle_image: dto.tirpVehicleImage,
       trip_route: dto.tripRoute,
@@ -153,6 +165,7 @@ export class BookingMapper {
       booking_distance: dto.bookingDistance,
       seat_count: dto.seatCount,
       status: dto.status,
+      trip_status: dto.tripStatus,
       total_price: dto.totalPrice,
     };
   }
@@ -171,6 +184,7 @@ export class BookingMapper {
   ): PassengerTodayTripResult {
     return {
       booking_id: dto.bookingId,
+      trip_id: dto.tripId,
       driver_name: dto.driverName,
       trip_start_time: dto.tripStartTime,
       vehicle_name: dto.vehicleName,
@@ -179,6 +193,7 @@ export class BookingMapper {
       seat_count: dto.seatCount,
       total_price: dto.totalPrice,
       status: dto.status,
+      trip_status: dto.tripStatus,
     };
   }
 }

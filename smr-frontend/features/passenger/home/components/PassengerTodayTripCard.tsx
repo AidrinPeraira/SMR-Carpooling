@@ -1,6 +1,6 @@
 import { Card, Button, Tag } from "@sharemyride/ui";
 import { Clock, Car, IndianRupee, Users } from "lucide-react";
-import { PassengerTodayTripResult } from "@sharemyride/shared";
+import { PassengerTodayTripResult, TripStatus } from "@sharemyride/shared";
 import Link from "next/link";
 
 interface Props {
@@ -108,9 +108,16 @@ export function PassengerTodayTripCard({ trip }: Props) {
               &middot; Driver: {trip.driver_name}
             </span>
           </div>
-          <Link href={`/passenger/bookings/${trip.booking_id}`}>
-            <Button variant="secondary">View Booking</Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href={`/passenger/bookings/${trip.booking_id}`}>
+              <Button variant="secondary">View Booking</Button>
+            </Link>
+            {trip.trip_status === TripStatus.ONGOING && (
+              <Link href={`/passenger/journey/${trip.trip_id}`}>
+                <Button variant="primary">View Journey</Button>
+              </Link>
+            )}
+          </div>
         </div>
       </Card>
     </section>
