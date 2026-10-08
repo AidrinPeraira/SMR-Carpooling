@@ -389,6 +389,7 @@ const journeyRepository = new JourneyRepository();
 const startTripJourneyUseCase = new StartTripJourneyUseCas(
   tripsRepository,
   journeyRepository,
+  eventBusInstance,
 );
 const getDriverJourneyDetailsUseCase = new GetDriverJourneyDetailsUseCase(
   journeyRepository,

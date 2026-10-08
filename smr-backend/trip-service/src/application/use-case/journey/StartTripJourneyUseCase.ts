@@ -6,13 +6,16 @@ import {
 import { IStartTripJourneyUseCase } from "#/application/interfaces/use-case/journey/IStartTripJourneyUseCase";
 import { JourneyEntity, JourneyStop } from "#/domain/entities/JourneyEntity";
 import { JourneyPassengerEntity } from "#/domain/entities/JourneyPassenger";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import {
   ApplicationError,
   BookingStatus,
   ErrorCode,
   ErrorDetails,
+  EventName,
   HttpStatusCodes,
   JourneyErrorMessage,
+  JourneyStartedEventPayload,
   JourneyStatus,
   PassengerJourneyStatus,
   StopType,
@@ -24,6 +27,7 @@ export class StartTripJourneyUseCas implements IStartTripJourneyUseCase {
   constructor(
     private readonly _tripsRepository: ITripRepository,
     private readonly _journeyRepository: IJourneyRepository,
+    private readonly _eventBus: IEventBus,
   ) {}
 
   async execute(tripId: string, driverId: string): Promise<void> {
@@ -131,6 +135,16 @@ export class StartTripJourneyUseCas implements IStartTripJourneyUseCase {
 
     await this._tripsRepository.update(tripId, {
       tripStatus: TripStatus.ONGOING,
+    });
+
+    await this._eventBus.publish<JourneyStartedEventPayload>({
+      eventName: EventName.JOURNEY_STARTED,
+      timestamp: new Date(),
+      payload: {
+        journey_id: tripId,
+        driver_id: driverId,
+        passenger_ids: confirmedBookings.map((b) => b.passengerId),
+      },
     });
   }
 
