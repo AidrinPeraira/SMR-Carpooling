@@ -379,6 +379,8 @@ import { DriverListTripsUseCase } from "#/application/use-case/trip/DriverListTr
 import { CancelTripUseCase } from "#/application/use-case/trip/CancelTripUseCase";
 import { GetDriverTodayTripUseCase } from "#/application/use-case/trip/GetDriverTodayTripUseCase";
 import { StartTripJourneyUseCas } from "#/application/use-case/journey/StartTripJourneyUseCase";
+import { GetDriverJourneyDetailsUseCase } from "#/application/use-case/journey/GetDriverJourneyDetailsUseCase";
+import { GetPassengerJourneyDetailsUseCase } from "#/application/use-case/journey/GetPassengerJourneyDetailsUseCase";
 import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
 import { JourneyControllerV1 } from "#/presentation/v1/controllers/journey/JourneyControllerV1";
 import { createJourneyRouterV1 } from "#/presentation/v1/routes/journey/JourneyRouterV1";
@@ -386,6 +388,12 @@ import { createJourneyRouterV1 } from "#/presentation/v1/routes/journey/JourneyR
 const journeyRepository = new JourneyRepository();
 const startTripJourneyUseCase = new StartTripJourneyUseCas(
   tripsRepository,
+  journeyRepository,
+);
+const getDriverJourneyDetailsUseCase = new GetDriverJourneyDetailsUseCase(
+  journeyRepository,
+);
+const getPassengerJourneyDetailsUseCase = new GetPassengerJourneyDetailsUseCase(
   journeyRepository,
 );
 
@@ -433,6 +441,8 @@ const bookingControllerV1 = new BookingControllerV1(
 const journeyControllerV1 = new JourneyControllerV1(
   consolaLogger,
   startTripJourneyUseCase,
+  getDriverJourneyDetailsUseCase,
+  getPassengerJourneyDetailsUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(

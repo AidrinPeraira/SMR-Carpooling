@@ -15,5 +15,19 @@ export function createJourneyRouterV1(
     (req, res, next) => journeyController.startJourney(req, res, next),
   );
 
+  // Driver: Get journey details
+  router.get(
+    "/:journeyId/driver",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => journeyController.getDriverJourneyDetails(req, res, next),
+  );
+
+  // Passenger: Get journey details
+  router.get(
+    "/:journeyId/passenger",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => journeyController.getPassengerJourneyDetails(req, res, next),
+  );
+
   return router;
 }
