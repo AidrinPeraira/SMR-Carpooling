@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Tag, useToast } from "@sharemyride/ui";
-import { Clock, Users, IndianRupee, Navigation } from "lucide-react";
-import { DriverTodayTripResult } from "@sharemyride/shared";
+import { Clock, Users, IndianRupee, Navigation, Eye } from "lucide-react";
+import { DriverTodayTripResult, TripStatus } from "@sharemyride/shared";
 import Link from "next/link";
 import { startTripJourneyRequest } from "@/features/driver/journey/api/startTripJourneyRequest";
 
@@ -135,14 +135,23 @@ export function TodayTripCard({ trip }: Props) {
             <Link href={`/driver/trips/${trip.trip_id}`}>
               <Button variant="secondary">Manage Trip</Button>
             </Link>
-            <Button
-              className="flex items-center gap-1"
-              disabled={isStarting}
-              onClick={handleStartTrip}
-            >
-              <Navigation className="w-4 h-4" />
-              {isStarting ? "Starting..." : "Start Trip"}
-            </Button>
+            {trip.status === TripStatus.ONGOING ? (
+              <Link href={`/driver/journey/${trip.trip_id}`}>
+                <Button className="flex items-center gap-1">
+                  <Eye className="w-4 h-4" />
+                  View Journey
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                className="flex items-center gap-1"
+                disabled={isStarting}
+                onClick={handleStartTrip}
+              >
+                <Navigation className="w-4 h-4" />
+                {isStarting ? "Starting..." : "Start Trip"}
+              </Button>
+            )}
           </div>
         </div>
       </Card>

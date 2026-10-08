@@ -8,10 +8,8 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
-import {
-  PassengerBookingStatsResponseDTO,
-  PassengerTodayTripResponseDTO,
-} from "#/application/dto/booking/PassengerHomeDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
+import { PassengerTodayTripResponseDTO } from "#/application/dto/trip/PassengerTripDTO";
 import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
 import { TripMapper } from "#/application/mapper/TripMapper";
 import { InitaiteBookingPaymentResponseDTO } from "#/application/dto/booking/BookingPaymentsDTO";

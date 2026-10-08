@@ -11,10 +11,8 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
-import {
-  PassengerBookingStatsResponseDTO,
-  PassengerTodayTripResponseDTO,
-} from "#/application/dto/booking/PassengerHomeDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
+import { PassengerTodayTripResponseDTO } from "#/application/dto/trip/PassengerTripDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
@@ -485,9 +483,7 @@ export class BookingsRepository implements IBookingRepository {
     const startOfMonth = new Date(
       Date.UTC(nowIST.getUTCFullYear(), nowIST.getUTCMonth(), 1),
     );
-    const startOfMonthUTC = new Date(
-      startOfMonth.getTime() - IST_OFFSET_MS,
-    );
+    const startOfMonthUTC = new Date(startOfMonth.getTime() - IST_OFFSET_MS);
 
     const [totalBookings, bookingsThisMonth] = await Promise.all([
       this._bookingsModel.count({ where: { passengerId } }),
@@ -506,9 +502,7 @@ export class BookingsRepository implements IBookingRepository {
     const nowIST = new Date(Date.now() + IST_OFFSET_MS);
     nowIST.setUTCHours(0, 0, 0, 0);
     const startOfDayUTC = new Date(nowIST.getTime() - IST_OFFSET_MS);
-    const endOfDayUTC = new Date(
-      startOfDayUTC.getTime() + 24 * 60 * 60 * 1000,
-    );
+    const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000);
 
     const booking = await this._bookingsModel.findFirst({
       where: {
@@ -517,7 +511,11 @@ export class BookingsRepository implements IBookingRepository {
         trip: {
           startTime: { gte: startOfDayUTC, lt: endOfDayUTC },
           tripStatus: {
-            in: [TripStatus.SCHEDULED, TripStatus.FULLY_BOOKED],
+            in: [
+              TripStatus.SCHEDULED,
+              TripStatus.FULLY_BOOKED,
+              TripStatus.ONGOING,
+            ],
           },
         },
       },
@@ -543,9 +541,10 @@ export class BookingsRepository implements IBookingRepository {
       driverName: driver
         ? `${driver.firstName} ${driver.lastName}`.trim()
         : "Driver",
-      tripStartTime: trip?.startTime instanceof Date
-        ? trip.startTime.toISOString()
-        : String(trip?.startTime),
+      tripStartTime:
+        trip?.startTime instanceof Date
+          ? trip.startTime.toISOString()
+          : String(trip?.startTime),
       vehicleName: vehicle
         ? `${vehicle.vehicleMake} ${vehicle.vehicleModel}`.trim()
         : "Vehicle",
@@ -556,5 +555,4 @@ export class BookingsRepository implements IBookingRepository {
       status: booking.status as BookingStatus,
     };
   }
-
 }

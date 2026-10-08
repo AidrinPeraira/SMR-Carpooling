@@ -98,7 +98,9 @@ const changeDriverStatusUseCase = new ChangeDriverStatusUseCase(
   driverRepository,
 );
 const getDriverDetailsUseCase = new GetDriverDetailsUseCase(driverRepository);
-const getDriverTripStatsUseCase = new GetDriverTripStatsUseCase(tripsRepository);
+const getDriverTripStatsUseCase = new GetDriverTripStatsUseCase(
+  tripsRepository,
+);
 
 const addUserVehicleUseCase = new AddUserVehicleUseCase(vehicleRepository);
 const updateUserVehicleUseCase = new UpdateUserVehicleUseCase(
@@ -227,7 +229,7 @@ import { PassengerListBookingsUseCase } from "#/application/use-case/booking/Pas
 import { WithdrawBookingUseCase } from "#/application/use-case/booking/WithdrawBookingUseCase";
 import { CancelBookingUseCase } from "#/application/use-case/booking/CancelBookingUseCase";
 import { GetPassengerBookingStatsUseCase } from "#/application/use-case/booking/GetPassengerBookingStatsUseCase";
-import { GetPassengerTodayTripUseCase } from "#/application/use-case/booking/GetPassengerTodayTripUseCase";
+import { GetPassengerTodayTripUseCase } from "#/application/use-case/trip/GetPassengerTodayTripUseCase";
 
 const newBookingUseCase = new NewBookingUseCase(
   bookingsRepository,

@@ -11,10 +11,8 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
-import {
-  PassengerBookingStatsResponseDTO,
-  PassengerTodayTripResponseDTO,
-} from "#/application/dto/booking/PassengerHomeDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
+import { PassengerTodayTripResponseDTO } from "#/application/dto/trip/PassengerTripDTO";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { PaginatedPayload } from "@sharemyride/shared";
 

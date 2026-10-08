@@ -1,4 +1,4 @@
-import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerHomeDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
 
 export interface IGetPassengerBookingStatsUseCase {
   execute(passengerId: string): Promise<PassengerBookingStatsResponseDTO>;

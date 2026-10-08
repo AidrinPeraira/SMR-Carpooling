@@ -481,6 +481,7 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
       <div className="grid grid-cols-1 gap-6">
         <DriverTripCommunicationCard tripId={tripId} bookings={bookings} />
         <DriverTripActionCard
+          tripId={tripId}
           tripDate={tripDetails.start_time}
           tripStatus={tripDetails.trip_status}
           onCancelTrip={() => setIsCancelDialogOpen(true)}

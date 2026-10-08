@@ -10,7 +10,7 @@ import { IWithdrawBookingUseCase } from "#/application/interfaces/use-case/booki
 import { IInitiateBookingPaymentUseCase } from "#/application/interfaces/use-case/booking/IInitiateBookingPaymentUseCase";
 import { ICancelBookingUseCase } from "#/application/interfaces/use-case/booking/ICancelBookingUseCase";
 import { IGetPassengerBookingStatsUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerBookingStatsUseCase";
-import { IGetPassengerTodayTripUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerTodayTripUseCase";
+import { IGetPassengerTodayTripUseCase } from "#/application/interfaces/use-case/trip/IGetPassengerTodayTripUseCase";
 import { IBookingControllerV1 } from "#/presentation/v1/interfaces/IBookingControllerV1";
 import { BookingMapper } from "#/application/mapper/BookingMapper";
 import {

@@ -1,4 +1,4 @@
-import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerHomeDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IGetPassengerBookingStatsUseCase } from "#/application/interfaces/use-case/booking/IGetPassengerBookingStatsUseCase";
 

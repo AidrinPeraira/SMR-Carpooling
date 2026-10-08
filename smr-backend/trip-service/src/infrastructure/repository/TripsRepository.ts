@@ -1062,7 +1062,11 @@ export class TripsRepository implements ITripRepository {
         driverId,
         startTime: { gte: startOfDayUTC, lt: endOfDayUTC },
         tripStatus: {
-          in: [TripStatus.SCHEDULED, TripStatus.FULLY_BOOKED],
+          in: [
+            TripStatus.SCHEDULED,
+            TripStatus.FULLY_BOOKED,
+            TripStatus.ONGOING,
+          ],
         },
       },
       orderBy: { startTime: "asc" },
