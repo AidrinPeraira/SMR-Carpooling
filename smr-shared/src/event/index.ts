@@ -7,3 +7,4 @@ export * from "./ApplicationEvents";
 export * from "./BookingEvents";
 export * from "./TripEvents";
 export * from "./SocketEventsEnum";
+export * from "./JourneyEvents";

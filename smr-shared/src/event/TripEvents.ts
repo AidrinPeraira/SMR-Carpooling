@@ -22,5 +22,4 @@ export interface NewTripEventPayload {
   driverEmail: string;
   tripDate: Date;
 }
-
 export type NewTripEvent = DomainEvent<NewTripEventPayload>;

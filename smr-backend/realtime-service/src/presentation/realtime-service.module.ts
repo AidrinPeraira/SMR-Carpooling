@@ -16,11 +16,14 @@ import { HandleCallTimeoutUseCase } from "#/application/use-cases/call/HandleCal
 import { InitiateCallUseCase } from "#/application/use-cases/call/InitiateCallUseCase";
 import { RejectCallUseCase } from "#/application/use-cases/call/RejectCallUseCase";
 import { RelayCallSignalUseCase } from "#/application/use-cases/call/RelayCallSignalUseCase";
+import { CreateJourneyUseCase } from "#/application/use-cases/journey/CreateJourneyUseCase";
 import { CallSessionModel } from "#/infrastructure/database/model/MongoCallSessionModel";
 import { ChatModel } from "#/infrastructure/database/model/MongoChatModel";
+import { JourneyModel } from "#/infrastructure/database/model/MongoJourneyModel";
 import { MemberModel } from "#/infrastructure/database/model/MongoMemberModel";
 import { CallSessionRepository } from "#/infrastructure/repository/CallSessionRepository";
 import { ChatRepository } from "#/infrastructure/repository/ChatRepository";
+import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
 import { MemberRespository } from "#/infrastructure/repository/MemberRepository";
 import { MessageRepository } from "#/infrastructure/repository/MessageRepository";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
@@ -30,6 +33,7 @@ import { ChatControllerV1 } from "#/presentation/v1/http/controllers/ChatControl
 import { createChatRouterV1 } from "#/presentation/v1/http/routes/ChatRouterV1";
 import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
 import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/NewBookingEventHandler";
+import { JourneyStartedEventHandler } from "#/presentation/v1/messaging/event-handlers/JourneyStartedEventHandler";
 import { NewTripEventHandler } from "#/presentation/v1/messaging/event-handlers/NewTripEventHandler";
 import { PassengerCancelBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerCancelBookingEventHandler";
 import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handlers/UserSignupEventHandler";
@@ -53,6 +57,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const chatRepository = new ChatRepository(ChatModel);
   const messageRepository = new MessageRepository();
   const callSessionRepository = new CallSessionRepository(CallSessionModel);
+  const journeyRepository = new JourneyRepository(JourneyModel);
 
   //infra services
   const uidGenereator = new CryptoUIDService();
@@ -61,6 +66,9 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const createMemberUseCase = new CreateMemberUseCase(memberRepository);
   const addActiveTripUseCase = new AddActiveTripUseCase(memberRepository);
   const removeActiveTripUseCase = new RemoveActiveTripUseCase(memberRepository);
+
+  // Use Cases — journey
+  const createJourneyUseCase = new CreateJourneyUseCase(journeyRepository);
 
   // Use Cases — chat lifecycle
   const addChatMemberUseCase = new AddChatMemberUseCase(chatRepository);
@@ -174,6 +182,10 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
       removeActiveTripUseCase,
       removeChatMembersUseCase,
     );
+  const journeyStartedEventHandler = new JourneyStartedEventHandler(
+    logger,
+    createJourneyUseCase,
+  );
 
   await eventDispatcher.register(
     EventName.AUTH_USER_SIGNUP,
@@ -195,6 +207,11 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   await eventDispatcher.register(
     EventName.BOOKING_CANCELLED_BY_PASSENGER,
     passengerCancelBookingEventHandler,
+  );
+
+  await eventDispatcher.register(
+    EventName.JOURNEY_STARTED,
+    journeyStartedEventHandler,
   );
 
   const eventBus = new EventBus(
