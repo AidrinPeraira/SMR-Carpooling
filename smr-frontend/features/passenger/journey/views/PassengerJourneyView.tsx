@@ -4,8 +4,10 @@ import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Loader } from "@sharemyride/ui";
+import { SocketEvents } from "@sharemyride/shared";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint } from "@/features/map/types/MapTypes";
+import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
 import { getPassengerJourneyDetailsRequest } from "../api/getPassengerJourneyDetailsRequest";
 import { JourneyStatusHeader } from "../components/JourneyStatusHeader";
 import { JourneyMapCard } from "../components/JourneyMapCard";
@@ -16,6 +18,14 @@ import { OtherPassengersCard } from "../components/OtherPassengersCard";
 export function PassengerJourneyView() {
   const { journeyId } = useParams<{ journeyId: string }>();
   const map = useMap();
+
+  const journeySocket = useLiveLocationSocket();
+
+  useEffect(() => {
+    journeySocket.emit(SocketEvents.JOURNEY_PASSENGER_JOIN, {
+      journey_id: journeyId,
+    });
+  }, [journeySocket, journeyId]);
 
   const {
     data: journey,

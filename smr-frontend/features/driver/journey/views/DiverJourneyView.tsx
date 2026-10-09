@@ -1,17 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getDriverJourneyDetailsRequest } from "@/features/driver/journey/api/getDriverJourneyDetailsRequest";
+import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
 import { NavigationDrawer } from "@/features/driver/journey/components/NavigationDrawer";
 import { NavigationMap } from "@/features/driver/journey/components/NavigationMap";
 import { Loader } from "@sharemyride/ui";
-import { GetDriverJourneyDetailsResult } from "@sharemyride/shared";
+import { GetDriverJourneyDetailsResult, SocketEvents } from "@sharemyride/shared";
 
 interface DriverJourneyViewProps {
   journeyId: string;
 }
 
 export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
+  const journeySocket = useLiveLocationSocket();
+
+  useEffect(() => {
+    journeySocket.emit(SocketEvents.JOURNEY_DRIVER_JOIN, {
+      journey_id: journeyId,
+    });
+  }, [journeySocket, journeyId]);
+
   const {
     data: journey,
     isLoading,
