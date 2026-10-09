@@ -4,6 +4,7 @@ export enum SocketEvents {
   SEND_MESSAGE = "send_message",
   NEW_MESSAGE = "new_message",
   CHAT_ERROR = "chat_error",
+
   CALL_INCOMING = "call_incoming",
   CALL_INITIATED = "call_initiated",
   CALL_ACCEPTED = "call_accepted",
@@ -13,4 +14,13 @@ export enum SocketEvents {
   CALL_ENDED = "call_ended",
   CALL_SIGNAL = "call_signal",
   CALL_ERROR = "call_error",
+
+  JOURNEY_DRIVER_JOIN = "journey_driver_join",
+  JOURNEY_PASSENGER_JOIN = "journey_passenger_join",
+  JOURNEY_SHARE_TOKEN_JOIN = "journey_share_token_join",
+  JOURNEY_LOCATION_UPDATE = "journey_location_update",
+  JOURNEY_LOCATION_BROADCAST = "journey_location_broadcast",
+  JOURNEY_LEAVE = "journey_leave",
+  JOURNEY_ENDED = "journey_ended",
+  JOURNEY_ERROR = "journey_error",
 }
