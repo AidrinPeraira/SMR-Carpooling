@@ -232,3 +232,24 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `end-call`       | Client → Server | End an ongoing call.                     |
 | `relay-signal`   | Client → Server | Relay WebRTC ICE/SDP signals.            |
 | `call-timeout`   | Server → Client | Notify caller of unanswered call.        |
+
+### Journey (HTTP)
+
+**Base Path:** `/api/v1/journey`
+
+| Method | Endpoint       | Description                              | Auth Required |
+| :----- | :------------- | :--------------------------------------- | :------------ |
+| `POST` | `/share-token` | Get or create a share token for a journey. | Yes (Passenger) |
+
+### Journey (Socket.IO — `/journey` namespace)
+
+| Event                      | Direction       | Description                                        |
+| :------------------------- | :-------------- | :------------------------------------------------- |
+| `journey_driver_join`      | Client → Server | Driver joins the journey room.                     |
+| `journey_passenger_join`   | Client → Server | Passenger joins the journey room (validated).       |
+| `journey_share_token_join` | Client → Server | Third party joins via share token (validated).       |
+| `journey_location_update`  | Client → Server | Driver sends live location update.                 |
+| `journey_location_broadcast` | Server → Client | Location broadcast to all room members.          |
+| `journey_leave`            | Client → Server | Leave the journey room.                            |
+| `journey_ended`            | Server → Client | Journey completed, all members notified.           |
+| `journey_error`            | Server → Client | Error notification for journey events.             |

@@ -17,6 +17,13 @@ import { InitiateCallUseCase } from "#/application/use-cases/call/InitiateCallUs
 import { RejectCallUseCase } from "#/application/use-cases/call/RejectCallUseCase";
 import { RelayCallSignalUseCase } from "#/application/use-cases/call/RelayCallSignalUseCase";
 import { CreateJourneyUseCase } from "#/application/use-cases/journey/CreateJourneyUseCase";
+import { DriverJoinJourneyUseCase } from "#/application/use-cases/journey/DriverJoinJourneyUseCase";
+import { PassengerJoinJourneyUseCase } from "#/application/use-cases/journey/PassengerJoinJourneyUseCase";
+import { ShareTokenJoinJourneyUseCase } from "#/application/use-cases/journey/ShareTokenJoinJourneyUseCase";
+import { UpdateLocationUseCase } from "#/application/use-cases/journey/UpdateLocationUseCase";
+import { LeaveJourneyUseCase } from "#/application/use-cases/journey/LeaveJourneyUseCase";
+import { EndJourneyUseCase } from "#/application/use-cases/journey/EndJourneyUseCase";
+import { GetShareTokenUseCase } from "#/application/use-cases/journey/GetShareTokenUseCase";
 import { CallSessionModel } from "#/infrastructure/database/model/MongoCallSessionModel";
 import { ChatModel } from "#/infrastructure/database/model/MongoChatModel";
 import { JourneyModel } from "#/infrastructure/database/model/MongoJourneyModel";
@@ -29,8 +36,12 @@ import { MessageRepository } from "#/infrastructure/repository/MessageRepository
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { EventBus } from "#/infrastructure/services/EventBus";
 import { SocketIOEmitter } from "#/infrastructure/sockets/SocketIOEmitter";
+import { RedisSocketStore } from "#/infrastructure/store/RedisSocketStore";
+import { getRedisClient } from "#/infrastructure/store/connect-redis";
 import { ChatControllerV1 } from "#/presentation/v1/http/controllers/ChatControllerV1";
+import { JourneyControllerV1 } from "#/presentation/v1/http/controllers/JourneyControllerV1";
 import { createChatRouterV1 } from "#/presentation/v1/http/routes/ChatRouterV1";
+import { createJourneyRouterV1 } from "#/presentation/v1/http/routes/JourneyRouterV1";
 import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
 import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/NewBookingEventHandler";
 import { JourneyStartedEventHandler } from "#/presentation/v1/messaging/event-handlers/JourneyStartedEventHandler";
@@ -40,6 +51,7 @@ import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handle
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { CallSocketHandler } from "#/presentation/v1/sockets/handlers/CallSocketHandler";
 import { ChatSocketHandler } from "#/presentation/v1/sockets/handlers/ChatSocketHandler";
+import { JourneySocketHandler } from "#/presentation/v1/sockets/handlers/JourneySocketHandler";
 import {
   createSocketServer,
   registerSocketHandlers,
@@ -67,6 +79,9 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const addActiveTripUseCase = new AddActiveTripUseCase(memberRepository);
   const removeActiveTripUseCase = new RemoveActiveTripUseCase(memberRepository);
 
+  // Infra — socket store
+  const socketStore = new RedisSocketStore(getRedisClient());
+
   // Use Cases — journey
   const createJourneyUseCase = new CreateJourneyUseCase(journeyRepository);
 
@@ -90,6 +105,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
 
   const chatSocketEmitter = new SocketIOEmitter(io, "/chat");
   const callSocketEmitter = new SocketIOEmitter(io, "/call");
+  const journeySocketEmitter = new SocketIOEmitter(io, "/journey");
 
   const joinTripChatUseCase = new JoinTripChatUseCase(
     memberRepository,
@@ -130,6 +146,36 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     callSocketEmitter,
   );
 
+  // Use Cases — journey (socket)
+  const driverJoinJourneyUseCase = new DriverJoinJourneyUseCase(
+    journeySocketEmitter,
+  );
+  const passengerJoinJourneyUseCase = new PassengerJoinJourneyUseCase(
+    journeyRepository,
+    journeySocketEmitter,
+  );
+  const shareTokenJoinJourneyUseCase = new ShareTokenJoinJourneyUseCase(
+    journeyRepository,
+    socketStore,
+    journeySocketEmitter,
+  );
+  const updateLocationUseCase = new UpdateLocationUseCase(
+    journeySocketEmitter,
+  );
+  const leaveJourneyUseCase = new LeaveJourneyUseCase(
+    socketStore,
+    journeySocketEmitter,
+  );
+  const endJourneyUseCase = new EndJourneyUseCase(
+    journeyRepository,
+    socketStore,
+    journeySocketEmitter,
+  );
+  const getShareTokenUseCase = new GetShareTokenUseCase(
+    journeyRepository,
+    uidGenereator,
+  );
+
   // Socket handlers — created after use cases, registered after creation
   const chatSocketHandler = new ChatSocketHandler(
     "/chat",
@@ -150,7 +196,21 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     relayCallSignalUseCase,
   );
 
-  await registerSocketHandlers(io, [chatSocketHandler, callSocketHandler], logger);
+  const journeySocketHandler = new JourneySocketHandler(
+    "/journey",
+    logger,
+    driverJoinJourneyUseCase,
+    passengerJoinJourneyUseCase,
+    shareTokenJoinJourneyUseCase,
+    updateLocationUseCase,
+    leaveJourneyUseCase,
+  );
+
+  await registerSocketHandlers(
+    io,
+    [chatSocketHandler, callSocketHandler, journeySocketHandler],
+    logger,
+  );
 
   // Messaging
   const eventDispatcher = new EventDispatcher(logger);
@@ -226,8 +286,15 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const chatController = new ChatControllerV1(logger, syncChatMessagesUseCase);
   const chatRouterV1 = createChatRouterV1(chatController);
 
+  const journeyController = new JourneyControllerV1(
+    logger,
+    getShareTokenUseCase,
+  );
+  const journeyRouterV1 = createJourneyRouterV1(journeyController);
+
   const v1Router = express.Router();
   v1Router.use("/chat", chatRouterV1);
+  v1Router.use("/journey", journeyRouterV1);
 
   return {
     eventBus,

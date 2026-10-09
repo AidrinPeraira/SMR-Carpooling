@@ -49,3 +49,45 @@ export interface GetPassengerJourneyDetailsResult {
   my_details: PassengerOwnDetailsResult;
   other_passengers: PassengerPeerResult[];
 }
+
+export interface DriverJoinJourneyDTO {
+  journey_id: string;
+}
+
+export interface PassengerJoinJourneyDTO {
+  journey_id: string;
+}
+
+export interface ShareTokenJoinJourneyDTO {
+  journey_id: string;
+  share_token: string;
+}
+
+export interface UpdateLocationDTO {
+  journey_id: string;
+  lat: number;
+  lng: number;
+  heading: number;
+  speed: number;
+  timestamp: number;
+}
+
+export interface LocationBroadcastDTO {
+  lat: number;
+  lng: number;
+  heading: number;
+  speed: number;
+  timestamp: number;
+}
+
+export interface LeaveJourneyDTO {
+  journey_id: string;
+}
+
+export interface GetShareTokenRequest {
+  journey_id: string;
+}
+
+export interface GetShareTokenResponse {
+  share_token: string;
+}

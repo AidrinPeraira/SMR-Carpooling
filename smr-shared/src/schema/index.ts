@@ -7,4 +7,5 @@ export * from "./trip/TripSchema";
 export * from "./chat";
 export * from "./call";
 export * from "./payment/PaymentSchema";
+export * from "./journey";
 
