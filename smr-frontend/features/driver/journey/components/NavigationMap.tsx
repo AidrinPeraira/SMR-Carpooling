@@ -1,10 +1,33 @@
 "use client";
 
+import { useState } from "react";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { DirectionsCard } from "@/features/driver/journey/components/DirectionsCard";
 import { Compass, Layers } from "lucide-react";
+import {
+  JourneyStatus,
+  TripStopDTO,
+  JourneyStopResult,
+} from "@sharemyride/shared";
 
-export function NavigationMap() {
+interface NavigationMapProps {
+  journeyStatus: JourneyStatus;
+  origin: TripStopDTO;
+  destination: TripStopDTO;
+  intermediateStops: JourneyStopResult[];
+}
+
+export function NavigationMap({
+  journeyStatus,
+  origin,
+  destination,
+  intermediateStops,
+}: NavigationMapProps) {
+  const [mapOrigin] = useState(origin);
+  const [mapDestination] = useState(destination);
+  const [mapStops] = useState(intermediateStops);
+  const [status] = useState(journeyStatus);
+
   return (
     <section className="relative h-full w-full flex flex-col">
       <div className="absolute inset-0">
@@ -12,7 +35,7 @@ export function NavigationMap() {
       </div>
 
       <div className="relative z-10 p-4 max-w-xl">
-        <DirectionsCard />
+        <DirectionsCard journeyStatus={status} />
       </div>
 
       <div className="relative z-10 mt-auto p-4 flex items-end justify-end">

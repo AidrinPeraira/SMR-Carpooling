@@ -5,14 +5,34 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { NavigationDrawerHeader } from "@/features/driver/journey/components/NaavigationDrawerHeader";
 import { CurrentTargetCard } from "@/features/driver/journey/components/CurrentTargetCard";
 import { PassengerManifestCard } from "@/features/driver/journey/components/PassnegerManifestCard";
+import {
+  JourneyStatus,
+  TripStopDTO,
+  JourneyStopResult,
+  DriverJourneyPassengerResult,
+} from "@sharemyride/shared";
 
-export function NavigationDrawer() {
+interface NavigationDrawerProps {
+  journeyStatus: JourneyStatus;
+  origin: TripStopDTO;
+  destination: TripStopDTO;
+  passengers: DriverJourneyPassengerResult[];
+  intermediateStops: JourneyStopResult[];
+}
+
+export function NavigationDrawer({
+  journeyStatus,
+  origin,
+  destination,
+  passengers,
+  intermediateStops,
+}: NavigationDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 z-20 bg-surface-card border-t border-border-strong rounded-t-2xl shadow-2xl transition-all duration-300 ${
-        isOpen ? "max-h-[90vh]" : "max-h-56"
+        isOpen ? "max-h-[90vh]" : ""
       } lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:max-h-full lg:h-full lg:w-[420px] xl:w-[460px] lg:flex-shrink-0 lg:rounded-none lg:border-t-0 lg:border-l lg:shadow-none lg:z-auto flex flex-col`}
     >
       <button
@@ -31,15 +51,27 @@ export function NavigationDrawer() {
         )}
       </button>
 
-      <NavigationDrawerHeader />
+      <NavigationDrawerHeader
+        journeyStatus={journeyStatus}
+        origin={origin}
+        destination={destination}
+        passengerCount={passengers.length}
+      />
 
       <div
         className={`overflow-y-auto flex-1 p-4 space-y-4 ${
           isOpen ? "" : "hidden lg:block"
         }`}
       >
-        <CurrentTargetCard />
-        <PassengerManifestCard />
+        <CurrentTargetCard
+          journeyStatus={journeyStatus}
+          intermediateStops={intermediateStops}
+          passengers={passengers}
+        />
+        <PassengerManifestCard
+          journeyStatus={journeyStatus}
+          passengers={passengers}
+        />
       </div>
     </div>
   );

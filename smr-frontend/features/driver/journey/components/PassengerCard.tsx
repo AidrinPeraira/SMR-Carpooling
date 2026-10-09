@@ -1,47 +1,79 @@
+"use client";
+
+import { useState } from "react";
 import { Avatar, Tag } from "@sharemyride/ui";
+import {
+  JourneyStatus,
+  DriverJourneyPassengerResult,
+  PassengerJourneyStatus,
+} from "@sharemyride/shared";
 
 interface PassengerCardProps {
-  initials: string;
-  name: string;
-  route: string;
-  status: "pickup-pending" | "onboard";
-  statusDetail?: string;
-  fare?: string;
+  journeyStatus: JourneyStatus;
+  passenger: DriverJourneyPassengerResult;
 }
 
 export function PassengerCard({
-  initials,
-  name,
-  route,
-  status,
-  statusDetail,
-  fare,
+  journeyStatus,
+  passenger,
 }: PassengerCardProps) {
+  const [status] = useState(journeyStatus);
+  const [data] = useState(passenger);
+
+  const initials = data.passenger_name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  const route = `${data.pickup_location.stop_name} → ${data.drop_off_location.stop_name}`;
+
+  const renderStatus = () => {
+    switch (data.passenger_status) {
+      case PassengerJourneyStatus.NOT_BOARDED:
+        return (
+          <span className="px-2 py-0.5 rounded bg-warning-surface text-warning-content text-[10px] font-semibold border border-warning-border">
+            Pickup pending
+          </span>
+        );
+      case PassengerJourneyStatus.PICKED_UP:
+        return <Tag variant="accent">Onboard</Tag>;
+      case PassengerJourneyStatus.DROPPED_OFF:
+        return (
+          <span className="px-2 py-0.5 rounded bg-success-surface text-success-content text-[10px] font-semibold border border-success-border">
+            Dropped off
+          </span>
+        );
+      case PassengerJourneyStatus.NO_SHOW:
+        return (
+          <span className="px-2 py-0.5 rounded bg-error-surface text-error-content text-[10px] font-semibold border border-error-border">
+            No show
+          </span>
+        );
+      case PassengerJourneyStatus.ENDED:
+        return <Tag variant="muted">Ended</Tag>;
+      default:
+        return <Tag variant="muted">{data.passenger_status}</Tag>;
+    }
+  };
+
   return (
     <div className="bg-surface-card rounded-xl p-3.5 border border-border-subtle shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <Avatar initials={initials} size="sm" />
-          <div>
-            <h4 className="text-sm font-bold text-content-primary">{name}</h4>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Avatar initials={initials} size="sm" className="shrink-0" />
+          <div className="min-w-0">
+            <h4 className="text-sm font-bold text-content-primary">
+              {data.passenger_name}
+            </h4>
             <p className="text-[10px] text-content-secondary tracking-wide">
               {route}
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          {status === "pickup-pending" ? (
-            <span className="px-2 py-0.5 rounded bg-warning-surface text-warning-content text-[10px] font-semibold border border-warning-border">
-              {statusDetail ?? "Pickup pending"}
-            </span>
-          ) : (
-            <Tag variant="accent">Onboard</Tag>
-          )}
-          {fare && (
-            <span className="text-[10px] font-semibold text-content-secondary">
-              {fare}
-            </span>
-          )}
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {renderStatus()}
         </div>
       </div>
     </div>

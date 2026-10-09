@@ -1,6 +1,24 @@
-import { PassengerCard } from "@/features/driver/journey/components/PassengerCard";
+"use client";
 
-export function PassengerManifestCard() {
+import { useState } from "react";
+import { PassengerCard } from "@/features/driver/journey/components/PassengerCard";
+import {
+  JourneyStatus,
+  DriverJourneyPassengerResult,
+} from "@sharemyride/shared";
+
+interface PassengerManifestCardProps {
+  journeyStatus: JourneyStatus;
+  passengers: DriverJourneyPassengerResult[];
+}
+
+export function PassengerManifestCard({
+  journeyStatus,
+  passengers,
+}: PassengerManifestCardProps) {
+  const [status] = useState(journeyStatus);
+  const [passengerList] = useState(passengers);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2.5">
@@ -8,30 +26,18 @@ export function PassengerManifestCard() {
           Passenger Manifest
         </h3>
         <span className="text-[10px] text-accent font-bold">
-          3 Bookings Active
+          {passengerList.length} Booking{passengerList.length !== 1 ? "s" : ""}{" "}
+          Active
         </span>
       </div>
       <div className="space-y-2.5">
-        <PassengerCard
-          initials="P"
-          name="Priya M."
-          route="Sadashivanagar → Mathikere"
-          status="pickup-pending"
-          statusDetail="Pickup pending · 400m ahead"
-        />
-        <PassengerCard
-          initials="RS"
-          name="Rahul S."
-          route="Jayanagar → Mathikere PO"
-          status="onboard"
-        />
-        <PassengerCard
-          initials="P2"
-          name="Passenger 2"
-          route="Koramangala → Yeshwantpur"
-          status="onboard"
-          fare="₹210.00 · Paid"
-        />
+        {passengerList.map((passenger) => (
+          <PassengerCard
+            key={passenger.passenger_id}
+            journeyStatus={status}
+            passenger={passenger}
+          />
+        ))}
       </div>
     </div>
   );
