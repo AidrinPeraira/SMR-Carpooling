@@ -8,542 +8,110 @@ import {
   Route,
   SearchSuggestion,
 } from "@/features/map/types/MapTypes";
-import { SearchBoxCore, SearchSession } from "@mapbox/search-js-core";
-import mapboxgl, {
-  GeolocateControl,
-  Map as MapboxMap,
-  Marker,
-} from "mapbox-gl";
+import { MapboxCore } from "./mapbox/MapboxCore";
+import { MarkerManager } from "./mapbox/MarkerManager";
+import { RouteManager } from "./mapbox/RouteManager";
+import { SearchProvider } from "./mapbox/SearchProvider";
 
-const MAP_BOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
-mapboxgl.accessToken = MAP_BOX_API_KEY;
-
-/**
- * This is the implementation of the mapbox-gl library
- * to provide map rendering services across components
- */
 export class MapBoxService implements IMapProviderService {
-  private _map: MapboxMap | null = null;
-  private _styleUrl = "mapbox://styles/mapbox/dark-v11";
-  private _geolocationControl: GeolocateControl | null = null;
-  private _searchBox: SearchBoxCore;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _searchSession: SearchSession<any, any, any, any>;
-  private _markers: Map<string, Marker> = new Map();
-  private _activeRoutes: Set<string> = new Set();
-  private _initPromise: Promise<void> | null = null;
-  private _resolveInit: (() => void) | null = null;
-  private _hasCustomViewport = false;
-
-  constructor() {
-    this._searchBox = new SearchBoxCore({
-      accessToken: MAP_BOX_API_KEY,
-    });
-    this._searchSession = new SearchSession(this._searchBox);
-  }
+  private _core = new MapboxCore();
+  private _markers = new MarkerManager(this._core);
+  private _routes = new RouteManager(this._core);
+  private _search = new SearchProvider();
 
   isInitialized(): boolean {
-    return !!this._map && (this._map.isStyleLoaded() || false);
+    return this._core.isInitialized();
   }
 
-  /**
-   * Creates a new map instance and sets the center and zoom, resolving when the map style loads
-   *
-   * @param element : Reference to html element that renders map
-   * @param options : optional config for center and zoom
-   */
   async initialise(
     element: HTMLDivElement,
-    options?: {
-      center?: MapPoint;
-      zoom?: number;
-    },
+    options?: { center?: MapPoint; zoom?: number },
   ): Promise<void> {
-    if (this._map) {
-      await this.destroy();
-    }
+    await this.destroy();
 
-    // Ensure DOM container element is empty to prevent Mapbox warning
-    element.innerHTML = "";
+    const initPromise = this._core.initialise(element, options);
 
-    this._hasCustomViewport = Boolean(options?.center);
-    this._initPromise = new Promise((resolve) => {
-      this._resolveInit = resolve;
-    });
-
-    const initialCenter = options?.center || [75.2711, 10.8505];
-    this._map = new MapboxMap({
-      container: element,
-      style: this._styleUrl,
-      center: initialCenter,
-      zoom: options?.zoom || 12,
-    });
-
-    if (this._map.isStyleLoaded()) {
-      this._resolveInit?.();
-      this._resolveInit = null;
-    } else {
-      this._map.once("load", () => {
-        this._resolveInit?.();
-        this._resolveInit = null;
-      });
-    }
-
-    // Fetch user location in background if center was not specified
     if (!options?.center) {
-      this.getCurrentLocation()
+      this._core
+        .getCurrentLocation()
         .then((location) => {
-          if (this._map && location && !this._hasCustomViewport) {
-            this._map.setCenter(location);
+          if (this._core.map && location && !this._core.hasCustomViewport) {
+            this._core.map.setCenter(location);
           }
         })
-        .catch(() => {
-          // Ignore location fallback warning
-        });
+        .catch(() => {});
     }
 
-    return this._initPromise;
+    return initPromise;
   }
 
-  /**
-   * This function clears the map instance
-   */
   async destroy(): Promise<void> {
-    // remove any location tracking first
-    await this.stopLocationTracking();
-    await this.clearAllMarkers();
-    await this.clearAllRoutes();
-
-    this._map?.remove();
-    this._map = null;
-    this._initPromise = null;
-    this._resolveInit = null;
-    this._hasCustomViewport = false;
+    await this._core.stopLocationTracking();
+    await this._markers.clearAll();
+    await this._routes.clearAll();
+    await this._core.destroy();
   }
 
-  /**
-   * Moves map center to given point
-   *
-   * @param point : coordinates as MapPoint ([lng, lat])
-   */
   async setCenter(point: MapPoint): Promise<void> {
-    this._hasCustomViewport = true;
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    this._map.flyTo({
-      center: point,
-    });
+    return this._core.setCenter(point);
   }
 
-  /**
-   * Fetches user's current GPS location via browser Geolocation API
-   */
   async getCurrentLocation(): Promise<MapPoint> {
-    const DEFAULT_FALLBACK: MapPoint = [76.95272651, 8.48706726];
-
-    return new Promise((resolve) => {
-      if (typeof window === "undefined" || !navigator.geolocation) {
-        resolve(DEFAULT_FALLBACK);
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { longitude, latitude } = position.coords;
-          resolve([longitude, latitude]);
-        },
-        (error) => {
-          console.warn(
-            "Geolocation positioning failed or timed out, using fallback location:",
-            error,
-          );
-          resolve(DEFAULT_FALLBACK);
-        },
-        { enableHighAccuracy: true, timeout: 5000 },
-      );
-    });
+    return this._core.getCurrentLocation();
   }
 
-  /**
-   * This method renders the default Mapbox marker to show the current
-   * user location and also start live tracking
-   *
-   * @param options : optional config
-   */
   async startLocationTracking(): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    // Always stop and clean up any existing geolocation control attached to an old map
-    if (this._geolocationControl) {
-      await this.stopLocationTracking();
-    }
-
-    const geoControl = new GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      trackUserLocation: true,
-      showUserHeading: true,
-      showUserLocation: true,
-    });
-
-    this._geolocationControl = geoControl;
-    // add the location control to the current map instance
-    this._map.addControl(this._geolocationControl);
-
-    this._geolocationControl.on("error", (error: unknown) => {
-      console.error("GeolocateControl error:", error);
-    });
-
-    this._geolocationControl.on("ready", () => {
-      if (!this._hasCustomViewport) {
-        geoControl.trigger();
-      }
-    });
+    return this._core.startLocationTracking();
   }
 
-  /**
-   * This method clears any active location tracking listeners
-   */
   async stopLocationTracking(): Promise<void> {
-    if (this._geolocationControl && this._map) {
-      try {
-        if (this._map.hasControl(this._geolocationControl)) {
-          this._map.removeControl(this._geolocationControl);
-        }
-      } catch (error) {
-        console.warn("GeolocateControl removal skipped:", error);
-      }
-    }
-    this._geolocationControl = null;
+    return this._core.stopLocationTracking();
   }
 
-  /**
-   * This method takes the search string and calls the Mapbox Search Box API
-   * and maps the result of suggested places into SearchSuggestion objects
-   *
-   * @param place : Place name or query as string
-   * @returns Array of search suggestions
-   */
   async searchSuggestions(place: string): Promise<SearchSuggestion[]> {
-    const response = await this._searchSession.suggest(place);
-
-    const result: SearchSuggestion[] = response.suggestions.map(
-      (suggestion: Record<string, string>) => {
-        return {
-          id: suggestion.mapbox_id,
-          title: suggestion.name,
-          address:
-            suggestion.full_address ||
-            suggestion.place_formatted ||
-            suggestion.name,
-        };
-      },
-    );
-
-    return result;
+    return this._search.searchSuggestions(place);
   }
 
-  /**
-   * Retrieves full details including coordinates for a given search suggestion
-   *
-   * @param suggestion : SearchSuggestion object
-   * @returns Full Place object containing lat & lng
-   */
   async getPlaceDetails(suggestion: SearchSuggestion): Promise<Place> {
-    if (suggestion.point) {
-      const [lng, lat] = suggestion.point;
-      return {
-        id: suggestion.id,
-        title: suggestion.title,
-        address: suggestion.address,
-        lat,
-        lng,
-      };
-    }
-
-    const response = await this._searchSession.retrieve({
-      mapbox_id: suggestion.id,
-      name: suggestion.title,
-      full_address: suggestion.address,
-    } as Parameters<typeof this._searchSession.retrieve>[0]);
-
-    const feature = response.features?.[0];
-    if (!feature) {
-      throw new Error(
-        `Failed to retrieve details for place: ${suggestion.title}`,
-      );
-    }
-
-    const [lng, lat] = feature.geometry.coordinates;
-    return {
-      id: suggestion.id,
-      title: suggestion.title,
-      address: suggestion.address,
-      lat,
-      lng,
-    };
+    return this._search.getPlaceDetails(suggestion);
   }
 
-  /**
-   * This method takes the cordinates for a place and renders a marker at the given coordinates
-   * It also adds markers to meomory to keep track of them.
-   *
-   * @param point : [lng, lat]
-   */
   async addMarker(point: MapPoint): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    //create a key to identify the marker at each point
-    const markerKey = `${point[0]},${point[1]}`;
-
-    if (this._markers.has(markerKey)) return;
-
-    const marker = new Marker();
-    marker.setLngLat(point).addTo(this._map);
-
-    this._markers.set(markerKey, marker);
+    return this._markers.addMarker(point);
   }
 
-  /**
-   * This checks for a marker for a given point. If found it removes it
-   *
-   * @param point : [lng, lat]
-   */
   async removeMarker(point: MapPoint): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    const markerKey = `${point[0]},${point[1]}`;
-
-    if (!this._markers.has(markerKey)) return;
-
-    const marker = this._markers.get(markerKey);
-    marker?.remove();
-
-    this._markers.delete(markerKey);
+    return this._markers.removeMarker(point);
   }
 
-  /**
-   * This clears all markers set in the current instance
-   */
   async clearAllMarkers(): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (this._markers.size > 0) {
-      this._markers.forEach((marker) => {
-        marker.remove();
-      });
-      this._markers.clear();
-    }
+    return this._markers.clearAll();
   }
 
-  /**
-   * Fits map viewport bounds to contain all given points
-   *
-   * @param points : Array of MapPoint ([lng, lat])
-   */
   async fitBounds(points: MapPoint[]): Promise<void> {
-    this._hasCustomViewport = true;
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-    if (points.length === 0) return;
-
-    if (points.length === 1) {
-      await this.setCenter(points[0]);
-      return;
-    }
-
-    //we use reduce with bounds object as accumulatot
-    const bounds = points.reduce(
-      (b, pt) => b.extend(pt),
-      new mapboxgl.LngLatBounds(points[0], points[0]),
-    );
-
-    this._map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
+    return this._core.fitBounds(points);
   }
 
-  /**
-   * Fetches direction and route data between waypoints using Mapbox Directions API
-   *
-   * @param waypoints : Array of MapPoint ([lng, lat])
-   * @returns Route object containing origin, destination, distance, duration, and line coordinates
-   */
   async getRoute(waypoints: MapPoint[]): Promise<Route> {
-    if (waypoints.length < 2) {
-      throw new Error(
-        "At least origin and destination points are required to get a route",
-      );
-    }
-
-    const coords = waypoints.map(([lng, lat]) => `${lng},${lat}`).join(";");
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&overview=full&access_token=${MAP_BOX_API_KEY}`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch route: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    const routeData = data.routes?.[0];
-
-    if (!routeData) {
-      throw new Error("No route found between specified points");
-    }
-
-    return {
-      origin: waypoints[0],
-      destination: waypoints[waypoints.length - 1],
-      totalLengthKm: Number((routeData.distance / 1000).toFixed(2)),
-      totalTimeMin: Math.round(routeData.duration / 60),
-      route: routeData.geometry.coordinates as MapPoint[],
-    };
+    return this._routes.getRoute(waypoints);
   }
 
-  /**
-   * Draws a GeoJSON line route on the map given an array of coordinates
-   *
-   * @param points Array of MapPoint ([lng, lat])
-   * @param options Optional route drawing styling and custom ID
-   */
-  async drawRoute(
-    points: MapPoint[],
-    options?: RouteDrawOptions,
-  ): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    const routeId = options?.id || "default";
-    const routeSourceId = `mapbox-trip-route-source-${routeId}`;
-    const routeLayerId = `mapbox-trip-route-layer-${routeId}`;
-
-    this._activeRoutes.add(routeId);
-
-    const feature = {
-      type: "Feature" as const,
-      properties: {},
-      geometry: {
-        type: "LineString" as const,
-        coordinates: points,
-      },
-    };
-
-    const existingSource = this._map.getSource(
-      routeSourceId,
-    ) as mapboxgl.GeoJSONSource;
-
-    if (existingSource) {
-      existingSource.setData(feature);
-    } else {
-      this._map.addSource(routeSourceId, {
-        type: "geojson",
-        data: feature,
-      });
-
-      this._map.addLayer({
-        id: routeLayerId,
-        type: "line",
-        source: routeSourceId,
-        layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": options?.color || "#3b82f6",
-          "line-width": options?.width || 5,
-          "line-opacity": options?.opacity || 0.85,
-        },
-      });
-    }
+  async drawRoute(points: MapPoint[], options?: RouteDrawOptions): Promise<void> {
+    return this._routes.drawRoute(points, options);
   }
 
-  /**
-   * Removes active route layer and source from the map instance for a given ID.
-   * If no ID is provided, removes all active routes.
-   *
-   * @param id Optional route ID to remove
-   */
   async removeRoute(id?: string): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    if (!id) {
-      await this.clearAllRoutes();
-      return;
-    }
-
-    const routeSourceId = `mapbox-trip-route-source-${id}`;
-    const routeLayerId = `mapbox-trip-route-layer-${id}`;
-
-    if (this._map.getLayer(routeLayerId)) {
-      this._map.removeLayer(routeLayerId);
-    }
-    if (this._map.getSource(routeSourceId)) {
-      this._map.removeSource(routeSourceId);
-    }
-
-    this._activeRoutes.delete(id);
-
-    // Backward compatibility for legacy single-route IDs
-    if (this._map.getLayer("mapbox-trip-route-layer")) {
-      this._map.removeLayer("mapbox-trip-route-layer");
-    }
-    if (this._map.getSource("mapbox-trip-route-source")) {
-      this._map.removeSource("mapbox-trip-route-source");
-    }
+    return this._routes.removeRoute(id);
   }
 
-  /**
-   * Removes all active route layers and sources from the map instance
-   */
   async clearAllRoutes(): Promise<void> {
-    if (this._initPromise) await this._initPromise;
-    if (!this._map) return;
-
-    for (const routeId of this._activeRoutes) {
-      const routeSourceId = `mapbox-trip-route-source-${routeId}`;
-      const routeLayerId = `mapbox-trip-route-layer-${routeId}`;
-
-      if (this._map.getLayer(routeLayerId)) {
-        this._map.removeLayer(routeLayerId);
-      }
-      if (this._map.getSource(routeSourceId)) {
-        this._map.removeSource(routeSourceId);
-      }
-    }
-
-    this._activeRoutes.clear();
-
-    // Clean up legacy single route IDs if present
-    if (this._map.getLayer("mapbox-trip-route-layer")) {
-      this._map.removeLayer("mapbox-trip-route-layer");
-    }
-    if (this._map.getSource("mapbox-trip-route-source")) {
-      this._map.removeSource("mapbox-trip-route-source");
-    }
+    return this._routes.clearAll();
   }
 
-  /**
-   * Renders a route line on the map using an array of latitude/longitude objects or coordinate tuples
-   *
-   * @param coordinates Array of { lat, lng } objects or [number, number] tuples
-   * @param options Optional route drawing styling and ID
-   */
   async drawRouteFromCoordinates(
     coordinates: { lat: number; lng: number }[] | [number, number][],
     options?: RouteDrawOptions,
   ): Promise<void> {
-    if (!coordinates || coordinates.length === 0) return;
-
-    const points: MapPoint[] = coordinates.map((coord) => {
-      if (Array.isArray(coord)) {
-        return [coord[0], coord[1]];
-      }
-      return [coord.lng, coord.lat];
-    });
-
-    await this.drawRoute(points, options);
+    return this._routes.drawRouteFromCoordinates(coordinates, options);
   }
 }
