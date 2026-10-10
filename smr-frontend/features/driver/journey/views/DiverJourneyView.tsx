@@ -7,7 +7,10 @@ import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocation
 import { NavigationDrawer } from "@/features/driver/journey/components/NavigationDrawer";
 import { NavigationMap } from "@/features/driver/journey/components/NavigationMap";
 import { Loader } from "@sharemyride/ui";
-import { GetDriverJourneyDetailsResult, SocketEvents } from "@sharemyride/shared";
+import {
+  GetDriverJourneyDetailsResult,
+  SocketEvents,
+} from "@sharemyride/shared";
 
 interface DriverJourneyViewProps {
   journeyId: string;
@@ -61,6 +64,8 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
     <div className="relative w-full h-full flex flex-col lg:flex-row overflow-hidden">
       <div className="absolute inset-0 lg:relative lg:inset-auto flex-1 h-full w-full">
         <NavigationMap
+          journeyId={journeyId}
+          journeySocket={journeySocket}
           journeyStatus={journey.journey_status}
           origin={journey.origin}
           destination={journey.destination}

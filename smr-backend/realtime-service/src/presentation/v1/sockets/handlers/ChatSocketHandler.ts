@@ -28,6 +28,8 @@ export class ChatSocketHandler implements IChatSocketHandler {
   ) {}
 
   async register(socket: Socket): Promise<void> {
+    this._logger.info("Registering chat socket handlers", { socketId: socket.id });
+
     socket.on(SocketEvents.JOIN_CHAT, (payload: unknown) =>
       this.onJoinChat(socket, payload),
     );
@@ -45,6 +47,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onJoinChat(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("ChatSocketHandler.onJoinChat", { socketId: socket.id });
     try {
       const validated = zodParser<JoinTripChatDTO>(
         JoinTripChatSchema,
@@ -65,6 +68,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onLeaveChat(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("ChatSocketHandler.onLeaveChat", { socketId: socket.id });
     try {
       const validated = zodParser<LeaveTripChatDTO>(
         LeaveTripChatSchema,
@@ -82,6 +86,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onSendMessage(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("ChatSocketHandler.onSendMessage", { socketId: socket.id });
     try {
       const validated = zodParser<SendChatMessageDTO>(
         SendChatMessageSchema,

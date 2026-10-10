@@ -36,6 +36,8 @@ export class JourneySocketHandler implements IJourneySocketHandler {
   ) {}
 
   async register(socket: Socket): Promise<void> {
+    this._logger.info("Registering journey socket handlers", { socketId: socket.id });
+
     socket.on(SocketEvents.JOURNEY_DRIVER_JOIN, (payload: unknown) =>
       this.onDriverJoin(socket, payload),
     );
@@ -61,6 +63,7 @@ export class JourneySocketHandler implements IJourneySocketHandler {
 
   @Trace("journey-socket-handler")
   async onDriverJoin(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("JourneySocketHandler.onDriverJoin", { socketId: socket.id });
     try {
       const validated = zodParser<DriverJoinJourneyDTO>(
         DriverJoinJourneySchema,
@@ -81,6 +84,7 @@ export class JourneySocketHandler implements IJourneySocketHandler {
 
   @Trace("journey-socket-handler")
   async onPassengerJoin(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("JourneySocketHandler.onPassengerJoin", { socketId: socket.id });
     try {
       const validated = zodParser<PassengerJoinJourneyDTO>(
         PassengerJoinJourneySchema,
@@ -103,6 +107,7 @@ export class JourneySocketHandler implements IJourneySocketHandler {
 
   @Trace("journey-socket-handler")
   async onShareTokenJoin(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("JourneySocketHandler.onShareTokenJoin", { socketId: socket.id });
     try {
       const validated = zodParser<ShareTokenJoinJourneyDTO>(
         ShareTokenJoinJourneySchema,
@@ -123,6 +128,7 @@ export class JourneySocketHandler implements IJourneySocketHandler {
 
   @Trace("journey-socket-handler")
   async onLocationUpdate(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("JourneySocketHandler.onLocationUpdate", { socketId: socket.id });
     try {
       const validated = zodParser<UpdateLocationDTO>(
         UpdateLocationSchema,
@@ -142,6 +148,7 @@ export class JourneySocketHandler implements IJourneySocketHandler {
 
   @Trace("journey-socket-handler")
   async onLeave(socket: Socket, payload: unknown): Promise<void> {
+    this._logger.info("JourneySocketHandler.onLeave", { socketId: socket.id });
     try {
       const validated = zodParser<LeaveJourneyDTO>(
         LeaveJourneySchema,

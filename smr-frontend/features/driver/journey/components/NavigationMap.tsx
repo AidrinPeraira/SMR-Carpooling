@@ -9,11 +9,16 @@ import {
   TripStopDTO,
   JourneyStopResult,
   StopType,
+  SocketEvents,
+  UpdateLocationDTO,
 } from "@sharemyride/shared";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint } from "@/features/map/types/MapTypes";
+import { Socket } from "socket.io-client";
 
 interface NavigationMapProps {
+  journeyId: string;
+  journeySocket: Socket;
   journeyStatus: JourneyStatus;
   origin: TripStopDTO;
   destination: TripStopDTO;
@@ -21,6 +26,8 @@ interface NavigationMapProps {
 }
 
 export function NavigationMap({
+  journeyId,
+  journeySocket,
   journeyStatus,
   origin,
   destination,
@@ -30,13 +37,19 @@ export function NavigationMap({
   const [mapDestination] = useState(destination);
   const [mapStops] = useState(intermediateStops);
 
-  console.log("Map origin", mapOrigin);
-
   const [status] = useState(journeyStatus);
   const map = useMap();
 
   async function handleLocationChange(newLocation: MapPoint) {
-    console.log("Moved to location. New Location: ", newLocation);
+    const payload: UpdateLocationDTO = {
+      journey_id: journeyId,
+      lat: newLocation[1],
+      lng: newLocation[0],
+      heading: 0,
+      speed: 0,
+      timestamp: Date.now(),
+    };
+    journeySocket.emit(SocketEvents.JOURNEY_LOCATION_UPDATE, payload);
   }
 
   useEffect(() => {
