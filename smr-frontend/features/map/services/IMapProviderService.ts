@@ -88,4 +88,13 @@ export interface IMapProviderService {
   clearAllRoutes(): Promise<void>;
 
   fitBounds(points: MapPoint[]): Promise<void>;
+
+  startNavigation(
+    waypoints: MapPoint[],
+    handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,
+  ): Promise<void>;
+
+  stopNavigation(): Promise<void>;
+
+  recenterNavigation(): Promise<void>;
 }

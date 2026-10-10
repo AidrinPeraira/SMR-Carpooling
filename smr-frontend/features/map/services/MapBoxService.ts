@@ -12,12 +12,18 @@ import { MapboxCore } from "./mapbox/MapboxCore";
 import { MarkerManager } from "./mapbox/MarkerManager";
 import { RouteManager } from "./mapbox/RouteManager";
 import { SearchProvider } from "./mapbox/SearchProvider";
+import { NavigationManager } from "@/features/map/services/mapbox/NavigationManager";
 
 export class MapBoxService implements IMapProviderService {
   private _core = new MapboxCore();
   private _markers = new MarkerManager(this._core);
   private _routes = new RouteManager(this._core);
   private _search = new SearchProvider();
+  private _navigation = new NavigationManager(
+    this._core,
+    this._markers,
+    this._routes,
+  );
 
   isInitialized(): boolean {
     return this._core.isInitialized();
@@ -96,7 +102,10 @@ export class MapBoxService implements IMapProviderService {
     return this._routes.getRoute(waypoints);
   }
 
-  async drawRoute(points: MapPoint[], options?: RouteDrawOptions): Promise<void> {
+  async drawRoute(
+    points: MapPoint[],
+    options?: RouteDrawOptions,
+  ): Promise<void> {
     return this._routes.drawRoute(points, options);
   }
 
@@ -113,5 +122,20 @@ export class MapBoxService implements IMapProviderService {
     options?: RouteDrawOptions,
   ): Promise<void> {
     return this._routes.drawRouteFromCoordinates(coordinates, options);
+  }
+
+  async startNavigation(
+    waypoints: MapPoint[],
+    handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,
+  ): Promise<void> {
+    return this._navigation.startNavigation(waypoints, handleLocationUpdate);
+  }
+
+  async stopNavigation(): Promise<void> {
+    return this._navigation.stopNavigation();
+  }
+
+  async recenterNavigation(): Promise<void> {
+    return this._navigation.recenterNavigation();
   }
 }

@@ -1,8 +1,5 @@
 import { MapPoint } from "@/features/map/types/MapTypes";
-import mapboxgl, {
-  GeolocateControl,
-  Map as MapboxMap,
-} from "mapbox-gl";
+import mapboxgl, { GeolocateControl, Map as MapboxMap } from "mapbox-gl";
 
 const MAP_BOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 mapboxgl.accessToken = MAP_BOX_API_KEY;
@@ -111,6 +108,12 @@ export class MapboxCore {
     this._map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
   }
 
+  /**
+   * This method gets the current location from the geoloaction
+   * browser api and returns [longitude, latitude] array
+   *
+   * @returns MapPoint : [longitude, latitude]
+   */
   async getCurrentLocation(): Promise<MapPoint> {
     const DEFAULT_FALLBACK: MapPoint = [76.95272651, 8.48706726];
 
