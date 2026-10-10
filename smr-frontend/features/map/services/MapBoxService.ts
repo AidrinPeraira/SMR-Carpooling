@@ -86,6 +86,10 @@ export class MapBoxService implements IMapProviderService {
     return this._markers.addMarker(point);
   }
 
+  async addMarkerWithLabel(point: MapPoint, label: string, radiusMeters?: number): Promise<void> {
+    return this._markers.addMarkerWithLabel(point, label, radiusMeters);
+  }
+
   async removeMarker(point: MapPoint): Promise<void> {
     return this._markers.removeMarker(point);
   }

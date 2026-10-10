@@ -7,4 +7,5 @@ export interface JourneyStopDTO {
   stopAddress: string;
   stopType: StopType;
   passengerId: string;
+  passengerName: string;
 }

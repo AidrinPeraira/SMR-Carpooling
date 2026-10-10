@@ -64,6 +64,8 @@ export interface IMapProviderService {
 
   addMarker(point: MapPoint): Promise<void>;
 
+  addMarkerWithLabel(point: MapPoint, label: string, radiusMeters?: number): Promise<void>;
+
   removeMarker(point: MapPoint): Promise<void>;
 
   clearAllMarkers(): Promise<void>;

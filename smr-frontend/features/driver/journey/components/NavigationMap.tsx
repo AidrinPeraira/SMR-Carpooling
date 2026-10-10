@@ -8,6 +8,7 @@ import {
   JourneyStatus,
   TripStopDTO,
   JourneyStopResult,
+  StopType,
 } from "@sharemyride/shared";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint } from "@/features/map/types/MapTypes";
@@ -44,6 +45,12 @@ export function NavigationMap({
       await map.clearAllRoutes();
 
       const currentLoation = await map.getCurrentLocation();
+
+      for (const stop of mapStops) {
+        const point: MapPoint = [stop.stop_lng, stop.stop_lat];
+        const stopLabel = stop.stop_type === StopType.PICKUP ? "Pickup" : "Drop off";
+        await map.addMarkerWithLabel(point, `${stop.passenger_name} · ${stopLabel}`, 100);
+      }
 
       const waypoints = [
         currentLoation,
