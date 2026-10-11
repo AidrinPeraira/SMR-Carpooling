@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { DirectionsCard } from "@/features/driver/journey/components/DirectionsCard";
 import { Locate } from "lucide-react";
@@ -8,12 +8,14 @@ import {
   JourneyStatus,
   TripStopDTO,
   JourneyStopResult,
+  DriverJourneyPassengerResult,
   StopType,
   SocketEvents,
   UpdateLocationDTO,
+  PassengerJourneyStatus,
 } from "@sharemyride/shared";
 import { useMap } from "@/features/map/hooks/useMap";
-import { MapPoint } from "@/features/map/types/MapTypes";
+import { MapPoint, NavigationState } from "@/features/map/types/MapTypes";
 import { Socket } from "socket.io-client";
 
 interface NavigationMapProps {
@@ -23,6 +25,30 @@ interface NavigationMapProps {
   origin: TripStopDTO;
   destination: TripStopDTO;
   intermediateStops: JourneyStopResult[];
+  passengers: DriverJourneyPassengerResult[];
+}
+
+function findCurrentTargetIndex(
+  stops: JourneyStopResult[],
+  passengers: DriverJourneyPassengerResult[],
+): number {
+  return stops.findIndex((stop) => {
+    const passenger = passengers.find(
+      (p) => p.passenger_id === stop.passenger_id,
+    );
+    if (!passenger) return false;
+    if (
+      stop.stop_type === StopType.PICKUP &&
+      passenger.passenger_status === PassengerJourneyStatus.NOT_BOARDED
+    )
+      return true;
+    if (
+      stop.stop_type === StopType.DROPOFF &&
+      passenger.passenger_status === PassengerJourneyStatus.PICKED_UP
+    )
+      return true;
+    return false;
+  });
 }
 
 export function NavigationMap({
@@ -32,42 +58,60 @@ export function NavigationMap({
   origin,
   destination,
   intermediateStops,
+  passengers,
 }: NavigationMapProps) {
-  const [mapOrigin] = useState(origin);
-  const [mapDestination] = useState(destination);
-  const [mapStops] = useState(intermediateStops);
-  const [currentLoation, setCurrentLocation] =
+  const [navigationState, setNavigationState] =
+    useState<NavigationState | null>(null);
+  const [currentLocation, setCurrentLocation] =
     useState<UpdateLocationDTO | null>(null);
 
-  const [status] = useState(journeyStatus);
   const map = useMap();
+  const navigationStartedRef = useRef(false);
 
-  async function handleLocationChange(newLocation: MapPoint) {
-    const payload: UpdateLocationDTO = {
-      journey_id: journeyId,
-      lat: newLocation[1],
-      lng: newLocation[0],
-      heading: 0,
-      speed: 0,
-      timestamp: Date.now(),
-    };
+  const currentTargetIndex = useMemo(
+    () => findCurrentTargetIndex(intermediateStops, passengers),
+    [intermediateStops, passengers],
+  );
 
-    setCurrentLocation(payload);
-  }
+  const waypoints: MapPoint[] = useMemo(() => {
+    const points: MapPoint[] = [
+      [origin.stop_lng, origin.stop_lat],
+      ...intermediateStops.map((s) => [s.stop_lng, s.stop_lat] as MapPoint),
+      [destination.stop_lng, destination.stop_lat],
+    ];
+    return points;
+  }, [origin, intermediateStops, destination]);
+
+  const handleLocationChange = useCallback(
+    async (newLocation: MapPoint) => {
+      const payload: UpdateLocationDTO = {
+        journey_id: journeyId,
+        lat: newLocation[1],
+        lng: newLocation[0],
+        heading: 0,
+        speed: 0,
+        timestamp: Date.now(),
+      };
+      setCurrentLocation(payload);
+    },
+    [journeyId],
+  );
+
+  const handleNavigationStateChange = useCallback((state: NavigationState) => {
+    setNavigationState(state);
+  }, []);
 
   useEffect(() => {
-    if (!currentLoation) return;
-    journeySocket.emit(SocketEvents.JOURNEY_LOCATION_UPDATE, currentLoation);
-  }, [journeySocket, currentLoation]);
+    if (!currentLocation) return;
+    journeySocket.emit(SocketEvents.JOURNEY_LOCATION_UPDATE, currentLocation);
+  }, [journeySocket, currentLocation]);
 
   useEffect(() => {
     async function setupMap() {
       await map.clearAllMarkers();
       await map.clearAllRoutes();
 
-      const currentLoation = await map.getCurrentLocation();
-
-      for (const stop of mapStops) {
+      for (const stop of intermediateStops) {
         const point: MapPoint = [stop.stop_lng, stop.stop_lat];
         const stopLabel =
           stop.stop_type === StopType.PICKUP ? "Pickup" : "Drop off";
@@ -78,20 +122,30 @@ export function NavigationMap({
         );
       }
 
-      const waypoints = [
-        currentLoation,
-        ...mapStops.map((v) => [v.stop_lng, v.stop_lat]),
-        [mapDestination.stop_lng, mapDestination.stop_lat],
-      ];
-      await map.startNavigation(waypoints as MapPoint[], handleLocationChange);
+      await map.startNavigation(
+        waypoints,
+        handleLocationChange,
+        handleNavigationStateChange,
+      );
+      navigationStartedRef.current = true;
     }
 
     setupMap();
 
     return () => {
       map.stopNavigation();
+      navigationStartedRef.current = false;
     };
   }, [map]);
+
+  const prevTargetIndexRef = useRef(currentTargetIndex);
+  useEffect(() => {
+    if (!navigationStartedRef.current) return;
+    if (prevTargetIndexRef.current === currentTargetIndex) return;
+
+    prevTargetIndexRef.current = currentTargetIndex;
+    map.advanceToNextSegment();
+  }, [currentTargetIndex, map]);
 
   return (
     <section className="relative h-full w-full flex flex-col">
@@ -100,7 +154,10 @@ export function NavigationMap({
       </div>
 
       <div className="relative z-10 p-4 max-w-xl">
-        <DirectionsCard journeyStatus={status} />
+        <DirectionsCard
+          journeyStatus={journeyStatus}
+          navigationState={navigationState}
+        />
       </div>
 
       <div className="relative z-10 mt-auto mb-28 lg:mb-0 p-4 flex items-end justify-end">

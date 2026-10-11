@@ -70,6 +70,7 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
           origin={journey.origin}
           destination={journey.destination}
           intermediateStops={journey.intermediate_stops}
+          passengers={journey.passengers}
         />
       </div>
       <NavigationDrawer

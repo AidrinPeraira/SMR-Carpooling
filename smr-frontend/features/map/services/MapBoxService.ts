@@ -4,6 +4,7 @@ import {
 } from "@/features/map/services/IMapProviderService";
 import {
   MapPoint,
+  NavigationState,
   Place,
   Route,
   SearchSuggestion,
@@ -143,8 +144,21 @@ export class MapBoxService implements IMapProviderService {
   async startNavigation(
     waypoints: MapPoint[],
     handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,
+    onNavigationStateChange?: (state: NavigationState) => void,
   ): Promise<void> {
-    return this._navigation.startNavigation(waypoints, handleLocationUpdate);
+    return this._navigation.startNavigation(
+      waypoints,
+      handleLocationUpdate,
+      onNavigationStateChange,
+    );
+  }
+
+  async advanceToNextSegment(): Promise<void> {
+    return this._navigation.advanceToNextSegment();
+  }
+
+  hasNextSegment(): boolean {
+    return this._navigation.hasNextSegment();
   }
 
   async stopNavigation(): Promise<void> {

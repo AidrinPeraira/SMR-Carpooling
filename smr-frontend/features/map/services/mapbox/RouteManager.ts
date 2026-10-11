@@ -1,5 +1,10 @@
 import { RouteDrawOptions } from "@/features/map/services/IMapProviderService";
-import { MapPoint, Route } from "@/features/map/types/MapTypes";
+import {
+  MapPoint,
+  NavigationRoute,
+  Route,
+  RouteStep,
+} from "@/features/map/types/MapTypes";
 import { MapboxCore } from "./MapboxCore";
 
 const MAP_BOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
@@ -40,6 +45,55 @@ export class RouteManager {
       totalLengthKm: Number((routeData.distance / 1000).toFixed(2)),
       totalTimeMin: Math.round(routeData.duration / 60),
       route: routeData.geometry.coordinates as MapPoint[],
+    };
+  }
+
+  async getNavigationRoute(waypoints: MapPoint[]): Promise<NavigationRoute> {
+    if (waypoints.length < 2) {
+      throw new Error(
+        "At least origin and destination points are required to get a route",
+      );
+    }
+
+    const coords = waypoints.map(([lng, lat]) => `${lng},${lat}`).join(";");
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&overview=full&steps=true&banner_instructions=true&access_token=${MAP_BOX_API_KEY}`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch route: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const routeData = data.routes?.[0];
+
+    if (!routeData) {
+      throw new Error("No route found between specified points");
+    }
+
+    const steps: RouteStep[] = routeData.legs.flatMap(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (leg: any) =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        leg.steps.map((step: any) => ({
+          maneuver: {
+            type: step.maneuver.type,
+            modifier: step.maneuver.modifier,
+            instruction: step.maneuver.instruction,
+            location: step.maneuver.location as MapPoint,
+          },
+          distance: step.distance,
+          duration: step.duration,
+          name: step.name || "",
+        })),
+    );
+
+    return {
+      origin: waypoints[0],
+      destination: waypoints[waypoints.length - 1],
+      totalLengthKm: Number((routeData.distance / 1000).toFixed(2)),
+      totalTimeMin: Math.round(routeData.duration / 60),
+      route: routeData.geometry.coordinates as MapPoint[],
+      steps,
     };
   }
 

@@ -1,6 +1,7 @@
 "use client";
 import {
   MapPoint,
+  NavigationState,
   Place,
   Route,
   SearchSuggestion,
@@ -100,7 +101,12 @@ export interface IMapProviderService {
   startNavigation(
     waypoints: MapPoint[],
     handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,
+    onNavigationStateChange?: (state: NavigationState) => void,
   ): Promise<void>;
+
+  advanceToNextSegment(): Promise<void>;
+
+  hasNextSegment(): boolean;
 
   stopNavigation(): Promise<void>;
 
