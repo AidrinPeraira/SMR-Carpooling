@@ -5,26 +5,32 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Loader } from "@sharemyride/ui";
 import { SocketEvents } from "@sharemyride/shared";
-import { useMap } from "@/features/map/hooks/useMap";
-import { MapPoint } from "@/features/map/types/MapTypes";
 import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
 import { getPassengerJourneyDetailsRequest } from "../api/getPassengerJourneyDetailsRequest";
 import { JourneyStatusHeader } from "../components/JourneyStatusHeader";
-import { JourneyMapCard } from "../components/JourneyMapCard";
+import { PassengerJourneyMap } from "../components/PassengerJourneyMap";
 import { JourneyStopsProgress } from "../components/JourneyStopsProgress";
 import { PassengerDetailsCard } from "../components/PassengerDetailsCard";
 import { OtherPassengersCard } from "../components/OtherPassengersCard";
 
 export function PassengerJourneyView() {
   const { journeyId } = useParams<{ journeyId: string }>();
-  const map = useMap();
 
   const journeySocket = useLiveLocationSocket();
 
   useEffect(() => {
+    const onError = (data: { message: string }) => {
+      console.error("Journey socket error:", data.message);
+    };
+
+    journeySocket.on(SocketEvents.JOURNEY_ERROR, onError);
     journeySocket.emit(SocketEvents.JOURNEY_PASSENGER_JOIN, {
       journey_id: journeyId,
     });
+
+    return () => {
+      journeySocket.off(SocketEvents.JOURNEY_ERROR, onError);
+    };
   }, [journeySocket, journeyId]);
 
   const {
@@ -37,98 +43,6 @@ export function PassengerJourneyView() {
     queryKey: ["passengerJourneyDetails", journeyId],
     queryFn: () => getPassengerJourneyDetailsRequest(journeyId),
   });
-
-  useEffect(() => {
-    if (!journey) return;
-    const currentJourney = journey;
-
-    async function setupMapRoutes() {
-      try {
-        await map.clearAllMarkers();
-        await map.clearAllRoutes();
-
-        const origin: MapPoint = [
-          currentJourney.origin.stop_lng,
-          currentJourney.origin.stop_lat,
-        ];
-        const destination: MapPoint = [
-          currentJourney.destination.stop_lng,
-          currentJourney.destination.stop_lat,
-        ];
-
-        const pickupPoint: MapPoint = [
-          currentJourney.my_details.pickup_location.stop_lng,
-          currentJourney.my_details.pickup_location.stop_lat,
-        ];
-        const dropOffPoint: MapPoint = [
-          currentJourney.my_details.drop_off_location.stop_lng,
-          currentJourney.my_details.drop_off_location.stop_lat,
-        ];
-
-        const routeWaypoints: MapPoint[] = [
-          origin,
-          ...currentJourney.intermediate_stops.map(
-            (stop): MapPoint => [stop.stop_lng, stop.stop_lat],
-          ),
-          destination,
-        ];
-
-        try {
-          const routeData = await map.getRoute(routeWaypoints);
-          if (routeData?.route) {
-            await map.drawRoute(routeData.route, {
-              id: "journey-full-route",
-              color: "#9ca3af",
-              width: 5,
-              opacity: 0.5,
-            });
-          }
-        } catch {
-          await map.drawRoute(routeWaypoints, {
-            id: "journey-full-route",
-            color: "#9ca3af",
-            width: 5,
-          });
-        }
-
-        try {
-          const passengerRouteData = await map.getRoute([
-            pickupPoint,
-            dropOffPoint,
-          ]);
-          if (passengerRouteData?.route) {
-            await map.drawRoute(passengerRouteData.route, {
-              id: "passenger-route",
-              color: "#10b981",
-              width: 6,
-              opacity: 0.95,
-            });
-          }
-        } catch {
-          await map.drawRoute([pickupPoint, dropOffPoint], {
-            id: "passenger-route",
-            color: "#10b981",
-            width: 6,
-          });
-        }
-
-        await map.addMarker(origin);
-        await map.addMarker(destination);
-        await map.addMarker(pickupPoint);
-        await map.addMarker(dropOffPoint);
-
-        for (const stop of currentJourney.intermediate_stops) {
-          await map.addMarker([stop.stop_lng, stop.stop_lat]);
-        }
-
-        await map.fitBounds([origin, destination]);
-      } catch (err) {
-        console.error("Failed to render journey map:", err);
-      }
-    }
-
-    setupMapRoutes();
-  }, [journey, map]);
 
   if (isLoading) {
     return (
@@ -172,12 +86,10 @@ export function PassengerJourneyView() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Map + Stops Progress (left/main column) */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <JourneyMapCard
-            origin={journey.origin}
-            destination={journey.destination}
-            intermediateStops={journey.intermediate_stops}
+          <PassengerJourneyMap
+            journeySocket={journeySocket}
+            journey={journey}
           />
 
           <JourneyStopsProgress
@@ -187,7 +99,6 @@ export function PassengerJourneyView() {
           />
         </div>
 
-        {/* Passenger details + Peers (right column) */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           <PassengerDetailsCard myDetails={journey.my_details} />
 

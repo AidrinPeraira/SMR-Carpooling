@@ -91,6 +91,12 @@ export interface IMapProviderService {
 
   fitBounds(points: MapPoint[]): Promise<void>;
 
+  addDriverMarker(point: MapPoint): Promise<void>;
+
+  updateDriverMarkerPosition(point: MapPoint): Promise<void>;
+
+  removeDriverMarker(): Promise<void>;
+
   startNavigation(
     waypoints: MapPoint[],
     handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,

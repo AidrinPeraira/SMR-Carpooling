@@ -128,6 +128,18 @@ export class MapBoxService implements IMapProviderService {
     return this._routes.drawRouteFromCoordinates(coordinates, options);
   }
 
+  async addDriverMarker(point: MapPoint): Promise<void> {
+    return this._markers.addDriverMarker(point);
+  }
+
+  async updateDriverMarkerPosition(point: MapPoint): Promise<void> {
+    return this._markers.updateDriverMarkerPosition(point);
+  }
+
+  async removeDriverMarker(): Promise<void> {
+    return this._markers.removeDriverMarker();
+  }
+
   async startNavigation(
     waypoints: MapPoint[],
     handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,

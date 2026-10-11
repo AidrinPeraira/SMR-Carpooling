@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { DirectionsCard } from "@/features/driver/journey/components/DirectionsCard";
-import { Compass } from "lucide-react";
+import { Locate } from "lucide-react";
 import {
   JourneyStatus,
   TripStopDTO,
@@ -36,6 +36,8 @@ export function NavigationMap({
   const [mapOrigin] = useState(origin);
   const [mapDestination] = useState(destination);
   const [mapStops] = useState(intermediateStops);
+  const [currentLoation, setCurrentLocation] =
+    useState<UpdateLocationDTO | null>(null);
 
   const [status] = useState(journeyStatus);
   const map = useMap();
@@ -49,8 +51,14 @@ export function NavigationMap({
       speed: 0,
       timestamp: Date.now(),
     };
-    journeySocket.emit(SocketEvents.JOURNEY_LOCATION_UPDATE, payload);
+
+    setCurrentLocation(payload);
   }
+
+  useEffect(() => {
+    if (!currentLoation) return;
+    journeySocket.emit(SocketEvents.JOURNEY_LOCATION_UPDATE, currentLoation);
+  }, [journeySocket, currentLoation]);
 
   useEffect(() => {
     async function setupMap() {
@@ -61,8 +69,13 @@ export function NavigationMap({
 
       for (const stop of mapStops) {
         const point: MapPoint = [stop.stop_lng, stop.stop_lat];
-        const stopLabel = stop.stop_type === StopType.PICKUP ? "Pickup" : "Drop off";
-        await map.addMarkerWithLabel(point, `${stop.passenger_name} · ${stopLabel}`, 100);
+        const stopLabel =
+          stop.stop_type === StopType.PICKUP ? "Pickup" : "Drop off";
+        await map.addMarkerWithLabel(
+          point,
+          `${stop.passenger_name} · ${stopLabel}`,
+          100,
+        );
       }
 
       const waypoints = [
@@ -90,16 +103,14 @@ export function NavigationMap({
         <DirectionsCard journeyStatus={status} />
       </div>
 
-      <div className="relative z-10 mt-auto p-4 flex items-end justify-end">
-        <div className="flex flex-col gap-2">
-          <button
-            className="w-10 h-10 rounded-full bg-surface-card text-content-primary shadow-md border border-border-subtle flex items-center justify-center active:scale-95 transition-all"
-            title="Re-center"
-            onClick={() => map.recenterNavigation()}
-          >
-            <Compass className="w-5 h-5 text-accent" />
-          </button>
-        </div>
+      <div className="relative z-10 mt-auto mb-28 lg:mb-0 p-4 flex items-end justify-end">
+        <button
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-card text-content-primary text-xs font-medium shadow-md border border-border-subtle active:scale-95 transition-all"
+          onClick={() => map.recenterNavigation()}
+        >
+          <Locate className="w-3.5 h-3.5 text-accent" />
+          Re-Center
+        </button>
       </div>
     </section>
   );

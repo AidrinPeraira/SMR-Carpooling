@@ -7,6 +7,7 @@ export class MarkerManager {
   private _radiusLayers: string[] = [];
   private _radiusSources: string[] = [];
   private _navigationMarker: Marker | null = null;
+  private _driverMarker: Marker | null = null;
   private _core: MapboxCore;
 
   constructor(core: MapboxCore) {
@@ -196,6 +197,37 @@ export class MarkerManager {
     }
 
     return coords;
+  }
+
+  addDriverMarker(point: MapPoint) {
+    if (!this._core.map) return;
+
+    this._driverMarker?.remove();
+
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <filter id="driver-shadow">
+          <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.3"/>
+        </filter>
+        <circle cx="18" cy="18" r="14" fill="#10b981" stroke="#ffffff" stroke-width="3" filter="url(#driver-shadow)"/>
+        <path d="M12 20v1.5a1 1 0 001 1h1a1 1 0 001-1V20m8 0v1.5a1 1 0 001 1h1a1 1 0 001-1V20m-1-4l-1.5-4.5a2 2 0 00-1.9-1.5h-5.2a2 2 0 00-1.9 1.5L13 16m12 0H12m12 0v3a1 1 0 01-1 1H14a1 1 0 01-1-1v-3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    `;
+    el.style.cursor = "pointer";
+
+    this._driverMarker = new Marker({ element: el, anchor: "center" })
+      .setLngLat(point)
+      .addTo(this._core.map);
+  }
+
+  updateDriverMarkerPosition(point: MapPoint) {
+    this._driverMarker?.setLngLat(point);
+  }
+
+  removeDriverMarker() {
+    this._driverMarker?.remove();
+    this._driverMarker = null;
   }
 
   async removeMarker(point: MapPoint): Promise<void> {
