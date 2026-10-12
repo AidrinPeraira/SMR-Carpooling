@@ -1,9 +1,16 @@
 let capturedCallback = null;
+let currentLocation = { latitude: 9.999012, longitude: 76.300193 };
 
-// Override native API
 navigator.geolocation.watchPosition = (cb) => {
   capturedCallback = cb;
   return 1;
+};
+
+navigator.geolocation.getCurrentPosition = (cb) => {
+  cb({
+    coords: { ...currentLocation },
+    timestamp: Date.now(),
+  });
 };
 
 let interval = null;
@@ -24,6 +31,8 @@ function moveTo(lat, lng) {
     },
     timestamp: Date.now(),
   };
+
+  currentLocation = { latitude: Number(lat), longitude: Number(lng) };
 
   if (capturedCallback) {
     capturedCallback(position);

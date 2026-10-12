@@ -21,6 +21,7 @@ import {
 } from "@sharemyride/shared";
 import { driverArrivedRequest } from "@/features/driver/journey/api/driverArrivedRequest";
 import { driverVerifyPickupRequest } from "@/features/driver/journey/api/driverVerifyPickupRequest";
+import { driverDropOffPassengerRequest } from "@/features/driver/journey/api/driverDropOffPassengerRequest";
 
 interface CurrentTargetCardProps {
   journeyId: string;
@@ -173,6 +174,51 @@ export function CurrentTargetCard({
     },
   });
 
+  const dropOffMutation = useMutation({
+    mutationFn: async () => {
+      if (!nextStop) throw new Error("No stop selected");
+
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            resolve,
+            (err) => {
+              const messages: Record<number, string> = {
+                1: "Location permission denied. Please enable location access.",
+                2: "Unable to determine your location. Please try again.",
+                3: "Location request timed out. Please try again.",
+              };
+              reject(new Error(messages[err.code] ?? "Failed to get location"));
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 30000,
+              maximumAge: 1000,
+            },
+          );
+        },
+      );
+
+      await driverDropOffPassengerRequest({
+        journey_id: journeyId,
+        passenger_id: nextStop.passenger_id,
+        drop_off_lat: position.coords.latitude,
+        drop_off_lng: position.coords.longitude,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["driverJourneyDetails", journeyId],
+      });
+      toast("Drop-off confirmed", { variant: "success" });
+    },
+    onError: (err: unknown) => {
+      toast(err instanceof Error ? err.message : "Failed to confirm drop-off", {
+        variant: "error",
+      });
+    },
+  });
+
   if (!nextStop || !nextPassenger || journeyStatus !== JourneyStatus.ONGOING) {
     return null;
   }
@@ -318,10 +364,19 @@ export function CurrentTargetCard({
         <Button
           variant="primary"
           className="mt-4 w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
-          disabled
+          onClick={() => dropOffMutation.mutate()}
+          disabled={dropOffMutation.isPending}
         >
-          <LogOut className="w-4 h-4" />
-          <span>Confirm Drop-off</span>
+          {dropOffMutation.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <LogOut className="w-4 h-4" />
+          )}
+          <span>
+            {dropOffMutation.isPending
+              ? "Confirming drop-off..."
+              : "Confirm Drop-off"}
+          </span>
         </Button>
       )}
     </Card>
