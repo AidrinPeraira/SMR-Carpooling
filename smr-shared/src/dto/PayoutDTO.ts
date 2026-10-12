@@ -19,3 +19,7 @@ export interface PayoutItemDTO {
 export interface GetPayoutsResult {
   payouts: PaginatedPayload<PayoutItemDTO[]>;
 }
+
+export interface GetPayoutDetailsResult {
+  payout: PayoutItemDTO;
+}

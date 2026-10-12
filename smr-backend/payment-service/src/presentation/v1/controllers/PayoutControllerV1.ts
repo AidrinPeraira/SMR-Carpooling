@@ -1,3 +1,4 @@
+import { IAdminGetPayoutDetailsUseCase } from "#/application/interfaces/use-cases/payout/IAdminGetPayoutDetailsUseCase";
 import { IAdminListPayoutsUseCase } from "#/application/interfaces/use-cases/payout/IAdminListPayoutsUseCase";
 import { IApprovePayoutUseCase } from "#/application/interfaces/use-cases/payout/IApprovePayoutUseCase";
 import { IGetDriverPayoutsUseCase } from "#/application/interfaces/use-cases/payout/IGetDriverPayoutsUseCase";
@@ -24,6 +25,7 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
     private readonly _logger: ILogger,
     private readonly _getDriverPayoutsUseCase: IGetDriverPayoutsUseCase,
     private readonly _adminListPayoutsUseCase: IAdminListPayoutsUseCase,
+    private readonly _adminGetPayoutDetailsUseCase: IAdminGetPayoutDetailsUseCase,
     private readonly _approvePayoutUseCase: IApprovePayoutUseCase,
   ) {}
 
@@ -104,8 +106,26 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
   }
 
   @Trace("payout-module")
+  async adminGetPayoutDetails(req: Request, res: Response): Promise<void> {
+    const payoutId = req.params.payoutId as string;
+
+    this._logger.info("Admin: fetching payout details", { payoutId });
+
+    const result = await this._adminGetPayoutDetailsUseCase.execute(payoutId);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          PayoutSuccessMessage.PAYOUTS_FETCHED,
+          { payout: PayoutMapper.toPayoutItem(result) },
+        ),
+      );
+  }
+
+  @Trace("payout-module")
   async adminApprovePayout(req: Request, res: Response): Promise<void> {
-    const { payoutId } = req.params;
+    const payoutId = req.params.payoutId as string;
 
     this._logger.info("Admin: approving payout", { payoutId });
 
@@ -113,6 +133,6 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
 
     res
       .status(HttpStatusCodes.Ok)
-      .json(makeSuccessResponse(PayoutSuccessMessage.PAYOUT_APPROVED));
+      .json(makeSuccessResponse(PayoutSuccessMessage.PAYOUT_COMPLETED));
   }
 }

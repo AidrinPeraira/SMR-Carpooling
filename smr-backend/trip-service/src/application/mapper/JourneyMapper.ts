@@ -5,8 +5,10 @@ import { GetDriverJourneyDetailsResponseDTO } from "#/application/dto/journey/Ge
 import { GetPassengerJourneyDetailsResponseDTO } from "#/application/dto/journey/GetPassengerJourneyDetailsDTO";
 import { PassengerConfirmPickupRequestDTO } from "#/application/dto/journey/PassengerConfirmPickupDTO";
 import { PassengerNoShowRequestDTO } from "#/application/dto/journey/PassengerNoShowDTO";
+import { AdminGetJourneyDetailsResponseDTO } from "#/application/interfaces/use-case/admin/journey/IAdminGetJourneyDetailsUseCase";
 import { TripMapper } from "./TripMapper";
 import {
+  AdminJourneyDetailsResult,
   DriverArrivedRequest,
   DriverDropOffPassengerRequest,
   DriverVerifyPickupRequest,
@@ -145,6 +147,41 @@ export class JourneyMapper {
       journeyId: body.journey_id,
       passengerId: body.passenger_id,
       currentTime: new Date().toISOString(),
+    };
+  }
+
+  static toAdminJourneyDetailsResult(
+    dto: AdminGetJourneyDetailsResponseDTO,
+  ): AdminJourneyDetailsResult {
+    return {
+      journey_id: dto.journeyId,
+      driver_id: dto.driverId,
+      journey_status: dto.journeyStatus,
+      origin: TripMapper.toTripStopDTO(dto.origin),
+      destination: TripMapper.toTripStopDTO(dto.destination),
+      intermediate_stops: dto.intermediateStops.map((stop) => ({
+        stop_lat: stop.stopLat,
+        stop_lng: stop.stopLng,
+        stop_name: stop.stopName,
+        stop_address: stop.stopAddress,
+        stop_type: stop.stopType,
+        passenger_id: stop.passengerId,
+        passenger_name: stop.passengerName,
+        arrived_at: stop.arrivedAt?.toISOString() ?? null,
+      })),
+      passengers: dto.passengers.map((p) => ({
+        passenger_id: p.passengerId,
+        passenger_name: p.passengerName,
+        booking_id: p.bookingId,
+        passenger_status: p.passengerStatus,
+        pickup_location: TripMapper.toTripStopDTO(p.pickupLocation),
+        drop_off_location: TripMapper.toTripStopDTO(p.dropOffLocation),
+        pickup_verified: p.pickupVerified,
+        pickup_time: p.pickupTime?.toISOString() ?? null,
+        dropoff_time: p.dropoffTime?.toISOString() ?? null,
+      })),
+      created_at: dto.createdAt instanceof Date ? dto.createdAt.toISOString() : String(dto.createdAt),
+      updated_at: dto.updatedAt instanceof Date ? dto.updatedAt.toISOString() : String(dto.updatedAt),
     };
   }
 }

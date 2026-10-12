@@ -26,7 +26,7 @@ export class MongoPayoutRepository
       commision: data.commision,
       payable: data.payable,
       status: data.status,
-      refTransactionId: data.refTransactionId,
+      refTransactionId: data.refTransactionId ?? null,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };

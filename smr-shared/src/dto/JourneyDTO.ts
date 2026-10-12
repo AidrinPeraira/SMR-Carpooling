@@ -131,3 +131,27 @@ export interface PassengerNoShowRequest {
   journey_id: string;
   passenger_id: string;
 }
+
+export interface AdminJourneyPassengerResult {
+  passenger_id: string;
+  passenger_name: string;
+  booking_id: string;
+  passenger_status: PassengerJourneyStatus;
+  pickup_location: TripStopDTO;
+  drop_off_location: TripStopDTO;
+  pickup_verified: boolean;
+  pickup_time: string | null;
+  dropoff_time: string | null;
+}
+
+export interface AdminJourneyDetailsResult {
+  journey_id: string;
+  driver_id: string;
+  journey_status: JourneyStatus;
+  origin: TripStopDTO;
+  destination: TripStopDTO;
+  intermediate_stops: JourneyStopResult[];
+  passengers: AdminJourneyPassengerResult[];
+  created_at: string;
+  updated_at: string;
+}

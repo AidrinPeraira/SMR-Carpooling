@@ -15,6 +15,7 @@ import { AdminListTransactionsUseCase } from "#/application/use-cases/admin/Admi
 import { CreatePayoutUseCase } from "#/application/use-cases/payout/CreatePayoutUseCase";
 import { ApprovePayoutUseCase } from "#/application/use-cases/payout/ApprovePayoutUseCase";
 import { GetDriverPayoutsUseCase } from "#/application/use-cases/payout/GetDriverPayoutsUseCase";
+import { AdminGetPayoutDetailsUseCase } from "#/application/use-cases/payout/AdminGetPayoutDetailsUseCase";
 import { AdminListPayoutsUseCase } from "#/application/use-cases/payout/AdminListPayoutsUseCase";
 import { MongoBookingPaymentRepository } from "#/infrastructure/repository/MongoBookingPaymentRepository";
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
@@ -95,6 +96,7 @@ const approvePayoutUseCase = new ApprovePayoutUseCase(
   cryptoUIDService,
 );
 const getDriverPayoutsUseCase = new GetDriverPayoutsUseCase(payoutRepository);
+const adminGetPayoutDetailsUseCase = new AdminGetPayoutDetailsUseCase(payoutRepository);
 const adminListPayoutsUseCase = new AdminListPayoutsUseCase(payoutRepository);
 
 const newUserEventHandler = new NewUserEventHandler(
@@ -232,6 +234,7 @@ const payoutControllerV1 = new PayoutControllerV1(
   consolaLogger,
   getDriverPayoutsUseCase,
   adminListPayoutsUseCase,
+  adminGetPayoutDetailsUseCase,
   approvePayoutUseCase,
 );
 

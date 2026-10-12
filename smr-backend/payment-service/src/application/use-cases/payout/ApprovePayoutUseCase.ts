@@ -43,15 +43,15 @@ export class ApprovePayoutUseCase implements IApprovePayoutUseCase {
       );
     }
 
-    if (payout.status === PayoutStatus.APPROVED) {
+    if (payout.status === PayoutStatus.COMPLETED) {
       throw new ApplicationError(
-        PayoutErrorMessage.PAYOUT_ALREADY_APPROVED,
+        PayoutErrorMessage.PAYOUT_ALREADY_COMPLETED,
         HttpStatusCodes.Conflict,
         ErrorCode.DOMAIN_CONFLICT,
         ErrorDetails.DOMAIN_CONFLICT,
         {
           location: "ApprovePayoutUseCase",
-          description: `Payout ${payoutId} has already been approved`,
+          description: `Payout ${payoutId} has already been completed`,
         },
       );
     }
@@ -113,7 +113,7 @@ export class ApprovePayoutUseCase implements IApprovePayoutUseCase {
     });
 
     await this._payoutRepository.updateByCustomId(payoutId, {
-      status: PayoutStatus.APPROVED,
+      status: PayoutStatus.COMPLETED,
       refTransactionId: transactionId,
       updatedAt: now,
     });

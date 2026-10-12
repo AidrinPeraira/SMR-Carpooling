@@ -41,7 +41,6 @@ export function CurrentTargetCard({
   passengers,
   onStartNavigation,
   onCompleteAndExit,
-  onCompleteAndContinue,
 }: CurrentTargetCardProps) {
   const toast = useToast();
   const queryClient = useQueryClient();

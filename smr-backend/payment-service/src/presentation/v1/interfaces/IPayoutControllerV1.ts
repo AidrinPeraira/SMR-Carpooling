@@ -13,5 +13,8 @@ export interface IPayoutControllerV1 {
 
   adminListPayouts(req: Request, res: Response): Promise<void>;
 
+  /** Retrieves full details of a single payout record for admin review. */
+  adminGetPayoutDetails(req: Request, res: Response): Promise<void>;
+
   adminApprovePayout(req: Request, res: Response): Promise<void>;
 }

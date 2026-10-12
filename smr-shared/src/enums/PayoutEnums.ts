@@ -1,4 +1,4 @@
 export enum PayoutStatus {
   "PENDING" = "pending",
-  "APPROVED" = "approved",
+  "COMPLETED" = "completed",
 }

@@ -157,6 +157,7 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `GET`   | `/vehicles/:driverId`             | Get admin view of a driver's vehicles.       | Yes (Admin)   |
 | `GET`   | `/trips/all`                      | List all trips.                              | Yes (Admin)   |
 | `GET`   | `/trips/details/:tripId`          | Get details of a specific trip.              | Yes (Admin)   |
+| `GET`   | `/trips/journey/:journeyId`       | Get journey details with all passengers.     | Yes (Admin)   |
 | `GET`   | `/bookings/all`                   | List all bookings.                           | Yes (Admin)   |
 | `GET`   | `/bookings/details/:bookingId`    | Get details of a specific booking.           | Yes (Admin)   |
 
@@ -200,6 +201,7 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | :------ | :---------------------------- | :----------------------------------------- | :------------ |
 | `GET`   | `/driver`                     | Get paginated list of driver's payouts.    | Yes (Driver)  |
 | `GET`   | `/admin`                      | List all payouts for admin review.         | Yes (Admin)   |
+| `GET`   | `/admin/:payoutId`            | Get details of a specific payout.          | Yes (Admin)   |
 | `PATCH` | `/admin/:payoutId/approve`    | Approve a pending payout.                  | Yes (Admin)   |
 
 ### Admin — Transactions

@@ -20,6 +20,12 @@ export function createPayoutRouterV1(
     (req, res) => payoutController.adminListPayouts(req, res),
   );
 
+  router.get(
+    "/admin/:payoutId",
+    AuthMiddleware(UserRole.ADMIN),
+    (req, res) => payoutController.adminGetPayoutDetails(req, res),
+  );
+
   router.patch(
     "/admin/:payoutId/approve",
     AuthMiddleware(UserRole.ADMIN),
