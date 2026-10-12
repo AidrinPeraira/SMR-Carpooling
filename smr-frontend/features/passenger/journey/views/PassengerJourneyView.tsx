@@ -100,7 +100,7 @@ export function PassengerJourneyView() {
         </div>
 
         <div className="lg:col-span-4 flex flex-col gap-6">
-          <PassengerDetailsCard myDetails={journey.my_details} />
+          <PassengerDetailsCard journeyId={journey.journey_id} myDetails={journey.my_details} />
 
           <OtherPassengersCard passengers={journey.other_passengers} />
         </div>

@@ -1,14 +1,35 @@
-import { Card, CardBody } from "@sharemyride/ui";
+"use client";
+
+import { Card, CardBody, Button, useToast } from "@sharemyride/ui";
 import { PassengerOwnDetailsResult, PassengerJourneyStatus } from "@sharemyride/shared";
-import { MapPin, Navigation, KeyRound } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MapPin, Navigation, KeyRound, Loader2, ShieldCheck, CircleCheckBig } from "lucide-react";
+import { passengerConfirmPickupRequest } from "../api/passengerConfirmPickupRequest";
 
 interface PassengerDetailsCardProps {
+  journeyId: string;
   myDetails: PassengerOwnDetailsResult;
 }
 
-export function PassengerDetailsCard({ myDetails }: PassengerDetailsCardProps) {
+export function PassengerDetailsCard({ journeyId, myDetails }: PassengerDetailsCardProps) {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
   const isAwaitingPickup =
     myDetails.passenger_status === PassengerJourneyStatus.NOT_BOARDED;
+
+  const confirmPickupMutation = useMutation({
+    mutationFn: async () => {
+      await passengerConfirmPickupRequest({ journey_id: journeyId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["passengerJourneyDetails", journeyId] });
+      toast("Pickup confirmed", { variant: "success" });
+    },
+    onError: (err: unknown) => {
+      toast(err instanceof Error ? err.message : "Failed to confirm pickup", { variant: "error" });
+    },
+  });
 
   return (
     <Card className="border-2 border-accent bg-surface-card shadow-sm">
@@ -61,9 +82,9 @@ export function PassengerDetailsCard({ myDetails }: PassengerDetailsCardProps) {
           </div>
         </div>
 
-        {/* OTP Section */}
+        {/* OTP & Confirm Pickup Section */}
         {myDetails.pickup_otp && isAwaitingPickup && (
-          <div className="border-t border-border-subtle pt-3">
+          <div className="border-t border-border-subtle pt-3 space-y-3">
             <div className="bg-surface-muted rounded-lg p-3 flex items-center gap-3 border border-border-subtle">
               <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center flex-shrink-0 text-accent">
                 <KeyRound className="w-4 h-4" />
@@ -77,6 +98,43 @@ export function PassengerDetailsCard({ myDetails }: PassengerDetailsCardProps) {
                 </p>
                 <p className="text-[10px] text-content-secondary mt-0.5">
                   Share this PIN with the driver when boarding
+                </p>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              className="w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
+              onClick={() => confirmPickupMutation.mutate()}
+              disabled={confirmPickupMutation.isPending}
+            >
+              {confirmPickupMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="w-4 h-4" />
+              )}
+              <span>
+                {confirmPickupMutation.isPending ? "Confirming..." : "Confirm Pickup"}
+              </span>
+            </Button>
+            <p className="text-[10px] text-content-secondary text-center">
+              Tap to confirm the driver has verified your PIN
+            </p>
+          </div>
+        )}
+
+        {myDetails.passenger_status === PassengerJourneyStatus.PICKED_UP && (
+          <div className="border-t border-border-subtle pt-3">
+            <div className="bg-success-surface rounded-lg p-3 flex items-center gap-3 border border-success-border">
+              <div className="w-8 h-8 rounded-full bg-success-content/15 flex items-center justify-center flex-shrink-0 text-success-content">
+                <CircleCheckBig className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-success-content">
+                  Driver confirmed
+                </p>
+                <p className="text-xs text-success-content/80 mt-0.5">
+                  Enjoy your journey!
                 </p>
               </div>
             </div>
