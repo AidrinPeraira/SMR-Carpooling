@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapContainer } from "@/features/map/components/MapContainer";
 import { DirectionsCard } from "@/features/driver/journey/components/DirectionsCard";
 import { Locate } from "lucide-react";
@@ -8,11 +8,9 @@ import {
   JourneyStatus,
   TripStopDTO,
   JourneyStopResult,
-  DriverJourneyPassengerResult,
   StopType,
   SocketEvents,
   UpdateLocationDTO,
-  PassengerJourneyStatus,
 } from "@sharemyride/shared";
 import { useMap } from "@/features/map/hooks/useMap";
 import { MapPoint, NavigationState } from "@/features/map/types/MapTypes";
@@ -25,31 +23,6 @@ interface NavigationMapProps {
   origin: TripStopDTO;
   destination: TripStopDTO;
   intermediateStops: JourneyStopResult[];
-  passengers: DriverJourneyPassengerResult[];
-  advanceTrigger: number;
-}
-
-function findCurrentTargetIndex(
-  stops: JourneyStopResult[],
-  passengers: DriverJourneyPassengerResult[],
-): number {
-  return stops.findIndex((stop) => {
-    const passenger = passengers.find(
-      (p) => p.passenger_id === stop.passenger_id,
-    );
-    if (!passenger) return false;
-    if (
-      stop.stop_type === StopType.PICKUP &&
-      passenger.passenger_status === PassengerJourneyStatus.NOT_BOARDED
-    )
-      return true;
-    if (
-      stop.stop_type === StopType.DROPOFF &&
-      passenger.passenger_status === PassengerJourneyStatus.PICKED_UP
-    )
-      return true;
-    return false;
-  });
 }
 
 export function NavigationMap({
@@ -59,8 +32,6 @@ export function NavigationMap({
   origin,
   destination,
   intermediateStops,
-  passengers,
-  advanceTrigger,
 }: NavigationMapProps) {
   const [navigationState, setNavigationState] =
     useState<NavigationState | null>(null);
@@ -68,12 +39,6 @@ export function NavigationMap({
     useState<UpdateLocationDTO | null>(null);
 
   const map = useMap();
-  const navigationStartedRef = useRef(false);
-
-  const currentTargetIndex = useMemo(
-    () => findCurrentTargetIndex(intermediateStops, passengers),
-    [intermediateStops, passengers],
-  );
 
   const waypoints: MapPoint[] = useMemo(() => {
     const points: MapPoint[] = [
@@ -129,40 +94,14 @@ export function NavigationMap({
         handleLocationChange,
         handleNavigationStateChange,
       );
-      navigationStartedRef.current = true;
     }
 
     setupMap();
 
     return () => {
       map.stopNavigation();
-      navigationStartedRef.current = false;
     };
   }, [map]);
-
-  const prevTargetIndexRef = useRef(currentTargetIndex);
-  const skipNextAutoAdvanceRef = useRef(false);
-  const lastAdvanceTriggerRef = useRef(advanceTrigger);
-
-  useEffect(() => {
-    if (advanceTrigger <= lastAdvanceTriggerRef.current) return;
-    lastAdvanceTriggerRef.current = advanceTrigger;
-    if (!navigationStartedRef.current) return;
-    map.advanceToNextSegment();
-    skipNextAutoAdvanceRef.current = true;
-  }, [advanceTrigger, map]);
-
-  useEffect(() => {
-    if (!navigationStartedRef.current) return;
-    if (prevTargetIndexRef.current === currentTargetIndex) return;
-
-    prevTargetIndexRef.current = currentTargetIndex;
-    if (skipNextAutoAdvanceRef.current) {
-      skipNextAutoAdvanceRef.current = false;
-      return;
-    }
-    map.advanceToNextSegment();
-  }, [currentTargetIndex, map]);
 
   return (
     <section className="relative h-full w-full flex flex-col">

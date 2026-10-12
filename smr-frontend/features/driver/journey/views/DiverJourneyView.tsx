@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getDriverJourneyDetailsRequest } from "@/features/driver/journey/api/getDriverJourneyDetailsRequest";
 import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
@@ -18,10 +18,6 @@ interface DriverJourneyViewProps {
 
 export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
   const journeySocket = useLiveLocationSocket();
-  const [advanceTrigger, setAdvanceTrigger] = useState(0);
-  const handleStartNavigation = useCallback(() => {
-    setAdvanceTrigger((prev) => prev + 1);
-  }, []);
 
   useEffect(() => {
     journeySocket.emit(SocketEvents.JOURNEY_DRIVER_JOIN, {
@@ -74,8 +70,6 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
           origin={journey.origin}
           destination={journey.destination}
           intermediateStops={journey.intermediate_stops}
-          passengers={journey.passengers}
-          advanceTrigger={advanceTrigger}
         />
       </div>
       <NavigationDrawer
@@ -85,7 +79,7 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
         destination={journey.destination}
         passengers={journey.passengers}
         intermediateStops={journey.intermediate_stops}
-        onStartNavigation={handleStartNavigation}
+        onStartNavigation={() => {}}
       />
     </div>
   );
