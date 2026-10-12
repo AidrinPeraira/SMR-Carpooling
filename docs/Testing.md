@@ -1,4 +1,4 @@
-# Testing Strategy (Solo Developer)
+# Testing Strategy
 
 The goal is **confidence without slowing down delivery**. We do not aim for 100% test coverage. We test only what is absolutely necessary to prevent critical bugs. **Functionality comes first; tests follow only where they add real value.**
 

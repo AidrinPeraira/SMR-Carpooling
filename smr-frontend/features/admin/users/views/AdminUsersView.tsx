@@ -28,7 +28,7 @@ export default function AdminUsersView() {
   const filterField = existingParams.get("filterField");
   const filterValue = existingParams.get("filterValue");
   const sortField = existingParams.get("sortField");
-  const sortValue = existingParams.get("sortValue");
+  const sortValue = existingParams.get("sortOrder");
 
   const page = existingParams.get("page") || "1";
   const limit = existingParams.get("limit") || "10";

@@ -1,0 +1,45 @@
+"use client";
+
+import { useVoiceCall } from "@/features/realtime/context/VoiceCallContext";
+import { Button } from "@sharemyride/ui";
+import { Phone } from "lucide-react";
+
+interface CallButtonProps {
+  tripId: string;
+  receiverId: string;
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  className?: string;
+  showText?: boolean;
+  label?: string;
+}
+
+export function CallButton({
+  tripId,
+  receiverId,
+  variant = "primary",
+  className,
+  showText = false,
+  label = "Call",
+}: CallButtonProps) {
+  const { initiateCall, callState } = useVoiceCall();
+
+  const handleCall = (e: React.MouseEvent) => {
+    e.preventDefault();
+    void initiateCall(tripId, receiverId);
+  };
+
+  const isBusy = callState !== "IDLE";
+
+  return (
+    <Button
+      variant={variant}
+      className={`inline-flex items-center gap-2 ${className ?? ""}`}
+      onClick={handleCall}
+      disabled={isBusy}
+      title="Start voice call"
+    >
+      <Phone className="w-4 h-4" />
+      {showText && <span>{isBusy ? "Busy" : label}</span>}
+    </Button>
+  );
+}

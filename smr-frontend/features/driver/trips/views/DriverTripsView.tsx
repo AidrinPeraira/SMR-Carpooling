@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@/components/UserInput/Pagination";
 import {
   getDriverTripsRequest,
   DriverTripItem,
@@ -19,13 +21,13 @@ const STATUS_OPTIONS = [
 ];
 
 export function DriverTripsView() {
+  const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [page, setPage] = useState<number>(1);
+  const page = Number(searchParams.get("page")) || 1;
   const limit = 10;
 
   const handleStatusChange = (newStatus: string) => {
     setStatusFilter(newStatus);
-    setPage(1);
   };
 
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -251,45 +253,8 @@ export function DriverTripsView() {
             </div>
           </Card>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border-subtle pt-6">
-              <p className="text-xs text-content-secondary">
-                Showing Page{" "}
-                <span className="font-semibold text-content-primary">
-                  {page}
-                </span>{" "}
-                of{" "}
-                <span className="font-semibold text-content-primary">
-                  {totalPages}
-                </span>{" "}
-                ({totalItems} total trips)
-              </p>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="secondary"
-                  className="text-xs py-1 px-3"
-                  disabled={page <= 1}
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                >
-                  Previous
-                </Button>
-                <span className="text-xs px-2 font-medium text-content-primary">
-                  {page} / {totalPages}
-                </span>
-                <Button
-                  variant="secondary"
-                  className="text-xs py-1 px-3"
-                  disabled={page >= totalPages}
-                  onClick={() =>
-                    setPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
+            <Pagination currentPage={page} totalPages={totalPages} />
           )}
         </>
       )}

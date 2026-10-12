@@ -73,7 +73,7 @@ export function DropDown({
 
       {isOpen && (
         <div
-          className="absolute left-0 right-0 z-50 mt-1 w-full max-h-60 overflow-y-auto border border-border-strong bg-surface-card rounded-sm flex flex-col gap-1 shadow-lg"
+          className="absolute left-0 z-50 mt-1 min-w-full w-max max-h-60 overflow-y-auto border border-border-strong bg-surface-card rounded-sm flex flex-col gap-1 shadow-lg"
         >
           {options.map((v) => {
             const isSelected = selectedValue === v.value;
@@ -81,7 +81,7 @@ export function DropDown({
               <p
                 key={v.value + v.label}
                 className={cn(
-                  "text-xs w-full hover:bg-surface-sidebar/70 text-content-secondary px-3 py-1.5 transition-colors cursor-pointer truncate",
+                  "text-xs w-full hover:bg-surface-sidebar/70 text-content-secondary px-3 py-1.5 transition-colors cursor-pointer whitespace-nowrap",
                   isSelected &&
                     "bg-surface-sidebar text-content-primary font-semibold",
                 )}

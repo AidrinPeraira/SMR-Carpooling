@@ -4,5 +4,8 @@ export * from "./query";
 export * from "./application/ApplicationSchema";
 export * from "./admin";
 export * from "./trip/TripSchema";
+export * from "./chat";
+export * from "./call";
 export * from "./payment/PaymentSchema";
+export * from "./journey";
 

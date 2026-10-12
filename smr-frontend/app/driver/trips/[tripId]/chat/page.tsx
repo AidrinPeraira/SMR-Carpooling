@@ -1,10 +1,9 @@
-import { TripChatView } from "@/features/chat/view/TripChatView";
+import { TripChatView } from "@/features/chat/view/ChatView";
 
-export default async function DriverTripChatPage({ params }: { params: Promise<{ tripId: string }> }) {
-  const resolvedParams = await params;
+export default function DriverTripChatPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <TripChatView chatId={resolvedParams.tripId} />
+      <TripChatView />
     </div>
   );
 }

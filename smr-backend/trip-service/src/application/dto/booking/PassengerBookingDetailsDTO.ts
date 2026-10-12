@@ -1,4 +1,4 @@
-import { BookingStatus, Route, TripStop } from "@sharemyride/shared";
+import { BookingStatus, Route, TripStatus, TripStop } from "@sharemyride/shared";
 
 export interface PassengerGetAllBookingsQueryDTO {
   bookingStatus?: BookingStatus;
@@ -45,5 +45,6 @@ export interface GetPassengerBookingDetailsResultDTO {
   seatCount: number;
 
   status: BookingStatus;
+  tripStatus: TripStatus;
   totalPrice: number;
 }

@@ -1,0 +1,67 @@
+info:
+  name: sync-chat-messages
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4005/v1/chat/messages
+  headers:
+    - name: x-user-id
+      value: "{{USER_ID}}"
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "trip_id": "trip_abc123"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4005/v1/chat/messages
+      method: POST
+      body:
+        type: json
+        data: |2-
+            {
+              "trip_id": "trip_abc123"
+            }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Chat messages retrieved",
+            "payload": {
+              "chat_id": "chat_xyz789",
+              "is_active": true,
+              "messages": [
+                {
+                  "id": "msg_001",
+                  "body": "Hello, I'm on my way!",
+                  "sender_name": "John Doe"
+                },
+                {
+                  "id": "msg_002",
+                  "body": "Great, see you soon!",
+                  "sender_name": "Jane Smith"
+                }
+              ]
+            }
+          }

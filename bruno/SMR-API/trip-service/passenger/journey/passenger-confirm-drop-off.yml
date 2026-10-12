@@ -1,0 +1,30 @@
+info:
+  name: passenger-confirm-drop-off
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/journey/passenger/confirm-drop-off
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjI1ZTVkOWE5OTkyZmQ5ODJmYTdlMzcyZmE3MGYwNTMxIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJQYXNzZW5nZXIiLCJsYXN0TmFtZSI6Ik9uZSIsImVtYWlsSWQiOiJwYXNzZW5nZXIub25lQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY0ODg5NDYsImV4cCI6MTc4NjQ4OTg0Nn0.8wA-8a9H9Z2T4q6u2Q_7D4lO2y2O4j9k2L9l4H9j4L9
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+    - name: Content-Type
+      value: application/json
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "journey_id": "f23a4192-8051-4091-a129-f12a32c25679",
+        "drop_off_lat": 12.9716,
+        "drop_off_lng": 77.5946
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,60 @@
+info:
+  name: get-driver-payouts
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:4000/v1/payouts/driver?page=1&limit=10
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "10"
+      type: query
+    - name: filterField
+      value: status
+      type: query
+      enabled: false
+    - name: filterValue
+      value: pending
+      type: query
+      enabled: false
+    - name: sortField
+      value: createdAt
+      type: query
+      enabled: false
+    - name: sortValue
+      value: desc
+      type: query
+      enabled: false
+  auth: inherit
+
+docs: |
+  ## Driver — Get My Payouts
+
+  Returns a paginated list of payouts belonging to the authenticated driver.
+  Supports filtering by status and sorting.
+
+  ### Query Parameters
+
+  | Parameter    | Type   | Required | Description                          |
+  |--------------|--------|----------|--------------------------------------|
+  | `page`       | number | No       | Page number (default: 1)             |
+  | `limit`      | number | No       | Items per page (default: 10)         |
+  | `filterField`| string | No       | Field to filter on (e.g. `status`)   |
+  | `filterValue`| string | No       | Exact match value (e.g. `pending`)   |
+  | `sortField`  | string | No       | Field to sort by (e.g. `createdAt`)  |
+  | `sortValue`  | string | No       | Sort direction: `asc` or `desc`      |
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

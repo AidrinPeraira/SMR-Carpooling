@@ -11,12 +11,20 @@ import {
   PassengerGetAllBookingsQueryDTO,
   PassengerGetAllBookingsResultDTO,
 } from "#/application/dto/booking/PassengerBookingDetailsDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
+import { PassengerTodayTripResponseDTO } from "#/application/dto/trip/PassengerTripDTO";
 import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
 import { IGeoIndexingService } from "#/application/interfaces/services/IGeoIndexingService";
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { prisma } from "#/infrastructure/database/prisma";
 import { Prisma } from "#/infrastructure/database/generated/prisma/client";
-import { BookingStatus, PaginatedPayload, Route, TripStop } from "@sharemyride/shared";
+import {
+  BookingStatus,
+  PaginatedPayload,
+  Route,
+  TripStatus,
+  TripStop,
+} from "@sharemyride/shared";
 
 export class BookingsRepository implements IBookingRepository {
   private readonly _bookingsModel = prisma.bookings;
@@ -52,8 +60,12 @@ export class BookingsRepository implements IBookingRepository {
         seatCount: booking.seatCount,
         totalPrice: booking.totalPrice,
         status: booking.status,
-        ...(booking.paymentKey !== undefined ? { paymentKey: booking.paymentKey } : {}),
-        ...(booking.paymentKeyExpiry !== undefined ? { paymentKeyExpiry: booking.paymentKeyExpiry } : {}),
+        ...(booking.paymentKey !== undefined
+          ? { paymentKey: booking.paymentKey }
+          : {}),
+        ...(booking.paymentKeyExpiry !== undefined
+          ? { paymentKeyExpiry: booking.paymentKeyExpiry }
+          : {}),
       },
     });
 
@@ -121,6 +133,8 @@ export class BookingsRepository implements IBookingRepository {
       tripDate: b.trip.startTime,
       tripVehicle:
         `${b.trip.vehicle.vehicleMake} ${b.trip.vehicle.vehicleModel}`.trim(),
+      tripOrigin: (b.trip.tripOrigin as any)?.stopName || "",
+      tripDestination: (b.trip.tripDestination as any)?.stopName || "",
       pickupPointName: (b.pickupPoint as any)?.stopName || "",
       pickupPointAddress: (b.pickupPoint as any)?.stopAddress || "",
       dropOffPointName: (b.dropOffPoint as any)?.stopName || "",
@@ -182,7 +196,8 @@ export class BookingsRepository implements IBookingRepository {
 
     if (data.status !== undefined) updateData.status = data.status;
     if (data.paymentKey !== undefined) updateData.paymentKey = data.paymentKey;
-    if (data.paymentKeyExpiry !== undefined) updateData.paymentKeyExpiry = data.paymentKeyExpiry;
+    if (data.paymentKeyExpiry !== undefined)
+      updateData.paymentKeyExpiry = data.paymentKeyExpiry;
     if (data.totalPrice !== undefined) updateData.totalPrice = data.totalPrice;
     if (data.seatCount !== undefined) updateData.seatCount = data.seatCount;
     if (data.distanceKm !== undefined) updateData.distanceKm = data.distanceKm;
@@ -316,7 +331,12 @@ export class BookingsRepository implements IBookingRepository {
       ];
     }
 
-    if (query?.filterField && query?.filterValue && (query.filterField as any) !== "None" && (query.filterValue as any) !== "None") {
+    if (
+      query?.filterField &&
+      query?.filterValue &&
+      (query.filterField as any) !== "None" &&
+      (query.filterValue as any) !== "None"
+    ) {
       const field = String(query.filterField);
       const val = String(query.filterValue);
       if (field === "status") {
@@ -331,9 +351,12 @@ export class BookingsRepository implements IBookingRepository {
       }
     }
 
-    let orderBy: Prisma.BookingsOrderByWithRelationInput = { createdAt: "desc" };
+    let orderBy: Prisma.BookingsOrderByWithRelationInput = {
+      createdAt: "desc",
+    };
     if (query?.sortField && (query.sortField as any) !== "None") {
-      const sortOrder = query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
+      const sortOrder =
+        query.sortValue?.toLowerCase() === "asc" ? "asc" : "desc";
       const field = String(query.sortField);
 
       if (field === "passengerName") {
@@ -451,5 +474,87 @@ export class BookingsRepository implements IBookingRepository {
       totalPrice: booking.totalPrice,
     };
   }
-}
 
+  async getPassengerBookingStats(
+    passengerId: string,
+  ): Promise<PassengerBookingStatsResponseDTO> {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(Date.now() + IST_OFFSET_MS);
+    const startOfMonth = new Date(
+      Date.UTC(nowIST.getUTCFullYear(), nowIST.getUTCMonth(), 1),
+    );
+    const startOfMonthUTC = new Date(startOfMonth.getTime() - IST_OFFSET_MS);
+
+    const [totalBookings, bookingsThisMonth] = await Promise.all([
+      this._bookingsModel.count({ where: { passengerId } }),
+      this._bookingsModel.count({
+        where: { passengerId, createdAt: { gte: startOfMonthUTC } },
+      }),
+    ]);
+
+    return { totalBookings, bookingsThisMonth };
+  }
+
+  async findPassengerTodayTrip(
+    passengerId: string,
+  ): Promise<PassengerTodayTripResponseDTO | null> {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(Date.now() + IST_OFFSET_MS);
+    nowIST.setUTCHours(0, 0, 0, 0);
+    const startOfDayUTC = new Date(nowIST.getTime() - IST_OFFSET_MS);
+    const endOfDayUTC = new Date(startOfDayUTC.getTime() + 24 * 60 * 60 * 1000);
+
+    const booking = await this._bookingsModel.findFirst({
+      where: {
+        passengerId,
+        status: BookingStatus.CONFIRMED,
+        trip: {
+          startTime: { gte: startOfDayUTC, lt: endOfDayUTC },
+          tripStatus: {
+            in: [
+              TripStatus.SCHEDULED,
+              TripStatus.FULLY_BOOKED,
+              TripStatus.ONGOING,
+            ],
+          },
+        },
+      },
+      orderBy: { trip: { startTime: "asc" } },
+      include: {
+        trip: {
+          include: {
+            driver: true,
+            vehicle: true,
+          },
+        },
+      },
+    });
+
+    if (!booking) return null;
+
+    const trip = (booking as any).trip;
+    const driver = trip?.driver;
+    const vehicle = trip?.vehicle;
+
+    return {
+      bookingId: booking.bookingId,
+      tripId: trip.tripId,
+      driverName: driver
+        ? `${driver.firstName} ${driver.lastName}`.trim()
+        : "Driver",
+      tripStartTime:
+        trip?.startTime instanceof Date
+          ? (trip.startTime as Date).toISOString()
+          : String(trip?.startTime),
+      vehicleName: vehicle
+        ? `${vehicle.vehicleMake} ${vehicle.vehicleModel}`.trim()
+        : "Vehicle",
+      pickupPoint: booking.pickupPoint as unknown as TripStop,
+      dropOffPoint: booking.dropOffPoint as unknown as TripStop,
+      seatCount: booking.seatCount,
+      totalPrice: booking.totalPrice,
+      status: booking.status as BookingStatus,
+      tripStatus: trip.tripStatus as TripStatus,
+    };
+  }
+}

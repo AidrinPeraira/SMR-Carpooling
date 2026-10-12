@@ -10,10 +10,17 @@ import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomer
 import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
 import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWalletUseCase";
 import { GetWalletTransactionsUseCase } from "#/application/use-cases/wallet/GetWalletTransactionsUseCase";
+import { GetCustomerEarningsUseCase } from "#/application/use-cases/customer/GetCustomerEarningsUseCase";
 import { AdminListTransactionsUseCase } from "#/application/use-cases/admin/AdminListTransactions";
+import { CreatePayoutUseCase } from "#/application/use-cases/payout/CreatePayoutUseCase";
+import { ApprovePayoutUseCase } from "#/application/use-cases/payout/ApprovePayoutUseCase";
+import { GetDriverPayoutsUseCase } from "#/application/use-cases/payout/GetDriverPayoutsUseCase";
+import { AdminGetPayoutDetailsUseCase } from "#/application/use-cases/payout/AdminGetPayoutDetailsUseCase";
+import { AdminListPayoutsUseCase } from "#/application/use-cases/payout/AdminListPayoutsUseCase";
 import { MongoBookingPaymentRepository } from "#/infrastructure/repository/MongoBookingPaymentRepository";
 import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
 import { MongoTransactionRepository } from "#/infrastructure/repository/MongoTransactionRepository";
+import { MongoPayoutRepository } from "#/infrastructure/repository/MongoPayoutRepository";
 import { MongoWalletRepository } from "#/infrastructure/repository/MongoWalletRepository";
 import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
 import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
@@ -21,12 +28,14 @@ import { EventBus } from "#/infrastructure/services/EventBus";
 import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
 import { RazorPayPaymentProvider } from "#/infrastructure/services/RazorPayPaymentProvider";
 import { PaymentControllerV1 } from "#/presentation/v1/controllers/PaymentControllerV1";
+import { PayoutControllerV1 } from "#/presentation/v1/controllers/PayoutControllerV1";
 import { AdminControllerV1 } from "#/presentation/v1/controllers/AdminControllerV1";
 import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
 import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
 import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
 import { BookingCancelledByPassengerEventHandler } from "#/presentation/v1/event-handlers/BookingCancelledByPassengerEventHandler";
 import { TripCancelledByDriverEventHandler } from "#/presentation/v1/event-handlers/TripCancelledByDriverEventHandler";
+import { JourneyPassengerDroppedOffEventHandler } from "#/presentation/v1/event-handlers/JourneyPassengerDroppedOffEventHandler";
 import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
 import { WebhookControllerV1 } from "#/presentation/v1/controllers/WebhookControllerV1";
 import { WalletControllerV1 } from "#/presentation/v1/controllers/WalletControllerV1";
@@ -34,6 +43,7 @@ import { createPaymentRouterV1 } from "#/presentation/v1/routes/PaymentRouterV1"
 import { createWalletRouterV1 } from "#/presentation/v1/routes/WalletRouterV1";
 import { createWebhookRouterV1 } from "#/presentation/v1/routes/WebhookRouterV1";
 import { createAdminRouterV1 } from "#/presentation/v1/routes/AdminRouterV1";
+import { createPayoutRouterV1 } from "#/presentation/v1/routes/PayoutRouterV1";
 import { ConsolaLogger, EventName } from "@sharemyride/shared";
 
 // Logger
@@ -44,6 +54,8 @@ const customerRepository = new MongoCustomerRepository();
 const walletRepository = new MongoWalletRepository();
 const bookingPaymentRepository = new MongoBookingPaymentRepository();
 const transactionRepository = new MongoTransactionRepository();
+
+const payoutRepository = new MongoPayoutRepository();
 
 const cryptoUIDService = new CryptoUIDService();
 const jwtTokenService = new JWTTokenService();
@@ -68,6 +80,24 @@ const getWalletTransactionsUseCase = new GetWalletTransactionsUseCase(
 const adminListTransactionsUseCase = new AdminListTransactionsUseCase(
   transactionRepository,
 );
+const getCustomerEarningsUseCase = new GetCustomerEarningsUseCase(
+  transactionRepository,
+);
+
+// Payout Use Cases
+const createPayoutUseCase = new CreatePayoutUseCase(
+  payoutRepository,
+  cryptoUIDService,
+);
+const approvePayoutUseCase = new ApprovePayoutUseCase(
+  payoutRepository,
+  walletRepository,
+  transactionRepository,
+  cryptoUIDService,
+);
+const getDriverPayoutsUseCase = new GetDriverPayoutsUseCase(payoutRepository);
+const adminGetPayoutDetailsUseCase = new AdminGetPayoutDetailsUseCase(payoutRepository);
+const adminListPayoutsUseCase = new AdminListPayoutsUseCase(payoutRepository);
 
 const newUserEventHandler = new NewUserEventHandler(
   consolaLogger,
@@ -157,6 +187,11 @@ const tripCancelledByDriverEventHandler = new TripCancelledByDriverEventHandler(
   refundBookingPaymentUseCase,
 );
 
+const journeyPassengerDroppedOffEventHandler = new JourneyPassengerDroppedOffEventHandler(
+  consolaLogger,
+  createPayoutUseCase,
+);
+
 await eventDispatcher.register(
   EventName.BOOKING_CANCELLED_BY_PASSENGER,
   bookingCancelledByPassengerEventHandler,
@@ -167,12 +202,18 @@ await eventDispatcher.register(
   tripCancelledByDriverEventHandler,
 );
 
+await eventDispatcher.register(
+  EventName.JOURNEY_PASSENGER_DROPPED_OFF,
+  journeyPassengerDroppedOffEventHandler,
+);
+
 // Payment Controller & Router
 const paymentControllerV1 = new PaymentControllerV1(
   consolaLogger,
   createBookingPaymentOrderUseCase,
   verifyBookingPaymentUseCase,
   payBookingWithWalletUseCase,
+  getCustomerEarningsUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(
@@ -189,10 +230,19 @@ const adminControllerV1 = new AdminControllerV1(
   adminListTransactionsUseCase,
 );
 
+const payoutControllerV1 = new PayoutControllerV1(
+  consolaLogger,
+  getDriverPayoutsUseCase,
+  adminListPayoutsUseCase,
+  adminGetPayoutDetailsUseCase,
+  approvePayoutUseCase,
+);
+
 const paymentRouterV1 = createPaymentRouterV1(paymentControllerV1);
 const webhookRouterV1 = createWebhookRouterV1(webhookControllerV1);
 const walletRouterV1 = createWalletRouterV1(walletControllerV1);
 const adminRouterV1 = createAdminRouterV1(adminControllerV1);
+const payoutRouterV1 = createPayoutRouterV1(payoutControllerV1);
 
 // Routers setup
 const v1Router = express.Router();
@@ -200,6 +250,7 @@ v1Router.use("/payments", paymentRouterV1);
 v1Router.use("/webhooks", webhookRouterV1);
 v1Router.use("/wallet", walletRouterV1);
 v1Router.use("/admin", adminRouterV1);
+v1Router.use("/payouts", payoutRouterV1);
 
 export const paymentServiceRouters = {
   v1: v1Router,

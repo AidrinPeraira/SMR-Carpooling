@@ -1,6 +1,7 @@
 "use client";
 import {
   MapPoint,
+  NavigationState,
   Place,
   Route,
   SearchSuggestion,
@@ -64,6 +65,8 @@ export interface IMapProviderService {
 
   addMarker(point: MapPoint): Promise<void>;
 
+  addMarkerWithLabel(point: MapPoint, label: string, radiusMeters?: number): Promise<void>;
+
   removeMarker(point: MapPoint): Promise<void>;
 
   clearAllMarkers(): Promise<void>;
@@ -88,4 +91,24 @@ export interface IMapProviderService {
   clearAllRoutes(): Promise<void>;
 
   fitBounds(points: MapPoint[]): Promise<void>;
+
+  addDriverMarker(point: MapPoint): Promise<void>;
+
+  updateDriverMarkerPosition(point: MapPoint): Promise<void>;
+
+  removeDriverMarker(): Promise<void>;
+
+  startNavigation(
+    waypoints: MapPoint[],
+    handleLocationUpdate?: (newLocation: MapPoint) => Promise<void>,
+    onNavigationStateChange?: (state: NavigationState) => void,
+  ): Promise<void>;
+
+  advanceToNextSegment(): Promise<void>;
+
+  hasNextSegment(): boolean;
+
+  stopNavigation(): Promise<void>;
+
+  recenterNavigation(): Promise<void>;
 }

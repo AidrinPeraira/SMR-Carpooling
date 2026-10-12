@@ -12,3 +12,9 @@ export interface GetDriverDetailsResult {
 }
 
 export type GetDriverDetailsResponseDTO = ApiResponse<GetDriverDetailsResult | null>;
+
+export interface DriverTripStatsResult {
+  total_trips: number;
+  trips_this_month: number;
+  total_passengers: number;
+}

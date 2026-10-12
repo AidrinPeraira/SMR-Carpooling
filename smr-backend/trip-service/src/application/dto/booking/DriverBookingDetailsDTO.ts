@@ -13,6 +13,8 @@ export interface DriverGetAllBookingsResultDTO {
 
   tripDate: Date;
   tripVehicle: string;
+  tripOrigin: string;
+  tripDestination: string;
 
   pickupPointName: string;
   pickupPointAddress: string;

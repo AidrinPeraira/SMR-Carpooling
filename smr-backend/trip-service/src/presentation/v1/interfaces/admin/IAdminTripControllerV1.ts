@@ -12,4 +12,11 @@ export interface IAdminTripControllerV1 {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+
+  /** Retrieves the full journey details including all passengers for admin review. */
+  getJourneyDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void>;
 }

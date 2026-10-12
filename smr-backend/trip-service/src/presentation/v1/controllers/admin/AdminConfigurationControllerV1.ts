@@ -5,7 +5,7 @@ import { IUpdatePricingUseCase } from "#/application/interfaces/use-case/admin/c
 import { ICreateNewVehicleUseCase } from "#/application/interfaces/use-case/admin/configurations/ICreateNewVehicleUseCase";
 import { IUpdateVehicleUseCase } from "#/application/interfaces/use-case/admin/configurations/IUpdateVehicleUseCase";
 import { IAdminConfigurationControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminConfigurationControllerV1";
-import { AdminConfigurationMapper } from "#/presentation/v1/mapper/admin/AdminConfigurationMapper";
+import { AdminConfigurationMapper } from "#/application/mapper/admin/AdminConfigurationMapper";
 import {
   ApplicationError,
   CreatePricingRequest,

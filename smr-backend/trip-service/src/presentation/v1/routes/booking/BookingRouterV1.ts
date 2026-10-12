@@ -44,6 +44,22 @@ export function createBookingRouterV1(
     (req, res, next) => bookingController.rejectBooking(req, res, next),
   );
 
+  // Passenger: Get booking stats
+  router.get(
+    "/passenger/stats",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) =>
+      bookingController.getPassengerBookingStats(req, res, next),
+  );
+
+  // Passenger: Get today's trip from booking perspective
+  router.get(
+    "/passenger/today",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) =>
+      bookingController.getPassengerTodayTrip(req, res, next),
+  );
+
   // Passenger: List all bookings
   router.get(
     "/passenger",

@@ -1,22 +1,67 @@
 "use client";
 
+import { TripStatus } from "@sharemyride/shared";
 import { Button, Card, CardBody, Tag } from "@sharemyride/ui";
-import { AlertCircle, XCircle } from "lucide-react";
+import { AlertCircle, Eye, PlayCircle, XCircle } from "lucide-react";
+import Link from "next/link";
 
 interface DriverTripActionCardProps {
+  tripId: string;
   tripStatus: string;
+  tripDate: string | Date;
   onCancelTrip?: () => void;
+  onStartTrip?: () => void;
   isCancelling?: boolean;
+  isStarting?: boolean;
 }
 
 export function DriverTripActionCard({
+  tripId,
   tripStatus,
+  tripDate,
   onCancelTrip,
+  onStartTrip,
   isCancelling = false,
+  isStarting = false,
 }: DriverTripActionCardProps) {
-  const normalizedStatus = tripStatus.toLowerCase();
   const canCancel =
-    normalizedStatus === "scheduled" || normalizedStatus === "fully_booked";
+    tripStatus === TripStatus.SCHEDULED || tripStatus === TripStatus.FULLY_BOOKED;
+
+  const today = new Date();
+  const trip = new Date(tripDate);
+  const isTripToday =
+    today.getFullYear() === trip.getFullYear() &&
+    today.getMonth() === trip.getMonth() &&
+    today.getDate() === trip.getDate();
+
+  const canStart = canCancel && isTripToday;
+
+  if (tripStatus === TripStatus.ONGOING) {
+    return (
+      <Card className="border border-accent/30 bg-accent/10 shadow-sm h-full flex flex-col justify-center">
+        <CardBody className="p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <Eye className="w-5 h-5 text-accent flex-shrink-0" />
+            <div>
+              <h4 className="font-semibold text-sm text-content-primary">
+                Journey In Progress
+              </h4>
+              <p className="text-xs text-content-secondary mt-0.5">
+                Your trip is currently ongoing. View the live journey details.
+              </p>
+            </div>
+          </div>
+
+          <Link href={`/driver/journey/${tripId}`}>
+            <Button className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2">
+              <Eye className="w-4 h-4" />
+              View Journey
+            </Button>
+          </Link>
+        </CardBody>
+      </Card>
+    );
+  }
 
   if (canCancel) {
     return (
@@ -34,17 +79,34 @@ export function DriverTripActionCard({
             </div>
           </div>
 
-          <Button
-            variant="danger"
-            className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2 shrink-0"
-            disabled={isCancelling}
-            onClick={
-              onCancelTrip || (() => alert("Cancel trip feature coming soon!"))
-            }
-          >
-            <XCircle className="w-4 h-4" />
-            {isCancelling ? "Cancelling..." : "Cancel Trip"}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto shrink-0">
+            {canStart && (
+              <Button
+                variant="primary"
+                className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2"
+                disabled={isStarting}
+                onClick={
+                  onStartTrip ||
+                  (() => alert("Start trip feature coming soon!"))
+                }
+              >
+                <PlayCircle className="w-4 h-4" />
+                {isStarting ? "Starting..." : "Start Trip"}
+              </Button>
+            )}
+            <Button
+              variant="danger"
+              className="w-full sm:w-auto text-xs py-2 px-4 font-medium flex items-center justify-center gap-2"
+              disabled={isCancelling}
+              onClick={
+                onCancelTrip ||
+                (() => alert("Cancel trip feature coming soon!"))
+              }
+            >
+              <XCircle className="w-4 h-4" />
+              {isCancelling ? "Cancelling..." : "Cancel Trip"}
+            </Button>
+          </div>
         </CardBody>
       </Card>
     );

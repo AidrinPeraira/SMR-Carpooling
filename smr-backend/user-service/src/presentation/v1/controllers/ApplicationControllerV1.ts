@@ -11,7 +11,7 @@ import { IResubmitRenewVehicleApplicationUseCase } from "#/application/interface
 import { IGetFileUploadUrlUseCase } from "#/application/interfaces/use-case/IGetFileUploadUrlUseCase";
 import { Trace } from "#/presentation/utils/traces-decorator";
 import { IApplicationControllerV1 } from "#/presentation/v1/interfaces/IApplicationControllerV1";
-import { ApplicationMapper } from "#/presentation/v1/mapper/ApplicationMapper";
+import { ApplicationMapper } from "#/application/mapper/ApplicationMapper";
 import {
   ApplicationDetailsResult,
   ApplicationIdParamSchema,

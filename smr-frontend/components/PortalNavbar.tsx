@@ -3,16 +3,22 @@
 import { cn } from "@/lib/utils";
 import {
   Avatar,
+  Button,
   Drawer,
   DrawerBody,
   DrawerFooter,
   DrawerHeader,
+  useToast,
 } from "@sharemyride/ui";
-import { Menu } from "lucide-react";
+import { Menu, LogOut, User as UserIcon, Sun, Moon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { logoutUserAction } from "@/features/auth/api/actions/LogoutUserAction";
+import { useQuery } from "@tanstack/react-query";
+import { getUserRequest } from "@/features/profile/api/requests/getUserRequest";
+import { useTheme } from "@/lib/useTheme";
 
 interface PortalNavbarProps {
   showLogo?: boolean;
@@ -25,18 +31,18 @@ export default function PortalNavbar({
 }: PortalNavbarProps) {
   const [sidebarOpen, setSideBarOpen] = useState<boolean>(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const toast = useToast();
+  const { theme, toggleTheme } = useTheme();
+
+  const { data: user } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getUserRequest,
+  });
 
   // Detect role from route or prop
   const detectedRole =
     userRole || (pathname.startsWith("/driver") ? "driver" : "passenger");
-
-  const user = {
-    user_id: "123",
-    first_name: "John",
-    last_name: "Doe",
-    user_role: detectedRole,
-    profile_image: "https://i.pravatar.cc/300",
-  };
 
   const activeStyles = "text-accent font-bold border-b border-accent ";
 
@@ -44,8 +50,17 @@ export default function PortalNavbar({
     { name: "Home", href: `/${detectedRole}` },
     { name: "Trips", href: `/${detectedRole}/trips` },
     { name: "Bookings", href: `/${detectedRole}/bookings` },
-    { name: "Profile", href: "/profile" },
   ];
+
+  const handleLogout = async () => {
+    const res = await logoutUserAction();
+    if (res.success) {
+      toast("Successfully logged out!", { variant: "success" });
+      router.push("/");
+    } else {
+      toast("Failed to log out", { variant: "error" });
+    }
+  };
 
   // Helper to determine active state
   const isLinkActive = (href: string) => {
@@ -139,12 +154,43 @@ export default function PortalNavbar({
         </DrawerBody>
 
         <DrawerFooter>
-          <div className="flex gap-2 m-2 justify-between items-center text-fg-secondary">
-            <Avatar
-              size="sm"
-              src={user.profile_image}
-              initials={user.first_name[0] + user.last_name[0]}
-            />
+          <div className="flex flex-col gap-2 m-2 text-fg-secondary">
+            <div className="flex gap-2 items-center">
+              <Avatar
+                size="sm"
+                src={user?.profile_image}
+                initials={user ? user.first_name[0] + user.last_name[0] : ""}
+              />
+            </div>
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 px-1 py-1 text-sm hover:text-accent"
+              onClick={() => setSideBarOpen(false)}
+            >
+              <UserIcon className="w-4 h-4" />
+              Profile
+            </Link>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 px-1 py-1 text-sm hover:text-accent text-left"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
+            </button>
+            <button
+              onClick={() => {
+                setSideBarOpen(false);
+                handleLogout();
+              }}
+              className="flex items-center gap-2 px-1 py-1 text-sm hover:text-accent text-left"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
           </div>
         </DrawerFooter>
       </Drawer>
@@ -188,12 +234,46 @@ export default function PortalNavbar({
           ))}
         </div>
 
-        <div className="flex gap-1 m-2 justify-center items-center text-fg-secondary">
+        <div className="relative group flex gap-1 m-2 justify-center items-center text-fg-secondary">
           <Avatar
             size="sm"
-            src={user.profile_image}
-            initials={user.first_name[0] + user.last_name[0]}
+            src={user?.profile_image}
+            initials={user ? user.first_name[0] + user.last_name[0] : ""}
+            className="cursor-pointer"
           />
+          <div className="absolute right-0 top-full pt-1 hidden group-hover:block z-50">
+            <div className="bg-surface-primary rounded-lg shadow-lg py-1 min-w-[160px]">
+              <Link href="/profile">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-surface-hover w-full text-left"
+                >
+                  <UserIcon className="w-4 h-4" />
+                  Profile
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                onClick={toggleTheme}
+                className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-surface-hover w-full text-left"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-surface-hover w-full text-left"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </>

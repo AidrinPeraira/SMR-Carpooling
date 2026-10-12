@@ -1,8 +1,9 @@
 import { ICreateBookingPaymentOrderUseCase } from "#/application/interfaces/use-cases/payment/ICreateBookingPaymentOrderUseCase";
 import { IVerifyBookingPaymentUseCase } from "#/application/interfaces/use-cases/payment/IVerifyBookingPaymentUseCase";
 import { IPayBookingWithWalletUseCase } from "#/application/interfaces/use-cases/payment/IPayBookingWithWalletUseCase";
+import { IGetCustomerEarningsUseCase } from "#/application/interfaces/use-cases/customer/IGetCustomerEarningsUseCase";
 import { IPaymentControllerV1 } from "#/presentation/v1/interfaces/IPaymentControllerV1";
-import { PaymentMapper } from "#/presentation/v1/mapper/PaymentMapper";
+import { PaymentMapper } from "#/application/mapper/PaymentMapper";
 import {
   CreateBookingPaymentOrderRequest,
   CreateBookingPaymentOrderResult,
@@ -16,8 +17,12 @@ import {
   PayBookingWithWalletRequest,
   PayBookingWithWalletSchema,
   zodParser,
+  ApplicationError,
+  ErrorCode,
+  ErrorDetails,
+  GenericErrorMessage,
 } from "@sharemyride/shared";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
 export class PaymentControllerV1 implements IPaymentControllerV1 {
@@ -26,6 +31,7 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     private readonly _createBookingPaymentOrderUseCase: ICreateBookingPaymentOrderUseCase,
     private readonly _verifyBookingPaymentUseCase: IVerifyBookingPaymentUseCase,
     private readonly _payBookingWithWalletUseCase: IPayBookingWithWalletUseCase,
+    private readonly _getCustomerEarningsUseCase: IGetCustomerEarningsUseCase,
   ) {}
 
   @Trace("payment-module")
@@ -95,5 +101,38 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     res
       .status(HttpStatusCodes.Ok)
       .json(makeSuccessResponse(PaymentSuccessMessage.PAYMENT_COMPLETED));
+  }
+
+  @Trace("payment-module")
+  async getCustomerEarnings(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        throw new ApplicationError(
+          GenericErrorMessage.UNAUTHORIZED,
+          HttpStatusCodes.Unauthorized,
+          ErrorCode.INPUT_UNAUTHORIZED,
+          ErrorDetails.INPUT_UNAUTHORIZED,
+        );
+      }
+
+      this._logger.info("Fetching customer earnings", { userId });
+
+      const result = await this._getCustomerEarningsUseCase.execute(userId);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse("Customer earnings fetched successfully", {
+            total_earnings: result.totalEarnings,
+          }),
+        );
+    } catch (error) {
+      next(error);
+    }
   }
 }

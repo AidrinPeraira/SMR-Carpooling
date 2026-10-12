@@ -29,6 +29,8 @@ export interface DriverBookingItemDTO {
   passenger_name: string;
   trip_date: string;
   trip_vehicle: string;
+  trip_origin: string;
+  trip_destination: string;
   pickup_point_name: string;
   pickup_point_address: string;
   drop_off_point_name: string;
@@ -82,6 +84,7 @@ export interface PassengerBookingDetailsDTO {
   booking_distance: number;
   seat_count: number;
   status: string;
+  trip_status: string;
   total_price: number;
 }
 
@@ -89,9 +92,27 @@ export interface InitiateBookingPaymentResponseDTO {
   payment_token: string;
 }
 
+export interface PassengerBookingStatsResult {
+  total_bookings: number;
+  bookings_this_month: number;
+}
+
+export interface PassengerTodayTripResult {
+  booking_id: string;
+  trip_id: string;
+  driver_name: string;
+  trip_start_time: string;
+  vehicle_name: string;
+  pickup_point: TripStopDTO;
+  drop_off_point: TripStopDTO;
+  seat_count: number;
+  total_price: number;
+  status: string;
+  trip_status: string;
+}
+
 export type DriverBookingItemResult = DriverBookingItemDTO;
 export type DriverBookingDetailsResult = DriverBookingDetailsDTO;
 export type PassengerBookingItemResult = PassengerBookingItemDTO;
 export type PassengerBookingDetailsResult = PassengerBookingDetailsDTO;
 export type InitiateBookingPaymentResult = InitiateBookingPaymentResponseDTO;
-

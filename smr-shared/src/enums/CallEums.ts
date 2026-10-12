@@ -4,3 +4,9 @@ export enum CallStatus {
   "RINGING" = "ringing",
   "ENDED" = "ended",
 }
+
+export enum CallSignalType {
+  OFFER = "offer",
+  ANSWER = "answer",
+  ICE_CANDIDATE = "ice_candidate",
+}

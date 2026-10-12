@@ -1,0 +1,199 @@
+import {
+  DriverGetAllBookingsQueryDTO,
+  DriverGetAllBookingsResultDTO,
+  GetBookingDetailsResultDTO,
+} from "#/application/dto/booking/DriverBookingDetailsDTO";
+import {
+  GetPassengerBookingDetailsResultDTO,
+  PassengerGetAllBookingsQueryDTO,
+  PassengerGetAllBookingsResultDTO,
+} from "#/application/dto/booking/PassengerBookingDetailsDTO";
+import { PassengerBookingStatsResponseDTO } from "#/application/dto/booking/PassengerStatsDTO";
+import { PassengerTodayTripResponseDTO } from "#/application/dto/trip/PassengerTripDTO";
+import { NewBookingRequestDTO } from "#/application/dto/booking/NewBookingDTO";
+import { TripMapper } from "#/application/mapper/TripMapper";
+import { InitaiteBookingPaymentResponseDTO } from "#/application/dto/booking/BookingPaymentsDTO";
+import {
+  CreateBookingRequest,
+  DriverBookingDetailsDTO,
+  DriverBookingItemDTO,
+  DriverGetBookingsQueryRequest,
+  InitiateBookingPaymentResponseDTO,
+  PaginatedPayload,
+  PassengerBookingDetailsDTO,
+  PassengerBookingItemDTO,
+  PassengerBookingStatsResult,
+  PassengerGetBookingsQueryRequest,
+  PassengerTodayTripResult,
+} from "@sharemyride/shared";
+
+export class BookingMapper {
+  static toInitiateBookingPaymentResponse(
+    dto: InitaiteBookingPaymentResponseDTO,
+  ): InitiateBookingPaymentResponseDTO {
+    return {
+      payment_token: dto.paymentToken,
+    };
+  }
+
+  static toNewBookingRequestDTO(
+    passengerId: string,
+    body: CreateBookingRequest,
+  ): NewBookingRequestDTO {
+    return {
+      passengerId,
+      tripId: body.trip_id,
+      pickupPoint: TripMapper.toTripStop(body.pickup_point),
+      dropOffPoint: TripMapper.toTripStop(body.drop_off_point),
+      pickupPlaceId: body.pickup_place_id,
+      dropOffPlaceId: body.drop_off_place_id,
+      seatCount: body.seat_count,
+      distanceKm: body.distance_km,
+    };
+  }
+
+  static toDriverGetAllBookingsQueryDTO(
+    query: DriverGetBookingsQueryRequest,
+  ): DriverGetAllBookingsQueryDTO {
+    return {
+      bookingStatus: query.booking_status,
+      page: query.page,
+      limit: query.limit,
+    };
+  }
+
+  static toDriverGetAllBookingsResponse(
+    payload: PaginatedPayload<DriverGetAllBookingsResultDTO[]>,
+  ): PaginatedPayload<DriverBookingItemDTO[]> {
+    return {
+      data: payload.data.map((item) => ({
+        booking_id: item.bookingId,
+        passenger_name: item.passngerName,
+        trip_date:
+          item.tripDate instanceof Date
+            ? item.tripDate.toISOString()
+            : String(item.tripDate),
+        trip_vehicle: item.tripVehicle,
+        trip_origin: item.tripOrigin,
+        trip_destination: item.tripDestination,
+        pickup_point_name: item.pickupPointName,
+        pickup_point_address: item.pickupPointAddress,
+        drop_off_point_name: item.dropOffPointName,
+        drop_off_point_address: item.dropOffPointAddress,
+        booking_distance: item.bookingDistance,
+        seat_count: item.seatCount,
+        status: item.status,
+        total_price: item.totalPrice,
+      })),
+      paginationMeta: payload.paginationMeta,
+    };
+  }
+
+  static toDriverGetBookingDetailsResponse(
+    dto: GetBookingDetailsResultDTO,
+  ): DriverBookingDetailsDTO {
+    return {
+      booking_id: dto.bookingId,
+      passenger_name: dto.passngerName,
+      trip_date:
+        dto.tripDate instanceof Date
+          ? dto.tripDate.toISOString()
+          : String(dto.tripDate),
+      trip_vehicle: dto.tripVehicle,
+      trip_route: dto.tripRoute,
+      pickup_point: TripMapper.toTripStopDTO(dto.pickupPoint),
+      drop_off_point: TripMapper.toTripStopDTO(dto.dropOffPoint),
+      booking_distance: dto.bookingDistance,
+      seat_count: dto.seatCount,
+      status: dto.status,
+      total_price: dto.totalPrice,
+    };
+  }
+
+  static toPassengerGetAllBookingsQueryDTO(
+    query: PassengerGetBookingsQueryRequest,
+  ): PassengerGetAllBookingsQueryDTO {
+    return {
+      bookingStatus: query.booking_status,
+      page: query.page,
+      limit: query.limit,
+    };
+  }
+
+  static toPassengerGetAllBookingsResponse(
+    payload: PaginatedPayload<PassengerGetAllBookingsResultDTO[]>,
+  ): PaginatedPayload<PassengerBookingItemDTO[]> {
+    return {
+      data: payload.data.map((item) => ({
+        booking_id: item.bookingId,
+        driver_name: item.driverName,
+        trip_date:
+          item.tripDate instanceof Date
+            ? item.tripDate.toISOString()
+            : String(item.tripDate),
+        trip_vehicle: item.tripVehicle,
+        pickup_point_name: item.pickupPointName,
+        pickup_point_address: item.pickupPointAddress,
+        drop_off_point_name: item.dropOffPointName,
+        drop_off_point_address: item.dropOffPointAddress,
+        booking_distance: item.bookingDistance,
+        seat_count: item.seatCount,
+        status: item.status,
+        total_price: item.totalPrice,
+      })),
+      paginationMeta: payload.paginationMeta,
+    };
+  }
+
+  static toPassengerGetBookingDetailsResponse(
+    dto: GetPassengerBookingDetailsResultDTO,
+  ): PassengerBookingDetailsDTO {
+    return {
+      booking_id: dto.bookingId,
+      trip_id: dto.tripId,
+      driver_id: dto.driverId,
+      driver_name: dto.driverName,
+      trip_date:
+        dto.tripDate instanceof Date
+          ? dto.tripDate.toISOString()
+          : String(dto.tripDate),
+      trip_vehicle: dto.tripVehicle,
+      trip_vehicle_image: dto.tirpVehicleImage,
+      trip_route: dto.tripRoute,
+      pickup_point: TripMapper.toTripStopDTO(dto.pickupPoint),
+      drop_off_point: TripMapper.toTripStopDTO(dto.dropOffPoint),
+      booking_distance: dto.bookingDistance,
+      seat_count: dto.seatCount,
+      status: dto.status,
+      trip_status: dto.tripStatus,
+      total_price: dto.totalPrice,
+    };
+  }
+
+  static toPassengerBookingStatsResponse(
+    dto: PassengerBookingStatsResponseDTO,
+  ): PassengerBookingStatsResult {
+    return {
+      total_bookings: dto.totalBookings,
+      bookings_this_month: dto.bookingsThisMonth,
+    };
+  }
+
+  static toPassengerTodayTripResponse(
+    dto: PassengerTodayTripResponseDTO,
+  ): PassengerTodayTripResult {
+    return {
+      booking_id: dto.bookingId,
+      trip_id: dto.tripId,
+      driver_name: dto.driverName,
+      trip_start_time: dto.tripStartTime,
+      vehicle_name: dto.vehicleName,
+      pickup_point: TripMapper.toTripStopDTO(dto.pickupPoint),
+      drop_off_point: TripMapper.toTripStopDTO(dto.dropOffPoint),
+      seat_count: dto.seatCount,
+      total_price: dto.totalPrice,
+      status: dto.status,
+      trip_status: dto.tripStatus,
+    };
+  }
+}

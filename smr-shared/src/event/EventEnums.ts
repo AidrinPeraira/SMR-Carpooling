@@ -19,4 +19,11 @@ export enum EventName {
   TRIP_CANCELLED_BY_DRIVER = "trip.cancelled_by_driver",
   BOOKING_CANCELLED_BY_PASSENGER = "booking.cancelled_by_passenger",
   TRIP_NEW_TRIP = "trip.new_trip",
+
+  JOURNEY_STARTED = "journey.started",
+  JOURNEY_DRIVER_ARRIVED = "journey.driver_arrived",
+  JOURNEY_PASSENGER_PICKED_UP = "journey.passenger_picked_up",
+  JOURNEY_PASSENGER_DROPPED_OFF = "journey.passenger_dropped_off",
+  JOURNEY_PASSENGER_NO_SHOW = "journey.passenger_no_show",
+  JOURNEY_COMPLETED = "journey.completed",
 }

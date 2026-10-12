@@ -20,5 +20,11 @@ export function createAdminTripRouterV1(
     (req, res, next) => adminTripController.getTripDetails(req, res, next),
   );
 
+  router.get(
+    "/journey/:journeyId",
+    AuthMiddleware(UserRole.ADMIN),
+    (req, res, next) => adminTripController.getJourneyDetails(req, res, next),
+  );
+
   return router;
 }

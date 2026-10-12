@@ -97,6 +97,7 @@ export class EventBus implements IEventBus {
         EventName.AUTH_USER_SIGNUP,
         EventName.BOOKING_CANCELLED_BY_PASSENGER,
         EventName.TRIP_CANCELLED_BY_DRIVER,
+        EventName.JOURNEY_PASSENGER_DROPPED_OFF,
       ]);
 
       this._logger.info("RabbitMQ initialised successfully");

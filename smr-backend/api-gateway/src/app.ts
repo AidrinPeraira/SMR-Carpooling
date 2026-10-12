@@ -86,6 +86,7 @@ export function createApp(logger: ILogger) {
       "/api/*/driver/**",
       "/api/*/vehicles/**",
       "/api/*/trips/**",
+      "/api/*/journey/**",
       "/api/*/bookings/**",
       "/api/*/webhook/trips/**",
     ],
@@ -113,6 +114,7 @@ export function createApp(logger: ILogger) {
     changeOrigin: true,
     pathFilter: [
       "/api/*/payments/**",
+      "/api/*/payouts/**",
       "/api/*/admin/transactions/**",
       "/api/*/wallet/**",
       "/api/*/webhook/payments/**",
@@ -135,11 +137,14 @@ export function createApp(logger: ILogger) {
     },
   });
 
-  const communicationServiceProxy = createProxyMiddleware<Request, Response>({
-    target: AppConfig.COMMUNICATION_SERVICE_URL,
+  const realtimeServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.REALTIME_SERVICE_URL,
     changeOrigin: true,
     ws: true,
-    pathFilter: ["/socket.io/**"],
+    pathFilter: ["/socket.io/**", "/api/*/chat/**"],
+    pathRewrite: {
+      "^/api": "",
+    },
     on: {
       proxyReq: (proxyReq, req) => {
         proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
@@ -149,11 +154,11 @@ export function createApp(logger: ILogger) {
         proxyReqWs.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
       },
       error: (error: unknown, _req, res) => {
-        logger.error("Communication service proxy error: ", error);
+        logger.error("Realtime service proxy error: ", error);
         if ("status" in res) {
           res
             .status(HttpStatusCodes.BadGateway)
-            .json(makeFailedResponse("Communication service is unavailable"));
+            .json(makeFailedResponse("Realtime service is unavailable"));
         }
       },
     },
@@ -162,7 +167,7 @@ export function createApp(logger: ILogger) {
   app.use(userServiceProxy);
   app.use(tripServiceProxy);
   app.use(paymentServiceProxy);
-  app.use(communicationServiceProxy);
+  app.use(realtimeServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

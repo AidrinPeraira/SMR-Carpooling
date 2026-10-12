@@ -1,5 +1,8 @@
 import { ITransactionRepository } from "#/application/interfaces/repository/ITransactionRepository";
-import { AdminListTransactionsQueryDTO, AdminListTransactionsResultDTO } from "#/application/dto/admin/AdminPaymentsDTO";
+import {
+  AdminListTransactionsQueryDTO,
+  AdminListTransactionsResultDTO,
+} from "#/application/dto/admin/AdminPaymentsDTO";
 import { TransactionEntity } from "#/domain/entities/TransactionEntity";
 import {
   TransactionDoc,
@@ -9,6 +12,7 @@ import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseReposi
 import {
   PaginatedPayload,
   SortOrder,
+  TransactionCategory,
 } from "@sharemyride/shared";
 
 export class MongoTransactionRepository
@@ -49,14 +53,17 @@ export class MongoTransactionRepository
     if (query.search && query.searchFields && query.searchFields.length > 0) {
       const searchConditions: any[] = [];
       const hasCustomerField =
-        query.searchFields.includes("creditor" as keyof AdminListTransactionsResultDTO) ||
-        query.searchFields.includes("debitor" as keyof AdminListTransactionsResultDTO);
+        query.searchFields.includes(
+          "creditor" as keyof AdminListTransactionsResultDTO,
+        ) ||
+        query.searchFields.includes(
+          "debitor" as keyof AdminListTransactionsResultDTO,
+        );
 
       let matchingCustomerIds: string[] = [];
       if (hasCustomerField) {
-        const { CustomerModel } = await import(
-          "#/infrastructure/database/models/MongoCustomerModel"
-        );
+        const { CustomerModel } =
+          await import("#/infrastructure/database/models/MongoCustomerModel");
         const matchingCustomers = await CustomerModel.find({
           $or: [
             { firstName: { $regex: query.search, $options: "i" } },
@@ -70,17 +77,24 @@ export class MongoTransactionRepository
       }
 
       for (const field of query.searchFields) {
-        if ((field as string) === "creditor" || (field as string) === "debitor") {
+        if (
+          (field as string) === "creditor" ||
+          (field as string) === "debitor"
+        ) {
           // Search by name match (resolved to IDs) or by direct ID match
           const orConditionsForField: any[] = [
             { [field]: { $regex: query.search, $options: "i" } },
           ];
           if (matchingCustomerIds.length > 0) {
-            orConditionsForField.push({ [field]: { $in: matchingCustomerIds } });
+            orConditionsForField.push({
+              [field]: { $in: matchingCustomerIds },
+            });
           }
           searchConditions.push({ $or: orConditionsForField });
         } else {
-          searchConditions.push({ [field]: { $regex: query.search, $options: "i" } });
+          searchConditions.push({
+            [field]: { $regex: query.search, $options: "i" },
+          });
         }
       }
 
@@ -97,7 +111,8 @@ export class MongoTransactionRepository
 
     if (query.sortField && query.sortValue) {
       mongoCursor.sort({
-        [query.sortField.toString()]: query.sortValue === SortOrder.ASC ? 1 : -1,
+        [query.sortField.toString()]:
+          query.sortValue === SortOrder.ASC ? 1 : -1,
       });
     } else {
       // Default: most recent first
@@ -114,21 +129,26 @@ export class MongoTransactionRepository
 
     // Extract unique customer IDs
     const uniqueCustomerIds = new Set<string>();
-    docs.forEach(doc => {
-      if (doc.creditor && doc.creditor !== "SYSTEM") uniqueCustomerIds.add(doc.creditor);
-      if (doc.debitor && doc.debitor !== "SYSTEM") uniqueCustomerIds.add(doc.debitor);
+    docs.forEach((doc) => {
+      if (doc.creditor && doc.creditor !== "SYSTEM")
+        uniqueCustomerIds.add(doc.creditor);
+      if (doc.debitor && doc.debitor !== "SYSTEM")
+        uniqueCustomerIds.add(doc.debitor);
     });
 
     // We can require the model here or at top. It's safer to import at top. Let's assume it's imported.
-    const { CustomerModel } = await import("#/infrastructure/database/models/MongoCustomerModel");
-    
+    const { CustomerModel } =
+      await import("#/infrastructure/database/models/MongoCustomerModel");
+
     // Fetch names
     const customers = await CustomerModel.find({
-      customerId: { $in: Array.from(uniqueCustomerIds) }
-    }).lean().exec();
+      customerId: { $in: Array.from(uniqueCustomerIds) },
+    })
+      .lean()
+      .exec();
 
     const customerMap = new Map<string, string>();
-    customers.forEach(c => {
+    customers.forEach((c) => {
       customerMap.set(c.customerId, `${c.firstName} ${c.lastName}`.trim());
     });
 
@@ -137,9 +157,15 @@ export class MongoTransactionRepository
       transactionDate: doc.createdAt,
       transactionAmount: doc.amount,
       creditorId: doc.creditor === "SYSTEM" ? null : doc.creditor,
-      creditorName: doc.creditor === "SYSTEM" ? "SYSTEM" : (customerMap.get(doc.creditor) || doc.creditor),
+      creditorName:
+        doc.creditor === "SYSTEM"
+          ? "SYSTEM"
+          : customerMap.get(doc.creditor) || doc.creditor,
       debitorId: doc.debitor === "SYSTEM" ? null : doc.debitor,
-      debitorName: doc.debitor === "SYSTEM" ? "SYSTEM" : (customerMap.get(doc.debitor) || doc.debitor),
+      debitorName:
+        doc.debitor === "SYSTEM"
+          ? "SYSTEM"
+          : customerMap.get(doc.debitor) || doc.debitor,
       paymentMethod: doc.paymentMethod,
       transactionType: doc.transactionType,
       transactionCategory: doc.transactionCategory,
@@ -156,5 +182,23 @@ export class MongoTransactionRepository
       },
     };
   }
-}
 
+  async getCustomerEarnings(customerId: string): Promise<number> {
+    const result = await TransactionModel.aggregate([
+      {
+        $match: {
+          creditor: customerId,
+          transactionCategory: TransactionCategory.PAYOUT,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" },
+        },
+      },
+    ]).exec();
+
+    return result.length > 0 ? result[0].total : 0;
+  }
+}

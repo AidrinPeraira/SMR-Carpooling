@@ -31,8 +31,8 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
         placeholder="Type a message..."
         className="flex-1 bg-surface-base rounded-full px-4 border-border-subtle focus-visible:ring-1 focus-visible:ring-accent"
       />
-      <Button 
-        onClick={handleSend} 
+      <Button
+        onClick={handleSend}
         disabled={!message.trim()}
         className="rounded-full w-10 h-10 p-0 flex items-center justify-center bg-accent text-surface-base hover:opacity-90 transition-opacity"
       >

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { IGetDriverVehiclesUseCase } from "#/application/interfaces/use-case/vehicle/IGetDriverVehiclesUseCase";
 import { IVehicleControllerV1 } from "#/presentation/v1/interfaces/IVehicleControllerV1";
-import { VehicleMapper } from "#/presentation/v1/mapper/VehicleMapper";
+import { VehicleMapper } from "#/application/mapper/VehicleMapper";
 import {
   HttpStatusCodes,
   ILogger,

@@ -18,6 +18,10 @@ export function createPaymentRouterV1(
     "/booking/wallet",
     paymentController.payBookingWithWallet.bind(paymentController),
   );
+  router.get(
+    "/earnings",
+    paymentController.getCustomerEarnings.bind(paymentController),
+  );
 
   return router;
 }

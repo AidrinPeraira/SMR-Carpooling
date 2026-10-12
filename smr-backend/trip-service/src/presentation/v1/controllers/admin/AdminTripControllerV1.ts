@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from "express";
+import { IAdminGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/admin/journey/IAdminGetJourneyDetailsUseCase";
 import { IAdminListAllTripsUseCase } from "#/application/interfaces/use-case/admin/trip/IAdminListAllTripsUseCase";
 import { IAdminGetTripDetailsUseCase } from "#/application/interfaces/use-case/admin/trip/IAdminGetTripDetailsUseCase";
 import { IAdminTripControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminTripControllerV1";
-import { AdminTripMapper } from "#/presentation/v1/mapper/admin/AdminTripMapper";
+import { AdminTripMapper } from "#/application/mapper/admin/AdminTripMapper";
+import { JourneyMapper } from "#/application/mapper/JourneyMapper";
 import {
   GenericSuccessMessage,
   HttpStatusCodes,
@@ -17,6 +19,7 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
     private readonly _logger: ILogger,
     private readonly _adminListAllTripsUseCase: IAdminListAllTripsUseCase,
     private readonly _adminGetTripDetailsUseCase: IAdminGetTripDetailsUseCase,
+    private readonly _adminGetJourneyDetailsUseCase: IAdminGetJourneyDetailsUseCase,
   ) {}
 
   @Trace("admin-Trip-module")
@@ -90,6 +93,36 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
 
       const details = await this._adminGetTripDetailsUseCase.execute(tripId);
       const response = AdminTripMapper.toAdminTripDetailsResponse(details);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            GenericSuccessMessage.OPERATION_SUCCESSFUL,
+            response,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("admin-Trip-module")
+  async getJourneyDetails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const journeyId = req.params.journeyId as string;
+
+      this._logger.info("Admin fetching journey details for journeyId:", {
+        journeyId,
+      });
+
+      const details =
+        await this._adminGetJourneyDetailsUseCase.execute(journeyId);
+      const response = JourneyMapper.toAdminJourneyDetailsResult(details);
 
       res
         .status(HttpStatusCodes.Ok)

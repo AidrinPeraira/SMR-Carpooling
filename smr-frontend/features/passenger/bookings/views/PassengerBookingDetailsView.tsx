@@ -355,6 +355,7 @@ export function PassengerBookingDetailsView({
               driverId={booking.driver_id}
               amount={booking.total_price}
               status={booking.status}
+              tripStatus={booking.trip_status}
               onWithdraw={handleWithdraw}
               isWithdrawing={isWithdrawing}
               onCancel={handleCancel}

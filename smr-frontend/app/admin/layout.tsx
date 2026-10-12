@@ -11,6 +11,7 @@ import {
   BookmarkCheck,
   Settings,
   BadgeIndianRupee,
+  Banknote,
 } from "lucide-react";
 import { logoutUserAction } from "@/features/auth/api/actions/LogoutUserAction";
 import { useToast } from "@sharemyride/ui";
@@ -79,6 +80,11 @@ export default function AdminLayout({ children }: Props) {
           name: "Transactions",
           href: "/admin/transactions",
           icon: <BadgeIndianRupee className="w-4 h-4" />,
+        },
+        {
+          name: "Payouts",
+          href: "/admin/payouts",
+          icon: <Banknote className="w-4 h-4" />,
         },
       ],
     },

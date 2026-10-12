@@ -14,3 +14,7 @@ export interface GetWalletTransactionsResult {
   wallet_balance: number;
   transactions: PaginatedPayload<WalletTransactionItemDTO[]>;
 }
+
+export interface CustomerEarningsResult {
+  total_earnings: number;
+}

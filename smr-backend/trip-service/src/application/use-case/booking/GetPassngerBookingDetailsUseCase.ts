@@ -92,6 +92,7 @@ export class GetPassengerBookingDetailsUseCase
       bookingDistance: booking.distanceKm,
       seatCount: booking.seatCount,
       status: booking.status,
+      tripStatus: trip.tripStatus,
       totalPrice: booking.totalPrice,
     };
   }

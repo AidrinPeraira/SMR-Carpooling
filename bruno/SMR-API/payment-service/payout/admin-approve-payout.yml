@@ -1,0 +1,37 @@
+info:
+  name: admin-approve-payout
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: http://localhost:4000/v1/payouts/admin/:payoutId/approve
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  params:
+    - name: payoutId
+      value: ""
+      type: path
+  auth: inherit
+
+docs: |
+  ## Admin — Approve Payout
+
+  Approves a pending payout. Creates a ledger transaction, credits the
+  driver's wallet with the payable amount, and updates the payout status
+  to `approved`.
+
+  ### Path Parameters
+
+  | Parameter  | Type   | Required | Description          |
+  |------------|--------|----------|----------------------|
+  | `payoutId` | string | Yes      | The payout record ID |
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
