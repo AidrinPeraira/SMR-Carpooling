@@ -136,15 +136,42 @@ export class JourneyRepository implements IJourneyRepository {
     const journey = await this._journeyModel.findUnique({
       where: { journeyId },
       include: {
-        passengers: true,
+        passengers: {
+          include: { booking: true },
+        },
         stops: true,
       },
     });
 
     if (!journey) return null;
 
+    const stopPlaceMap = new Map<string, string>();
+    const placeIds: string[] = [];
+    for (const p of journey.passengers) {
+      stopPlaceMap.set(`${p.passengerId}:pickup`, p.booking.pickupPlaceId);
+      stopPlaceMap.set(`${p.passengerId}:dropoff`, p.booking.dropOffPlaceId);
+      placeIds.push(p.booking.pickupPlaceId, p.booking.dropOffPlaceId);
+    }
+
+    const tripPlaces = await prisma.tripPlaces.findMany({
+      where: { tripId: journeyId, placeIndex: { in: placeIds } },
+    });
+
+    const placeSeqMap = new Map<string, number>();
+    for (const tp of tripPlaces) {
+      placeSeqMap.set(tp.placeIndex, tp.seqNumber);
+    }
+
+    const sortedStops = [...journey.stops].sort((a, b) => {
+      const aPlaceId = stopPlaceMap.get(`${a.passengerId}:${a.stopType}`);
+      const bPlaceId = stopPlaceMap.get(`${b.passengerId}:${b.stopType}`);
+      const aSeq = aPlaceId ? (placeSeqMap.get(aPlaceId) ?? 0) : 0;
+      const bSeq = bPlaceId ? (placeSeqMap.get(bPlaceId) ?? 0) : 0;
+      return aSeq - bSeq;
+    });
+
     return {
-      journey: this._toJourneyEntity(journey, journey.stops),
+      journey: this._toJourneyEntity(journey, sortedStops),
       journeyPassengers: journey.passengers.map(this._toPassengerEntity),
     };
   }
