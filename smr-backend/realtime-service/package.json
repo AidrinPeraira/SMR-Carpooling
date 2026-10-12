@@ -26,7 +26,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@sharemyride/shared": "^0.1.0",
+    "@sharemyride/shared": "^0.2.0",
     "@socket.io/redis-adapter": "^8.3.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
