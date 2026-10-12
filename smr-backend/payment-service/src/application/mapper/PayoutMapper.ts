@@ -24,7 +24,7 @@ export class PayoutMapper {
   ): PaginatedPayload<PayoutItemDTO[]> {
     return {
       paginationMeta: payload.paginationMeta,
-      data: payload.data.map(PayoutMapper.toPayoutItem),
+      data: payload.data.map((item) => PayoutMapper.toPayoutItem(item)),
     };
   }
 }

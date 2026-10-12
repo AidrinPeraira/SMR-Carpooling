@@ -15,9 +15,6 @@ import {
   InitiateCallConfirmationPayload,
   AcceptCallCallerPayload,
   AcceptCallReceiverPayload,
-  RejectCallPayload,
-  CallTimeoutPayload,
-  EndCallPayload,
   RelayCallSignalPayload,
 } from "@sharemyride/shared";
 
@@ -221,21 +218,21 @@ export function VoiceCallProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    const onCallRejected = (_data: RejectCallPayload) => {
+    const onCallRejected = () => {
       showNotification("rejected", "Call was declined");
       cleanup();
     };
 
-    const onCallNoAnswer = (_data: CallTimeoutPayload) => {
+    const onCallNoAnswer = () => {
       showNotification("error", "No answer");
       cleanup();
     };
 
-    const onCallMissed = (_data: CallTimeoutPayload) => {
+    const onCallMissed = () => {
       cleanup();
     };
 
-    const onCallEnded = (_data: EndCallPayload) => {
+    const onCallEnded = () => {
       cleanup();
     };
 

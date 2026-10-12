@@ -93,7 +93,7 @@ export default function AdminPayoutsView() {
   }, [searchValue, filterField, filterValue, sortField, sortValue, page, limit]);
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["allPayouts", queryParams],
+    queryKey: ["allPayouts", queryParams, searchValue],
     queryFn: async () => {
       return await getAllPayoutsRequest(
         queryParams,

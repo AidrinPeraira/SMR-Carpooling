@@ -33,7 +33,9 @@ export function TripChatView() {
 
   const chatSocket = useChatSocket();
   const chatDataRef = useRef(chatData);
-  chatDataRef.current = chatData;
+  useEffect(() => {
+    chatDataRef.current = chatData;
+  }, [chatData]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);

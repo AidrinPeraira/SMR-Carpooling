@@ -86,7 +86,7 @@ export class JourneyRepository implements IJourneyRepository {
         result.createdJourney,
         result.createdStops,
       ),
-      journeyPassengers: result.createdPassengers.map(this._toPassengerEntity),
+      journeyPassengers: result.createdPassengers.map((p) => this._toPassengerEntity(p)),
     };
   }
 
@@ -172,7 +172,7 @@ export class JourneyRepository implements IJourneyRepository {
 
     return {
       journey: this._toJourneyEntity(journey, sortedStops),
-      journeyPassengers: journey.passengers.map(this._toPassengerEntity),
+      journeyPassengers: journey.passengers.map((p: any) => this._toPassengerEntity(p)),
     };
   }
 
@@ -317,8 +317,8 @@ export class JourneyRepository implements IJourneyRepository {
     return {
       journeyId: journey.journeyId,
       driverId: journey.driverId,
-      origin: journey.origin as unknown as TripStop,
-      destination: journey.destination as unknown as TripStop,
+      origin: journey.origin as TripStop,
+      destination: journey.destination as TripStop,
       intermediateStops,
       journeyStatus: journey.journeyStatus as JourneyStatus,
       createdAt: journey.createdAt,
@@ -334,8 +334,8 @@ export class JourneyRepository implements IJourneyRepository {
       journeyId: record.journeyId,
       bookingId: record.bookingId,
       passengerStatus: record.passengerStatus as PassengerJourneyStatus,
-      pickupLocation: record.pickupLocation as unknown as TripStop,
-      dropOffLocation: record.dropOffLocation as unknown as TripStop,
+      pickupLocation: record.pickupLocation as TripStop,
+      dropOffLocation: record.dropOffLocation as TripStop,
       pickupOTP: record.pickupOTP,
       pickupTime: record.pickupTime,
       dropoffTime: record.dropoffTime,

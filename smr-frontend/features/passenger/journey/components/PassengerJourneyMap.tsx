@@ -67,7 +67,7 @@ export function PassengerJourneyMap({
     }
 
     setupMap();
-  }, [map]);
+  }, [map, journey]);
 
   const driverMarkerAdded = useRef(false);
 

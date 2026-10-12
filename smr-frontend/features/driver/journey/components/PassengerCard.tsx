@@ -16,7 +16,6 @@ interface PassengerCardProps {
 
 export function PassengerCard({
   journeyId,
-  journeyStatus,
   passenger,
 }: PassengerCardProps) {
   const initials = passenger.passenger_name

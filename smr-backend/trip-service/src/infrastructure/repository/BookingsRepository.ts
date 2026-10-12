@@ -544,7 +544,7 @@ export class BookingsRepository implements IBookingRepository {
         : "Driver",
       tripStartTime:
         trip?.startTime instanceof Date
-          ? trip.startTime.toISOString()
+          ? (trip.startTime as Date).toISOString()
           : String(trip?.startTime),
       vehicleName: vehicle
         ? `${vehicle.vehicleMake} ${vehicle.vehicleModel}`.trim()

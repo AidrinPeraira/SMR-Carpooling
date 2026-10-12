@@ -1,7 +1,7 @@
 "use client";
 
 import { Tag } from "@sharemyride/ui";
-import { Clock, Route, Users } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 import { JourneyStatus, TripStopDTO } from "@sharemyride/shared";
 
 interface NavigationDrawerHeaderProps {
