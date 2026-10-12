@@ -47,6 +47,8 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
     );
   }
 
+  console.log("[DriverJourney] intermediate_stops:", JSON.stringify(journey?.intermediate_stops, null, 2));
+
   if (isError || !journey) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">

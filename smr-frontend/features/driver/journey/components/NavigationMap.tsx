@@ -41,12 +41,24 @@ export function NavigationMap({
   const map = useMap();
 
   const waypoints: MapPoint[] = useMemo(() => {
-    const points: MapPoint[] = [
+    const nextStopIndex = intermediateStops.findIndex(
+      (s) => s.arrived_at === null,
+    );
+
+    const remainingStops =
+      nextStopIndex === -1
+        ? []
+        : intermediateStops
+            .slice(nextStopIndex)
+            .map((s) => [s.stop_lng, s.stop_lat] as MapPoint);
+
+    const result: MapPoint[] = [
       [origin.stop_lng, origin.stop_lat],
-      ...intermediateStops.map((s) => [s.stop_lng, s.stop_lat] as MapPoint),
+      ...remainingStops,
       [destination.stop_lng, destination.stop_lat],
     ];
-    return points;
+    console.log("[NavigationMap] nextStopIndex:", nextStopIndex, "nextStop:", intermediateStops[nextStopIndex]?.stop_name, "waypoints:", result);
+    return result;
   }, [origin, intermediateStops, destination]);
 
   const handleLocationChange = useCallback(
