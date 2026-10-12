@@ -23,6 +23,7 @@ export enum JourneyErrorMessage {
   DRIVER_NOT_IN_RANGE = "Driver is not within the required range of the stop.",
   STOP_NOT_FOUND = "The specified stop was not found in this journey.",
   INVALID_PICKUP_OTP = "The pickup OTP provided is invalid.",
+  PICKUP_OTP_NOT_VALIDATED = "The driver has not validated the pickup OTP.",
   PASSENGER_NOT_BOARDED = "Passenger has not been picked up yet.",
   PASSENGER_ALREADY_DROPPED_OFF = "Passenger has already been dropped off.",
   PASSENGER_ALREADY_PICKED_UP = "Passenger has already been picked up.",

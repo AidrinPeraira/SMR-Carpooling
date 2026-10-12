@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getDriverJourneyDetailsRequest } from "@/features/driver/journey/api/getDriverJourneyDetailsRequest";
 import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
 import { NavigationDrawer } from "@/features/driver/journey/components/NavigationDrawer";
@@ -17,6 +17,7 @@ interface DriverJourneyViewProps {
 }
 
 export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
+  const queryClient = useQueryClient();
   const journeySocket = useLiveLocationSocket();
 
   useEffect(() => {
@@ -46,8 +47,6 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
       </div>
     );
   }
-
-  console.log("[DriverJourney] intermediate_stops:", JSON.stringify(journey?.intermediate_stops, null, 2));
 
   if (isError || !journey) {
     return (
@@ -81,7 +80,11 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
         destination={journey.destination}
         passengers={journey.passengers}
         intermediateStops={journey.intermediate_stops}
-        onStartNavigation={() => {}}
+        onStartNavigation={() => {
+          queryClient.invalidateQueries({
+            queryKey: ["driverJourneyDetails", journeyId],
+          });
+        }}
       />
     </div>
   );

@@ -55,8 +55,6 @@ export function PassengerJourneyView() {
     );
   }
 
-  console.log("[PassengerJourney] intermediate_stops:", JSON.stringify(journey?.intermediate_stops, null, 2));
-
   if (isError) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-7xl">

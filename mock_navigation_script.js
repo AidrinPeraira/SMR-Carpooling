@@ -15,7 +15,7 @@ function setPath(p) {
   i = 0; // Reset index when setting a new path
 }
 
-function moveTo(lng, lat) {
+function moveTo(lat, lng) {
   // Craft the full object the browser usually returns
   let position = {
     coords: {
@@ -38,7 +38,7 @@ function startTraveling() {
     }
 
     // Call moveTo so the position object is crafted correctly
-    moveTo(path[i][0], path[i][1]);
+    moveTo(path[i][1], path[i][0]);
     i++;
   }, 1000); // 1-second interval
 }

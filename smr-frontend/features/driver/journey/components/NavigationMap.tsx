@@ -57,7 +57,6 @@ export function NavigationMap({
       ...remainingStops,
       [destination.stop_lng, destination.stop_lat],
     ];
-    console.log("[NavigationMap] nextStopIndex:", nextStopIndex, "nextStop:", intermediateStops[nextStopIndex]?.stop_name, "waypoints:", result);
     return result;
   }, [origin, intermediateStops, destination]);
 

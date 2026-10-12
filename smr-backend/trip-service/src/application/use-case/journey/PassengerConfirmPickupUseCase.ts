@@ -91,7 +91,7 @@ export class PassengerConfirmPickupUseCase implements IPassengerConfirmPickupUse
 
     if (!passenger.pickupVerified) {
       throw new ApplicationError(
-        JourneyErrorMessage.INVALID_PICKUP_OTP,
+        JourneyErrorMessage.PICKUP_OTP_NOT_VALIDATED,
         HttpStatusCodes.BadRequest,
         ErrorCode.DOMAIN_CONFLICT,
         ErrorDetails.DOMAIN_CONFLICT,
