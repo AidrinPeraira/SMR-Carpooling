@@ -92,3 +92,39 @@ export interface GetShareTokenRequest {
 export interface GetShareTokenResponse {
   share_token: string;
 }
+
+export interface DriverArrivedRequest {
+  journey_id: string;
+  passenger_id: string;
+  stop_type: string;
+  arrived_lat: number;
+  arrived_lng: number;
+}
+
+export interface DriverVerifyPickupRequest {
+  journey_id: string;
+  passenger_id: string;
+  pickup_otp: string;
+}
+
+export interface PassengerConfirmPickupRequest {
+  journey_id: string;
+}
+
+export interface DriverDropOffPassengerRequest {
+  journey_id: string;
+  passenger_id: string;
+  drop_off_lat: number;
+  drop_off_lng: number;
+}
+
+export interface PassengerConfirmDropOffRequest {
+  journey_id: string;
+  drop_off_lat: number;
+  drop_off_lng: number;
+}
+
+export interface PassengerNoShowRequest {
+  journey_id: string;
+  passenger_id: string;
+}

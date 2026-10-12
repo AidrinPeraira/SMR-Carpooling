@@ -1,4 +1,4 @@
-import { JourneyEntity } from "#/domain/entities/JourneyEntity";
+import { JourneyEntity, JourneyStop } from "#/domain/entities/JourneyEntity";
 import { JourneyPassengerEntity } from "#/domain/entities/JourneyPassenger";
 
 /**
@@ -38,4 +38,16 @@ export interface IJourneyRepository {
     passengerId: string,
     journeyPassenger: Partial<JourneyPassengerEntity>,
   ): Promise<JourneyPassengerEntity>;
+
+  findJourneyPassenger(
+    journeyId: string,
+    passengerId: string,
+  ): Promise<JourneyPassengerEntity | null>;
+
+  updateJourneyStop(
+    journeyId: string,
+    passengerId: string,
+    stopType: string,
+    stop: Partial<JourneyStop>,
+  ): Promise<void>;
 }

@@ -93,11 +93,18 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 
 **Base Path:** `/api/v1/journey`
 
-| Method | Endpoint                | Description                                    | Auth Required    |
-| :----- | :---------------------- | :--------------------------------------------- | :--------------- |
-| `POST` | `/:tripId/start`        | Start a journey for a scheduled trip.          | Yes (Driver)     |
-| `GET`  | `/:journeyId/driver`    | Get journey details for the driver.            | Yes (Driver)     |
-| `GET`  | `/:journeyId/passenger` | Get journey details for the passenger.         | Yes (Passenger)  |
+| Method  | Endpoint                       | Description                                    | Auth Required    |
+| :------ | :----------------------------- | :--------------------------------------------- | :--------------- |
+| `POST`  | `/:tripId/start`               | Start a journey for a scheduled trip.          | Yes (Driver)     |
+| `GET`   | `/:journeyId/driver`           | Get journey details for the driver.            | Yes (Driver)     |
+| `GET`   | `/:journeyId/passenger`        | Get journey details for the passenger.         | Yes (Passenger)  |
+| `POST`  | `/driver/arrived`              | Record driver arrival at a stop.               | Yes (Driver)     |
+| `POST`  | `/driver/verify-pickup`        | Verify passenger pickup OTP.                   | Yes (Driver)     |
+| `POST`  | `/passenger/confirm-pickup`    | Confirm passenger pickup after OTP.            | Yes (Passenger)  |
+| `POST`  | `/driver/drop-off`             | Drop off a passenger at their stop.            | Yes (Driver)     |
+| `POST`  | `/passenger/confirm-drop-off`  | Confirm passenger drop-off.                    | Yes (Passenger)  |
+| `POST`  | `/driver/no-show`              | Mark a passenger as no-show.                   | Yes (Driver)     |
+| `PATCH` | `/:journeyId/complete`         | Complete the journey.                          | Yes (Driver)     |
 
 ### Bookings
 

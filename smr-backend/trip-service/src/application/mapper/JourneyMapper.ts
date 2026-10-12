@@ -1,9 +1,21 @@
+import { DriverArrivedRequestDTO } from "#/application/dto/journey/DriverArrivedDTO";
+import { DriverVerifyPickupRequestDTO } from "#/application/dto/journey/DriverVerifyPickupDTO";
+import { DropOffRequestDTO } from "#/application/dto/journey/DropOffDTO";
 import { GetDriverJourneyDetailsResponseDTO } from "#/application/dto/journey/GetDriverJourneyDetailsResponseDTO";
 import { GetPassengerJourneyDetailsResponseDTO } from "#/application/dto/journey/GetPassengerJourneyDetailsDTO";
+import { PassengerConfirmPickupRequestDTO } from "#/application/dto/journey/PassengerConfirmPickupDTO";
+import { PassengerNoShowRequestDTO } from "#/application/dto/journey/PassengerNoShowDTO";
 import { TripMapper } from "./TripMapper";
 import {
+  DriverArrivedRequest,
+  DriverDropOffPassengerRequest,
+  DriverVerifyPickupRequest,
   GetDriverJourneyDetailsResult,
   GetPassengerJourneyDetailsResult,
+  PassengerConfirmDropOffRequest,
+  PassengerConfirmPickupRequest,
+  PassengerNoShowRequest,
+  StopType,
 } from "@sharemyride/shared";
 
 export class JourneyMapper {
@@ -62,6 +74,73 @@ export class JourneyMapper {
         pickup_location: TripMapper.toTripStopDTO(p.pickupLocation),
         drop_off_location: TripMapper.toTripStopDTO(p.dropOffLocation),
       })),
+    };
+  }
+
+  static toDriverArrivedDTO(
+    body: DriverArrivedRequest,
+  ): DriverArrivedRequestDTO {
+    return {
+      journeyId: body.journey_id,
+      passengerId: body.passenger_id,
+      stopType: body.stop_type as StopType,
+      arrivedLat: body.arrived_lat,
+      arrivedLng: body.arrived_lng,
+      arrivedTime: new Date(),
+    };
+  }
+
+  static toDriverVerifyPickupDTO(
+    body: DriverVerifyPickupRequest,
+  ): DriverVerifyPickupRequestDTO {
+    return {
+      journeyId: body.journey_id,
+      passengerId: body.passenger_id,
+      pickupOtp: body.pickup_otp,
+    };
+  }
+
+  static toPassengerConfirmPickupDTO(
+    body: PassengerConfirmPickupRequest,
+  ): PassengerConfirmPickupRequestDTO {
+    return {
+      journeyId: body.journey_id,
+      pickupTime: new Date().toISOString(),
+    };
+  }
+
+  static toDriverDropOffDTO(
+    body: DriverDropOffPassengerRequest,
+  ): DropOffRequestDTO {
+    return {
+      journeyId: body.journey_id,
+      passengerId: body.passenger_id,
+      dropOffLat: body.drop_off_lat,
+      dropOffLng: body.drop_off_lng,
+      dropOffTime: new Date(),
+    };
+  }
+
+  static toPassengerConfirmDropOffDTO(
+    body: PassengerConfirmDropOffRequest,
+    passengerId: string,
+  ): DropOffRequestDTO {
+    return {
+      journeyId: body.journey_id,
+      passengerId,
+      dropOffLat: body.drop_off_lat,
+      dropOffLng: body.drop_off_lng,
+      dropOffTime: new Date(),
+    };
+  }
+
+  static toPassengerNoShowDTO(
+    body: PassengerNoShowRequest,
+  ): PassengerNoShowRequestDTO {
+    return {
+      journeyId: body.journey_id,
+      passengerId: body.passenger_id,
+      currentTime: new Date().toISOString(),
     };
   }
 }

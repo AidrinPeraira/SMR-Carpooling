@@ -383,6 +383,13 @@ import { GetDriverTodayTripUseCase } from "#/application/use-case/trip/GetDriver
 import { StartTripJourneyUseCas } from "#/application/use-case/journey/StartTripJourneyUseCase";
 import { GetDriverJourneyDetailsUseCase } from "#/application/use-case/journey/GetDriverJourneyDetailsUseCase";
 import { GetPassengerJourneyDetailsUseCase } from "#/application/use-case/journey/GetPassengerJourneyDetailsUseCase";
+import { DriverArrivedUseCase } from "#/application/use-case/journey/DriverArrivedUseCase";
+import { DriverVerifyPickupUseCase } from "#/application/use-case/journey/DriverVerifyPickupUseCase";
+import { PassengerConfirmPickupUseCase } from "#/application/use-case/journey/PassengerConfirmPickupUseCase";
+import { DriverDropOffPassengerUseCase } from "#/application/use-case/journey/DriverDropOffPassengerUseCase";
+import { PassengerConfirmDropOffUseCase } from "#/application/use-case/journey/PassengerConfirmDropOffUseCase";
+import { PassengerNoShowUseCase } from "#/application/use-case/journey/PassengerNoShowUseCase";
+import { DriverCompleteJourneyUseCase } from "#/application/use-case/journey/DriverCompleteJourneyUseCase";
 import { JourneyRepository } from "#/infrastructure/repository/JourneyRepository";
 import { JourneyControllerV1 } from "#/presentation/v1/controllers/journey/JourneyControllerV1";
 import { createJourneyRouterV1 } from "#/presentation/v1/routes/journey/JourneyRouterV1";
@@ -398,6 +405,36 @@ const getDriverJourneyDetailsUseCase = new GetDriverJourneyDetailsUseCase(
 );
 const getPassengerJourneyDetailsUseCase = new GetPassengerJourneyDetailsUseCase(
   journeyRepository,
+);
+const driverArrivedUseCase = new DriverArrivedUseCase(
+  journeyRepository,
+  eventBusInstance,
+);
+const driverVerifyPickupUseCase = new DriverVerifyPickupUseCase(
+  journeyRepository,
+);
+const passengerConfirmPickupUseCase = new PassengerConfirmPickupUseCase(
+  journeyRepository,
+  eventBusInstance,
+);
+const driverDropOffPassengerUseCase = new DriverDropOffPassengerUseCase(
+  journeyRepository,
+  bookingsRepository,
+  eventBusInstance,
+);
+const passengerConfirmDropOffUseCase = new PassengerConfirmDropOffUseCase(
+  journeyRepository,
+  bookingsRepository,
+  eventBusInstance,
+);
+const passengerNoShowUseCase = new PassengerNoShowUseCase(
+  journeyRepository,
+  eventBusInstance,
+);
+const driverCompleteJourneyUseCase = new DriverCompleteJourneyUseCase(
+  journeyRepository,
+  tripsRepository,
+  eventBusInstance,
 );
 
 const driverListTripsUseCase = new DriverListTripsUseCase(tripsRepository);
@@ -446,6 +483,13 @@ const journeyControllerV1 = new JourneyControllerV1(
   startTripJourneyUseCase,
   getDriverJourneyDetailsUseCase,
   getPassengerJourneyDetailsUseCase,
+  driverArrivedUseCase,
+  driverVerifyPickupUseCase,
+  passengerConfirmPickupUseCase,
+  driverDropOffPassengerUseCase,
+  passengerConfirmDropOffUseCase,
+  passengerNoShowUseCase,
+  driverCompleteJourneyUseCase,
 );
 
 const webhookControllerV1 = new WebhookControllerV1(

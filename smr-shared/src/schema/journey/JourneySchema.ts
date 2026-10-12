@@ -47,3 +47,59 @@ export const GetShareTokenSchema = z.object({
 });
 
 export type GetShareTokenSchemaType = z.infer<typeof GetShareTokenSchema>;
+
+export const DriverArrivedSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+  stop_type: z.enum(["pickup", "dropoff"]),
+  arrived_lat: z.number(),
+  arrived_lng: z.number(),
+});
+
+export type DriverArrivedSchemaType = z.infer<typeof DriverArrivedSchema>;
+
+export const DriverVerifyPickupSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+  pickup_otp: z.string().length(4),
+});
+
+export type DriverVerifyPickupSchemaType = z.infer<
+  typeof DriverVerifyPickupSchema
+>;
+
+export const PassengerConfirmPickupSchema = z.object({
+  journey_id: z.string().min(1),
+});
+
+export type PassengerConfirmPickupSchemaType = z.infer<
+  typeof PassengerConfirmPickupSchema
+>;
+
+export const DriverDropOffPassengerSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+  drop_off_lat: z.number(),
+  drop_off_lng: z.number(),
+});
+
+export type DriverDropOffPassengerSchemaType = z.infer<
+  typeof DriverDropOffPassengerSchema
+>;
+
+export const PassengerConfirmDropOffSchema = z.object({
+  journey_id: z.string().min(1),
+  drop_off_lat: z.number(),
+  drop_off_lng: z.number(),
+});
+
+export type PassengerConfirmDropOffSchemaType = z.infer<
+  typeof PassengerConfirmDropOffSchema
+>;
+
+export const PassengerNoShowSchema = z.object({
+  journey_id: z.string().min(1),
+  passenger_id: z.string().min(1),
+});
+
+export type PassengerNoShowSchemaType = z.infer<typeof PassengerNoShowSchema>;

@@ -215,6 +215,63 @@ export class JourneyRepository implements IJourneyRepository {
     return this._toPassengerEntity(updated);
   }
 
+  /**
+   * Finds a single journey passenger record
+   * by the composite key (journeyId + passengerId).
+   *
+   * @param journeyId : ID of the journey
+   * @param passengerId : ID of the passenger
+   * @returns Journey passenger entity, or null
+   */
+  async findJourneyPassenger(
+    journeyId: string,
+    passengerId: string,
+  ): Promise<JourneyPassengerEntity | null> {
+    const record = await this._journeyPassengerModel.findUnique({
+      where: {
+        journeyId_passengerId: { journeyId, passengerId },
+      },
+    });
+
+    if (!record) return null;
+
+    return this._toPassengerEntity(record);
+  }
+
+  /**
+   * Updates a journey stop record using the
+   * composite key (journeyId + passengerId + stopType).
+   *
+   * @param journeyId : ID of the journey
+   * @param passengerId : ID of the passenger the stop belongs to
+   * @param stopType : PICKUP or DROPOFF
+   * @param stop : Fields to update (arrivedAt, arrivedLat, arrivedLng, departedAt)
+   */
+  async updateJourneyStop(
+    journeyId: string,
+    passengerId: string,
+    stopType: string,
+    stop: Partial<JourneyStop>,
+  ): Promise<void> {
+    const updateData: Record<string, any> = {};
+
+    if (stop.arrivedAt !== undefined) updateData.arrivedAt = stop.arrivedAt;
+    if (stop.departedAt !== undefined) updateData.departedAt = stop.departedAt;
+    if (stop.arrivedLat !== undefined) updateData.arrivedLat = stop.arrivedLat;
+    if (stop.arrivedLng !== undefined) updateData.arrivedLng = stop.arrivedLng;
+
+    await prisma.journeyStop.update({
+      where: {
+        journeyId_passengerId_stopType: {
+          journeyId,
+          passengerId,
+          stopType: stopType as StopType,
+        },
+      },
+      data: updateData,
+    });
+  }
+
   /** Maps a Prisma Journey + JourneyStop[] to a JourneyEntity. */
   private _toJourneyEntity(journey: any, stops: any[]): JourneyEntity {
     const intermediateStops: JourneyStop[] = stops.map((s: any) => ({

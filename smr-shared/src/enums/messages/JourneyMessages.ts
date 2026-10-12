@@ -2,6 +2,12 @@ export enum JourneySuccessMessage {
   STARTED = "Trip journey started successfully.",
   DRIVER_DETAILS_FETCHED = "Driver journey details fetched successfully.",
   PASSENGER_DETAILS_FETCHED = "Passenger journey details fetched successfully.",
+  DRIVER_ARRIVED = "Driver arrival recorded successfully.",
+  PICKUP_VERIFIED = "Passenger pickup verified successfully.",
+  PICKUP_CONFIRMED = "Passenger pickup confirmed successfully.",
+  DROP_OFF_CONFIRMED = "Passenger drop off confirmed successfully.",
+  NO_SHOW_MARKED = "Passenger marked as no-show.",
+  JOURNEY_COMPLETED = "Journey completed successfully.",
 }
 
 export enum JourneyErrorMessage {
@@ -14,4 +20,13 @@ export enum JourneyErrorMessage {
   NOT_JOURNEY_DRIVER = "You are not the driver of this journey.",
   JOURNEY_NOT_ACTIVE = "This journey is no longer active.",
   INVALID_SHARE_TOKEN = "The share token is invalid or has been revoked.",
+  DRIVER_NOT_IN_RANGE = "Driver is not within the required range of the stop.",
+  STOP_NOT_FOUND = "The specified stop was not found in this journey.",
+  INVALID_PICKUP_OTP = "The pickup OTP provided is invalid.",
+  PASSENGER_NOT_BOARDED = "Passenger has not been picked up yet.",
+  PASSENGER_ALREADY_DROPPED_OFF = "Passenger has already been dropped off.",
+  PASSENGER_ALREADY_PICKED_UP = "Passenger has already been picked up.",
+  NOT_ALL_PASSENGERS_DROPPED_OFF = "All passengers must be dropped off before completing the journey.",
+  NO_SHOW_WAIT_TIME_NOT_MET = "Driver must wait at least 10 minutes before marking a no-show.",
+  DRIVER_NOT_ARRIVED = "Driver has not arrived at the passenger's pickup stop.",
 }

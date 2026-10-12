@@ -29,5 +29,54 @@ export function createJourneyRouterV1(
     (req, res, next) => journeyController.getPassengerJourneyDetails(req, res, next),
   );
 
+  // Driver: Mark arrival at a stop
+  router.post(
+    "/driver/arrived",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => journeyController.driverArrived(req, res, next),
+  );
+
+  // Driver: Verify passenger pickup OTP
+  router.post(
+    "/driver/verify-pickup",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => journeyController.driverVerifyPickup(req, res, next),
+  );
+
+  // Passenger: Confirm pickup
+  router.post(
+    "/passenger/confirm-pickup",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => journeyController.passengerConfirmPickup(req, res, next),
+  );
+
+  // Driver: Drop off passenger
+  router.post(
+    "/driver/drop-off",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => journeyController.driverDropOffPassenger(req, res, next),
+  );
+
+  // Passenger: Confirm drop off
+  router.post(
+    "/passenger/confirm-drop-off",
+    AuthMiddleware(UserRole.PASSENGER),
+    (req, res, next) => journeyController.passengerConfirmDropOff(req, res, next),
+  );
+
+  // Driver: Mark passenger as no-show
+  router.post(
+    "/driver/no-show",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => journeyController.passengerNoShow(req, res, next),
+  );
+
+  // Driver: Complete journey
+  router.patch(
+    "/:journeyId/complete",
+    AuthMiddleware(UserRole.DRIVER),
+    (req, res, next) => journeyController.driverCompleteJourney(req, res, next),
+  );
+
   return router;
 }
