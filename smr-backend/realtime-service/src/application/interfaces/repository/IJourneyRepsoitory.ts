@@ -17,4 +17,9 @@ export interface IJourneyRepository extends IBaseRepository<JourneyEntity> {
     memberId: string,
     shareToken: string,
   ): Promise<void>;
+
+  removeMember(
+    journeyId: string,
+    memberId: string,
+  ): Promise<string | null>;
 }

@@ -24,6 +24,7 @@ import { UpdateLocationUseCase } from "#/application/use-cases/journey/UpdateLoc
 import { LeaveJourneyUseCase } from "#/application/use-cases/journey/LeaveJourneyUseCase";
 import { EndJourneyUseCase } from "#/application/use-cases/journey/EndJourneyUseCase";
 import { GetShareTokenUseCase } from "#/application/use-cases/journey/GetShareTokenUseCase";
+import { RemovePassengerFromJourneyUseCase } from "#/application/use-cases/journey/RemovePassengerFromJourneyUseCase";
 import { CallSessionModel } from "#/infrastructure/database/model/MongoCallSessionModel";
 import { ChatModel } from "#/infrastructure/database/model/MongoChatModel";
 import { JourneyModel } from "#/infrastructure/database/model/MongoJourneyModel";
@@ -44,7 +45,10 @@ import { createChatRouterV1 } from "#/presentation/v1/http/routes/ChatRouterV1";
 import { createJourneyRouterV1 } from "#/presentation/v1/http/routes/JourneyRouterV1";
 import { DriverCancelTripEventHandler } from "#/presentation/v1/messaging/event-handlers/DriverCancelTripEventHandler";
 import { NewBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/NewBookingEventHandler";
+import { JourneyCompletedEventHandler } from "#/presentation/v1/messaging/event-handlers/JourneyCompletedEventHandler";
 import { JourneyStartedEventHandler } from "#/presentation/v1/messaging/event-handlers/JourneyStartedEventHandler";
+import { PassengerDroppedOffEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerDroppedOffEventHandler";
+import { PassengerNoShowEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerNoShowEventHandler";
 import { NewTripEventHandler } from "#/presentation/v1/messaging/event-handlers/NewTripEventHandler";
 import { PassengerCancelBookingEventHandler } from "#/presentation/v1/messaging/event-handlers/PassengerCancelBookingEventHandler";
 import { UserSignupEventHandler } from "#/presentation/v1/messaging/event-handlers/UserSignupEventHandler";
@@ -171,6 +175,12 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     socketStore,
     journeySocketEmitter,
   );
+  const removePassengerFromJourneyUseCase =
+    new RemovePassengerFromJourneyUseCase(
+      journeyRepository,
+      socketStore,
+      journeySocketEmitter,
+    );
   const getShareTokenUseCase = new GetShareTokenUseCase(
     journeyRepository,
     uidGenereator,
@@ -246,6 +256,18 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     logger,
     createJourneyUseCase,
   );
+  const passengerDroppedOffEventHandler = new PassengerDroppedOffEventHandler(
+    logger,
+    removePassengerFromJourneyUseCase,
+  );
+  const passengerNoShowEventHandler = new PassengerNoShowEventHandler(
+    logger,
+    removePassengerFromJourneyUseCase,
+  );
+  const journeyCompletedEventHandler = new JourneyCompletedEventHandler(
+    logger,
+    endJourneyUseCase,
+  );
 
   await eventDispatcher.register(
     EventName.AUTH_USER_SIGNUP,
@@ -272,6 +294,21 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   await eventDispatcher.register(
     EventName.JOURNEY_STARTED,
     journeyStartedEventHandler,
+  );
+
+  await eventDispatcher.register(
+    EventName.JOURNEY_PASSENGER_DROPPED_OFF,
+    passengerDroppedOffEventHandler,
+  );
+
+  await eventDispatcher.register(
+    EventName.JOURNEY_PASSENGER_NO_SHOW,
+    passengerNoShowEventHandler,
+  );
+
+  await eventDispatcher.register(
+    EventName.JOURNEY_COMPLETED,
+    journeyCompletedEventHandler,
   );
 
   const eventBus = new EventBus(

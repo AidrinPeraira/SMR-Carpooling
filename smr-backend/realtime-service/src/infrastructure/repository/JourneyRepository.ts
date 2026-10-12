@@ -49,4 +49,26 @@ export class JourneyRepository
       { $set: { "members.$.shareToken": shareToken } },
     );
   }
+
+  /** Pulls a member from the journey and returns their share token if one existed. */
+  async removeMember(
+    journeyId: string,
+    memberId: string,
+  ): Promise<string | null> {
+    const journey = await this.model
+      .findOne({ journeyId, "members.memberId": memberId })
+      .lean();
+
+    if (!journey) return null;
+
+    const member = journey.members.find((m) => m.memberId === memberId);
+    const shareToken = member?.shareToken ?? null;
+
+    await this.model.updateOne(
+      { journeyId },
+      { $pull: { members: { memberId } } },
+    );
+
+    return shareToken;
+  }
 }

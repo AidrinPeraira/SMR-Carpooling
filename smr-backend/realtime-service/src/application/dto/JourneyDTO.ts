@@ -44,3 +44,8 @@ export interface GetShareTokenRequestDTO {
 export interface GetShareTokenResponseDTO {
   shareToken: string;
 }
+
+export interface RemovePassengerFromJourneyRequestDTO {
+  journeyId: string;
+  passengerId: string;
+}
