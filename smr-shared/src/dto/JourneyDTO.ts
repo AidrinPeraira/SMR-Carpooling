@@ -45,6 +45,7 @@ export interface PassengerPeerResult {
 
 export interface GetPassengerJourneyDetailsResult {
   journey_id: string;
+  driver_id: string;
   journey_status: JourneyStatus;
   origin: TripStopDTO;
   destination: TripStopDTO;

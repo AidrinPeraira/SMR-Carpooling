@@ -53,6 +53,7 @@ export class JourneyMapper {
   ): GetPassengerJourneyDetailsResult {
     return {
       journey_id: dto.journeyId,
+      driver_id: dto.driverId,
       journey_status: dto.journeyStatus,
       origin: TripMapper.toTripStopDTO(dto.origin),
       destination: TripMapper.toTripStopDTO(dto.destination),

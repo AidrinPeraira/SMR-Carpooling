@@ -10,6 +10,7 @@ interface CallButtonProps {
   variant?: "primary" | "secondary" | "ghost" | "danger";
   className?: string;
   showText?: boolean;
+  label?: string;
 }
 
 export function CallButton({
@@ -18,6 +19,7 @@ export function CallButton({
   variant = "primary",
   className,
   showText = false,
+  label = "Call",
 }: CallButtonProps) {
   const { initiateCall, callState } = useVoiceCall();
 
@@ -37,7 +39,7 @@ export function CallButton({
       title="Start voice call"
     >
       <Phone className="w-4 h-4" />
-      {showText && <span>{isBusy ? "Busy" : "Call"}</span>}
+      {showText && <span>{isBusy ? "Busy" : label}</span>}
     </Button>
   );
 }

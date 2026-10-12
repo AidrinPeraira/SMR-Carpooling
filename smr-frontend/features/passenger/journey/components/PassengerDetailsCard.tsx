@@ -4,14 +4,16 @@ import { Card, CardBody, Button, useToast } from "@sharemyride/ui";
 import { PassengerOwnDetailsResult, PassengerJourneyStatus } from "@sharemyride/shared";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MapPin, Navigation, KeyRound, Loader2, ShieldCheck, CircleCheckBig } from "lucide-react";
+import { CallButton } from "@/features/call/CallButton";
 import { passengerConfirmPickupRequest } from "../api/passengerConfirmPickupRequest";
 
 interface PassengerDetailsCardProps {
   journeyId: string;
+  driverId: string;
   myDetails: PassengerOwnDetailsResult;
 }
 
-export function PassengerDetailsCard({ journeyId, myDetails }: PassengerDetailsCardProps) {
+export function PassengerDetailsCard({ journeyId, driverId, myDetails }: PassengerDetailsCardProps) {
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -45,6 +47,15 @@ export function PassengerDetailsCard({ journeyId, myDetails }: PassengerDetailsC
             </span>
           )}
         </div>
+
+        <CallButton
+          tripId={journeyId}
+          receiverId={driverId}
+          variant="secondary"
+          className="w-full text-xs py-2 font-medium"
+          showText
+          label="Call Driver"
+        />
 
         {/* Pickup Location */}
         <div className="flex items-start gap-3">

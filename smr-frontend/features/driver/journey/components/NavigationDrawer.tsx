@@ -81,6 +81,7 @@ export function NavigationDrawer({
           onCompleteAndContinue={onCompleteAndContinue}
         />
         <PassengerManifestCard
+          journeyId={journeyId}
           journeyStatus={journeyStatus}
           passengers={passengers}
         />

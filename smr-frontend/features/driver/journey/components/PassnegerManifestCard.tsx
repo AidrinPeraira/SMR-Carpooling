@@ -1,17 +1,20 @@
 "use client";
 
 import { PassengerCard } from "@/features/driver/journey/components/PassengerCard";
+import { CallButton } from "@/features/call/CallButton";
 import {
   JourneyStatus,
   DriverJourneyPassengerResult,
 } from "@sharemyride/shared";
 
 interface PassengerManifestCardProps {
+  journeyId: string;
   journeyStatus: JourneyStatus;
   passengers: DriverJourneyPassengerResult[];
 }
 
 export function PassengerManifestCard({
+  journeyId,
   journeyStatus,
   passengers,
 }: PassengerManifestCardProps) {
@@ -30,6 +33,7 @@ export function PassengerManifestCard({
         {passengers.map((passenger) => (
           <PassengerCard
             key={passenger.passenger_id}
+            journeyId={journeyId}
             journeyStatus={journeyStatus}
             passenger={passenger}
           />

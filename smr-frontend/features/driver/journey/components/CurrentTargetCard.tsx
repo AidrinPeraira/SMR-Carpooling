@@ -5,8 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, Button, Avatar, useToast } from "@sharemyride/ui";
 import {
   MapPin,
-  Phone,
-  MessageSquare,
   CheckCircle,
   LogOut,
   Loader2,
@@ -94,7 +92,10 @@ export function CurrentTargetCard({
   };
 
   const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 4);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 4);
     if (!pasted) return;
     e.preventDefault();
     const next = [...otp];
@@ -110,7 +111,8 @@ export function CurrentTargetCard({
     mutationFn: async () => {
       if (!nextStop) throw new Error("No stop selected");
       const code = otp.join("");
-      if (code.length !== 4) throw new Error("Please enter the full 4-digit OTP");
+      if (code.length !== 4)
+        throw new Error("Please enter the full 4-digit OTP");
       await driverVerifyPickupRequest({
         journey_id: journeyId,
         passenger_id: nextStop.passenger_id,
@@ -125,10 +127,9 @@ export function CurrentTargetCard({
       setOtp(["", "", "", ""]);
     },
     onError: (err: unknown) => {
-      toast(
-        err instanceof Error ? err.message : "Failed to verify OTP",
-        { variant: "error" },
-      );
+      toast(err instanceof Error ? err.message : "Failed to verify OTP", {
+        variant: "error",
+      });
       setOtp(["", "", "", ""]);
       otpRefs.current[0]?.focus();
     },
@@ -237,10 +238,9 @@ export function CurrentTargetCard({
       toast("Journey completed!", { variant: "success" });
     },
     onError: (err: unknown) => {
-      toast(
-        err instanceof Error ? err.message : "Failed to complete journey",
-        { variant: "error" },
-      );
+      toast(err instanceof Error ? err.message : "Failed to complete journey", {
+        variant: "error",
+      });
     },
   });
 
@@ -277,30 +277,9 @@ export function CurrentTargetCard({
           </p>
         </div>
 
-        <div className="mt-4 space-y-2">
+        <div className="mt-4">
           <Button
             variant="primary"
-            className="w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
-            onClick={() =>
-              completeJourneyMutation.mutate(undefined, {
-                onSuccess: onCompleteAndContinue,
-              })
-            }
-            disabled={isCompleted || completeJourneyMutation.isPending}
-          >
-            {completeJourneyMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Navigation className="w-4 h-4" />
-            )}
-            <span>
-              {isCompleted
-                ? "Trip Completed"
-                : "Complete Trip & Continue Navigation"}
-            </span>
-          </Button>
-          <Button
-            variant="secondary"
             className="w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
             onClick={() => {
               if (isCompleted) {
@@ -318,7 +297,7 @@ export function CurrentTargetCard({
             ) : (
               <X className="w-4 h-4" />
             )}
-            <span>Exit</span>
+            <span>Close & Exit Navigation</span>
           </Button>
         </div>
       </Card>
@@ -375,20 +354,7 @@ export function CurrentTargetCard({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <button
-            className="w-8 h-8 rounded-full bg-surface-muted hover:bg-surface-secondary flex items-center justify-center text-content-primary transition-colors"
-            title={`Call ${nextPassenger.passenger_name}`}
-          >
-            <Phone className="w-4 h-4" />
-          </button>
-          <button
-            className="w-8 h-8 rounded-full bg-surface-muted hover:bg-surface-secondary flex items-center justify-center text-content-primary transition-colors"
-            title={`Chat with ${nextPassenger.passenger_name}`}
-          >
-            <MessageSquare className="w-4 h-4" />
-          </button>
-        </div>
+        <div className="flex items-center gap-1.5" />
       </div>
 
       {!hasArrived && (
@@ -422,7 +388,9 @@ export function CurrentTargetCard({
             {otp.map((digit, i) => (
               <input
                 key={i}
-                ref={(el) => { otpRefs.current[i] = el; }}
+                ref={(el) => {
+                  otpRefs.current[i] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
@@ -439,7 +407,9 @@ export function CurrentTargetCard({
             variant="primary"
             className="w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
             onClick={() => verifyPickupMutation.mutate()}
-            disabled={otp.join("").length !== 4 || verifyPickupMutation.isPending}
+            disabled={
+              otp.join("").length !== 4 || verifyPickupMutation.isPending
+            }
           >
             {verifyPickupMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -459,7 +429,10 @@ export function CurrentTargetCard({
         <Button
           variant="primary"
           className="mt-4 w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
-          onClick={onStartNavigation}
+          onClick={() => {
+            toast("Verifying passenger side confirmation.", {});
+            onStartNavigation();
+          }}
         >
           <Navigation className="w-4 h-4" />
           <span>Start Navigation to Next Destination</span>

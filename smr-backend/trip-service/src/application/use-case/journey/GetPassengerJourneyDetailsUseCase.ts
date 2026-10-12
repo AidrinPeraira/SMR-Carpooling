@@ -52,6 +52,7 @@ export class GetPassengerJourneyDetailsUseCase implements IGetPassengerJourneyDe
 
     return {
       journeyId: journey.journeyId,
+      driverId: journey.driverId,
       journeyStatus: journey.journeyStatus,
       origin: journey.origin,
       destination: journey.destination,

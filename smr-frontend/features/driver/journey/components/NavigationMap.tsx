@@ -112,7 +112,7 @@ export function NavigationMap({
     return () => {
       map.stopNavigation();
     };
-  }, [map]);
+  }, [map, waypoints, intermediateStops]);
 
   return (
     <section className="relative h-full w-full flex flex-col">

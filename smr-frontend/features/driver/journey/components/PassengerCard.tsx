@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, Tag } from "@sharemyride/ui";
+import { CallButton } from "@/features/call/CallButton";
 import {
   JourneyStatus,
   DriverJourneyPassengerResult,
@@ -8,11 +9,13 @@ import {
 } from "@sharemyride/shared";
 
 interface PassengerCardProps {
+  journeyId: string;
   journeyStatus: JourneyStatus;
   passenger: DriverJourneyPassengerResult;
 }
 
 export function PassengerCard({
+  journeyId,
   journeyStatus,
   passenger,
 }: PassengerCardProps) {
@@ -68,7 +71,13 @@ export function PassengerCard({
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          <CallButton
+            tripId={journeyId}
+            receiverId={passenger.passenger_id}
+            variant="ghost"
+            className="shrink-0"
+          />
           {renderStatus()}
         </div>
       </div>

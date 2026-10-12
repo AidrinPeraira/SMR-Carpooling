@@ -39,13 +39,22 @@ export function PassengerJourneyView() {
       console.error("Journey socket error:", data.message);
     };
 
+    const joinPayload = { journey_id: journeyId };
+
+    const emitJoin = () => {
+      journeySocket.emit(SocketEvents.JOURNEY_PASSENGER_JOIN, joinPayload);
+    };
+
     journeySocket.on(SocketEvents.JOURNEY_ERROR, onError);
-    journeySocket.emit(SocketEvents.JOURNEY_PASSENGER_JOIN, {
-      journey_id: journeyId,
-    });
+
+    if (journeySocket.connected) {
+      emitJoin();
+    }
+    journeySocket.on("connect", emitJoin);
 
     return () => {
       journeySocket.off(SocketEvents.JOURNEY_ERROR, onError);
+      journeySocket.off("connect", emitJoin);
     };
   }, [journeySocket, journeyId, isDroppedOff, isError]);
 
@@ -99,7 +108,7 @@ export function PassengerJourneyView() {
         </div>
 
         <div className="lg:col-span-4 flex flex-col gap-6">
-          <PassengerDetailsCard journeyId={journey.journey_id} myDetails={journey.my_details} />
+          <PassengerDetailsCard journeyId={journey.journey_id} driverId={journey.driver_id} myDetails={journey.my_details} />
 
           <OtherPassengersCard passengers={journey.other_passengers} />
         </div>

@@ -7,6 +7,7 @@ import { JourneyStopDTO } from "./JourneyStopDTO";
 
 export interface GetPassengerJourneyDetailsResponseDTO {
   journeyId: string;
+  driverId: string;
   journeyStatus: JourneyStatus;
   origin: TripStop;
   destination: TripStop;
