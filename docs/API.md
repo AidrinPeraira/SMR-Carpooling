@@ -192,6 +192,16 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | :----- | :--------------- | :--------------------------------------- | :------------ |
 | `GET`  | `/transactions`  | Get wallet transaction history.          | Yes           |
 
+### Payouts
+
+**Base Path:** `/api/v1/payouts`
+
+| Method  | Endpoint                      | Description                                | Auth Required |
+| :------ | :---------------------------- | :----------------------------------------- | :------------ |
+| `GET`   | `/driver`                     | Get paginated list of driver's payouts.    | Yes (Driver)  |
+| `GET`   | `/admin`                      | List all payouts for admin review.         | Yes (Admin)   |
+| `PATCH` | `/admin/:payoutId/approve`    | Approve a pending payout.                  | Yes (Admin)   |
+
 ### Admin — Transactions
 
 **Base Path:** `/api/v1/admin/transactions`

@@ -8,3 +8,4 @@ export * from "./PaymentMessages";
 export * from "./ChatMessages";
 export * from "./CallMessages";
 export * from "./JourneyMessages";
+export * from "./PayoutMessages";

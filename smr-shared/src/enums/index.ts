@@ -14,3 +14,4 @@ export * from "./BookingEnums";
 export * from "./TransactionEnums";
 export * from "./CallEums";
 export * from "./JourneyEnums";
+export * from "./PayoutEnums";
