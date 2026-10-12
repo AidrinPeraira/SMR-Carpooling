@@ -20,6 +20,8 @@ interface NavigationDrawerProps {
   passengers: DriverJourneyPassengerResult[];
   intermediateStops: JourneyStopResult[];
   onStartNavigation: () => void;
+  onCompleteAndExit: () => void;
+  onCompleteAndContinue: () => void;
 }
 
 export function NavigationDrawer({
@@ -30,6 +32,8 @@ export function NavigationDrawer({
   passengers,
   intermediateStops,
   onStartNavigation,
+  onCompleteAndExit,
+  onCompleteAndContinue,
 }: NavigationDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -73,6 +77,8 @@ export function NavigationDrawer({
           intermediateStops={intermediateStops}
           passengers={passengers}
           onStartNavigation={onStartNavigation}
+          onCompleteAndExit={onCompleteAndExit}
+          onCompleteAndContinue={onCompleteAndContinue}
         />
         <PassengerManifestCard
           journeyStatus={journeyStatus}

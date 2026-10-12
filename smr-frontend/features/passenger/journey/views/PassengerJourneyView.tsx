@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Loader } from "@sharemyride/ui";
-import { SocketEvents } from "@sharemyride/shared";
+import { Loader, useToast } from "@sharemyride/ui";
+import { SocketEvents, PassengerJourneyStatus } from "@sharemyride/shared";
 import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
 import { getPassengerJourneyDetailsRequest } from "../api/getPassengerJourneyDetailsRequest";
 import { JourneyStatusHeader } from "../components/JourneyStatusHeader";
@@ -15,10 +15,26 @@ import { OtherPassengersCard } from "../components/OtherPassengersCard";
 
 export function PassengerJourneyView() {
   const { journeyId } = useParams<{ journeyId: string }>();
+  const router = useRouter();
+  const toast = useToast();
+
+  const {
+    data: journey,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["passengerJourneyDetails", journeyId],
+    queryFn: () => getPassengerJourneyDetailsRequest(journeyId),
+  });
+
+  const isDroppedOff =
+    journey?.my_details.passenger_status === PassengerJourneyStatus.DROPPED_OFF;
 
   const journeySocket = useLiveLocationSocket();
 
   useEffect(() => {
+    if (isDroppedOff || isError) return;
+
     const onError = (data: { message: string }) => {
       console.error("Journey socket error:", data.message);
     };
@@ -31,18 +47,21 @@ export function PassengerJourneyView() {
     return () => {
       journeySocket.off(SocketEvents.JOURNEY_ERROR, onError);
     };
-  }, [journeySocket, journeyId]);
+  }, [journeySocket, journeyId, isDroppedOff, isError]);
 
-  const {
-    data: journey,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["passengerJourneyDetails", journeyId],
-    queryFn: () => getPassengerJourneyDetailsRequest(journeyId),
-  });
+  useEffect(() => {
+    if (isDroppedOff) {
+      toast("No active journey found", { variant: "warn" });
+      router.replace("/passenger");
+    }
+  }, [isDroppedOff, toast, router]);
+
+  useEffect(() => {
+    if (isError) {
+      toast("No active journey found", { variant: "error" });
+      router.replace("/passenger");
+    }
+  }, [isError, toast, router]);
 
   if (isLoading) {
     return (
@@ -55,27 +74,7 @@ export function PassengerJourneyView() {
     );
   }
 
-  if (isError) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="rounded-xl border border-error-border bg-error-surface p-6 text-center text-error-content space-y-3">
-          <h3 className="font-semibold text-lg">Error Loading Journey</h3>
-          <p className="text-sm">
-            {(error as Error)?.message || "Could not load journey details."}
-          </p>
-          <Button
-            variant="secondary"
-            className="text-xs py-1.5 px-3"
-            onClick={() => refetch()}
-          >
-            Retry
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!journey) return null;
+  if (isError || !journey || isDroppedOff) return null;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl space-y-6">

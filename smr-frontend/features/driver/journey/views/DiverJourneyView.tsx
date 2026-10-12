@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getDriverJourneyDetailsRequest } from "@/features/driver/journey/api/getDriverJourneyDetailsRequest";
 import { useLiveLocationSocket } from "@/features/realtime/hooks/useLiveLocationSocket";
 import { NavigationDrawer } from "@/features/driver/journey/components/NavigationDrawer";
 import { NavigationMap } from "@/features/driver/journey/components/NavigationMap";
-import { Loader } from "@sharemyride/ui";
+import { Loader, useToast } from "@sharemyride/ui";
 import {
   GetDriverJourneyDetailsResult,
+  JourneyStatus,
   SocketEvents,
 } from "@sharemyride/shared";
 
@@ -17,25 +19,44 @@ interface DriverJourneyViewProps {
 }
 
 export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
+  const router = useRouter();
+  const toast = useToast();
   const queryClient = useQueryClient();
   const journeySocket = useLiveLocationSocket();
-
-  useEffect(() => {
-    journeySocket.emit(SocketEvents.JOURNEY_DRIVER_JOIN, {
-      journey_id: journeyId,
-    });
-  }, [journeySocket, journeyId]);
 
   const {
     data: journey,
     isLoading,
     isError,
-    error,
   } = useQuery<GetDriverJourneyDetailsResult>({
     queryKey: ["driverJourneyDetails", journeyId],
     queryFn: () => getDriverJourneyDetailsRequest(journeyId),
     enabled: !!journeyId,
   });
+
+  const isCompleted = journey?.journey_status === JourneyStatus.COMPLETED;
+
+  useEffect(() => {
+    if (isCompleted || isError) return;
+
+    journeySocket.emit(SocketEvents.JOURNEY_DRIVER_JOIN, {
+      journey_id: journeyId,
+    });
+  }, [journeySocket, journeyId, isCompleted, isError]);
+
+  useEffect(() => {
+    if (isCompleted) {
+      toast("No active journey found", { variant: "warn" });
+      router.replace("/driver");
+    }
+  }, [isCompleted, toast, router]);
+
+  useEffect(() => {
+    if (isError) {
+      toast("No active journey found", { variant: "error" });
+      router.replace("/driver");
+    }
+  }, [isError, toast, router]);
 
   if (isLoading) {
     return (
@@ -48,18 +69,7 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
     );
   }
 
-  if (isError || !journey) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
-        <p className="text-sm font-semibold text-error-content">
-          Failed to load journey
-        </p>
-        <p className="text-xs text-content-secondary">
-          {(error as Error)?.message || "Something went wrong."}
-        </p>
-      </div>
-    );
-  }
+  if (isError || !journey || isCompleted) return null;
 
   return (
     <div className="relative w-full h-full flex flex-col lg:flex-row overflow-hidden">
@@ -81,6 +91,14 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
         passengers={journey.passengers}
         intermediateStops={journey.intermediate_stops}
         onStartNavigation={() => {
+          queryClient.invalidateQueries({
+            queryKey: ["driverJourneyDetails", journeyId],
+          });
+        }}
+        onCompleteAndExit={() => {
+          router.push("/driver");
+        }}
+        onCompleteAndContinue={() => {
           queryClient.invalidateQueries({
             queryKey: ["driverJourneyDetails", journeyId],
           });

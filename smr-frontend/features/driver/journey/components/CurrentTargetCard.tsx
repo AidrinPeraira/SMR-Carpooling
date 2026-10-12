@@ -11,6 +11,8 @@ import {
   LogOut,
   Loader2,
   Navigation,
+  Flag,
+  X,
 } from "lucide-react";
 import {
   JourneyStatus,
@@ -22,6 +24,7 @@ import {
 import { driverArrivedRequest } from "@/features/driver/journey/api/driverArrivedRequest";
 import { driverVerifyPickupRequest } from "@/features/driver/journey/api/driverVerifyPickupRequest";
 import { driverDropOffPassengerRequest } from "@/features/driver/journey/api/driverDropOffPassengerRequest";
+import { driverCompleteJourneyRequest } from "@/features/driver/journey/api/driverCompleteJourneyRequest";
 
 interface CurrentTargetCardProps {
   journeyId: string;
@@ -29,6 +32,8 @@ interface CurrentTargetCardProps {
   intermediateStops: JourneyStopResult[];
   passengers: DriverJourneyPassengerResult[];
   onStartNavigation: () => void;
+  onCompleteAndExit: () => void;
+  onCompleteAndContinue: () => void;
 }
 
 export function CurrentTargetCard({
@@ -37,6 +42,8 @@ export function CurrentTargetCard({
   intermediateStops,
   passengers,
   onStartNavigation,
+  onCompleteAndExit,
+  onCompleteAndContinue,
 }: CurrentTargetCardProps) {
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -218,6 +225,105 @@ export function CurrentTargetCard({
       });
     },
   });
+
+  const completeJourneyMutation = useMutation({
+    mutationFn: async () => {
+      await driverCompleteJourneyRequest(journeyId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["driverJourneyDetails", journeyId],
+      });
+      toast("Journey completed!", { variant: "success" });
+    },
+    onError: (err: unknown) => {
+      toast(
+        err instanceof Error ? err.message : "Failed to complete journey",
+        { variant: "error" },
+      );
+    },
+  });
+
+  const isCompleted = journeyStatus === JourneyStatus.COMPLETED;
+
+  const allStopsCompleted =
+    !nextStop &&
+    passengers.length > 0 &&
+    passengers.every(
+      (p) =>
+        p.passenger_status === PassengerJourneyStatus.DROPPED_OFF ||
+        p.passenger_status === PassengerJourneyStatus.ENDED ||
+        p.passenger_status === PassengerJourneyStatus.NO_SHOW,
+    );
+
+  if (allStopsCompleted || isCompleted) {
+    return (
+      <Card className="p-4 border-2 border-accent relative overflow-hidden">
+        <div className="absolute top-0 right-0 bg-accent text-accent-fg text-[10px] font-bold px-2 py-0.5 rounded-bl-lg uppercase tracking-wider">
+          Journey Complete
+        </div>
+
+        <div className="pt-4 text-center">
+          <Flag className="w-8 h-8 text-accent mx-auto mb-2" />
+          <h2 className="text-sm font-bold text-content-primary">
+            {isCompleted
+              ? "Journey has been completed"
+              : "All passengers have been dropped off"}
+          </h2>
+          <p className="text-xs text-content-secondary mt-1">
+            {isCompleted
+              ? "You can continue navigating or exit"
+              : "Complete the journey to finish your trip"}
+          </p>
+        </div>
+
+        <div className="mt-4 space-y-2">
+          <Button
+            variant="primary"
+            className="w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
+            onClick={() =>
+              completeJourneyMutation.mutate(undefined, {
+                onSuccess: onCompleteAndContinue,
+              })
+            }
+            disabled={isCompleted || completeJourneyMutation.isPending}
+          >
+            {completeJourneyMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Navigation className="w-4 h-4" />
+            )}
+            <span>
+              {isCompleted
+                ? "Trip Completed"
+                : "Complete Trip & Continue Navigation"}
+            </span>
+          </Button>
+          <Button
+            variant="secondary"
+            className="w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
+            onClick={() => {
+              if (isCompleted) {
+                onCompleteAndExit();
+              } else {
+                completeJourneyMutation.mutate(undefined, {
+                  onSuccess: onCompleteAndExit,
+                });
+              }
+            }}
+            disabled={completeJourneyMutation.isPending}
+          >
+            {completeJourneyMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <X className="w-4 h-4" />
+            )}
+            <span>Exit</span>
+          </Button>
+        </div>
+      </Card>
+    );
+  }
 
   if (!nextStop || !nextPassenger || journeyStatus !== JourneyStatus.ONGOING) {
     return null;
