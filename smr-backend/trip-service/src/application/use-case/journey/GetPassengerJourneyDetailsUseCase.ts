@@ -63,6 +63,7 @@ export class GetPassengerJourneyDetailsUseCase implements IGetPassengerJourneyDe
         stopType: stop.stopType,
         passengerId: stop.passengerId,
         passengerName: journeyPassengers.find((p) => p.passengerId === stop.passengerId)?.passengerName ?? "",
+        arrivedAt: stop.arrivedAt,
       })),
       myDetails: {
         passengerStatus: myRecord.passengerStatus,

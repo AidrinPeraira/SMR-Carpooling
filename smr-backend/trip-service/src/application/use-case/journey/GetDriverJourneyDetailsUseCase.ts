@@ -59,6 +59,7 @@ export class GetDriverJourneyDetailsUseCase implements IGetDriverJourneyDetailsU
         stopType: stop.stopType,
         passengerId: stop.passengerId,
         passengerName: journeyPassengers.find((p) => p.passengerId === stop.passengerId)?.passengerName ?? "",
+        arrivedAt: stop.arrivedAt,
       })),
       passengers: journeyPassengers.map((p) => ({
         passengerId: p.passengerId,

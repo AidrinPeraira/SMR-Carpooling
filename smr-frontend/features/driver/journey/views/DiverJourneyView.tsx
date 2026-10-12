@@ -74,6 +74,7 @@ export function DriverJourneyView({ journeyId }: DriverJourneyViewProps) {
         />
       </div>
       <NavigationDrawer
+        journeyId={journeyId}
         journeyStatus={journey.journey_status}
         origin={journey.origin}
         destination={journey.destination}

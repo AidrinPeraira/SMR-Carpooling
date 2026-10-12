@@ -35,6 +35,7 @@ export class JourneyMapper {
         stop_type: stop.stopType,
         passenger_id: stop.passengerId,
         passenger_name: stop.passengerName,
+        arrived_at: stop.arrivedAt?.toISOString() ?? null,
       })),
       passengers: dto.passengers.map((p) => ({
         passenger_id: p.passengerId,
@@ -62,6 +63,7 @@ export class JourneyMapper {
         stop_type: stop.stopType,
         passenger_id: stop.passengerId,
         passenger_name: stop.passengerName,
+        arrived_at: stop.arrivedAt?.toISOString() ?? null,
       })),
       my_details: {
         passenger_status: dto.myDetails.passengerStatus,

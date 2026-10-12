@@ -9,6 +9,7 @@ export interface JourneyStopResult {
   stop_type: StopType;
   passenger_id: string;
   passenger_name: string;
+  arrived_at: string | null;
 }
 
 export interface DriverJourneyPassengerResult {

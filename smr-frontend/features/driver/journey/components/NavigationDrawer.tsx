@@ -13,6 +13,7 @@ import {
 } from "@sharemyride/shared";
 
 interface NavigationDrawerProps {
+  journeyId: string;
   journeyStatus: JourneyStatus;
   origin: TripStopDTO;
   destination: TripStopDTO;
@@ -21,6 +22,7 @@ interface NavigationDrawerProps {
 }
 
 export function NavigationDrawer({
+  journeyId,
   journeyStatus,
   origin,
   destination,
@@ -64,6 +66,7 @@ export function NavigationDrawer({
         }`}
       >
         <CurrentTargetCard
+          journeyId={journeyId}
           journeyStatus={journeyStatus}
           intermediateStops={intermediateStops}
           passengers={passengers}
