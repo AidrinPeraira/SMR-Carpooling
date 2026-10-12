@@ -26,6 +26,7 @@ interface NavigationMapProps {
   destination: TripStopDTO;
   intermediateStops: JourneyStopResult[];
   passengers: DriverJourneyPassengerResult[];
+  advanceTrigger: number;
 }
 
 function findCurrentTargetIndex(
@@ -59,6 +60,7 @@ export function NavigationMap({
   destination,
   intermediateStops,
   passengers,
+  advanceTrigger,
 }: NavigationMapProps) {
   const [navigationState, setNavigationState] =
     useState<NavigationState | null>(null);
@@ -139,11 +141,26 @@ export function NavigationMap({
   }, [map]);
 
   const prevTargetIndexRef = useRef(currentTargetIndex);
+  const skipNextAutoAdvanceRef = useRef(false);
+  const lastAdvanceTriggerRef = useRef(advanceTrigger);
+
+  useEffect(() => {
+    if (advanceTrigger <= lastAdvanceTriggerRef.current) return;
+    lastAdvanceTriggerRef.current = advanceTrigger;
+    if (!navigationStartedRef.current) return;
+    map.advanceToNextSegment();
+    skipNextAutoAdvanceRef.current = true;
+  }, [advanceTrigger, map]);
+
   useEffect(() => {
     if (!navigationStartedRef.current) return;
     if (prevTargetIndexRef.current === currentTargetIndex) return;
 
     prevTargetIndexRef.current = currentTargetIndex;
+    if (skipNextAutoAdvanceRef.current) {
+      skipNextAutoAdvanceRef.current = false;
+      return;
+    }
     map.advanceToNextSegment();
   }, [currentTargetIndex, map]);
 

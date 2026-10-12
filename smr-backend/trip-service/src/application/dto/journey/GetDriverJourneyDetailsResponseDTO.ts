@@ -20,4 +20,5 @@ export interface DriverJourneyPassengerDTO {
   passengerStatus: PassengerJourneyStatus;
   pickupLocation: TripStop;
   dropOffLocation: TripStop;
+  pickupVerified: boolean;
 }

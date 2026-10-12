@@ -19,6 +19,7 @@ interface NavigationDrawerProps {
   destination: TripStopDTO;
   passengers: DriverJourneyPassengerResult[];
   intermediateStops: JourneyStopResult[];
+  onStartNavigation: () => void;
 }
 
 export function NavigationDrawer({
@@ -28,6 +29,7 @@ export function NavigationDrawer({
   destination,
   passengers,
   intermediateStops,
+  onStartNavigation,
 }: NavigationDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -70,6 +72,7 @@ export function NavigationDrawer({
           journeyStatus={journeyStatus}
           intermediateStops={intermediateStops}
           passengers={passengers}
+          onStartNavigation={onStartNavigation}
         />
         <PassengerManifestCard
           journeyStatus={journeyStatus}

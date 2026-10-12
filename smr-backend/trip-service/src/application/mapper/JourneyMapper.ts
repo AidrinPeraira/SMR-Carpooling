@@ -43,6 +43,7 @@ export class JourneyMapper {
         passenger_status: p.passengerStatus,
         pickup_location: TripMapper.toTripStopDTO(p.pickupLocation),
         drop_off_location: TripMapper.toTripStopDTO(p.dropOffLocation),
+        pickup_verified: p.pickupVerified,
       })),
     };
   }

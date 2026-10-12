@@ -18,6 +18,7 @@ export interface DriverJourneyPassengerResult {
   passenger_status: PassengerJourneyStatus;
   pickup_location: TripStopDTO;
   drop_off_location: TripStopDTO;
+  pickup_verified: boolean;
 }
 
 export interface GetDriverJourneyDetailsResult {

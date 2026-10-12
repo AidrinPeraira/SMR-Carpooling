@@ -67,6 +67,7 @@ export class GetDriverJourneyDetailsUseCase implements IGetDriverJourneyDetailsU
         passengerStatus: p.passengerStatus,
         pickupLocation: p.pickupLocation,
         dropOffLocation: p.dropOffLocation,
+        pickupVerified: p.pickupVerified,
       })),
     };
   }

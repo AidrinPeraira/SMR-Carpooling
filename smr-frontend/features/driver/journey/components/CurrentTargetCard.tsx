@@ -10,6 +10,7 @@ import {
   CheckCircle,
   LogOut,
   Loader2,
+  Navigation,
 } from "lucide-react";
 import {
   JourneyStatus,
@@ -26,6 +27,7 @@ interface CurrentTargetCardProps {
   journeyStatus: JourneyStatus;
   intermediateStops: JourneyStopResult[];
   passengers: DriverJourneyPassengerResult[];
+  onStartNavigation: () => void;
 }
 
 export function CurrentTargetCard({
@@ -33,6 +35,7 @@ export function CurrentTargetCard({
   journeyStatus,
   intermediateStops,
   passengers,
+  onStartNavigation,
 }: CurrentTargetCardProps) {
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -258,7 +261,7 @@ export function CurrentTargetCard({
         </Button>
       )}
 
-      {hasArrived && isPickup && (
+      {hasArrived && isPickup && !nextPassenger.pickup_verified && (
         <div className="mt-4 space-y-3">
           <p className="text-xs font-semibold text-content-secondary text-center">
             Enter the 4-digit OTP from the passenger
@@ -298,6 +301,17 @@ export function CurrentTargetCard({
             </span>
           </Button>
         </div>
+      )}
+
+      {hasArrived && isPickup && nextPassenger.pickup_verified && (
+        <Button
+          variant="primary"
+          className="mt-4 w-full py-2.5 rounded-full flex items-center justify-center gap-2 font-bold"
+          onClick={onStartNavigation}
+        >
+          <Navigation className="w-4 h-4" />
+          <span>Start Navigation to Next Destination</span>
+        </Button>
       )}
 
       {hasArrived && !isPickup && (
