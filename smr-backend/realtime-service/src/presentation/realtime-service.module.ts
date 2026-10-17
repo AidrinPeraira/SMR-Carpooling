@@ -107,9 +107,9 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   // Socket server — create first so we can build the emitter
   const io = await createSocketServer(httpServer);
 
-  const chatSocketEmitter = new SocketIOEmitter(io, "/chat");
-  const callSocketEmitter = new SocketIOEmitter(io, "/call");
-  const journeySocketEmitter = new SocketIOEmitter(io, "/journey");
+  const chatSocketEmitter = new SocketIOEmitter(io, "/chat", logger);
+  const callSocketEmitter = new SocketIOEmitter(io, "/call", logger);
+  const journeySocketEmitter = new SocketIOEmitter(io, "/journey", logger);
 
   const joinTripChatUseCase = new JoinTripChatUseCase(
     memberRepository,
@@ -157,6 +157,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
   const passengerJoinJourneyUseCase = new PassengerJoinJourneyUseCase(
     journeyRepository,
     journeySocketEmitter,
+    socketStore,
   );
   const shareTokenJoinJourneyUseCase = new ShareTokenJoinJourneyUseCase(
     journeyRepository,

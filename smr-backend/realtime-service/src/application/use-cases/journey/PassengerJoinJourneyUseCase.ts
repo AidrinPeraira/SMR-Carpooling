@@ -1,5 +1,6 @@
 import { PassengerJoinJourneyRequestDTO } from "#/application/dto/JourneyDTO";
 import { IJourneyRepository } from "#/application/interfaces/repository/IJourneyRepsoitory";
+import { ISocketStore } from "#/application/interfaces/services/ISocketStore";
 import { ISocketEmitter } from "#/application/interfaces/sockets/ISocketEmitter";
 import { IPassengerJoinJourneyUseCase } from "#/application/interfaces/use-cases/journey/IPassengerJoinJourneyUseCase";
 import {
@@ -10,14 +11,11 @@ import {
   JourneyErrorMessage,
 } from "@sharemyride/shared";
 
-/**
- * This class implements the use case that handles a passenger joining a room
- * for a journey. It validates the passenger against journey records and also
- */
 export class PassengerJoinJourneyUseCase implements IPassengerJoinJourneyUseCase {
   constructor(
     private readonly _journeyRepository: IJourneyRepository,
     private readonly _socketEmitter: ISocketEmitter,
+    private readonly _socketStore: ISocketStore,
   ) {}
 
   async execute(
@@ -71,6 +69,7 @@ export class PassengerJoinJourneyUseCase implements IPassengerJoinJourneyUseCase
       );
     }
 
+    await this._socketStore.addSocket(dto.journeyId, dto.userId, socketId);
     await this._socketEmitter.joinRoom(`journey:${dto.journeyId}`, socketId);
   }
 }
