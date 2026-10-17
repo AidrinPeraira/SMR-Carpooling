@@ -32,9 +32,10 @@ export function TripChatView() {
   });
 
   const chatSocket = useChatSocket();
-  const chatDataRef = useRef(chatData);
+  const chatIdRef = useRef<string | null>(null);
+
   useEffect(() => {
-    chatDataRef.current = chatData;
+    if (chatData) chatIdRef.current = chatData.chat_id;
   }, [chatData]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -59,31 +60,37 @@ export function TripChatView() {
   }, [tripId]);
 
   useEffect(() => {
-    chatSocket.emit(SocketEvents.JOIN_CHAT, { trip_id: tripId });
+    const joinChat = () => {
+      chatSocket.emit(SocketEvents.JOIN_CHAT, { trip_id: tripId });
+    };
+
+    joinChat();
+    chatSocket.on("connect", joinChat);
 
     const onNewMessage = (data: ChatMessageDTO) => {
-      const current = chatDataRef.current;
-      if (!current) return;
-      setChatData({ ...current, messages: [...current.messages, data] });
+      setChatData((prev) => {
+        if (!prev) return prev;
+        return { ...prev, messages: [...prev.messages, data] };
+      });
     };
 
     chatSocket.on(SocketEvents.NEW_MESSAGE, onNewMessage);
 
     return () => {
+      chatSocket.off("connect", joinChat);
       chatSocket.off(SocketEvents.NEW_MESSAGE, onNewMessage);
-      if (chatDataRef.current) {
+      if (chatIdRef.current) {
         chatSocket.emit(SocketEvents.LEAVE_CHAT, {
-          chat_id: chatDataRef.current.chat_id,
+          chat_id: chatIdRef.current,
         });
       }
     };
   }, [chatSocket, tripId]);
 
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ block: "end" });
+    });
   }, [chatData?.messages]);
 
   const handleSendMessage = useCallback(
