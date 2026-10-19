@@ -92,7 +92,7 @@ export class ApprovePayoutUseCase implements IApprovePayoutUseCase {
     await this._transactionRepository.save({
       transactionId,
       creditor: payout.driverId,
-      debitor: payout.passengerId,
+      debitor: "SYSTEM",
       transactionType: TransactionType.CREDIT,
       transactionCategory: TransactionCategory.PAYOUT,
       paymentMethod: PaymentMethod.WALLET,

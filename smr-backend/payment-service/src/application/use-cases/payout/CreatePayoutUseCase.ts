@@ -1,5 +1,6 @@
 import { CreatePayoutRequestDTO } from "#/application/dto/payout/CreatePayoutDTO";
 import { IPayoutRepository } from "#/application/interfaces/repository/IPayoutRepository";
+import { ITransactionRepository } from "#/application/interfaces/repository/ITransactionRepository";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { ICreatePayoutUseCase } from "#/application/interfaces/use-cases/payout/ICreatePayoutUseCase";
 import {
@@ -7,8 +8,11 @@ import {
   ErrorCode,
   ErrorDetails,
   HttpStatusCodes,
+  PaymentMethod,
   PayoutErrorMessage,
   PayoutStatus,
+  TransactionCategory,
+  TransactionType,
 } from "@sharemyride/shared";
 
 const COMMISSION_RATE = 0.1;
@@ -20,6 +24,7 @@ const COMMISSION_RATE = 0.1;
 export class CreatePayoutUseCase implements ICreatePayoutUseCase {
   constructor(
     private readonly _payoutRepository: IPayoutRepository,
+    private readonly _transactionRepository: ITransactionRepository,
     private readonly _uidService: IUniqueIdGenerator,
   ) {}
 
@@ -45,8 +50,10 @@ export class CreatePayoutUseCase implements ICreatePayoutUseCase {
     const payable = Math.round((dto.amount - commission) * 100) / 100;
     const now = new Date();
 
+    const payoutId = this._uidService.generateRandomId();
+
     await this._payoutRepository.save({
-      payoutId: this._uidService.generateRandomId(),
+      payoutId,
       tripId: dto.journeyId,
       bookingId: dto.bookingId,
       driverId: dto.driverId,
@@ -58,6 +65,18 @@ export class CreatePayoutUseCase implements ICreatePayoutUseCase {
       refTransactionId: null,
       createdAt: now,
       updatedAt: now,
+    });
+
+    await this._transactionRepository.save({
+      transactionId: this._uidService.generateRandomId(),
+      creditor: "SYSTEM",
+      debitor: dto.passengerId,
+      transactionType: TransactionType.CREDIT,
+      transactionCategory: TransactionCategory.COMMISSION,
+      paymentMethod: PaymentMethod.WALLET,
+      recordId: payoutId,
+      amount: commission,
+      createdAt: now,
     });
   }
 }

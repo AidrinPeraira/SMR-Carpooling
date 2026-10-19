@@ -87,6 +87,7 @@ const getCustomerEarningsUseCase = new GetCustomerEarningsUseCase(
 // Payout Use Cases
 const createPayoutUseCase = new CreatePayoutUseCase(
   payoutRepository,
+  transactionRepository,
   cryptoUIDService,
 );
 const approvePayoutUseCase = new ApprovePayoutUseCase(
