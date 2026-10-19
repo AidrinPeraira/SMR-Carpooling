@@ -17,7 +17,6 @@ export function Pagination({
   function handleSelectPage(page: number) {
     const params = new URLSearchParams(currentParams);
     params.set("page", page.toString());
-    params.set("limit", "10");
     router.replace(`${path}?${params.toString()}`);
   }
 

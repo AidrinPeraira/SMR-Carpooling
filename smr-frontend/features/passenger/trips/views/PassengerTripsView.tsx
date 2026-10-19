@@ -10,7 +10,7 @@ import {
   PaginatedPayload,
   SortOrder,
 } from "@sharemyride/shared";
-import { Button, Loader, useToast } from "@sharemyride/ui";
+import { Button, ItemsPerPage, Loader, useToast } from "@sharemyride/ui";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
@@ -22,6 +22,7 @@ export function PassengerTripsView() {
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
   const [isOpen, setIsOpen] = useState<boolean>(true);
 
   const [lastSearchParams, setLastSearchParams] = useState<{
@@ -84,7 +85,7 @@ export function PassengerTripsView() {
         time: searchDate,
         query: {
           page,
-          limit: 10,
+          limit,
           sortValue: SortOrder.ASC,
         },
       });
@@ -104,6 +105,14 @@ export function PassengerTripsView() {
       });
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function handleLimitChange(newLimit: number) {
+    setLimit(newLimit);
+    setCurrentPage(1);
+    if (lastSearchParams) {
+      executeSearch(lastSearchParams, 1);
     }
   }
 
@@ -201,30 +210,39 @@ export function PassengerTripsView() {
           )}
 
           {/* Pagination */}
-          {tripsPayload && tripsPayload.paginationMeta.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 pt-3 mt-3 border-t border-border-subtle">
-              <Button
-                variant="secondary"
-                className="w-7 h-7 p-0 flex items-center justify-center text-xs"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage <= 1}
-              >
-                &lt;
-              </Button>
-              <span className="text-xs text-content-secondary px-2">
-                Page {currentPage} of{" "}
-                {tripsPayload.paginationMeta.totalPages}
-              </span>
-              <Button
-                variant="secondary"
-                className="w-7 h-7 p-0 flex items-center justify-center text-xs"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={
-                  currentPage >= tripsPayload.paginationMeta.totalPages
-                }
-              >
-                &gt;
-              </Button>
+          {tripsPayload && (
+            <div className="flex items-center justify-between pt-3 mt-3 border-t border-border-subtle">
+              <ItemsPerPage
+                value={limit}
+                onChange={handleLimitChange}
+                totalItems={totalItems}
+              />
+              {tripsPayload.paginationMeta.totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="secondary"
+                    className="w-7 h-7 p-0 flex items-center justify-center text-xs"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    &lt;
+                  </Button>
+                  <span className="text-xs text-content-secondary px-2">
+                    Page {currentPage} of{" "}
+                    {tripsPayload.paginationMeta.totalPages}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    className="w-7 h-7 p-0 flex items-center justify-center text-xs"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={
+                      currentPage >= tripsPayload.paginationMeta.totalPages
+                    }
+                  >
+                    &gt;
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

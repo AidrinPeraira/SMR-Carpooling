@@ -12,6 +12,8 @@ import {
 import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
 import { InlineError } from "@/components/InlineError";
 import { Filter } from "@/components/UserInput/Filter";
+import { ItemsPerPage } from "@/components/UserInput/ItemsPerPage";
+import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
 import { getAdminVehiclesRequest } from "../api/requests/getAdminVehiclesRequest";
@@ -24,13 +26,15 @@ export function AdminVehiclesView() {
   const filterField = existingParams.get("filterField");
   const filterValue = existingParams.get("filterValue");
   const sortField = existingParams.get("sortField");
-  const sortValue = existingParams.get("sortValue") || existingParams.get("sortOrder");
+  const sortValue =
+    existingParams.get("sortValue") || existingParams.get("sortOrder");
 
   const page = existingParams.get("page") || "1";
   const limit = existingParams.get("limit") || "10";
 
   const queryParams: Record<string, string> = useMemo(() => {
-    const query: Partial<Record<keyof QueryDTO<VehicleListResult>, string>> = {};
+    const query: Partial<Record<keyof QueryDTO<VehicleListResult>, string>> =
+      {};
 
     if (searchValue) {
       query.search = searchValue;
@@ -55,7 +59,15 @@ export function AdminVehiclesView() {
     query.limit = limit;
 
     return query as Record<string, string>;
-  }, [searchValue, filterField, filterValue, sortField, sortValue, page, limit]);
+  }, [
+    searchValue,
+    filterField,
+    filterValue,
+    sortField,
+    sortValue,
+    page,
+    limit,
+  ]);
 
   const { isPending, error, data } = useQuery({
     queryKey: ["adminVehicles", queryParams],
@@ -76,7 +88,9 @@ export function AdminVehiclesView() {
   }
 
   if (error) {
-    return <InlineError message={`Error fetching vehicles: ${String(error)}`} />;
+    return (
+      <InlineError message={`Error fetching vehicles: ${String(error)}`} />
+    );
   }
 
   if (!data || !data.success || !data.payload) {
@@ -160,6 +174,13 @@ export function AdminVehiclesView() {
       </div>
       <div className="overflow-x-auto">
         <Table columnNames={tableData.columnNames} data={tableData.data} />
+      </div>
+      <div className="flex items-center justify-between">
+        <ItemsPerPage totalItems={data.payload.paginationMeta?.totalItems} />
+        <Pagination
+          currentPage={data.payload.paginationMeta?.currentPage ?? 1}
+          totalPages={data.payload.paginationMeta?.totalPages ?? 1}
+        />
       </div>
     </div>
   );

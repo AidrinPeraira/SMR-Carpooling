@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { ItemsPerPage } from "@/components/UserInput/ItemsPerPage";
 import { Pagination } from "@/components/UserInput/Pagination";
 import {
   getDriverTripsRequest,
@@ -24,7 +25,7 @@ export function DriverTripsView() {
   const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const page = Number(searchParams.get("page")) || 1;
-  const limit = 10;
+  const limit = Number(searchParams.get("limit")) || 10;
 
   const handleStatusChange = (newStatus: string) => {
     setStatusFilter(newStatus);
@@ -253,9 +254,10 @@ export function DriverTripsView() {
             </div>
           </Card>
 
-          {totalPages > 1 && (
+          <div className="flex items-center justify-between">
+            <ItemsPerPage totalItems={totalItems} />
             <Pagination currentPage={page} totalPages={totalPages} />
-          )}
+          </div>
         </>
       )}
     </div>

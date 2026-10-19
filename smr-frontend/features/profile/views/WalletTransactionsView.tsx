@@ -1,6 +1,7 @@
 "use client";
 
 import { Filter } from "@/components/UserInput/Filter";
+import { ItemsPerPage } from "@/components/UserInput/ItemsPerPage";
 import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
@@ -120,6 +121,8 @@ export function WalletTransactionsView() {
   const paginationMeta = (data?.success && data.payload?.transactions?.paginationMeta) || {
     currentPage: 1,
     totalPages: 1,
+    totalItems: 0,
+    limit: 10,
   };
   const walletBalance = (data?.success && data.payload?.wallet_balance) || 0;
 
@@ -159,10 +162,13 @@ export function WalletTransactionsView() {
       </div>
 
       {transactions.length > 0 && (
-        <Pagination
-          currentPage={paginationMeta.currentPage}
-          totalPages={paginationMeta.totalPages}
-        />
+        <div className="flex items-center justify-between">
+          <ItemsPerPage totalItems={paginationMeta.totalItems} />
+          <Pagination
+            currentPage={paginationMeta.currentPage}
+            totalPages={paginationMeta.totalPages}
+          />
+        </div>
       )}
     </div>
   );

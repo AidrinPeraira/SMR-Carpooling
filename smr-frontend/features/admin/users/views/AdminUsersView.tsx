@@ -2,6 +2,7 @@
 
 import { Filter } from "@/components/UserInput/Filter";
 import { InlineError } from "@/components/InlineError";
+import { ItemsPerPage } from "@/components/UserInput/ItemsPerPage";
 import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
@@ -199,10 +200,13 @@ export default function AdminUsersView() {
       <div className="overflow-x-auto">
         <Table columnNames={tableData.columnNames} data={tableData.data} />
       </div>
-      <Pagination
-        currentPage={data.payload.paginationMeta.currentPage}
-        totalPages={data.payload.paginationMeta.totalPages}
-      />
+      <div className="flex items-center justify-between">
+        <ItemsPerPage totalItems={data.payload.paginationMeta.totalItems} />
+        <Pagination
+          currentPage={data.payload.paginationMeta.currentPage}
+          totalPages={data.payload.paginationMeta.totalPages}
+        />
+      </div>
     </div>
   );
 }
