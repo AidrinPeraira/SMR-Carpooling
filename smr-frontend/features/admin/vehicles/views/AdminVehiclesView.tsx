@@ -4,9 +4,9 @@ import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
+  AdminVehicleRecordResult,
   QueryDTO,
   SortOrder,
-  VehicleListResult,
   VehicleTypes,
 } from "@sharemyride/shared";
 import { Button, Loader, Table, TableProps, Tag } from "@sharemyride/ui";
@@ -16,7 +16,7 @@ import { ItemsPerPage } from "@/components/UserInput/ItemsPerPage";
 import { Pagination } from "@/components/UserInput/Pagination";
 import { Search } from "@/components/UserInput/Search";
 import { Sort } from "@/components/UserInput/Sort";
-import { getAdminVehiclesRequest } from "../api/requests/getAdminVehiclesRequest";
+import { getAdminVehicleRecordsRequest } from "../api/requests/getAdminVehicleRecordsRequest";
 
 export function AdminVehiclesView() {
   const existingParams = useSearchParams();
@@ -33,8 +33,9 @@ export function AdminVehiclesView() {
   const limit = existingParams.get("limit") || "10";
 
   const queryParams: Record<string, string> = useMemo(() => {
-    const query: Partial<Record<keyof QueryDTO<VehicleListResult>, string>> =
-      {};
+    const query: Partial<
+      Record<keyof QueryDTO<AdminVehicleRecordResult>, string>
+    > = {};
 
     if (searchValue) {
       query.search = searchValue;
@@ -46,12 +47,12 @@ export function AdminVehiclesView() {
       filterField !== "None" &&
       filterValue !== "None"
     ) {
-      query.filterField = filterField as keyof VehicleListResult;
+      query.filterField = filterField as keyof AdminVehicleRecordResult;
       query.filterValue = filterValue;
     }
 
     if (sortField) {
-      query.sortField = sortField as keyof VehicleListResult;
+      query.sortField = sortField as keyof AdminVehicleRecordResult;
       query.sortValue = (sortValue as SortOrder) || SortOrder.ASC;
     }
 
@@ -59,20 +60,12 @@ export function AdminVehiclesView() {
     query.limit = limit;
 
     return query as Record<string, string>;
-  }, [
-    searchValue,
-    filterField,
-    filterValue,
-    sortField,
-    sortValue,
-    page,
-    limit,
-  ]);
+  }, [searchValue, filterField, filterValue, sortField, sortValue, page, limit]);
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["adminVehicles", queryParams],
+    queryKey: ["adminVehicleRecords", queryParams],
     queryFn: async () => {
-      return await getAdminVehiclesRequest(queryParams);
+      return await getAdminVehicleRecordsRequest(queryParams);
     },
     placeholderData: keepPreviousData,
     staleTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
@@ -101,14 +94,12 @@ export function AdminVehiclesView() {
     );
   }
 
-  const vehiclesList = data.payload.vehicles ?? [];
-
-  const tableData: TableProps<VehicleListResult> = {
-    data: vehiclesList,
+  const tableData: TableProps<AdminVehicleRecordResult> = {
+    data: data.payload.data ?? [],
     columnNames: [
       {
-        headerName: "Vehicle ID",
-        fieldName: "id",
+        headerName: "Registration No.",
+        fieldName: "registration_number",
       },
       {
         headerName: "Make & Model",
@@ -126,20 +117,26 @@ export function AdminVehiclesView() {
         ),
       },
       {
-        headerName: "Status",
-        fieldName: "is_active",
+        headerName: "Capacity",
+        fieldName: "vehicle_capacity",
+      },
+      {
+        headerName: "Reg. Expiry",
+        fieldName: "registration_expiry",
         customRender: (value) =>
-          value ? (
-            <Tag variant="accent">ACTIVE</Tag>
-          ) : (
-            <Tag variant="muted">INACTIVE</Tag>
-          ),
+          value ? new Date(String(value)).toLocaleDateString() : "-",
+      },
+      {
+        headerName: "Insurance Expiry",
+        fieldName: "insurance_expiry",
+        customRender: (value) =>
+          value ? new Date(String(value)).toLocaleDateString() : "-",
       },
       {
         headerName: "Action",
         customRender: (_v, row) => (
           <Button
-            onClick={() => router.push(`/admin/vehicles/${row.id}`)}
+            onClick={() => router.push(`/admin/vehicles/${row.record_id}`)}
             variant="ghost"
             className="text-xs"
           >
@@ -153,10 +150,15 @@ export function AdminVehiclesView() {
 
   const filterFields = {
     vehicleType: [VehicleTypes.SEDAN, VehicleTypes.SUV, VehicleTypes.HATCHBACK],
-    isActive: ["true", "false"],
   };
 
-  const sortFields = ["vehicleMake", "vehicleModel", "vehicleType", "isActive"];
+  const sortFields = [
+    "vehicleMake",
+    "vehicleModel",
+    "vehicleType",
+    "registrationExpiry",
+    "insuranceExpiry",
+  ];
 
   return (
     <div className="p-8 space-y-6">
@@ -176,10 +178,10 @@ export function AdminVehiclesView() {
         <Table columnNames={tableData.columnNames} data={tableData.data} />
       </div>
       <div className="flex items-center justify-between">
-        <ItemsPerPage totalItems={data.payload.paginationMeta?.totalItems} />
+        <ItemsPerPage totalItems={data.payload.paginationMeta.totalItems} />
         <Pagination
-          currentPage={data.payload.paginationMeta?.currentPage ?? 1}
-          totalPages={data.payload.paginationMeta?.totalPages ?? 1}
+          currentPage={data.payload.paginationMeta.currentPage}
+          totalPages={data.payload.paginationMeta.totalPages}
         />
       </div>
     </div>

@@ -71,6 +71,15 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `GET`  | `/:applicationId`  | Get details of a specific application.        | Yes (Admin)   |
 | `POST` | `/process`         | Process (approve/reject/return) an application. | Yes (Admin)   |
 
+### Admin — Vehicle Records
+
+**Base Path:** `/api/v1/admin/vehicles`
+
+| Method | Endpoint      | Description                                    | Auth Required |
+| :----- | :------------ | :--------------------------------------------- | :------------ |
+| `GET`  | `/`           | List all vehicle records with pagination.      | Yes (Admin)   |
+| `GET`  | `/:recordId`  | Get full details of a vehicle record.          | Yes (Admin)   |
+
 ---
 
 ## Trip Service

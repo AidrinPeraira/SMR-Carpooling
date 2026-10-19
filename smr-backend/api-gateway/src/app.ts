@@ -58,6 +58,7 @@ export function createApp(logger: ILogger) {
       "/api/*/applications/**",
       "/api/*/admin/users/**",
       "/api/*/admin/applications/**",
+      "/api/*/admin/vehicles/**",
     ],
     pathRewrite: {
       "^/api": "",

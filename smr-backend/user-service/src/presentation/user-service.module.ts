@@ -61,6 +61,10 @@ import { GetApplicationsUseCase } from "#/application/use-case/application/GetAp
 import { GetApplicationDetailsUseCase } from "#/application/use-case/application/GetApplicationDetailsUseCase";
 import { GetFileUploadUrlUseCase } from "#/application/use-case/GetFileUploadUrlUseCase";
 
+// Admin Vehicle Record Use Cases
+import { GetAllVehicleRecordsUseCase } from "#/application/use-case/admin/vehicles/GetAllVehicleRecordsUseCase";
+import { GetVehicleRecordDetailsUseCase } from "#/application/use-case/admin/vehicles/GetVehicleRecordDetailsUseCase";
+
 // Admin Application Use Cases
 import { GetAllApplicationsUseCase } from "#/application/use-case/admin/application/GetAllApplicationsUseCase";
 import { ProcessApplicationUseCase } from "#/application/use-case/admin/application/ProcessApplicationUseCase";
@@ -70,6 +74,8 @@ import { ApplicationControllerV1 } from "#/presentation/v1/controllers/Applicati
 import { createApplicationRouterV1 } from "#/presentation/v1/routes/ApplicationRouterV1";
 import { AdminApplicationControllerV1 } from "#/presentation/v1/controllers/admin/AdminApplicationControllerV1";
 import { createAdminApplicationRouterV1 } from "#/presentation/v1/routes/admin/AdminApplicationRouterV1";
+import { AdminVehicleRecordControllerV1 } from "#/presentation/v1/controllers/admin/AdminVehicleRecordControllerV1";
+import { createAdminVehicleRecordRouteV1 } from "#/presentation/v1/routes/admin/AdminVehicleRecordRouterV1";
 
 /**
  * Composition Root for the User Service.
@@ -357,6 +363,24 @@ const adminApplicationRouterV1 = createAdminApplicationRouterV1(
   adminApplicationControllerV1,
 );
 
+//admin vehicle record controller
+const getAllVehicleRecordsUseCase = new GetAllVehicleRecordsUseCase(
+  mongoVehicleRecordRepository,
+);
+const getVehicleRecordDetailsUseCase = new GetVehicleRecordDetailsUseCase(
+  mongoVehicleRecordRepository,
+  mongoApplicationRepository,
+  mongoUserRepository,
+);
+const adminVehicleRecordControllerV1 = new AdminVehicleRecordControllerV1(
+  consolaLogger,
+  getAllVehicleRecordsUseCase,
+  getVehicleRecordDetailsUseCase,
+);
+const adminVehicleRecordRouterV1 = createAdminVehicleRecordRouteV1(
+  adminVehicleRecordControllerV1,
+);
+
 // v1 router setup
 const profileRouterV1 = createProfileRouterV1(profileControllerV1);
 const v1Router = express.Router();
@@ -376,6 +400,11 @@ v1Router.use(
   "/admin/applications",
   AuthMiddleware(UserRole.ADMIN),
   adminApplicationRouterV1,
+);
+v1Router.use(
+  "/admin/vehicles",
+  AuthMiddleware(UserRole.ADMIN),
+  adminVehicleRecordRouterV1,
 );
 
 //exporting versioned routers

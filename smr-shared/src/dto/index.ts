@@ -6,6 +6,7 @@ export * from "./DriverDTO";
 export * from "./VehicleDTO";
 export * from "./admin/AdminUsersDTO";
 export * from "./admin/AdminConfigurationsDTO";
+export * from "./admin/AdminVehicleRecordsDTO";
 export * from "./admin/AdminApplicationsDTO";
 export * from "./admin/AdminTripsDTO";
 export * from "./admin/AdminBookingsDTO";
