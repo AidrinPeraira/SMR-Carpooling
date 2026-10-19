@@ -28,6 +28,7 @@ export function ItemsPerPage({
         value={value !== undefined ? String(value) : undefined}
         options={dropdownOptions}
         onChange={(v) => onChange(Number(v))}
+        direction="up"
       />
       {totalItems !== undefined && (
         <span className="text-xs text-content-secondary whitespace-nowrap">
