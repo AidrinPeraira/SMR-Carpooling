@@ -54,7 +54,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 
     //if the user doesn't exist create a new one
     if (!user) {
-      const userId = this.uniqueIdGenerator.generateRandomId();
+      const userId = this.uniqueIdGenerator.generateRandomId("USR");
       const now = new Date();
 
       user = await this.userRepository.save({

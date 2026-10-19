@@ -58,7 +58,7 @@ export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCa
     const movedFiles: { from: string; to: string }[] = [];
 
     try {
-      applicationId = this._uniqueIdGenerator.generateRandomId();
+      applicationId = this._uniqueIdGenerator.generateRandomId("APP");
       const now = new Date();
 
       const applicationData: Omit<ApplicationEntity, "id"> = {
@@ -76,7 +76,7 @@ export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCa
         return filePath.startsWith("temp/") ? filePath.slice(5) : filePath;
       };
 
-      driverRecordId = this._uniqueIdGenerator.generateRandomId();
+      driverRecordId = this._uniqueIdGenerator.generateRandomId("DRV");
 
       const finalLicenseFile = getDestinationPath(data.licenseFile);
       if (finalLicenseFile !== data.licenseFile) {
@@ -120,7 +120,7 @@ export class OnboardingApplicationUseCase implements IOnboardingApplicationUseCa
         movedFiles.push({ from: data.insuranceFile, to: finalInsuranceFile });
       }
 
-      vehicleRecordId = this._uniqueIdGenerator.generateRandomId();
+      vehicleRecordId = this._uniqueIdGenerator.generateRandomId("VHC");
 
       // save vehicle record
       const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {

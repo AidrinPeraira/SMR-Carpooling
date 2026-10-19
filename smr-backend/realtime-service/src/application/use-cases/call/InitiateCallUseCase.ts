@@ -120,7 +120,7 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
     }
 
     //create a new call session
-    const newSessionId = this._uniqueIdGenerator.generateRandomId();
+    const newSessionId = this._uniqueIdGenerator.generateRandomId("CLL");
     const now = new Date();
 
     const newSession = await this._callSessionRepository.save({

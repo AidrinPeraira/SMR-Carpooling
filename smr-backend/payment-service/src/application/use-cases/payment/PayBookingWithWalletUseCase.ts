@@ -184,7 +184,7 @@ export class PayBookingWithWalletUseCase implements IPayBookingWithWalletUseCase
         );
       }
 
-      const walletTransactionId = this._uidService.generateRandomId();
+      const walletTransactionId = this._uidService.generateRandomId("TXN");
 
       await this._walletRepository.addTransactionByCustomerId(passengerId, {
         walletId: wallet.walletId,
@@ -208,7 +208,7 @@ export class PayBookingWithWalletUseCase implements IPayBookingWithWalletUseCase
         updatedAt: new Date(),
       });
 
-      const transactionId = this._uidService.generateRandomId();
+      const transactionId = this._uidService.generateRandomId("TXN");
       await this._transactionRepository.save({
         transactionId,
         creditor: "SYSTEM",

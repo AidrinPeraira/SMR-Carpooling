@@ -54,7 +54,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
     const movedFiles: { from: string; to: string }[] = [];
 
     try {
-      applicationId = this._uniqueIdGenerator.generateRandomId();
+      applicationId = this._uniqueIdGenerator.generateRandomId("APP");
       const now = new Date();
 
       const applicationData: Omit<ApplicationEntity, "id"> = {
@@ -95,7 +95,7 @@ export class NewVehicleApplicationUseCase implements INewVehicleApplicationUseCa
         movedFiles.push({ from: data.insuranceFile, to: finalInsuranceFile });
       }
 
-      recordId = this._uniqueIdGenerator.generateRandomId();
+      recordId = this._uniqueIdGenerator.generateRandomId("VHC");
 
       // save records
       const vehicleRecordData: Omit<VehicleRecordEntity, "id"> = {

@@ -50,7 +50,7 @@ export class CreatePayoutUseCase implements ICreatePayoutUseCase {
     const payable = Math.round((dto.amount - commission) * 100) / 100;
     const now = new Date();
 
-    const payoutId = this._uidService.generateRandomId();
+    const payoutId = this._uidService.generateRandomId("PYT");
 
     await this._payoutRepository.save({
       payoutId,
@@ -68,7 +68,7 @@ export class CreatePayoutUseCase implements ICreatePayoutUseCase {
     });
 
     await this._transactionRepository.save({
-      transactionId: this._uidService.generateRandomId(),
+      transactionId: this._uidService.generateRandomId("TXN"),
       creditor: "SYSTEM",
       debitor: dto.passengerId,
       transactionType: TransactionType.CREDIT,

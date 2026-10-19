@@ -62,7 +62,7 @@ export class GetShareTokenUseCase implements IGetShareTokenUseCase {
       return { shareToken: member.shareToken };
     }
 
-    const shareToken = this._idGenerator.generateRandomId();
+    const shareToken = this._idGenerator.generateRandomId("SHR");
 
     await this._journeyRepository.setMemberShareToken(
       dto.journeyId,

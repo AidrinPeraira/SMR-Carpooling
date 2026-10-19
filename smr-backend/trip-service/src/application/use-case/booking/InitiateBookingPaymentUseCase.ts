@@ -138,7 +138,7 @@ export class InitiateBookingPaymentUseCase implements IInitiateBookingPaymentUse
       );
     }
 
-    const paymentKey = this._uniqueIdService.generateRandomId();
+    const paymentKey = this._uniqueIdService.generateRandomId("PAY");
     const keyExpiry = new Date(now.getTime() + 2 * 60 * 1000);
 
     const updatedTrip = await this._tripRepository.atmoicReserveSeat(

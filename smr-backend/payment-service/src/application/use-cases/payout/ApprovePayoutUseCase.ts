@@ -87,7 +87,7 @@ export class ApprovePayoutUseCase implements IApprovePayoutUseCase {
     }
 
     const now = new Date();
-    const transactionId = this._uidService.generateRandomId();
+    const transactionId = this._uidService.generateRandomId("TXN");
 
     await this._transactionRepository.save({
       transactionId,

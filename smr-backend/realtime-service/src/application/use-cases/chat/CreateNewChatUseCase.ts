@@ -14,7 +14,7 @@ export class CreateNewChatUseCase implements ICreateNewChatUseCase {
 
   async execute(tripId: string): Promise<void> {
     await this._chatRepository.save({
-      chatId: this._uidGenerator.generateRandomId(),
+      chatId: this._uidGenerator.generateRandomId("CHT"),
       tripId,
       isActive: true,
       members: [],

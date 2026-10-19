@@ -74,7 +74,7 @@ export class RefundBookingPaymentUseCase implements IRefundBookingPaymentUseCase
 
       //add ledger transaction
       await this._transactionRepository.save({
-        transactionId: this._uidService.generateRandomId(),
+        transactionId: this._uidService.generateRandomId("TXN"),
         debitor: "SYSTEM",
         creditor: successfulBooking.passengerId,
         transactionType: TransactionType.CREDIT,
