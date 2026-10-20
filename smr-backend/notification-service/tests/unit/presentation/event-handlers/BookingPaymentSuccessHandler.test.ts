@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BookingPaymentSuccessHandler } from "#/presentation/event-handlers/BookingPaymentSuccessHandler";
-import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/ISendBookingPaymentSuccessMailUseCase";
+import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/booking/ISendBookingPaymentSuccessMailUseCase";
 import { ILogger, BookingPaymentSuccessEvent, EventName } from "@sharemyride/shared";
 
 describe("BookingPaymentSuccessHandler", () => {

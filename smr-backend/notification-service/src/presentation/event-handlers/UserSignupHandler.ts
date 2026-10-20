@@ -1,6 +1,6 @@
 import { SinupVerifcationMailRequestDTO } from "#/application/dto/email/SignupVerificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/ISendSignupVerificationMailUseCase";
+import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/auth/ISendSignupVerificationMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
 

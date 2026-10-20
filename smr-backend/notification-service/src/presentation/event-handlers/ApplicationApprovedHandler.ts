@@ -1,6 +1,6 @@
 import { ApplicationApprovedMailDTO } from "#/application/dto/email/ApplicationNotificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendApplicationApprovedMailUseCase } from "#/application/interfaces/use-case/ISendApplicationApprovedMailUseCase";
+import { ISendApplicationApprovedMailUseCase } from "#/application/interfaces/use-case/application/ISendApplicationApprovedMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ApplicationApprovedEvent, ILogger } from "@sharemyride/shared";
 

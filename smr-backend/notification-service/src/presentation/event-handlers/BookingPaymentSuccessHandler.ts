@@ -1,6 +1,6 @@
 import { BookingPaymentMailDTO } from "#/application/dto/email/BookingPaymentMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/ISendBookingPaymentSuccessMailUseCase";
+import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/booking/ISendBookingPaymentSuccessMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { BookingPaymentSuccessEvent, ILogger } from "@sharemyride/shared";
 

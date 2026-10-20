@@ -1,6 +1,6 @@
 import { PasswordChangedMailDTO } from "#/application/dto/email/PasswordChangeMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendPasswordChangedMailUseCase } from "#/application/interfaces/use-case/ISendPasswordChangedMailUseCase";
+import { ISendPasswordChangedMailUseCase } from "#/application/interfaces/use-case/auth/ISendPasswordChangedMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, PasswordChangedEvent } from "@sharemyride/shared";
 

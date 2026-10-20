@@ -1,6 +1,6 @@
 import { NewBookingMailDTO } from "#/application/dto/email/NewBookingMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/ISendNewBookingEmailUseCase";
+import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/booking/ISendNewBookingEmailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, NewBookingEvent } from "@sharemyride/shared";
 

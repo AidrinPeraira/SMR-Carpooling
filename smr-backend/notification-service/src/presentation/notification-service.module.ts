@@ -3,19 +3,23 @@
  */
 
 import { AppConfig } from "#/application.config";
-import { SendApplicationApprovedMailUseCase } from "#/application/use-case/SendApplicationApprovedMailUseCase";
-import { SendApplicationRejectedMailUseCase } from "#/application/use-case/SendApplicationRejectedMailUseCase";
-import { SendApplicationReturnedMailUseCase } from "#/application/use-case/SendApplicationReturnedMailUseCase";
-import { SendPasswordChangeRequestMailUseCase } from "#/application/use-case/SendPasswordChangeRequestMailUseCase";
-import { SendPasswordChangedMailUseCase } from "#/application/use-case/SendPasswordChangedMailUseCase";
-import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSignupVerificationMailUseCase";
-import { SendNewBookingEmailUseCase } from "#/application/use-case/SendNewBookingEmailUseCase";
-import { SendBookingPaymentSuccessMailUseCase } from "#/application/use-case/SendBookingPaymentSuccessMailUseCase";
-import { SendBookingPaymentFailedMailUseCase } from "#/application/use-case/SendBookingPaymentFailedMailUseCase";
-import { SendBookingCancellationEmailUseCase } from "#/application/use-case/SendBookingCancellationEMailUseCase";
-import { SendTripCancellationEmailsUseCase } from "#/application/use-case/SendTripCancellationEmailsUseCase";
+import { SendApplicationApprovedMailUseCase } from "#/application/use-case/application/SendApplicationApprovedMailUseCase";
+import { SendApplicationRejectedMailUseCase } from "#/application/use-case/application/SendApplicationRejectedMailUseCase";
+import { SendApplicationReturnedMailUseCase } from "#/application/use-case/application/SendApplicationReturnedMailUseCase";
+import { SendPasswordChangeRequestMailUseCase } from "#/application/use-case/auth/SendPasswordChangeRequestMailUseCase";
+import { SendPasswordChangedMailUseCase } from "#/application/use-case/auth/SendPasswordChangedMailUseCase";
+import { SendSignupVerificationMailUseCase } from "#/application/use-case/auth/SendSignupVerificationMailUseCase";
+import { SendNewBookingEmailUseCase } from "#/application/use-case/booking/SendNewBookingEmailUseCase";
+import { SendBookingPaymentSuccessMailUseCase } from "#/application/use-case/booking/SendBookingPaymentSuccessMailUseCase";
+import { SendBookingPaymentFailedMailUseCase } from "#/application/use-case/booking/SendBookingPaymentFailedMailUseCase";
+import { SendBookingCancellationEmailUseCase } from "#/application/use-case/booking/SendBookingCancellationEmailUseCase";
+import { SendTripCancellationEmailsUseCase } from "#/application/use-case/trip/SendTripCancellationEmailsUseCase";
 import { RabbitMQConsumer } from "#/infrastructure/services/RabbitMQConsumer";
 import { ResendEmailService } from "#/infrastructure/services/ResendEMailService";
+import { ApplicationEmailTemplateFactory } from "#/infrastructure/templates/ApplicationEmailTemplateFactory";
+import { AuthEmailTemplateFactory } from "#/infrastructure/templates/AuthEmailTemplateFactory";
+import { BookingEmailTemplateFactory } from "#/infrastructure/templates/BookingEmailTemplateFactory";
+import { TripEmailTemplateFactory } from "#/infrastructure/templates/TripEmailTemplateFactory";
 import { ApplicationApprovedHandler } from "#/presentation/event-handlers/ApplicationApprovedHandler";
 import { ApplicationRejectedHandler } from "#/presentation/event-handlers/ApplicationRejectedHandler";
 import { ApplicationReturnedHandler } from "#/presentation/event-handlers/ApplicationReturnedHandler";
@@ -34,40 +38,47 @@ const consolaLogger = new ConsolaLogger();
 
 const resendMailService = new ResendEmailService(consolaLogger);
 
+const bookingEmailTemplateFactory = new BookingEmailTemplateFactory();
+const applicationEmailTemplateFactory = new ApplicationEmailTemplateFactory();
+const authEmailTemplateFactory = new AuthEmailTemplateFactory();
+const tripEmailTemplateFactory = new TripEmailTemplateFactory();
+
 const sendSignUpVerificationEmailUseCase =
-  new SendSignupVerificationMailUseCase(resendMailService);
+  new SendSignupVerificationMailUseCase(resendMailService, authEmailTemplateFactory);
 
 const sendPasswordChangeRequestMailUseCase =
-  new SendPasswordChangeRequestMailUseCase(resendMailService);
+  new SendPasswordChangeRequestMailUseCase(resendMailService, authEmailTemplateFactory);
 
 const sendPasswordChangedMailUseCase = new SendPasswordChangedMailUseCase(
   resendMailService,
+  authEmailTemplateFactory,
 );
 
 const sendApplicationApprovedMailUseCase =
-  new SendApplicationApprovedMailUseCase(resendMailService);
+  new SendApplicationApprovedMailUseCase(resendMailService, applicationEmailTemplateFactory);
 
 const sendApplicationRejectedMailUseCase =
-  new SendApplicationRejectedMailUseCase(resendMailService);
+  new SendApplicationRejectedMailUseCase(resendMailService, applicationEmailTemplateFactory);
 
 const sendApplicationReturnedMailUseCase =
-  new SendApplicationReturnedMailUseCase(resendMailService);
+  new SendApplicationReturnedMailUseCase(resendMailService, applicationEmailTemplateFactory);
 
 const sendNewBookingEmailUseCase = new SendNewBookingEmailUseCase(
   resendMailService,
+  bookingEmailTemplateFactory,
 );
 
 const sendBookingPaymentSuccessMailUseCase =
-  new SendBookingPaymentSuccessMailUseCase(resendMailService);
+  new SendBookingPaymentSuccessMailUseCase(resendMailService, bookingEmailTemplateFactory);
 
 const sendBookingPaymentFailedMailUseCase =
-  new SendBookingPaymentFailedMailUseCase(resendMailService);
+  new SendBookingPaymentFailedMailUseCase(resendMailService, bookingEmailTemplateFactory);
 
 const sendBookingCancellationEmailUseCase =
-  new SendBookingCancellationEmailUseCase(resendMailService);
+  new SendBookingCancellationEmailUseCase(resendMailService, bookingEmailTemplateFactory);
 
 const sendTripCancellationEmailsUseCase =
-  new SendTripCancellationEmailsUseCase(resendMailService);
+  new SendTripCancellationEmailsUseCase(resendMailService, tripEmailTemplateFactory);
 
 const userSignupHandler = new UserSignupHandler(
   consolaLogger,

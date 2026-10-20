@@ -1,6 +1,6 @@
 import { TripCancellationMailDTO } from "#/application/dto/email/TripCancellationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendTripCancellationEmailUseCase } from "#/application/interfaces/use-case/ISendTripCancellationEmail";
+import { ISendTripCancellationEmailUseCase } from "#/application/interfaces/use-case/trip/ISendTripCancellationEmailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { DriverCancelTripEvent, ILogger } from "@sharemyride/shared";
 

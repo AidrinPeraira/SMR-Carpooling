@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { SendSignupVerificationMailUseCase } from "#/application/use-case/SendSignupVerificationMailUseCase";
+import { SendSignupVerificationMailUseCase } from "#/application/use-case/auth/SendSignupVerificationMailUseCase";
 import { AppConfig } from "#/application.config";
 import { MockMailService } from "&#/mocks/MockMailService";
+import { AuthEmailTemplateFactory } from "#/infrastructure/templates/AuthEmailTemplateFactory";
 
 describe("SendSignupVerificationMailUseCase", () => {
   it("should format notification correctly and call mail service", async () => {
     const mailService = new MockMailService();
-    const useCase = new SendSignupVerificationMailUseCase(mailService);
+    const templateFactory = new AuthEmailTemplateFactory();
+    const useCase = new SendSignupVerificationMailUseCase(mailService, templateFactory);
 
     const testData = {
       userName: "Jane Smith",
