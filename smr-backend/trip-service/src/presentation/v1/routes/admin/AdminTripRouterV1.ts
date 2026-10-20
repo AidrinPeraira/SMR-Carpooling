@@ -26,5 +26,17 @@ export function createAdminTripRouterV1(
     (req, res, next) => adminTripController.getJourneyDetails(req, res, next),
   );
 
+  router.get(
+    "/dashboard/count",
+    AuthMiddleware(UserRole.ADMIN),
+    (req, res, next) => adminTripController.getTripsCount(req, res, next),
+  );
+
+  router.get(
+    "/dashboard/trend",
+    AuthMiddleware(UserRole.ADMIN),
+    (req, res, next) => adminTripController.getTripTrend(req, res, next),
+  );
+
   return router;
 }

@@ -2,6 +2,8 @@ import {
   AdminGetAllTripsQuery,
   AdminGetAllTripsResponseDTO,
   AdminGetTripDetailsResponseDTO,
+  GetTripsCountResposneDTO,
+  GetTripTrendResponseDTO,
 } from "#/application/dto/admin/AdminTripsDTO";
 import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import {
@@ -24,6 +26,7 @@ import {
   BookingStatus,
   PaginatedPayload,
   Route,
+  TrendRange,
   TripStatus,
   TripStop,
   VehicleStatus,
@@ -1188,5 +1191,81 @@ export class TripsRepository implements ITripRepository {
         tripDate: { lt: startOfDayUTC },
       },
     });
+  }
+
+  async getTripsCount(): Promise<GetTripsCountResposneDTO> {
+    const [totalTrips, completedTrips, upcomingTrips, cancelledTrips] =
+      await Promise.all([
+        this._tripModel.count(),
+        this._tripModel.count({ where: { tripStatus: TripStatus.COMPLETED } }),
+        this._tripModel.count({
+          where: {
+            tripStatus: { in: [TripStatus.SCHEDULED, TripStatus.FULLY_BOOKED] },
+          },
+        }),
+        this._tripModel.count({ where: { tripStatus: TripStatus.CANCELLED } }),
+      ]);
+
+    return { totalTrips, completedTrips, upcomingTrips, cancelledTrips };
+  }
+
+  async getTripTrend(range: TrendRange): Promise<GetTripTrendResponseDTO> {
+    const now = new Date();
+    let startDate: Date;
+    let groupBy: "day" | "week" | "month";
+
+    switch (range) {
+      case TrendRange.LAST_WEEK:
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        groupBy = "day";
+        break;
+      case TrendRange.LAST_MONTH:
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        groupBy = "week";
+        break;
+      case TrendRange.LAST_YEAR:
+        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        groupBy = "month";
+        break;
+    }
+
+    const trips = await this._tripModel.findMany({
+      where: { createdAt: { gte: startDate } },
+      select: { createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const buckets = new Map<string, number>();
+
+    for (const trip of trips) {
+      const d = trip.createdAt;
+      let label = "";
+
+      switch (groupBy) {
+        case "day": {
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+          label = days[d.getDay()]!;
+          break;
+        }
+        case "week": {
+          const weekStart = new Date(d);
+          weekStart.setDate(d.getDate() - d.getDay());
+          label = `W${Math.ceil(weekStart.getDate() / 7)}`;
+          break;
+        }
+        case "month": {
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          label = months[d.getMonth()]!;
+          break;
+        }
+      }
+
+      buckets.set(label, (buckets.get(label) ?? 0) + 1);
+    }
+
+    return {
+      trendRange: range,
+      data: Array.from(buckets.entries()).map(([label, value]) => ({ label, value })),
+    };
   }
 }

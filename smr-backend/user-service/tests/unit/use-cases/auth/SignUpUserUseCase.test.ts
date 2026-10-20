@@ -42,6 +42,7 @@ describe("SignUpUserUseCase", () => {
         updateByCustomId = vi.fn();
         deleteById = vi.fn();
         deleteByCustomId = vi.fn();
+        getUsersCount = vi.fn();
       },
     );
     const mockUserRepository = new UserRepository();
@@ -150,6 +151,7 @@ describe("SignUpUserUseCase", () => {
         updateByCustomId = vi.fn();
         deleteById = vi.fn();
         deleteByCustomId = vi.fn();
+        getUsersCount = vi.fn();
       },
     ))();
 
@@ -228,6 +230,7 @@ describe("SignUpUserUseCase", () => {
         updateByCustomId = vi.fn();
         deleteById = vi.fn();
         deleteByCustomId = vi.fn();
+        getUsersCount = vi.fn();
       },
     ))();
 

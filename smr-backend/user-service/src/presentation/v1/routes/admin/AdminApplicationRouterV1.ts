@@ -31,5 +31,12 @@ export function createAdminApplicationRouterV1(
     ),
   );
 
+  router.get(
+    "/dashboard/count",
+    adminApplicationControllerV1.getApplicationCount.bind(
+      adminApplicationControllerV1,
+    ),
+  );
+
   return router;
 }

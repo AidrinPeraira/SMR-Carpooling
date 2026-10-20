@@ -1,15 +1,13 @@
 import {
   GetAllApplicationsQueryDTO,
   GetAllApplicationsResponseDTO,
+  GetApplicationCountResponseDTO,
 } from "#/application/dto/admin/application/AdminApplicationsDTO";
 import { GetApplicationDetailsResultDTO } from "#/application/dto/application/GetApplicationDetailsResultDTO";
 import { IBaseRepository } from "#/application/interfaces/repository/IBaseRepository";
 import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { PaginatedPayload } from "@sharemyride/shared";
 
-/**
- * This is the repository for all applications (ApplicationEntities)
- */
 export interface IApplicationRepository extends IBaseRepository<ApplicationEntity> {
   /**
    * This method queries applications and joins them with corresponding user data
@@ -32,4 +30,6 @@ export interface IApplicationRepository extends IBaseRepository<ApplicationEntit
   getFullApplicationDetails(
     applicationId: string,
   ): Promise<GetApplicationDetailsResultDTO | null>;
+
+  getApplicationCount(): Promise<GetApplicationCountResponseDTO>;
 }

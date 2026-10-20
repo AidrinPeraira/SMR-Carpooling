@@ -1,8 +1,10 @@
+import { GetUsersCountResponseDTO } from "#/application/dto/admin/users/AdminUsersDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { UserEntity } from "#/domain/entities/UserEntity";
 import { VerificationToken } from "#/domain/ValueObjects/VerificationToken";
 import { UserDoc } from "#/infrastructure/database/models/MongoUserModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
+import { AccountStatus } from "@sharemyride/shared";
 import { Model } from "mongoose";
 
 /**
@@ -68,5 +70,20 @@ export class MongoUserRespository
   async findByEmail(email: string): Promise<UserEntity | null> {
     const data = await this._userModel.findOne({ emailId: email });
     return data ? this.toDomainEntityMapper(data) : null;
+  }
+
+  async getUsersCount(): Promise<GetUsersCountResponseDTO> {
+    const [totalUsers, activeUsers] = await Promise.all([
+      this._userModel.countDocuments().exec(),
+      this._userModel
+        .countDocuments({ accountStatus: AccountStatus.ACTIVE })
+        .exec(),
+    ]);
+
+    return {
+      totalUsers,
+      activeUsers,
+      inactiveUsers: totalUsers - activeUsers,
+    };
   }
 }

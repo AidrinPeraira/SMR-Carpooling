@@ -1,5 +1,6 @@
 import { GetTripTrendResponseDTO } from "#/application/dto/admin/AdminTripsDTO";
+import { TrendRange } from "@sharemyride/shared";
 
 export interface IGetTripTrendUseCase {
-  execute(): Promise<GetTripTrendResponseDTO>;
+  execute(range: TrendRange): Promise<GetTripTrendResponseDTO>;
 }

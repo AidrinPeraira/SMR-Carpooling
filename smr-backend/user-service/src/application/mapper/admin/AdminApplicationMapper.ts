@@ -1,10 +1,12 @@
 import {
   GetAllApplicationsQueryDTO,
   GetAllApplicationsResponseDTO,
+  GetApplicationCountResponseDTO,
   ProcessApplicationRequestDTO,
 } from "#/application/dto/admin/application/AdminApplicationsDTO";
 import {
   AdminApplicationListResult,
+  GetApplicationCountResult,
   ProcessApplicationRequest,
   QueryRequest,
 } from "@sharemyride/shared";
@@ -44,6 +46,17 @@ export class AdminApplicationMapper {
       application_status: dto.applicationStatus,
       created_at: dto.createdAt,
       updated_at: dto.updatedAt,
+    };
+  }
+
+  static toGetApplicationCountResult(
+    dto: GetApplicationCountResponseDTO,
+  ): GetApplicationCountResult {
+    return {
+      total_applications: dto.totalApplications,
+      vehicle_applications: dto.vehicleApplications,
+      onboarding_applications: dto.onboardingApplications,
+      renewal_applications: dto.renewalApplications,
     };
   }
 }

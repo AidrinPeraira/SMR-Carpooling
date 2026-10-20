@@ -1,5 +1,6 @@
 import { GetRevenueTrendResponseDTO } from "#/application/dto/admin/AdminPaymentsDTO";
+import { TrendRange } from "@sharemyride/shared";
 
 export interface IGetRevenueTrendUseCase {
-  execute(): Promise<GetRevenueTrendResponseDTO>;
+  execute(range: TrendRange): Promise<GetRevenueTrendResponseDTO>;
 }

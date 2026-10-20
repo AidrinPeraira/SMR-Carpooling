@@ -1,15 +1,19 @@
 import { AdminListTransactionsQueryDTO } from "#/application/dto/admin/AdminPaymentsDTO";
 import { IAdminListTransactionsUseCase } from "#/application/interfaces/use-cases/admin/IAdminListTransactionsUseCase";
+import { IGetTransactionSummaryUseCase } from "#/application/interfaces/use-cases/admin/IGetTransactionSummaryUseCase";
+import { IGetRevenueTrendUseCase } from "#/application/interfaces/use-cases/admin/IGetRevenueTrendUseCase";
 import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 import { IAdminControllerV1 } from "#/presentation/v1/interfaces/IAdminControllerV1";
 import { AdminMapper } from "#/application/mapper/AdminMapper";
 import {
   AdminListTransactionsSchema,
   AdminListTransactionsSchemaType,
+  GenericSuccessMessage,
   HttpStatusCodes,
   ILogger,
   makeSuccessResponse,
   PaymentSuccessMessage,
+  TrendRange,
   zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
@@ -22,6 +26,8 @@ export class AdminControllerV1 implements IAdminControllerV1 {
   constructor(
     private readonly _logger: ILogger,
     private readonly _adminListTransactionsUseCase: IAdminListTransactionsUseCase,
+    private readonly _getTransactionSummaryUseCase: IGetTransactionSummaryUseCase,
+    private readonly _getRevenueTrendUseCase: IGetRevenueTrendUseCase,
   ) {}
 
   /**
@@ -80,6 +86,40 @@ export class AdminControllerV1 implements IAdminControllerV1 {
         makeSuccessResponse(
           PaymentSuccessMessage.TRANSACTIONS_FETCHED,
           AdminMapper.toListTransactionsResult(result),
+        ),
+      );
+  }
+
+  @Trace("admin-module")
+  async getTransactionsSummary(req: Request, res: Response): Promise<void> {
+    this._logger.info("Admin: fetching transactions summary");
+
+    const result = await this._getTransactionSummaryUseCase.execute();
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          AdminMapper.toGetTransactionsSummaryResult(result),
+        ),
+      );
+  }
+
+  @Trace("admin-module")
+  async getRevenueTrend(req: Request, res: Response): Promise<void> {
+    const range = (req.query.range as TrendRange) ?? TrendRange.LAST_MONTH;
+
+    this._logger.info("Admin: fetching revenue trend", { range });
+
+    const result = await this._getRevenueTrendUseCase.execute(range);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          AdminMapper.toGetRevenueTrendResult(result),
         ),
       );
   }

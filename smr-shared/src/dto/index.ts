@@ -11,6 +11,7 @@ export * from "./admin/AdminApplicationsDTO";
 export * from "./admin/AdminTripsDTO";
 export * from "./admin/AdminBookingsDTO";
 export * from "./admin/AdminTransactionsDTO";
+export * from "./admin/AdminDashboardDTO";
 export * from "./TripDTO";
 export * from "./BookingDTO";
 export * from "./PaymentDTO";

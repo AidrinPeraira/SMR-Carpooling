@@ -2,6 +2,8 @@ import {
   AdminGetAllTripsQuery,
   AdminGetAllTripsResponseDTO,
   AdminGetTripDetailsResponseDTO,
+  GetTripsCountResposneDTO,
+  GetTripTrendResponseDTO,
 } from "#/application/dto/admin/AdminTripsDTO";
 import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
 import {
@@ -11,7 +13,7 @@ import {
 import { BookingEntity } from "#/domain/entities/BookingEntity";
 import { TripEntity } from "#/domain/entities/TripEntity";
 import { VehicleEntity } from "#/domain/entities/VehicleEntity";
-import { PaginatedPayload, TripStop, VehicleTypes } from "@sharemyride/shared";
+import { PaginatedPayload, TrendRange, TripStop, VehicleTypes } from "@sharemyride/shared";
 
 export interface JourneyDetailsPayload {
   trip: TripEntity;
@@ -150,4 +152,8 @@ export interface ITripRepository {
    * for the trips in the past
    */
   cleanIndices(): Promise<void>;
+
+  getTripsCount(): Promise<GetTripsCountResposneDTO>;
+
+  getTripTrend(range: TrendRange): Promise<GetTripTrendResponseDTO>;
 }

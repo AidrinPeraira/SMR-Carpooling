@@ -30,6 +30,7 @@ import { createAdminUsersRouteV1 } from "#/presentation/v1/routes/admin/AdminUse
 import { GetAllUsersUseCase } from "#/application/use-case/admin/users/GetAllUsersUseCase";
 import { ChangeUserStatusUseCase } from "#/application/use-case/admin/users/ChangeUserStatusUseCase";
 import { GetFullUserProfileUseCase } from "#/application/use-case/admin/users/GetFullUserProfileUseCase";
+import { GetUsersCountUseCase } from "#/application/use-case/admin/users/GetUsersCountUseCase";
 import { SwitchUserRoleUseCase } from "#/application/use-case/profile/SwitchUserRoleUseCase";
 import { redisClient } from "#/infrastructure/database/connect-redis";
 import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
@@ -68,6 +69,7 @@ import { GetVehicleRecordDetailsUseCase } from "#/application/use-case/admin/veh
 // Admin Application Use Cases
 import { GetAllApplicationsUseCase } from "#/application/use-case/admin/application/GetAllApplicationsUseCase";
 import { ProcessApplicationUseCase } from "#/application/use-case/admin/application/ProcessApplicationUseCase";
+import { GetApplicationCountUseCase } from "#/application/use-case/admin/application/GetApplicationCountUseCase";
 
 // Application Controllers & Routers
 import { ApplicationControllerV1 } from "#/presentation/v1/controllers/ApplicationControllerV1";
@@ -243,11 +245,13 @@ const changeUserStatusUseCase = new ChangeUserStatusUseCase(
   redisSessionStore,
   rabbitMQEventBus,
 );
+const getUsersCountUseCase = new GetUsersCountUseCase(mongoUserRepository);
 const adminUserControllerV1 = new AdminUserControllerV1(
   consolaLogger,
   getAllUsersUseCase,
   changeUserStatusUseCase,
   getFullUserProfileUseCase,
+  getUsersCountUseCase,
 );
 
 const adminUserRoutesV1 = createAdminUsersRouteV1(adminUserControllerV1);
@@ -352,11 +356,15 @@ const processApplicationUseCase = new ProcessApplicationUseCase(
   rabbitMQEventBus,
 );
 
+const getApplicationCountUseCase = new GetApplicationCountUseCase(
+  mongoApplicationRepository,
+);
 const adminApplicationControllerV1 = new AdminApplicationControllerV1(
   consolaLogger,
   getAllApplicationsUseCase,
   getApplicationDetailsUseCase,
   processApplicationUseCase,
+  getApplicationCountUseCase,
 );
 
 const adminApplicationRouterV1 = createAdminApplicationRouterV1(

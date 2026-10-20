@@ -2,6 +2,8 @@ import { ITransactionRepository } from "#/application/interfaces/repository/ITra
 import {
   AdminListTransactionsQueryDTO,
   AdminListTransactionsResultDTO,
+  GetRevenueTrendResponseDTO,
+  GetTransactionsSummaryResponseDTO,
 } from "#/application/dto/admin/AdminPaymentsDTO";
 import { TransactionEntity } from "#/domain/entities/TransactionEntity";
 import {
@@ -13,6 +15,7 @@ import {
   PaginatedPayload,
   SortOrder,
   TransactionCategory,
+  TrendRange,
 } from "@sharemyride/shared";
 
 export class MongoTransactionRepository
@@ -200,5 +203,96 @@ export class MongoTransactionRepository
     ]).exec();
 
     return result.length > 0 ? result[0].total : 0;
+  }
+
+  async getTransactionsSummary(): Promise<GetTransactionsSummaryResponseDTO> {
+    const result = await TransactionModel.aggregate([
+      {
+        $group: {
+          _id: "$transactionCategory",
+          total: { $sum: "$amount" },
+        },
+      },
+    ]).exec();
+
+    const categoryMap = new Map<string, number>();
+    for (const item of result) {
+      categoryMap.set(item._id, item.total);
+    }
+
+    const bookingRevenue = categoryMap.get(TransactionCategory.BOOKING_PAYMENT) ?? 0;
+    const payoutsIssued = categoryMap.get(TransactionCategory.PAYOUT) ?? 0;
+    const refundsIssued = categoryMap.get(TransactionCategory.REFUND) ?? 0;
+    const commission = categoryMap.get(TransactionCategory.COMMISSION) ?? 0;
+
+    return {
+      totalRevenue: bookingRevenue + commission,
+      bookingRevenue,
+      payoutsIssues: payoutsIssued,
+      refundsIssued,
+    };
+  }
+
+  async getRevenueTrend(range: TrendRange): Promise<GetRevenueTrendResponseDTO> {
+    const now = new Date();
+    let startDate: Date;
+    let groupBy: "day" | "week" | "month";
+
+    switch (range) {
+      case TrendRange.LAST_WEEK:
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        groupBy = "day";
+        break;
+      case TrendRange.LAST_MONTH:
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        groupBy = "week";
+        break;
+      case TrendRange.LAST_YEAR:
+        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        groupBy = "month";
+        break;
+    }
+
+    const docs = await TransactionModel.find({
+      createdAt: { $gte: startDate },
+      transactionCategory: TransactionCategory.BOOKING_PAYMENT,
+    })
+      .select("amount createdAt")
+      .sort({ createdAt: 1 })
+      .lean()
+      .exec();
+
+    const buckets = new Map<string, number>();
+
+    for (const doc of docs) {
+      const d = new Date(doc.createdAt);
+      let label = "";
+
+      switch (groupBy) {
+        case "day": {
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+          label = days[d.getDay()]!;
+          break;
+        }
+        case "week": {
+          const weekStart = new Date(d);
+          weekStart.setDate(d.getDate() - d.getDay());
+          label = `W${Math.ceil(weekStart.getDate() / 7)}`;
+          break;
+        }
+        case "month": {
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          label = months[d.getMonth()]!;
+          break;
+        }
+      }
+
+      buckets.set(label, (buckets.get(label) ?? 0) + doc.amount);
+    }
+
+    return {
+      trendRange: range,
+      data: Array.from(buckets.entries()).map(([label, value]) => ({ label, value })),
+    };
   }
 }
