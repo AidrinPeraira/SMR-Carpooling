@@ -217,10 +217,11 @@ export class MongoTransactionRepository
 
     const categoryMap = new Map<string, number>();
     for (const item of result) {
-      categoryMap.set(item._id, item.total);
+      categoryMap.set(item._id as string, item.total as number);
     }
 
-    const bookingRevenue = categoryMap.get(TransactionCategory.BOOKING_PAYMENT) ?? 0;
+    const bookingRevenue =
+      categoryMap.get(TransactionCategory.BOOKING_PAYMENT) ?? 0;
     const payoutsIssued = categoryMap.get(TransactionCategory.PAYOUT) ?? 0;
     const refundsIssued = categoryMap.get(TransactionCategory.REFUND) ?? 0;
     const commission = categoryMap.get(TransactionCategory.COMMISSION) ?? 0;
@@ -233,7 +234,9 @@ export class MongoTransactionRepository
     };
   }
 
-  async getRevenueTrend(range: TrendRange): Promise<GetRevenueTrendResponseDTO> {
+  async getRevenueTrend(
+    range: TrendRange,
+  ): Promise<GetRevenueTrendResponseDTO> {
     const now = new Date();
     let startDate: Date;
     let groupBy: "day" | "week" | "month";
@@ -244,11 +247,19 @@ export class MongoTransactionRepository
         groupBy = "day";
         break;
       case TrendRange.LAST_MONTH:
-        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        startDate = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate(),
+        );
         groupBy = "week";
         break;
       case TrendRange.LAST_YEAR:
-        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        startDate = new Date(
+          now.getFullYear() - 1,
+          now.getMonth(),
+          now.getDate(),
+        );
         groupBy = "month";
         break;
     }
@@ -281,7 +292,20 @@ export class MongoTransactionRepository
           break;
         }
         case "month": {
-          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
           label = months[d.getMonth()]!;
           break;
         }
@@ -292,7 +316,10 @@ export class MongoTransactionRepository
 
     return {
       trendRange: range,
-      data: Array.from(buckets.entries()).map(([label, value]) => ({ label, value })),
+      data: Array.from(buckets.entries()).map(([label, value]) => ({
+        label,
+        value,
+      })),
     };
   }
 }

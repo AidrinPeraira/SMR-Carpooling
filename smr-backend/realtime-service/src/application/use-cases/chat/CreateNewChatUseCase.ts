@@ -1,5 +1,5 @@
 import { IChatRepository } from "#/application/interfaces/repository/IChatRepository";
-import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIDGenerator";
+import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { ICreateNewChatUseCase } from "#/application/interfaces/use-cases/chat/ICreateNewChatUseCase";
 
 /**

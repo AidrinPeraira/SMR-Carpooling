@@ -3,7 +3,7 @@ import {
   GetShareTokenResponseDTO,
 } from "#/application/dto/JourneyDTO";
 import { IJourneyRepository } from "#/application/interfaces/repository/IJourneyRepsoitory";
-import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIDGenerator";
+import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { IGetShareTokenUseCase } from "#/application/interfaces/use-cases/journey/IGetShareTokenUseCase";
 import {
   ApplicationError,
