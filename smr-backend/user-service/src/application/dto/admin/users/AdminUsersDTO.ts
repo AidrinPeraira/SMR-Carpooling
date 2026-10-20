@@ -32,3 +32,9 @@ export interface GetFullUserProfileResponseDTO {
   profileImage?: string;
   createdAt: Date;
 }
+
+export interface GetUsersCountResponseDTO {
+  totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
+}

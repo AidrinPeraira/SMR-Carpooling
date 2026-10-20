@@ -2,6 +2,7 @@ import {
   BookingStatus,
   QueryDTO,
   Route,
+  TrendRange,
   TripStatus,
   TripStop,
 } from "@sharemyride/shared";
@@ -43,4 +44,19 @@ export interface AdminGetTripDetailsResponseDTO {
   driverName: string;
 
   bookings: BookingDetails[];
+}
+
+export interface GetTripsCountResposneDTO {
+  totalTrips: number;
+  completedTrips: number;
+  upcomingTrips: number;
+  cancelledTrips: number;
+}
+
+export interface GetTripTrendResponseDTO {
+  trendRange: TrendRange;
+  data: {
+    label: string;
+    value: number;
+  }[];
 }
