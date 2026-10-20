@@ -117,6 +117,7 @@ export function createApp(logger: ILogger) {
       "/api/*/payments/**",
       "/api/*/payouts/**",
       "/api/*/admin/transactions/**",
+      "/api/*/admin/dashboard/**",
       "/api/*/wallet/**",
       "/api/*/webhook/payments/**",
     ],
