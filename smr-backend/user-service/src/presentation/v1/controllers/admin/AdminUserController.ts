@@ -20,6 +20,7 @@ import {
 } from "@sharemyride/shared";
 import { IChangeUserStatusUseCase } from "#/application/interfaces/use-case/admin/users/IChangeUserStatusUseCase";
 import { IGetFullUserProfileUseCase } from "#/application/interfaces/use-case/admin/users/IGetFullUserProfileUseCase";
+import { IGetUsersCountUseCase } from "#/application/interfaces/use-case/admin/users/IGetUsersCountUseCase";
 import { Trace } from "#/presentation/utils/traces-decorator";
 
 export class AdminUserControllerV1 implements IAdminUserControllerV1 {
@@ -28,6 +29,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
     private readonly _getAllUsersUseCase: IGetAllUsersUseCase,
     private readonly _changeUserStatusUseCase: IChangeUserStatusUseCase,
     private readonly _getFullUserProfileUseCase: IGetFullUserProfileUseCase,
+    private readonly _getUsersCountUseCase: IGetUsersCountUseCase,
   ) {}
 
   /**
@@ -155,5 +157,23 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
     res
       .status(HttpStatusCodes.Ok)
       .json(makeSuccessResponse(UserSuccessMessage.USER_UPDATED));
+  }
+
+  @Trace("admin-user-module")
+  async getUsersCount(req: Request, res: Response): Promise<void> {
+    this._logger.info("Admin fetching users count", {
+      adminUserId: req.headers["x-user-id"],
+    });
+
+    const result = await this._getUsersCountUseCase.execute();
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          AdminUsersMapper.toGetUsersCountResult(result),
+        ),
+      );
   }
 }

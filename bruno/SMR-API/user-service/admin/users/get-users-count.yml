@@ -1,0 +1,39 @@
+info:
+  name: get-users-count
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: http://localhost:4000/api/v1/admin/users/dashboard/count
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  auth: inherit
+
+docs: |
+  ## Admin — Get Users Count
+
+  Returns aggregated user counts for the admin dashboard.
+
+  ### Response Shape (success)
+
+  ```json
+  {
+    "success": true,
+    "message": "Operation completed successfully.",
+    "payload": {
+      "total_users": 150,
+      "active_users": 120,
+      "inactive_users": 30
+    }
+  }
+  ```
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

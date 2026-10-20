@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NewBookingHandler } from "#/presentation/event-handlers/NewBookingHandler";
-import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/ISendNewBookingEmailUseCase";
+import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/booking/ISendNewBookingEmailUseCase";
 import { ILogger, NewBookingEvent, EventName } from "@sharemyride/shared";
 
 describe("NewBookingHandler", () => {

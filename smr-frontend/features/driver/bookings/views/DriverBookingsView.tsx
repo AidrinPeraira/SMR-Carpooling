@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { ItemsPerPage } from "@/components/UserInput/ItemsPerPage";
 import { Pagination } from "@/components/UserInput/Pagination";
 import { getDriverBookingsRequest } from "../api/getDriverBookingsRequest";
 import { DriverBookingsHeader } from "../components/DriverBookingsHeader";
@@ -13,7 +14,7 @@ export function DriverBookingsView() {
   const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const page = Number(searchParams.get("page")) || 1;
-  const limit = 10;
+  const limit = Number(searchParams.get("limit")) || 10;
 
   const handleStatusChange = (newStatus: string) => {
     setStatusFilter(newStatus);
@@ -106,11 +107,10 @@ export function DriverBookingsView() {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="mt-8">
-              <Pagination currentPage={page} totalPages={totalPages} />
-            </div>
-          )}
+          <div className="flex items-center justify-between mt-8">
+            <ItemsPerPage totalItems={totalItems} />
+            <Pagination currentPage={page} totalPages={totalPages} />
+          </div>
         </>
       )}
     </div>

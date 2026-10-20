@@ -2,11 +2,13 @@ import {
   GetAllUsersRequestQueryDTO,
   GetAllUsersResponseDTO,
   GetFullUserProfileResponseDTO,
+  GetUsersCountResponseDTO,
 } from "#/application/dto/admin/users/AdminUsersDTO";
 import { userQueryFieldMapper } from "#/presentation/utils/query-mapper";
 import {
   GetAllUsersResult,
   GetFullUserProfileResult,
+  GetUsersCountResult,
   QueryRequest,
 } from "@sharemyride/shared";
 
@@ -56,6 +58,16 @@ export class AdminUsersMapper {
       phone_number: data.phoneNumber,
       profile_image: data.profileImage,
       created_at: data.createdAt,
+    };
+  }
+
+  static toGetUsersCountResult(
+    data: GetUsersCountResponseDTO,
+  ): GetUsersCountResult {
+    return {
+      total_users: data.totalUsers,
+      active_users: data.activeUsers,
+      inactive_users: data.inactiveUsers,
     };
   }
 }

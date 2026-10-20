@@ -1,4 +1,5 @@
 import { IGetAllApplicationsUseCase } from "#/application/interfaces/use-case/admin/application/IGetAllApplicationsUseCase";
+import { IGetApplicationsCountUseCase } from "#/application/interfaces/use-case/admin/application/IGetApplicationCountUseCase";
 import { IPocessApplicationUseCase } from "#/application/interfaces/use-case/admin/application/IProcessApplicationUseCase";
 import { IGetApplicationDetailsUseCase } from "#/application/interfaces/use-case/application/IGetApplicationDetailsUseCase";
 import { Trace } from "#/presentation/utils/traces-decorator";
@@ -28,6 +29,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
     private readonly _getAllApplicationsUseCase: IGetAllApplicationsUseCase,
     private readonly _getApplicationDetailsUseCase: IGetApplicationDetailsUseCase,
     private readonly _processApplicationUseCase: IPocessApplicationUseCase,
+    private readonly _getApplicationCountUseCase: IGetApplicationsCountUseCase,
   ) {}
 
   @Trace("admin-application-module")
@@ -99,6 +101,24 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       .status(HttpStatusCodes.Ok)
       .json(
         makeSuccessResponse(ApplicationSuccessMessage.APPLICATION_PROCESSED),
+      );
+  }
+
+  @Trace("admin-application-module")
+  async getApplicationCount(req: Request, res: Response): Promise<void> {
+    this._logger.info("Admin fetching application count", {
+      adminUserId: req.headers["x-user-id"],
+    });
+
+    const result = await this._getApplicationCountUseCase.execute();
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          AdminApplicationMapper.toGetApplicationCountResult(result),
+        ),
       );
   }
 }

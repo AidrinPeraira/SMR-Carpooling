@@ -1,5 +1,5 @@
 import { IChatRepository } from "#/application/interfaces/repository/IChatRepository";
-import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIDGenerator";
+import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { ICreateNewChatUseCase } from "#/application/interfaces/use-cases/chat/ICreateNewChatUseCase";
 
 /**
@@ -14,7 +14,7 @@ export class CreateNewChatUseCase implements ICreateNewChatUseCase {
 
   async execute(tripId: string): Promise<void> {
     await this._chatRepository.save({
-      chatId: this._uidGenerator.generateRandomId(),
+      chatId: this._uidGenerator.generateRandomId("CHT"),
       tripId,
       isActive: true,
       members: [],

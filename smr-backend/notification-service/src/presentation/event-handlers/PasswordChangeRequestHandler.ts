@@ -1,6 +1,6 @@
 import { PasswordChangeRequestMailDTO } from "#/application/dto/email/PasswordChangeMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendPasswordChangeRequestMailUseCase } from "#/application/interfaces/use-case/ISendPasswordChangeRequestMailUseCase";
+import { ISendPasswordChangeRequestMailUseCase } from "#/application/interfaces/use-case/auth/ISendPasswordChangeRequestMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, PasswordChangeRequestEvent } from "@sharemyride/shared";
 

@@ -86,7 +86,7 @@ export class VerifyBookingPaymentUseCase implements IVerifyBookingPaymentUseCase
         updatedAt: new Date(),
       });
 
-      const transactionId = this._uidService.generateRandomId();
+      const transactionId = this._uidService.generateRandomId("TXN");
       await this._transactionRepository.save({
         transactionId,
         creditor: "SYSTEM",

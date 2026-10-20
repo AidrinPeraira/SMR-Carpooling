@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { IAdminGetJourneyDetailsUseCase } from "#/application/interfaces/use-case/admin/journey/IAdminGetJourneyDetailsUseCase";
 import { IAdminListAllTripsUseCase } from "#/application/interfaces/use-case/admin/trip/IAdminListAllTripsUseCase";
 import { IAdminGetTripDetailsUseCase } from "#/application/interfaces/use-case/admin/trip/IAdminGetTripDetailsUseCase";
+import { IGetTripsCountUseCase } from "#/application/interfaces/use-case/admin/trip/IGetTripsCountUseCase";
+import { IGetTripTrendUseCase } from "#/application/interfaces/use-case/admin/trip/IGetTripTrendUseCase";
 import { IAdminTripControllerV1 } from "#/presentation/v1/interfaces/admin/IAdminTripControllerV1";
 import { AdminTripMapper } from "#/application/mapper/admin/AdminTripMapper";
 import { JourneyMapper } from "#/application/mapper/JourneyMapper";
@@ -11,6 +13,7 @@ import {
   ILogger,
   makeSuccessResponse,
   SortOrder,
+  TrendRange,
 } from "@sharemyride/shared";
 import { Trace } from "#/presentation/utils/decorators/traces-decorator";
 
@@ -20,6 +23,8 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
     private readonly _adminListAllTripsUseCase: IAdminListAllTripsUseCase,
     private readonly _adminGetTripDetailsUseCase: IAdminGetTripDetailsUseCase,
     private readonly _adminGetJourneyDetailsUseCase: IAdminGetJourneyDetailsUseCase,
+    private readonly _getTripsCountUseCase: IGetTripsCountUseCase,
+    private readonly _getTripTrendUseCase: IGetTripTrendUseCase,
   ) {}
 
   @Trace("admin-Trip-module")
@@ -123,6 +128,58 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
       const details =
         await this._adminGetJourneyDetailsUseCase.execute(journeyId);
       const response = JourneyMapper.toAdminJourneyDetailsResult(details);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            GenericSuccessMessage.OPERATION_SUCCESSFUL,
+            response,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("admin-Trip-module")
+  async getTripsCount(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      this._logger.info("Admin fetching trips count");
+
+      const result = await this._getTripsCountUseCase.execute();
+      const response = AdminTripMapper.toGetTripsCountResult(result);
+
+      res
+        .status(HttpStatusCodes.Ok)
+        .json(
+          makeSuccessResponse(
+            GenericSuccessMessage.OPERATION_SUCCESSFUL,
+            response,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @Trace("admin-Trip-module")
+  async getTripTrend(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const range = (req.query.range as TrendRange) ?? TrendRange.LAST_MONTH;
+
+      this._logger.info("Admin fetching trip trend", { range });
+
+      const result = await this._getTripTrendUseCase.execute(range);
+      const response = AdminTripMapper.toGetTripTrendResult(result);
 
       res
         .status(HttpStatusCodes.Ok)

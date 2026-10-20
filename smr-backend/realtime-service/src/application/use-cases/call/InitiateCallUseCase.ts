@@ -6,7 +6,7 @@ import {
 import { CallSocketMapper } from "#/application/mapper/CallSocketMapper";
 import { ICallSessionRepository } from "#/application/interfaces/repository/ICallSessionRepository";
 import { IMemberRepository } from "#/application/interfaces/repository/IMemberRepository";
-import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIDGenerator";
+import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 import { ISocketEmitter } from "#/application/interfaces/sockets/ISocketEmitter";
 import { IInitiateCallUseCase } from "#/application/interfaces/use-cases/call/IInitiateCallUseCase";
 import {
@@ -120,7 +120,7 @@ export class InitiateCallUseCase implements IInitiateCallUseCase {
     }
 
     //create a new call session
-    const newSessionId = this._uniqueIdGenerator.generateRandomId();
+    const newSessionId = this._uniqueIdGenerator.generateRandomId("CLL");
     const now = new Date();
 
     const newSession = await this._callSessionRepository.save({

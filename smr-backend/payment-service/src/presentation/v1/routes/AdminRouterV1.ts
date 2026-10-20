@@ -15,5 +15,15 @@ export function createAdminRouterV1(adminController: IAdminControllerV1): Router
     adminController.listTransactions.bind(adminController),
   );
 
+  router.get(
+    "/dashboard/summary",
+    adminController.getTransactionsSummary.bind(adminController),
+  );
+
+  router.get(
+    "/dashboard/revenue-trend",
+    adminController.getRevenueTrend.bind(adminController),
+  );
+
   return router;
 }

@@ -32,5 +32,10 @@ export function createAdminUsersRouteV1(
     adminUserControllerV1.unBlockUser.bind(adminUserControllerV1),
   );
 
+  router.get(
+    "/dashboard/count",
+    adminUserControllerV1.getUsersCount.bind(adminUserControllerV1),
+  );
+
   return router;
 }

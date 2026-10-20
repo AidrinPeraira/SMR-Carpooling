@@ -25,20 +25,19 @@ export class RemovePassengerFromJourneyUseCase
       dto.passengerId,
     );
 
-    if (shareToken) {
-      const socketId = await this._socketStore.getSocketByToken(
-        dto.journeyId,
-        shareToken,
+    const tokenKey = shareToken ?? dto.passengerId;
+    const socketId = await this._socketStore.getSocketByToken(
+      dto.journeyId,
+      tokenKey,
+    );
+
+    if (socketId) {
+      await this._socketEmitter.leaveRoom(
+        `journey:${dto.journeyId}`,
+        socketId,
       );
-
-      if (socketId) {
-        await this._socketEmitter.leaveRoom(
-          `journey:${dto.journeyId}`,
-          socketId,
-        );
-      }
-
-      await this._socketStore.removeSocket(dto.journeyId, shareToken);
     }
+
+    await this._socketStore.removeSocket(dto.journeyId, tokenKey);
   }
 }

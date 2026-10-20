@@ -1,6 +1,12 @@
-import { AdminListTransactionsResultDTO } from "#/application/dto/admin/AdminPaymentsDTO";
+import {
+  AdminListTransactionsResultDTO,
+  GetRevenueTrendResponseDTO,
+  GetTransactionsSummaryResponseDTO,
+} from "#/application/dto/admin/AdminPaymentsDTO";
 import {
   AdminTransactionItemDTO,
+  GetRevenueTrendResult,
+  GetTransactionsSummaryResult,
   PaginatedPayload,
 } from "@sharemyride/shared";
 
@@ -36,6 +42,26 @@ export class AdminMapper {
           record_id: item.recordId,
         }),
       ),
+    };
+  }
+
+  static toGetTransactionsSummaryResult(
+    dto: GetTransactionsSummaryResponseDTO,
+  ): GetTransactionsSummaryResult {
+    return {
+      total_revenue: dto.totalRevenue,
+      booking_revenue: dto.bookingRevenue,
+      payouts_issued: dto.payoutsIssues,
+      refunds_issued: dto.refundsIssued,
+    };
+  }
+
+  static toGetRevenueTrendResult(
+    dto: GetRevenueTrendResponseDTO,
+  ): GetRevenueTrendResult {
+    return {
+      trend_range: dto.trendRange,
+      data: dto.data,
     };
   }
 }

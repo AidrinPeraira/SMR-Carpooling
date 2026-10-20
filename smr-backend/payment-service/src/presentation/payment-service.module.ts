@@ -12,6 +12,8 @@ import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWallet
 import { GetWalletTransactionsUseCase } from "#/application/use-cases/wallet/GetWalletTransactionsUseCase";
 import { GetCustomerEarningsUseCase } from "#/application/use-cases/customer/GetCustomerEarningsUseCase";
 import { AdminListTransactionsUseCase } from "#/application/use-cases/admin/AdminListTransactions";
+import { GetTransactionSummaryUseCase } from "#/application/use-cases/admin/GetTransactionSummaryUseCase";
+import { GetRevenueTrendUseCase } from "#/application/use-cases/admin/GetRevenueTrendUseCase";
 import { CreatePayoutUseCase } from "#/application/use-cases/payout/CreatePayoutUseCase";
 import { ApprovePayoutUseCase } from "#/application/use-cases/payout/ApprovePayoutUseCase";
 import { GetDriverPayoutsUseCase } from "#/application/use-cases/payout/GetDriverPayoutsUseCase";
@@ -80,6 +82,12 @@ const getWalletTransactionsUseCase = new GetWalletTransactionsUseCase(
 const adminListTransactionsUseCase = new AdminListTransactionsUseCase(
   transactionRepository,
 );
+const getTransactionSummaryUseCase = new GetTransactionSummaryUseCase(
+  transactionRepository,
+);
+const getRevenueTrendUseCase = new GetRevenueTrendUseCase(
+  transactionRepository,
+);
 const getCustomerEarningsUseCase = new GetCustomerEarningsUseCase(
   transactionRepository,
 );
@@ -87,6 +95,7 @@ const getCustomerEarningsUseCase = new GetCustomerEarningsUseCase(
 // Payout Use Cases
 const createPayoutUseCase = new CreatePayoutUseCase(
   payoutRepository,
+  transactionRepository,
   cryptoUIDService,
 );
 const approvePayoutUseCase = new ApprovePayoutUseCase(
@@ -228,6 +237,8 @@ const walletControllerV1 = new WalletControllerV1(
 const adminControllerV1 = new AdminControllerV1(
   consolaLogger,
   adminListTransactionsUseCase,
+  getTransactionSummaryUseCase,
+  getRevenueTrendUseCase,
 );
 
 const payoutControllerV1 = new PayoutControllerV1(

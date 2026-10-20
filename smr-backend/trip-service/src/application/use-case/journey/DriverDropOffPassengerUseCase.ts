@@ -123,7 +123,7 @@ export class DriverDropOffPassengerUseCase implements IDriverVerifyPassengerDrop
         s.passengerId === dto.passengerId && s.stopType === StopType.DROPOFF,
     );
 
-    if (dropOffStop) {
+    if (dropOffStop && !dropOffStop.arrivedAt) {
       const distance = this._haversineMeters(
         dto.dropOffLat,
         dto.dropOffLng,

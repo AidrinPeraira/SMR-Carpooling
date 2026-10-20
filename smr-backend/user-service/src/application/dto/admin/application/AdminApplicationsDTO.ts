@@ -25,3 +25,10 @@ export interface ProcessApplicationRequestDTO {
   adminComment: AdminComment;
   applicationStatus: ApplicationStatus;
 }
+
+export interface GetApplicationCountResponseDTO {
+  totalApplications: number;
+  vehicleApplications: number;
+  onboardingApplications: number;
+  renewalApplications: number;
+}

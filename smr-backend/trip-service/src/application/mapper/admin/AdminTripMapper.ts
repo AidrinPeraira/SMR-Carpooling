@@ -1,11 +1,15 @@
 import {
   AdminGetAllTripsResponseDTO,
   AdminGetTripDetailsResponseDTO,
+  GetTripsCountResposneDTO,
+  GetTripTrendResponseDTO,
 } from "#/application/dto/admin/AdminTripsDTO";
 import { TripMapper } from "#/application/mapper/TripMapper";
 import {
   AdminTripDetailsDTO,
   AdminTripItemDTO,
+  GetTripsCountResult,
+  GetTripTrendResult,
   PaginatedPayload,
 } from "@sharemyride/shared";
 
@@ -50,6 +54,26 @@ export class AdminTripMapper {
         booking_origin: b.bookingOrigin,
         booking_destination: b.bookingDestination,
       })),
+    };
+  }
+
+  static toGetTripsCountResult(
+    dto: GetTripsCountResposneDTO,
+  ): GetTripsCountResult {
+    return {
+      total_trips: dto.totalTrips,
+      completed_trips: dto.completedTrips,
+      upcoming_trips: dto.upcomingTrips,
+      cancelled_trips: dto.cancelledTrips,
+    };
+  }
+
+  static toGetTripTrendResult(
+    dto: GetTripTrendResponseDTO,
+  ): GetTripTrendResult {
+    return {
+      trend_range: dto.trendRange,
+      data: dto.data,
     };
   }
 }

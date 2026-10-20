@@ -9,6 +9,7 @@ export enum TransactionCategory {
   PAYOUT = "payout",
   WALLET_TOPUP = "wallet_topup",
   WALLET_WITHDRAWAL = "wallet_withdrawal",
+  COMMISSION = "commission",
 }
 
 export enum PaymentMethod {

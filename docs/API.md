@@ -60,6 +60,7 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `GET`   | `/:userId`      | Get full profile details of a user.          | Yes (Admin)   |
 | `PATCH` | `/block/:id`    | Block a user account.                        | Yes (Admin)   |
 | `PATCH` | `/unblock/:id`  | Unblock a user account.                      | Yes (Admin)   |
+| `GET`   | `/dashboard/count` | Get aggregated user counts for dashboard. | Yes (Admin)   |
 
 ### Admin — Applications
 
@@ -70,6 +71,16 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `GET`  | `/`                | List all submitted applications.              | Yes (Admin)   |
 | `GET`  | `/:applicationId`  | Get details of a specific application.        | Yes (Admin)   |
 | `POST` | `/process`         | Process (approve/reject/return) an application. | Yes (Admin)   |
+| `GET`  | `/dashboard/count` | Get aggregated application counts for dashboard. | Yes (Admin)   |
+
+### Admin — Vehicle Records
+
+**Base Path:** `/api/v1/admin/vehicles`
+
+| Method | Endpoint      | Description                                    | Auth Required |
+| :----- | :------------ | :--------------------------------------------- | :------------ |
+| `GET`  | `/`           | List all vehicle records with pagination.      | Yes (Admin)   |
+| `GET`  | `/:recordId`  | Get full details of a vehicle record.          | Yes (Admin)   |
 
 ---
 
@@ -160,6 +171,8 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | `GET`   | `/trips/journey/:journeyId`       | Get journey details with all passengers.     | Yes (Admin)   |
 | `GET`   | `/bookings/all`                   | List all bookings.                           | Yes (Admin)   |
 | `GET`   | `/bookings/details/:bookingId`    | Get details of a specific booking.           | Yes (Admin)   |
+| `GET`   | `/trips/dashboard/count`          | Get aggregated trip counts for dashboard.    | Yes (Admin)   |
+| `GET`   | `/trips/dashboard/trend`          | Get trip trend data. Query: `?range=last_week\|last_month\|last_year` | Yes (Admin)   |
 
 ### Webhooks (Trip Service)
 
@@ -211,6 +224,8 @@ All endpoints are accessed through the API Gateway. The base URL pattern is `/ap
 | Method | Endpoint | Description                              | Auth Required |
 | :----- | :------- | :--------------------------------------- | :------------ |
 | `GET`  | `/`      | List all transactions.                   | Yes (Admin)   |
+| `GET`  | `/dashboard/summary`       | Get aggregated financial summary for dashboard. | Yes (Admin)   |
+| `GET`  | `/dashboard/revenue-trend` | Get revenue trend data. Query: `?range=last_week\|last_month\|last_year` | Yes (Admin)   |
 
 ### Webhooks (Payment Service)
 

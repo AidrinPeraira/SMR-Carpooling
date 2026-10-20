@@ -1,6 +1,7 @@
 import {
   GetAllApplicationsQueryDTO,
   GetAllApplicationsResponseDTO,
+  GetApplicationCountResponseDTO,
 } from "#/application/dto/admin/application/AdminApplicationsDTO";
 import { GetApplicationDetailsResultDTO } from "#/application/dto/application/GetApplicationDetailsResultDTO";
 import { IApplicationRepository } from "#/application/interfaces/repository/IApplicationRepository";
@@ -8,6 +9,7 @@ import { ApplicationEntity } from "#/domain/entities/ApplicationEntity";
 import { ApplicationDoc } from "#/infrastructure/database/models/MongoApplicationModel";
 import { MongoBaseRepository } from "#/infrastructure/repository/MongoBaseRepository";
 import {
+  ApplicationType,
   PaginatedPayload,
   SortOrder,
   VehicleTypes,
@@ -213,6 +215,31 @@ export class MongoApplicationRepository
             updatedAt: v.updatedAt as unknown as Date,
           }))
         : [],
+    };
+  }
+
+  async getApplicationCount(): Promise<GetApplicationCountResponseDTO> {
+    const [totalApplications, vehicleApplications, onboardingApplications, renewalApplications] =
+      await Promise.all([
+        this._applicationModel.countDocuments().exec(),
+        this._applicationModel
+          .countDocuments({
+            applicationType: { $in: [ApplicationType.NEW_VEHICLE, ApplicationType.RENEW_VEHICLE] },
+          })
+          .exec(),
+        this._applicationModel
+          .countDocuments({ applicationType: ApplicationType.ONBOARDING })
+          .exec(),
+        this._applicationModel
+          .countDocuments({ applicationType: ApplicationType.RENEW_DRIVER })
+          .exec(),
+      ]);
+
+    return {
+      totalApplications,
+      vehicleApplications,
+      onboardingApplications,
+      renewalApplications,
     };
   }
 }

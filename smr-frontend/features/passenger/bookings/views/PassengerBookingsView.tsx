@@ -5,15 +5,20 @@ import { useQuery } from "@tanstack/react-query";
 import { getPassengerBookingsRequest } from "../api/getPassengerBookingsRequest";
 import { PassengerBookingsHeader } from "../components/PassengerBookingsHeader";
 import { PassengerBookingsCard } from "../components/PassengerBookingsCard";
-import { Button, Loader } from "@sharemyride/ui";
+import { Button, ItemsPerPage, Loader } from "@sharemyride/ui";
 
 export function PassengerBookingsView() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState<number>(1);
-  const limit = 10;
+  const [limit, setLimit] = useState<number>(10);
 
   const handleStatusChange = (newStatus: string) => {
     setStatusFilter(newStatus);
+    setPage(1);
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
     setPage(1);
   };
 
@@ -105,13 +110,14 @@ export function PassengerBookingsView() {
           </div>
 
           {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border-subtle pt-6 mt-8">
-              <p className="text-xs text-content-secondary">
-                Showing Page <span className="font-semibold text-content-primary">{page}</span> of{" "}
-                <span className="font-semibold text-content-primary">{totalPages}</span> ({totalItems} total bookings)
-              </p>
+          <div className="flex items-center justify-between border-t border-border-subtle pt-6 mt-8">
+            <ItemsPerPage
+              value={limit}
+              onChange={handleLimitChange}
+              totalItems={totalItems}
+            />
 
+            {totalPages > 1 && (
               <div className="flex items-center gap-2">
                 <Button
                   variant="secondary"
@@ -133,8 +139,8 @@ export function PassengerBookingsView() {
                   Next
                 </Button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
     </div>

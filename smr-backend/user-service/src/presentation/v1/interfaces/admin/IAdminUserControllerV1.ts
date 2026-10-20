@@ -9,4 +9,5 @@ export interface IAdminUserControllerV1 {
   getFullUserProfile(req: Request, res: Response): Promise<void>;
   blockUser(req: Request, res: Response): Promise<void>;
   unBlockUser(req: Request, res: Response): Promise<void>;
+  getUsersCount(req: Request, res: Response): Promise<void>;
 }

@@ -64,7 +64,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
 
     //create a new user
     let newUser: UserEntity;
-    const userId = this._uniqueIdGenerator.generateRandomId();
+    const userId = this._uniqueIdGenerator.generateRandomId("USR");
     const passwordHash = this._hashingService.createHash(data.password);
 
     const now = new Date();

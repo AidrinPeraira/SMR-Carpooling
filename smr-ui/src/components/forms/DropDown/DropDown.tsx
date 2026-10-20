@@ -14,6 +14,7 @@ export interface DropDownProps {
   className?: string;
   disabled?: boolean;
   placeholder?: string;
+  direction?: "up" | "down";
 }
 
 export function DropDown({
@@ -24,6 +25,7 @@ export function DropDown({
   className,
   disabled = false,
   placeholder = "Select option",
+  direction = "down",
 }: DropDownProps) {
   const [selected, setSelected] = useState(value !== undefined ? value : defaultValue);
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +75,10 @@ export function DropDown({
 
       {isOpen && (
         <div
-          className="absolute left-0 z-50 mt-1 min-w-full w-max max-h-60 overflow-y-auto border border-border-strong bg-surface-card rounded-sm flex flex-col gap-1 shadow-lg"
+          className={cn(
+            "absolute left-0 z-50 min-w-full w-max max-h-60 overflow-y-auto border border-border-strong bg-surface-card rounded-sm flex flex-col gap-1 shadow-lg",
+            direction === "up" ? "bottom-full mb-1" : "mt-1",
+          )}
         >
           {options.map((v) => {
             const isSelected = selectedValue === v.value;

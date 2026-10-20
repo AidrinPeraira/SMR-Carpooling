@@ -5,7 +5,6 @@ import {
   MapPoint,
   NavigationRoute,
   NavigationState,
-  RouteStep,
 } from "@/features/map/types/MapTypes";
 import * as turf from "@turf/turf";
 
@@ -26,7 +25,6 @@ export class NavigationManager {
   private _currentSegmentIndex: number = 0;
   private _currentRoute: NavigationRoute | null = null;
   private _currentStepIndex: number = 0;
-  private _cumulativeStepDistances: number[] = [];
   private _lastRerouteTime: number = 0;
 
   private _onLocationUpdate?: (newLocation: MapPoint) => Promise<void>;
@@ -124,7 +122,6 @@ export class NavigationManager {
     this._currentRoute = route;
     await this._routes.drawRoute(route.route);
 
-    this._buildCumulativeDistances(route.steps);
     this._currentStepIndex = 0;
     this._emitState();
   }
@@ -146,18 +143,8 @@ export class NavigationManager {
 
     await this._routes.drawRoute(route.route);
 
-    this._buildCumulativeDistances(route.steps);
     this._currentStepIndex = 0;
     this._emitState();
-  }
-
-  private _buildCumulativeDistances(steps: RouteStep[]) {
-    this._cumulativeStepDistances = [];
-    let cumulative = 0;
-    for (const step of steps) {
-      cumulative += step.distance;
-      this._cumulativeStepDistances.push(cumulative);
-    }
   }
 
   private _updateStepTracking(currentPosition: MapPoint) {

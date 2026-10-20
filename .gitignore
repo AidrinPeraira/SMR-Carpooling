@@ -53,3 +53,6 @@ generated/prisma
 
 000_specimen_images
 **/plan.md
+
+# Migrations
+migrations/

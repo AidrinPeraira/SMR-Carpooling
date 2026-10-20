@@ -19,7 +19,7 @@ export class CreateWalletUseCase implements ICreateWalletUseCase {
     }
 
     const now = new Date();
-    const walletId = this._uidService.generateRandomId();
+    const walletId = this._uidService.generateRandomId("WLT");
 
     return this._walletRepository.save({
       walletId,

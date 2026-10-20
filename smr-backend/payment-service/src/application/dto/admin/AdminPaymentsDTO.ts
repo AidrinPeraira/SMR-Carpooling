@@ -1,4 +1,10 @@
-import { PaymentMethod, QueryDTO, TransactionCategory, TransactionType } from "@sharemyride/shared";
+import {
+  PaymentMethod,
+  QueryDTO,
+  TransactionCategory,
+  TransactionType,
+  TrendRange,
+} from "@sharemyride/shared";
 
 export type AdminListTransactionsQueryDTO =
   QueryDTO<AdminListTransactionsResultDTO>;
@@ -20,3 +26,17 @@ export interface AdminListTransactionsResultDTO {
   recordId: string;
 }
 
+export interface GetTransactionsSummaryResponseDTO {
+  totalRevenue: number;
+  bookingRevenue: number;
+  payoutsIssues: number;
+  refundsIssued: number;
+}
+
+export interface GetRevenueTrendResponseDTO {
+  trendRange: TrendRange;
+  data: {
+    label: string;
+    value: number;
+  }[];
+}

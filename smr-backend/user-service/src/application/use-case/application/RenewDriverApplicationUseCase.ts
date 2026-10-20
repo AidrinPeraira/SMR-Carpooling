@@ -74,7 +74,7 @@ export class RenewDriverApplicationUseCase implements IRenewDriverApplicationUse
     const movedFiles: { from: string; to: string }[] = [];
 
     try {
-      applicationId = this._uniqueIdGenerator.generateRandomId();
+      applicationId = this._uniqueIdGenerator.generateRandomId("APP");
       const now = new Date();
 
       const applicationData: Omit<ApplicationEntity, "id"> = {
@@ -98,7 +98,7 @@ export class RenewDriverApplicationUseCase implements IRenewDriverApplicationUse
         movedFiles.push({ from: data.licenseFile, to: finalLicenseFile });
       }
 
-      driverRecordId = this._uniqueIdGenerator.generateRandomId();
+      driverRecordId = this._uniqueIdGenerator.generateRandomId("DRV");
 
       const driverRecordData: Omit<DriverRecordEntity, "id"> = {
         recordId: driverRecordId,

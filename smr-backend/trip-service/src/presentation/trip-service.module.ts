@@ -285,6 +285,8 @@ const getPassengerTodayTripUseCase = new GetPassengerTodayTripUseCase(
 
 import { AdminListAllTripsUseCase } from "#/application/use-case/admin/trip/AdminListAllTripsUseCase";
 import { AdminGetTripDetailsUseCase } from "#/application/use-case/admin/trip/AdminGetTripDetailsUseCase";
+import { GetTripsCountUseCase } from "#/application/use-case/admin/trip/GetTripsCountUseCase";
+import { GetTripTrendUseCase } from "#/application/use-case/admin/trip/GetTripTrendUseCase";
 import { AdminGetJourneyDetailsUseCase } from "#/application/use-case/admin/journey/AdminGetJourneyDetailsUseCase";
 import { AdminListAllBookingsUseCase } from "#/application/use-case/admin/booking/AdminListAllBookingsUseCase";
 import { AdminGetBookingDetailsUseCase } from "#/application/use-case/admin/booking/AdminGetBookingDetailsUseCase";
@@ -402,11 +404,16 @@ const adminGetJourneyDetailsUseCase = new AdminGetJourneyDetailsUseCase(
   journeyRepository,
 );
 
+const getTripsCountUseCase = new GetTripsCountUseCase(tripsRepository);
+const getTripTrendUseCase = new GetTripTrendUseCase(tripsRepository);
+
 const adminTripControllerV1 = new AdminTripControllerV1(
   consolaLogger,
   adminListAllTripsUseCase,
   adminGetTripDetailsUseCase,
   adminGetJourneyDetailsUseCase,
+  getTripsCountUseCase,
+  getTripTrendUseCase,
 );
 const getPassengerJourneyDetailsUseCase = new GetPassengerJourneyDetailsUseCase(
   journeyRepository,
