@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4000,
+  PORT: Number(process.env.API_GATEWAY_PORT) || 4000,
   NODE_ENV: String(process.env.NODE_ENV) || "development",
 
   USER_SERVICE_URL:
@@ -27,8 +27,9 @@ export const AppConfig = {
   ),
   REDIS_URL: String(process.env.REDIS_URL || "redis://localhost:6379"),
 
-  SERVICE_NAME: String(process.env.SERVICE_NAME) || "api-gateway-service",
-  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+  SERVICE_NAME:
+    String(process.env.API_GATEWAY_SERVICE_NAME) || "api-gateway-service",
+  SERVICE_VERSION: String(process.env.API_GATEWAY_SERVICE_VERSION) || "0.0.1",
 
   OTEL_EXPORTER_OTLP_ENDPOINT: String(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",

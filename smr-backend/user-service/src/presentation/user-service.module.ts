@@ -101,9 +101,15 @@ const s3StorageService = new S3StorageService();
 //repositories
 const mongoUserRepository = new MongoUserRespository(UserModel);
 const mongoVehicleListRepository = new MongoVehicleListRepository();
-const mongoApplicationRepository = new MongoApplicationRepository(ApplicationModel);
-const mongoDriverRecordRepository = new MongoDriverRecordRepository(DriverRecordModel);
-const mongoVehicleRecordRepository = new MongoVehicleRecordRepository(VehicleRecordModel);
+const mongoApplicationRepository = new MongoApplicationRepository(
+  ApplicationModel,
+);
+const mongoDriverRecordRepository = new MongoDriverRecordRepository(
+  DriverRecordModel,
+);
+const mongoVehicleRecordRepository = new MongoVehicleRecordRepository(
+  VehicleRecordModel,
+);
 
 //use cases - vehicle config
 const newVehicleListConfigUseCase = new NewVehicleListConfigUseCase(
@@ -139,7 +145,7 @@ const rabbitMQEventBus = new RabbitMQEventBus(
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
   eventDispatcher,
-  "smr.user_service.queue",
+  AppConfig.USER_SERVICE_RABBITMQ_QUEUE_NAME,
 );
 
 //stores

@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4003,
+  PORT: Number(process.env.TRIP_SERVICE_PORT) || 4003,
   NODE_ENV: String(process.env.NODE_ENV) || "development",
 
   API_GATEWAY_KEY: String(
@@ -12,13 +12,15 @@ export const AppConfig = {
     process.env.API_GATEWAY_URL || "http://localhost:4000",
   ),
 
-  DATABASE_URL: String(process.env.DATABASE_URL) || "",
+  DATABASE_URL: String(process.env.POSTGRES_URL) || "",
   REDIS_URL: String(process.env.REDIS_URL) || "redis://localhost:6379",
 
   RABBITMQ_URL: String(process.env.RABBITMQ_URL || "amqp://localhost:5672"),
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
+  TRIP_SERVICE_RABBITMQ_QUEUE_NAME:
+    process.env.TRIP_SERVICE_RABBITMQ_QUEUE_NAME || "smr.trips.queue",
 
   QSTASH_URL: String(
     process.env.QSTASH_URL || "https://qstash-eu-central-1.upstash.io",
@@ -32,8 +34,8 @@ export const AppConfig = {
 
   PAYMENT_SECRET: String(process.env.PAYMENT_SECRET || "secret_key"),
 
-  SERVICE_NAME: String(process.env.SERVICE_NAME) || "trip-service",
-  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+  SERVICE_NAME: String(process.env.TRIP_SERVICE_NAME) || "trip-service",
+  SERVICE_VERSION: String(process.env.TRIP_SERVICE_VERSION) || "0.0.1",
 
   OTEL_EXPORTER_OTLP_ENDPOINT: String(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",

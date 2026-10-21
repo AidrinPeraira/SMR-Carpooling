@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4004,
+  PORT: Number(process.env.PAYMENT_SERVICE_PORT) || 4004,
   NODE_ENV: String(process.env.NODE_ENV) || "development",
 
   API_GATEWAY_KEY: String(
@@ -18,6 +18,8 @@ export const AppConfig = {
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
+  PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME:
+    process.env.PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME || "smr.payments.queue",
 
   RAZORPAY_API_KEY: String(process.env.RAZORPAY_API_KEY || "api_key"),
   RAZORPAY_API_SECRET: String(process.env.RAZORPAY_API_SECRET || "api_secret"),
@@ -28,8 +30,8 @@ export const AppConfig = {
   ),
   QSTASH_TOKEN: String(process.env.QSTASH_TOKEN || "test_token"),
 
-  SERVICE_NAME: String(process.env.SERVICE_NAME) || "payment-service",
-  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+  SERVICE_NAME: String(process.env.PAYMENT_SERVICE_NAME) || "payment-service",
+  SERVICE_VERSION: String(process.env.PAYMENT_SERVICE_VERSION) || "0.0.1",
 
   OTEL_EXPORTER_OTLP_ENDPOINT: String(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",

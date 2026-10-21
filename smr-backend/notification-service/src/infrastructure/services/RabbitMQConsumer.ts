@@ -1,3 +1,4 @@
+import { AppConfig } from "#/application.config";
 import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
 import { IMessageConsumer } from "#/application/interfaces/messaging/IMessageConsumer";
 import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
@@ -30,7 +31,7 @@ export class RabbitMQConsumer implements IMessageConsumer {
     url: string,
     eventDispatcher: IEventDispatcher,
     exchangeName: string = "sharemyride.events",
-    queueName: string = "smr.notfications.queue",
+    queueName: string = AppConfig.NOTIFICATION_SERVICE_RABBITMQ_QUEUE_NAME,
   ) {
     this._url = url;
     this._logger = logger;

@@ -1,3 +1,4 @@
+import { AppConfig } from "#/application.config";
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
 import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
@@ -30,7 +31,7 @@ export class EventBus implements IEventBus {
     url: string,
     exchangeName: string = "sharemyride.events",
     eventDispatcher: IEventDispatcher,
-    queueName: string = "smr.payments.queue",
+    queueName: string = AppConfig.PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME,
   ) {
     this._logger = logger;
     this._url = url;
