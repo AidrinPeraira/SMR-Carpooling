@@ -144,17 +144,26 @@ llm-service/src/
 └── application.config.ts
 ```
 
-**MCP Service** — MCP tool server exposed over stdio:
+**MCP Service** — MCP tool server (Express + Streamable HTTP transport):
 
 ```text
 mcp-service/src/
-├── index.ts                             # Entry — McpServer + StdioServerTransport
-├── app.ts                               # MCP server setup
+├── index.ts                             # Entry — Express server bootstrap
+├── app.ts                               # Express + MCP handler wiring
+├── application.config.ts                # Environment / config
+├── types/
+│   └── mcp.types.ts                     # ToolDefinition<T> and ToolHandler<TInput> types
 ├── tools/
-│   ├── definition/                      # Tool schemas (name, description, input shape)
-│   └── handler/                         # Tool execution logic
-├── services/                            # HTTP clients (e.g. api-gateway calls)
-└── application.config.ts
+│   ├── index.ts                         # Creates McpServer, registers all tool groups
+│   └── [role]/                          # One folder per role (passenger, driver, admin)
+│       ├── [role].tools.ts              # Wires definitions + handlers via registerTool
+│       ├── definitions/                 # Tool schemas (name, description, inputSchema)
+│       │   └── [ToolName]Definition.ts  # One file per tool
+│       └── handlers/                    # Tool execution logic
+│           └── [ToolName]Handler.ts     # One file per tool
+└── services/
+    ├── GatewayService.ts                # Axios client for api-gateway calls
+    └── LoggerService.ts                 # Winston logger singleton
 ```
 
 ---
