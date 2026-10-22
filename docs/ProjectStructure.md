@@ -23,7 +23,9 @@ ShareMyRide/
 │   ├── trip-service/          # Trips, Bookings, Vehicles, Driver management
 │   ├── payment-service/       # Payments (RazorPay), Wallets, Transactions
 │   ├── notification-service/  # Email notifications (Resend) — pure event consumer
-│   └── realtime-service/      # Chat (Socket.IO) & Voice Calls (WebRTC signaling)
+│   ├── realtime-service/      # Chat (Socket.IO) & Voice Calls (WebRTC signaling)
+│   ├── llm-service/           # LLM chat service (Express, connects to MCP server)
+│   └── mcp-service/           # MCP tool server (stdio transport)
 ├── smr-frontend/              # Next.js web application (Feature-Based Architecture)
 ├── smr-ui/                    # Shared UI Component Library (Storybook + Vite)
 ├── smr-shared/                # Internal library (DTOs, Enums, Errors, Schemas)
@@ -89,6 +91,7 @@ Each service (within `smr-backend/`) implements **Clean Architecture**, with the
 ### Service-Specific Variations
 
 **API Gateway** — No Clean Architecture layers. Flat structure with middleware, services, and config:
+
 ```text
 api-gateway/src/
 ├── middleware/        # auth, blacklist, key, metrics middleware
@@ -99,6 +102,7 @@ api-gateway/src/
 ```
 
 **Notification Service** — No REST routes. Pure event consumer:
+
 ```text
 notification-service/src/
 ├── domain/entities/           # NotificationEntity
@@ -115,11 +119,42 @@ notification-service/src/
 ```
 
 **Realtime Service** — Has both HTTP and Socket.IO presentation layers:
+
 ```text
 realtime-service/src/presentation/v1/
 ├── http/              # HTTP controllers, interfaces, routes (chat message sync)
 ├── sockets/           # Socket.IO handlers, interfaces, middlewares (chat + call)
 └── messaging/         # RabbitMQ event handlers
+```
+
+**LLM Service** — Chat service that connects to the MCP server as a client:
+
+```text
+llm-service/src/
+├── index.ts                             # Entry — Express server
+├── app.ts                               # Express app setup
+├── domain/                              # Domain entities & interfaces
+├── application/                         # Use cases & DTOs
+├── infrastructure/
+│   └── services/
+│       ├── McpClientService.ts          # Spawns MCP server, discovers/executes tools
+│       └── LlmProviderService.ts        # LLM provider adapter
+├── presentation/
+│   └── routes/                          # Express route definitions
+└── application.config.ts
+```
+
+**MCP Service** — MCP tool server exposed over stdio:
+
+```text
+mcp-service/src/
+├── index.ts                             # Entry — McpServer + StdioServerTransport
+├── app.ts                               # MCP server setup
+├── tools/
+│   ├── definition/                      # Tool schemas (name, description, input shape)
+│   └── handler/                         # Tool execution logic
+├── services/                            # HTTP clients (e.g. api-gateway calls)
+└── application.config.ts
 ```
 
 ---
