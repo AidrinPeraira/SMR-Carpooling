@@ -6,5 +6,6 @@ export const GatewayClient = axios.create({
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
+    "x-mcp-key": AppConfig.MCP_SERVICE_KEY,
   },
 });

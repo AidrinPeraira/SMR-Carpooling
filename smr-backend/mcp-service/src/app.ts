@@ -8,6 +8,7 @@ export async function createApp() {
 
   const app = createMcpExpressApp();
   const node = toNodeHandler(handler);
+
   app.all("/mcp", (req, res) => void node(req, res, req.body));
 
   return app;

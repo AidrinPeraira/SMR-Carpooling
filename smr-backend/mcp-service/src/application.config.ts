@@ -9,6 +9,8 @@ export const AppConfig = {
   SERVICE_NAME: String(process.env.MCP_SERVICE_NAME) || "mcp-service",
   SERVICE_VERSION: String(process.env.MCP_SERVICE_VERSION) || "0.0.1",
 
+  MCP_SERVICE_KEY: String(process.env.MCP_SERVICE_KEY) || "secret-token",
+
   API_GATEWAY_KEY: String(process.env.API_GATEWAY_KEY) || "secret-key",
   API_GATEWAY_URL:
     String(process.env.API_GATEWAY_URL) || "http://localhost:4000",

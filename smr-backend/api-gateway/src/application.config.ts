@@ -25,6 +25,8 @@ export const AppConfig = {
     process.env.API_GATEWAY_KEY ||
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
+  MCP_SERVICE_KEY: String(process.env.MCP_SERVICE_KEY) || "secret-token",
+
   REDIS_URL: String(process.env.REDIS_URL || "redis://localhost:6379"),
 
   SERVICE_NAME:
