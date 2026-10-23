@@ -166,10 +166,53 @@ export function createApp(logger: ILogger) {
     },
   });
 
+  const mcpServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.MCP_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: ["/mcp/**"],
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("MCP service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("MCP service is unavailable"));
+        }
+      },
+    },
+  });
+
+  const llmServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.LLM_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: ["/api/*/ai/**"],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("LLM service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("LLM service is unavailable"));
+        }
+      },
+    },
+  });
+
   app.use(userServiceProxy);
   app.use(tripServiceProxy);
   app.use(paymentServiceProxy);
   app.use(realtimeServiceProxy);
+  app.use(mcpServiceProxy);
+  app.use(llmServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

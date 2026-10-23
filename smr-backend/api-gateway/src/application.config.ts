@@ -12,6 +12,10 @@ export const AppConfig = {
     String(process.env.PAYMENT_SERVICE_URL) || "http://localhost:4004",
   REALTIME_SERVICE_URL:
     String(process.env.REALTIME_SERVICE_URL) || "http://localhost:4005",
+  MCP_SERVICE_URL:
+    String(process.env.MCP_SERVICE_URL) || "http://localhost:4007",
+  LLM_SERVICE_URL:
+    String(process.env.LLM_SERVICE_URL) || "http://localhost:4006",
 
   ACCESS_TOKEN_SECRET: String(
     process.env.ACCESS_TOKEN_SECRET ||

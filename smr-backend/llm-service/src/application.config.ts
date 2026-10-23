@@ -11,5 +11,13 @@ export const AppConfig = {
 
   API_GATEWAY_KEY: String(process.env.API_GATEWAY_KEY) || "secret-key",
 
+  MCP_SERVICE_URL:
+    String(process.env.MCP_SERVICE_URL) || "http://localhost:4007",
+
   MAPBOX_TOKEN: String(process.env.MAPBOX_TOKEN) || "secret-token",
+
+  MAPBOX_MCP_URL:
+    String(process.env.MAPBOX_MCP_URL) || "ttps://mcp.mapbox.com/mcp",
+
+  GEMINI_API_KEY: String(process.env.GEMINI_API_KEY) || "secret-key",
 };
