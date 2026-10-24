@@ -2,7 +2,6 @@ import { AppConfig } from "#/application.config";
 import { createGoogle } from "@ai-sdk/google";
 import { createMCPClient } from "@ai-sdk/mcp";
 import { generateText, streamText } from "ai";
-import { writeFileSync } from "node:fs";
 
 async function testMCP() {
   const google = createGoogle({
@@ -32,7 +31,8 @@ async function testMCP() {
   // const result = await generateText({
   //   model: google("gemini-3.5-flash-lite"),
   //   tools: {
-  //     ...mapboxTools,
+  //     ...mapboxTools
+  //     k
   //     ...smrTools,
   //   },
   //   maxSteps: 5,

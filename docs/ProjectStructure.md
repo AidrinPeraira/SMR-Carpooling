@@ -127,21 +127,30 @@ realtime-service/src/presentation/v1/
 └── messaging/         # RabbitMQ event handlers
 ```
 
-**LLM Service** — Chat service that connects to the MCP server as a client:
+**LLM Service** — Chat service that connects to the MCP server as a client. Uses a simplified **Contracts / Providers** architecture instead of full Clean Architecture:
 
 ```text
 llm-service/src/
 ├── index.ts                             # Entry — Express server
 ├── app.ts                               # Express app setup
-├── domain/                              # Domain entities & interfaces
-├── application/                         # Use cases & DTOs
-├── infrastructure/
-│   └── services/
-│       ├── McpClientService.ts          # Spawns MCP server, discovers/executes tools
-│       └── LlmProviderService.ts        # LLM provider adapter
-├── presentation/
-│   └── routes/                          # Express route definitions
-└── application.config.ts
+├── application.config.ts                # Environment / config
+├── contracts/                           # Interfaces, entities & enums (the "what")
+│   ├── entity/                          # Domain objects (ChatSession, ChatMessage, ActionLog)
+│   ├── enums/                           # Domain enums (ChatRoles)
+│   └── interfaces/                      # Port definitions
+│       ├── controllers/                 # Controller interfaces
+│       ├── messaging/                   # IEventBus, IEventDispatcher, IEventHandler
+│       ├── repository/                  # IChatSessionRepository, IChatSessionStore
+│       └── services/                    # ILlmProvider, IMcpClient
+├── providers/                           # Concrete implementations (the "how")
+│   ├── controllers/                     # Request handlers + business logic
+│   │   └── ChatController.ts
+│   ├── messaging/                       # EventBus, EventDispatcher
+│   ├── repository/                      # ChatSessionRepository (DB persistence)
+│   └── services/                        # External adapters (Gemini, Mapbox MCP, SMR MCP)
+└── presentation/                        # Wiring & entry points
+    ├── llm-service.module.ts            # Composition Root (DI wiring)
+    └── routes.ts                        # Express route definitions
 ```
 
 **MCP Service** — MCP tool server (Express + Streamable HTTP transport):
