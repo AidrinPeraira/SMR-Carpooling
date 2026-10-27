@@ -134,16 +134,3 @@ COPY --chown=node:node ./smr-backend/mcp-service/ ./smr-backend/mcp-service/
 EXPOSE 4007
 CMD ["pnpm", "--filter", "@smr/mcp-service", "run", "dev"]
 
-#################################################
-# --- LLM Service ---
-
-FROM root-workspace AS llm-service-installer
-COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
-COPY --chown=node:node ./smr-backend/llm-service/package.json ./smr-backend/llm-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/llm-service...
-
-FROM llm-service-installer AS llm-service-dev
-COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
-COPY --chown=node:node ./smr-backend/llm-service/ ./smr-backend/llm-service/
-EXPOSE 4006
-CMD ["pnpm", "--filter", "@smr/llm-service", "run", "dev"]
