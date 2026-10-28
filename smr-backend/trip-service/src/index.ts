@@ -8,7 +8,7 @@ import { WinstonLoggerService } from "#/infrastructure/services/LoggerService";
 async function startServer(): Promise<void> {
   const logger = new WinstonLoggerService();
 
-  // Connect Redis
+  // Connect Redis.
   await connectRedis(logger);
 
   // Connect RabbitMQ
