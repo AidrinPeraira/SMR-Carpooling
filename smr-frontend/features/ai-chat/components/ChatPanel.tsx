@@ -17,6 +17,10 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
   }, [chat.messages]);
 
+  useEffect(() => {
+    console.log(chat.messages);
+  }, [chat.messages]);
+
   function handleUserInputSubmit(e: SyntheticEvent) {
     e.preventDefault();
 
@@ -26,10 +30,6 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
 
     setUserInput("");
   }
-
-  useEffect(() => {
-    console.log(chat.messages);
-  }, [chat.messages]);
 
   return (
     <div className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 md:w-[400px] md:h-[600px] z-50 flex flex-col bg-surface-base md:rounded-2xl md:shadow-xl border border-border-subtle">
@@ -71,19 +71,55 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
               </div>
             </div>
           ) : (
-            <AiMessage
-              key={message.id}
-              text={message.parts
-                .filter((p) => p.type === "text")
-                .map((p) => (p as { type: "text"; text: string }).text)
-                .join("")}
-            />
+            <div key={message.id} className="space-y-2">
+              {message.parts
+                .filter((p) => p.type === "dynamic-tool")
+                .map((p) => {
+                  const tool = p as {
+                    type: "dynamic-tool";
+                    toolName: string;
+                    toolCallId: string;
+                    state: string;
+                    title?: string;
+                  };
+                  return (
+                    <div
+                      key={tool.toolCallId}
+                      className="flex justify-start"
+                    >
+                      <div className="max-w-[80%] px-3 py-1.5 rounded-xl text-xs bg-surface-muted text-content-tertiary italic flex items-center gap-1.5">
+                        <span>
+                          {tool.state === "output-available"
+                            ? "✓"
+                            : "⏳"}
+                        </span>
+                        <span>{tool.title ?? tool.toolName}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              {message.parts.some((p) => p.type === "text") && (
+                <AiMessage
+                  text={message.parts
+                    .filter((p) => p.type === "text")
+                    .map((p) => (p as { type: "text"; text: string }).text)
+                    .join("")}
+                />
+              )}
+            </div>
           ),
         )}
-        {chat.status !== "ready" && chat.messages.length > 0 && (
+        {chat.status !== "ready" && !chat.error && chat.messages.length > 0 && (
           <div className="flex justify-start">
             <div className="px-3 py-2 rounded-xl text-sm bg-surface-muted text-content-tertiary">
               Thinking…
+            </div>
+          </div>
+        )}
+        {chat.error && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] px-3 py-2 rounded-xl text-sm bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+              Something went wrong. Please try again.
             </div>
           </div>
         )}

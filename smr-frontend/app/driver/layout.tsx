@@ -2,6 +2,7 @@ import PortalNavbar from "@/components/PortalNavbar";
 import { VoiceCallProvider } from "@/features/realtime/context/VoiceCallProvider";
 import { CallModals } from "@/features/call/CallModals";
 import { ReactNode } from "react";
+import ChatWidget from "@/features/ai-chat/views/ChatWidget";
 
 interface Props {
   children: ReactNode;
@@ -20,6 +21,7 @@ export default function DriverLayout({ children }: Props) {
         </main>
       </div>
       <CallModals />
+      <ChatWidget />
     </VoiceCallProvider>
   );
 }
