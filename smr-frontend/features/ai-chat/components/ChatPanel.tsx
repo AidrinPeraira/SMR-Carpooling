@@ -2,10 +2,12 @@
 
 import { useRef, useEffect, useState } from "react";
 import { X, Send, Trash2 } from "lucide-react";
-import type { UseChatReturn } from "@ai-sdk/react";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { UIMessage } from "ai";
+import ReactMarkdown from "react-markdown";
 
 interface ChatPanelProps {
-  chat: UseChatReturn;
+  chat: UseChatHelpers<UIMessage>;
   onClose: () => void;
   onClear: () => void;
 }
@@ -68,7 +70,46 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
               }`}
             >
               {message.parts.map((part, i) =>
-                part.type === "text" ? <span key={i}>{part.text}</span> : null,
+                part.type === "text" ? (
+                  message.role === "user" ? (
+                    <span key={i}>{part.text}</span>
+                  ) : (
+                    <ReactMarkdown
+                      key={i}
+                      components={{
+                        a: ({ children, href }) => (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline text-accent"
+                          >
+                            {children}
+                          </a>
+                        ),
+                        p: ({ children }) => (
+                          <p className="mb-1 last:mb-0">{children}</p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc ml-4 mb-1">{children}</ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal ml-4 mb-1">{children}</ol>
+                        ),
+                        code: ({ children }) => (
+                          <code className="bg-surface-base px-1 rounded text-xs">
+                            {children}
+                          </code>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-semibold">{children}</strong>
+                        ),
+                      }}
+                    >
+                      {part.text}
+                    </ReactMarkdown>
+                  )
+                ) : null,
               )}
             </div>
           </div>

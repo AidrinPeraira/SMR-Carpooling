@@ -3,12 +3,23 @@ import { createMcpExpressApp } from "@modelcontextprotocol/express";
 import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { HttpStatusCode } from "axios";
+import morgan from "morgan";
+import { logger } from "#/services/LoggerService";
 
 export async function createApp() {
   const passengerHandler = createMcpHandler(() => createPassengerMcpServer());
   const driverHandler = createMcpHandler(() => createDriverMcpServer());
 
   const app = createMcpExpressApp();
+
+  app.use(
+    morgan("dev", {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+    }),
+  );
+
   const passengerNode = toNodeHandler(passengerHandler);
   const driverNode = toNodeHandler(driverHandler);
 
@@ -16,7 +27,10 @@ export async function createApp() {
     res.status(HttpStatusCode.Ok).json({ status: "OK" });
   });
 
-  app.all("/mcp/passenger", (req, res) => void passengerNode(req, res, req.body));
+  app.all(
+    "/mcp/passenger",
+    (req, res) => void passengerNode(req, res, req.body),
+  );
   app.all("/mcp/driver", (req, res) => void driverNode(req, res, req.body));
 
   return app;
