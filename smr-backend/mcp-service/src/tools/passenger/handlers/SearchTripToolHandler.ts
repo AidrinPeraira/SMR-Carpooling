@@ -1,18 +1,17 @@
 import { GatewayClient } from "#/services/GatewayService";
+import { MCPSearchTripSchema } from "#/tools/passenger/definitions/SearchTripToolDefinition";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserErrorMessage,
   UserRole,
   type ApiResponse,
   type ListTripsResult,
-  type SearchTripSchema,
 } from "@sharemyride/shared";
 
 export const handleSearchTripToolCall: ToolCallback<
-  typeof SearchTripSchema
+  typeof MCPSearchTripSchema
 > = async (input, ctx) => {
   const authToken = ctx.http?.req?.headers.get("authorization");
-
   const userRole = ctx.http?.req?.headers.get("x-user-role");
 
   if (userRole !== UserRole.PASSENGER) {
