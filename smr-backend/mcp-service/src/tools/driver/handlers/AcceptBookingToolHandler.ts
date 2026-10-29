@@ -1,5 +1,6 @@
 import { GatewayClient } from "#/services/GatewayService";
 import { AcceptBookingSchema } from "#/tools/driver/definitions/AcceptBookingToolDefinition";
+import { logger } from "#/services/LoggerService";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserRole,
@@ -20,20 +21,28 @@ export const handleAcceptBookingToolCall: ToolCallback<
     };
   }
 
-  const response = await GatewayClient.patch<ApiResponse>(
-    `/api/v1/bookings/${input.bookingId}/accept`,
-    {},
-    { headers: { Authorization: authToken } },
-  );
+  try {
+    const response = await GatewayClient.patch<ApiResponse>(
+      `/api/v1/bookings/${input.bookingId}/accept`,
+      {},
+      { headers: { Authorization: authToken } },
+    );
 
-  if (!response.data.success) {
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("accept-booking tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
       isError: true,
     };
   }
-
-  return {
-    content: [{ type: "text", text: JSON.stringify(response.data) }],
-  };
 };

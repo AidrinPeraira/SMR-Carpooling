@@ -1,5 +1,6 @@
 import { GatewayClient } from "#/services/GatewayService";
 import { GetTripDetailsSchema } from "#/tools/driver/definitions/GetTripDetailsToolDefinition";
+import { logger } from "#/services/LoggerService";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserRole,
@@ -21,20 +22,28 @@ export const handleGetTripDetailsToolCall: ToolCallback<
     };
   }
 
-  const response = await GatewayClient.get<
-    ApiResponse<DriverTripDetailsResult>
-  >(`/api/v1/trips/driver/${input.tripId}`, {
-    headers: { Authorization: authToken },
-  });
+  try {
+    const response = await GatewayClient.get<
+      ApiResponse<DriverTripDetailsResult>
+    >(`/api/v1/trips/driver/${input.tripId}`, {
+      headers: { Authorization: authToken },
+    });
 
-  if (!response.data.success) {
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("get-trip-details tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
       isError: true,
     };
   }
-
-  return {
-    content: [{ type: "text", text: JSON.stringify(response.data) }],
-  };
 };

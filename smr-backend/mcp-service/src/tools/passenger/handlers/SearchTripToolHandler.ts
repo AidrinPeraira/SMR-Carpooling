@@ -1,5 +1,6 @@
 import { GatewayClient } from "#/services/GatewayService";
 import { MCPSearchTripSchema } from "#/tools/passenger/definitions/SearchTripToolDefinition";
+import { logger } from "#/services/LoggerService";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserErrorMessage,
@@ -21,24 +22,32 @@ export const handleSearchTripToolCall: ToolCallback<
     };
   }
 
-  const response = await GatewayClient.post<ApiResponse<ListTripsResult[]>>(
-    "/api/v1/trips/search",
-    input,
-    {
-      headers: {
-        Authorization: authToken,
+  try {
+    const response = await GatewayClient.post<ApiResponse<ListTripsResult[]>>(
+      "/api/v1/trips/search",
+      input,
+      {
+        headers: {
+          Authorization: authToken,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.data.success) {
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("search-trips tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
       isError: true,
     };
   }
-
-  return {
-    content: [{ type: "text", text: JSON.stringify(response.data) }],
-  };
 };

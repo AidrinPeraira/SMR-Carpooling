@@ -7,7 +7,7 @@ import { DefaultChatTransport } from "ai";
 import ChatPanel from "@/features/ai-chat/components/ChatPanel";
 
 export default function ChatWidget() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const chat = useChat({
     transport: new DefaultChatTransport({
       api: "/api/assistant",

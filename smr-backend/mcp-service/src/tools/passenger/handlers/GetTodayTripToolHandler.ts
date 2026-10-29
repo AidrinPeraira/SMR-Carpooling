@@ -1,5 +1,6 @@
 import { GatewayClient } from "#/services/GatewayService";
 import { GetTodayTripSchema } from "#/tools/passenger/definitions/GetTodayTripToolDefinition";
+import { logger } from "#/services/LoggerService";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserRole,
@@ -21,20 +22,28 @@ export const handleGetTodayTripToolCall: ToolCallback<
     };
   }
 
-  const response = await GatewayClient.get<
-    ApiResponse<PassengerTodayTripResult>
-  >("/api/v1/bookings/passenger/today", {
-    headers: { Authorization: authToken },
-  });
+  try {
+    const response = await GatewayClient.get<
+      ApiResponse<PassengerTodayTripResult>
+    >("/api/v1/bookings/passenger/today", {
+      headers: { Authorization: authToken },
+    });
 
-  if (!response.data.success) {
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("get-today-trip tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
       isError: true,
     };
   }
-
-  return {
-    content: [{ type: "text", text: JSON.stringify(response.data) }],
-  };
 };

@@ -1,4 +1,5 @@
 import { GatewayClient } from "#/services/GatewayService";
+import { logger } from "#/services/LoggerService";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserRole,
@@ -21,21 +22,29 @@ export const handleListTripsToolCall: ToolCallback<
     };
   }
 
-  const response = await GatewayClient.get<
-    ApiResponse<DriverTripItemResult[]>
-  >("/api/v1/trips/driver", {
-    headers: { Authorization: authToken },
-    params: input,
-  });
+  try {
+    const response = await GatewayClient.get<
+      ApiResponse<DriverTripItemResult[]>
+    >("/api/v1/trips/driver", {
+      headers: { Authorization: authToken },
+      params: input,
+    });
 
-  if (!response.data.success) {
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("list-trips tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
       isError: true,
     };
   }
-
-  return {
-    content: [{ type: "text", text: JSON.stringify(response.data) }],
-  };
 };

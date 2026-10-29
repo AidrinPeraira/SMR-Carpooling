@@ -19,16 +19,19 @@ export function keyMiddleware(req: Request, res: Response, next: NextFunction) {
 
   //check for valid frontend
   const frontendKey = req.headers["x-frontend-key"];
+  const mcpServiceKey = req.headers["x-mcp-key"];
 
   if (!frontendKey || frontendKey !== AppConfig.FRONTEND_KEY) {
-    res
-      .status(HttpStatusCodes.Forbidden)
-      .json(
-        makeFailedResponse(
-          "Forbidden: Request must originate from a verified client",
-        ),
-      );
-    return;
+    if (!mcpServiceKey || mcpServiceKey !== AppConfig.MCP_SERVICE_KEY) {
+      res
+        .status(HttpStatusCodes.Forbidden)
+        .json(
+          makeFailedResponse(
+            "Forbidden: Request must originate from a verified client",
+          ),
+        );
+      return;
+    }
   }
 
   //attatch gateway key

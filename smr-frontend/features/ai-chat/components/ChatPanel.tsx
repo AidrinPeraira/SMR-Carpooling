@@ -1,10 +1,7 @@
-"use client";
-
-import { useRef, useEffect, useState } from "react";
+import { UIMessage, UseChatHelpers } from "@ai-sdk/react";
 import { X, Send, Trash2 } from "lucide-react";
-import type { UseChatHelpers } from "@ai-sdk/react";
-import type { UIMessage } from "ai";
-import ReactMarkdown from "react-markdown";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
+import AiMessage from "./AiMessage";
 
 interface ChatPanelProps {
   chat: UseChatHelpers<UIMessage>;
@@ -13,21 +10,26 @@ interface ChatPanelProps {
 }
 
 export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
-  const { messages, sendMessage, status } = chat;
-  const [input, setInput] = useState("");
+  const [userInput, setUserInput] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
-  }, [messages]);
+  }, [chat.messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  function handleUserInputSubmit(e: SyntheticEvent) {
     e.preventDefault();
-    if (input.trim() && status === "ready") {
-      sendMessage({ text: input });
-      setInput("");
-    }
-  };
+
+    if (!userInput.trim()) return;
+
+    chat.sendMessage({ text: userInput });
+
+    setUserInput("");
+  }
+
+  useEffect(() => {
+    console.log(chat.messages);
+  }, [chat.messages]);
 
   return (
     <div className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 md:w-[400px] md:h-[600px] z-50 flex flex-col bg-surface-base md:rounded-2xl md:shadow-xl border border-border-subtle">
@@ -52,69 +54,33 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
-        {messages.length === 0 && (
+        {chat.messages.length === 0 && (
           <p className="text-sm text-content-tertiary text-center mt-8">
             Ask me about trips, bookings, or anything else.
           </p>
         )}
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`max-w-[80%] px-3 py-2 rounded-xl text-sm ${
-                message.role === "user"
-                  ? "bg-accent text-accent-fg"
-                  : "bg-surface-muted text-content-primary"
-              }`}
-            >
-              {message.parts.map((part, i) =>
-                part.type === "text" ? (
-                  message.role === "user" ? (
+        {chat.messages.map((message) =>
+          message.role === "user" ? (
+            <div key={message.id} className="flex justify-end">
+              <div className="max-w-[80%] px-3 py-2 rounded-xl text-sm bg-accent text-accent-fg">
+                {message.parts.map((part, i) =>
+                  part.type === "text" ? (
                     <span key={i}>{part.text}</span>
-                  ) : (
-                    <ReactMarkdown
-                      key={i}
-                      components={{
-                        a: ({ children, href }) => (
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline text-accent"
-                          >
-                            {children}
-                          </a>
-                        ),
-                        p: ({ children }) => (
-                          <p className="mb-1 last:mb-0">{children}</p>
-                        ),
-                        ul: ({ children }) => (
-                          <ul className="list-disc ml-4 mb-1">{children}</ul>
-                        ),
-                        ol: ({ children }) => (
-                          <ol className="list-decimal ml-4 mb-1">{children}</ol>
-                        ),
-                        code: ({ children }) => (
-                          <code className="bg-surface-base px-1 rounded text-xs">
-                            {children}
-                          </code>
-                        ),
-                        strong: ({ children }) => (
-                          <strong className="font-semibold">{children}</strong>
-                        ),
-                      }}
-                    >
-                      {part.text}
-                    </ReactMarkdown>
-                  )
-                ) : null,
-              )}
+                  ) : null,
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-        {status !== "ready" && messages.length > 0 && (
+          ) : (
+            <AiMessage
+              key={message.id}
+              text={message.parts
+                .filter((p) => p.type === "text")
+                .map((p) => (p as { type: "text"; text: string }).text)
+                .join("")}
+            />
+          ),
+        )}
+        {chat.status !== "ready" && chat.messages.length > 0 && (
           <div className="flex justify-start">
             <div className="px-3 py-2 rounded-xl text-sm bg-surface-muted text-content-tertiary">
               Thinking…
@@ -124,19 +90,19 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
       </div>
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleUserInputSubmit}
         className="flex items-center gap-2 px-4 py-3 border-t border-border-subtle"
       >
         <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
           placeholder="Ask something…"
+          onChange={(e) => setUserInput(e.target.value)}
+          value={userInput}
           className="flex-1 text-sm bg-surface-muted rounded-xl px-3 py-2 outline-none text-content-primary placeholder:text-content-tertiary"
         />
         <button
-          type="submit"
-          disabled={status !== "ready" || !input.trim()}
+          disabled={userInput == ""}
           className="p-2 rounded-xl bg-accent text-accent-fg disabled:opacity-40"
+          type="submit"
         >
           <Send size={16} />
         </button>

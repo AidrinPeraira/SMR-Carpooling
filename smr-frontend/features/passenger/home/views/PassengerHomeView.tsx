@@ -54,7 +54,7 @@ export function PassengerHomeView() {
             </div>
           </div>
           <Link href="/passenger/trips">
-            <button className="flex items-center gap-1 bg-accent text-fg-primary px-4 py-2 rounded-lg font-medium hover:bg-accent/90 transition-colors">
+            <button className="flex items-center gap-1 bg-accent px-4 py-2 rounded-lg font-medium hover:bg-accent/90 transition-colors">
               <Search className="w-4 h-4" />
               Find a Ride
             </button>

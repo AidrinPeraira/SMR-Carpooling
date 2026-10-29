@@ -1,5 +1,6 @@
 import { GatewayClient } from "#/services/GatewayService";
 import { GetBookingDetailsSchema } from "#/tools/driver/definitions/GetBookingDetailsToolDefinition";
+import { logger } from "#/services/LoggerService";
 import type { ToolCallback } from "@modelcontextprotocol/server";
 import {
   UserRole,
@@ -21,20 +22,28 @@ export const handleGetBookingDetailsToolCall: ToolCallback<
     };
   }
 
-  const response = await GatewayClient.get<
-    ApiResponse<DriverBookingDetailsResult>
-  >(`/api/v1/bookings/driver/${input.bookingId}`, {
-    headers: { Authorization: authToken },
-  });
+  try {
+    const response = await GatewayClient.get<
+      ApiResponse<DriverBookingDetailsResult>
+    >(`/api/v1/bookings/driver/${input.bookingId}`, {
+      headers: { Authorization: authToken },
+    });
 
-  if (!response.data.success) {
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("get-booking-details tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
       isError: true,
     };
   }
-
-  return {
-    content: [{ type: "text", text: JSON.stringify(response.data) }],
-  };
 };
