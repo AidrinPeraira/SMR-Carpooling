@@ -5,11 +5,11 @@ import {
   UserRole,
   UserErrorMessage,
   type ApiResponse,
-  type CreateTripSchema,
 } from "@sharemyride/shared";
+import { MCPCreateTripSchema } from "#/tools/driver/definitions/CreateTripToolDefinition";
 
 export const handleCreateTripToolCall: ToolCallback<
-  typeof CreateTripSchema
+  typeof MCPCreateTripSchema
 > = async (input, ctx) => {
   const authToken = ctx.http?.req?.headers.get("authorization");
   const userRole = ctx.http?.req?.headers.get("x-user-role");

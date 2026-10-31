@@ -5,7 +5,7 @@ import { createMcpHandler } from "@modelcontextprotocol/server";
 import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
-import { HttpStatusCodes, makeFailedResponse } from "@sharemyride/shared";
+import { makeFailedResponse } from "@sharemyride/shared";
 import { logger } from "#/services/LoggerService";
 import { mapError } from "#/utils/error-mapper";
 

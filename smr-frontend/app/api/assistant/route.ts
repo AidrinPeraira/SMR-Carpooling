@@ -13,6 +13,7 @@ import { cookies } from "next/headers";
 import { clearAuthCookies, setAuthCookies } from "@/lib/auth-cookies";
 import { getNewTokens } from "@/lib/api-server";
 import { NextResponse } from "next/server";
+import { RIDE_ASSISTANT_INSTRUCTIONS } from "@/lib/ai-instructions";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -79,7 +80,7 @@ async function getValidatedToken(): Promise<{
     throw new Error("unauthenticated");
   }
 
-  let token = accessToken;
+  const token = accessToken;
 
   if (token) {
     const payload = decodeJwt(token);
@@ -134,28 +135,16 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: google("gemini-3.5-flash-lite"),
-      instructions: `You are Ride Assistant, the ShareMyRide support agent. Your role is "${userRole}".
-
-CURRENT DATE & TIME: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "full", timeStyle: "long" })}
-- All times are in IST (Asia/Kolkata). Interpret user references like "tomorrow" or "this evening" in IST.
-- Never schedule a trip in the past. If the resolved date/time is before now, let the user know and ask for a corrected time.
-
-SCOPE
-- Only answer questions related to the ShareMyRide service — bookings, trips, payments, account, routes, and navigation.
-- Politely decline any off-topic requests. Example: "I can only help with ShareMyRide related questions."
-
-TOOLS
-- Use the SMR tools to look up or act on bookings, trips, payments, and account details. Never fabricate IDs, prices, or statuses — always call the API.
-- Use the Mapbox tools only when you need a place name, coordinates, geocoding, or route/directions to support an SMR query.
-
-BEHAVIOUR
-- Keep answers short and conversational — this is a chat, not a document.
-- If an API call fails or returns an error, tell the user something went wrong and suggest they try again. Never expose raw error messages or internal details.
-- Ask one clarifying question at a time if the user's request is ambiguous.
-- Always ask for input from user when executing actions that update or create.
-- Take confirmations for the input parameters needed from the user.
-
-Format your responses using mark down syntax if needed to make it appear easy to understand for the user.`,
+      instructions: RIDE_ASSISTANT_INSTRUCTIONS
+        .replace("{role}", userRole)
+        .replace(
+          "{datetime}",
+          new Date().toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            dateStyle: "full",
+            timeStyle: "long",
+          }),
+        ),
       tools: {
         ...mapboxTools,
         ...smrTools,

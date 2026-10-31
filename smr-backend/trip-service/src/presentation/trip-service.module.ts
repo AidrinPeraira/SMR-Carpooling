@@ -218,6 +218,7 @@ const createTripUseCase = new CreateTripUseCase(
   tripsRepository,
   driverRepository,
   eventBusInstance,
+  cryptoUIDService,
 );
 
 import { DriverAcceptBookingUseCase } from "#/application/use-case/booking/DriverAcceptBookingUseCase";

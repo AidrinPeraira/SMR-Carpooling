@@ -24,7 +24,7 @@ export const mapError = (err: unknown): ApplicationError => {
     }
 
     return new ApplicationError(
-      err.response?.data?.message ?? GenericErrorMessage.INTERNAL_SERVER_ERROR,
+      (err.response?.data as { message?: string })?.message ?? GenericErrorMessage.INTERNAL_SERVER_ERROR,
       err.response?.status ?? HttpStatusCodes.InternalServerError,
       ErrorCode.SYSTEM_INTERNAL_ERROR,
       {
