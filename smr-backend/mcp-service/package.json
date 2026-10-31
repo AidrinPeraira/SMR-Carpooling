@@ -18,7 +18,7 @@
     "@modelcontextprotocol/express": "^2.0.2",
     "@modelcontextprotocol/node": "^2.1.1",
     "@modelcontextprotocol/server": "^2.3.1",
-    "@sharemyride/shared": "^0.2.0",
+    "@sharemyride/shared": "^0.4.0",
     "axios": "^1.20.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
