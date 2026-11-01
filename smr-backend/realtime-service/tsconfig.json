@@ -3,11 +3,22 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": ".",
+    "noEmit": false,
     "paths": {
-      "#/*": ["./src/*"],
-      "&#/*": ["./tests/*"]
+      "#/*": [
+        "./src/*"
+      ],
+      "&#/*": [
+        "./tests/*"
+      ]
     }
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.mjs"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "scripts/**/*.mjs"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
