@@ -18,5 +18,5 @@ export enum UserErrorMessage {
   INVALID_TOKEN = "The verification token is invalid or has expired.",
   PASSWORD_MISMATCH = "Passwords do not match.",
   NOT_A_DRIVER = "User is not registered as a driver.",
+  NOT_A_PASSENGER = "User role is not passenger.",
 }
-

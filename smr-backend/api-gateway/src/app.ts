@@ -166,10 +166,33 @@ export function createApp(logger: ILogger) {
     },
   });
 
+  const mcpServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.MCP_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: ["/mcp/**"],
+    headers: {
+      Host: "localhost",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("MCP service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("MCP service is unavailable"));
+        }
+      },
+    },
+  });
+
   app.use(userServiceProxy);
   app.use(tripServiceProxy);
   app.use(paymentServiceProxy);
   app.use(realtimeServiceProxy);
+  app.use(mcpServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {

@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { CreateTripRequestDTO } from "#/application/dto/trip/CreateTripRequestDTO";
 import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
 import { ICreateTripUseCase } from "#/application/interfaces/use-case/trip/ICreateTripUseCase";
@@ -16,6 +15,7 @@ import {
 import { EventName } from "@sharemyride/shared";
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
+import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
 
 /**
  * Use case responsible for orchestrating trip creation logic
@@ -26,6 +26,7 @@ export class CreateTripUseCase implements ICreateTripUseCase {
     private readonly _tripRepository: ITripRepository,
     private readonly _driverRepository: IDriverRepository,
     private readonly _eventBus: IEventBus,
+    private readonly _uidGenerator: IUniqueIdGenerator,
   ) {}
 
   async execute(data: CreateTripRequestDTO): Promise<void> {
@@ -78,7 +79,7 @@ export class CreateTripUseCase implements ICreateTripUseCase {
 
     const now = new Date();
     const trip: TripEntity = {
-      tripId: crypto.randomUUID(),
+      tripId: this._uidGenerator.generateRandomId("TRP"),
       driverId: data.driverId,
       vehicleId: data.vehicleId,
       tripOrigin: data.tripOrigin,

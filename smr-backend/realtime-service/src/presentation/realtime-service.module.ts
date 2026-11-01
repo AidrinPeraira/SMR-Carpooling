@@ -164,9 +164,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     socketStore,
     journeySocketEmitter,
   );
-  const updateLocationUseCase = new UpdateLocationUseCase(
-    journeySocketEmitter,
-  );
+  const updateLocationUseCase = new UpdateLocationUseCase(journeySocketEmitter);
   const leaveJourneyUseCase = new LeaveJourneyUseCase(
     socketStore,
     journeySocketEmitter,
@@ -317,7 +315,7 @@ export async function setUpRealtimeModule(httpServer: Server, logger: ILogger) {
     AppConfig.RABBITMQ_URL,
     AppConfig.RABBITMQ_EXCHANGE_NAME,
     eventDispatcher,
-    "smr.realtime.queue",
+    AppConfig.REALTIME_SERVICE_RABBITMQ_QUEUE_NAME,
   );
 
   // HTTP controllers

@@ -24,9 +24,6 @@ services:
     tty: true
     ports:
       - "4001:4001"
-    depends_on:
-      - redis
-      - rabbitmq
     env_file:
       - ./smr-backend/user-service/.env
     environment:
@@ -184,9 +181,6 @@ services:
     tty: true
     ports:
       - "4005:4005"
-    depends_on:
-      - redis
-      - rabbitmq
     env_file:
       - ./smr-backend/realtime-service/.env
     environment:
@@ -210,21 +204,33 @@ services:
           path: ./smr-shared/dist
           target: /app/smr-shared/dist
 
-  # --- Infrastructure Services ---
-
-  redis:
-    image: redis:7.0-alpine
+  mcp-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: mcp-service-dev
+    tty: true
     ports:
-      - "6379:6379"
+      - "4007:4007"
+    env_file:
+      - ./smr-backend/mcp-service/.env
+    environment:
+      - NODE_ENV=development
+      - CI=true
     volumes:
-      - ./smr-infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ./smr-infra/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./smr-infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - .:/app
+      - /app/node_modules
+      - /app/smr-backend/mcp-service/node_modules
+      - /app/smr-shared/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./smr-backend/mcp-service/src
+          target: /app/smr-backend/mcp-service/src
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: ./smr-backend/mcp-service/package.json
+        - action: sync
+          path: ./smr-shared/dist
+          target: /app/smr-shared/dist

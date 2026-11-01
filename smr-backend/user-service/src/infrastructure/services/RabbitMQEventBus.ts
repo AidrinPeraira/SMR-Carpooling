@@ -1,3 +1,4 @@
+import { AppConfig } from "#/application.config";
 import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
 import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
@@ -31,7 +32,7 @@ export class RabbitMQEventBus implements IEventBus {
     url: string,
     exchangeName: string = "sharemyride.events",
     eventDispatcher?: IEventDispatcher,
-    queueName: string = "smr.user_service.queue",
+    queueName: string = AppConfig.USER_SERVICE_RABBITMQ_QUEUE_NAME,
   ) {
     this._logger = logger;
     this._url = url;

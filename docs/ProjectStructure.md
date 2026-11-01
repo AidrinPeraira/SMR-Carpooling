@@ -23,7 +23,9 @@ ShareMyRide/
 │   ├── trip-service/          # Trips, Bookings, Vehicles, Driver management
 │   ├── payment-service/       # Payments (RazorPay), Wallets, Transactions
 │   ├── notification-service/  # Email notifications (Resend) — pure event consumer
-│   └── realtime-service/      # Chat (Socket.IO) & Voice Calls (WebRTC signaling)
+│   ├── realtime-service/      # Chat (Socket.IO) & Voice Calls (WebRTC signaling)
+│   ├── llm-service/           # LLM chat service (Express, connects to MCP server)
+│   └── mcp-service/           # MCP tool server (stdio transport)
 ├── smr-frontend/              # Next.js web application (Feature-Based Architecture)
 ├── smr-ui/                    # Shared UI Component Library (Storybook + Vite)
 ├── smr-shared/                # Internal library (DTOs, Enums, Errors, Schemas)
@@ -89,6 +91,7 @@ Each service (within `smr-backend/`) implements **Clean Architecture**, with the
 ### Service-Specific Variations
 
 **API Gateway** — No Clean Architecture layers. Flat structure with middleware, services, and config:
+
 ```text
 api-gateway/src/
 ├── middleware/        # auth, blacklist, key, metrics middleware
@@ -99,6 +102,7 @@ api-gateway/src/
 ```
 
 **Notification Service** — No REST routes. Pure event consumer:
+
 ```text
 notification-service/src/
 ├── domain/entities/           # NotificationEntity
@@ -115,11 +119,60 @@ notification-service/src/
 ```
 
 **Realtime Service** — Has both HTTP and Socket.IO presentation layers:
+
 ```text
 realtime-service/src/presentation/v1/
 ├── http/              # HTTP controllers, interfaces, routes (chat message sync)
 ├── sockets/           # Socket.IO handlers, interfaces, middlewares (chat + call)
 └── messaging/         # RabbitMQ event handlers
+```
+
+**LLM Service** — Chat service that connects to the MCP server as a client. Uses a simplified **Contracts / Providers** architecture instead of full Clean Architecture:
+
+```text
+llm-service/src/
+├── index.ts                             # Entry — Express server
+├── app.ts                               # Express app setup
+├── application.config.ts                # Environment / config
+├── contracts/                           # Interfaces, entities & enums (the "what")
+│   ├── entity/                          # Domain objects (ChatSession, ChatMessage, ActionLog)
+│   ├── enums/                           # Domain enums (ChatRoles)
+│   └── interfaces/                      # Port definitions
+│       ├── controllers/                 # Controller interfaces
+│       ├── messaging/                   # IEventBus, IEventDispatcher, IEventHandler
+│       ├── repository/                  # IChatSessionRepository, IChatSessionStore
+│       └── services/                    # ILlmProvider, IMcpClient
+├── providers/                           # Concrete implementations (the "how")
+│   ├── controllers/                     # Request handlers + business logic
+│   │   └── ChatController.ts
+│   ├── messaging/                       # EventBus, EventDispatcher
+│   ├── repository/                      # ChatSessionRepository (DB persistence)
+│   └── services/                        # External adapters (Gemini, Mapbox MCP, SMR MCP)
+└── presentation/                        # Wiring & entry points
+    ├── llm-service.module.ts            # Composition Root (DI wiring)
+    └── routes.ts                        # Express route definitions
+```
+
+**MCP Service** — MCP tool server (Express + Streamable HTTP transport):
+
+```text
+mcp-service/src/
+├── index.ts                             # Entry — Express server bootstrap
+├── app.ts                               # Express + MCP handler wiring
+├── application.config.ts                # Environment / config
+├── types/
+│   └── mcp.types.ts                     # ToolDefinition<T> and ToolHandler<TInput> types
+├── tools/
+│   ├── index.ts                         # Creates McpServer, registers all tool groups
+│   └── [role]/                          # One folder per role (passenger, driver, admin)
+│       ├── [role].tools.ts              # Wires definitions + handlers via registerTool
+│       ├── definitions/                 # Tool schemas (name, description, inputSchema)
+│       │   └── [ToolName]Definition.ts  # One file per tool
+│       └── handlers/                    # Tool execution logic
+│           └── [ToolName]Handler.ts     # One file per tool
+└── services/
+    ├── GatewayService.ts                # Axios client for api-gateway calls
+    └── LoggerService.ts                 # Winston logger singleton
 ```
 
 ---

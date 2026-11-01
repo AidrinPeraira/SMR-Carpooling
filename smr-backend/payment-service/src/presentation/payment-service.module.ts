@@ -105,7 +105,9 @@ const approvePayoutUseCase = new ApprovePayoutUseCase(
   cryptoUIDService,
 );
 const getDriverPayoutsUseCase = new GetDriverPayoutsUseCase(payoutRepository);
-const adminGetPayoutDetailsUseCase = new AdminGetPayoutDetailsUseCase(payoutRepository);
+const adminGetPayoutDetailsUseCase = new AdminGetPayoutDetailsUseCase(
+  payoutRepository,
+);
 const adminListPayoutsUseCase = new AdminListPayoutsUseCase(payoutRepository);
 
 const newUserEventHandler = new NewUserEventHandler(
@@ -140,7 +142,7 @@ const eventBusInstance = new EventBus(
   AppConfig.RABBITMQ_URL,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
   eventDispatcher,
-  "smr.payments.queue",
+  AppConfig.PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME,
 );
 
 // Payment Use Cases
@@ -151,7 +153,7 @@ const createBookingPaymentOrderUseCase = new CreateBookingPaymentOrderUseCase(
   scheduledJobService,
   `${AppConfig.API_GATEWAY_URL}/api/v1/payments/webhooks/clear-booking-payment`,
   customerRepository,
-  eventBusInstance
+  eventBusInstance,
 );
 
 const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
@@ -170,13 +172,13 @@ const payBookingWithWalletUseCase = new PayBookingWithWalletUseCase(
   transactionRepository,
   eventBusInstance,
   cryptoUIDService,
-  customerRepository
+  customerRepository,
 );
 
 const failedBookingPaymentUseCase = new FailedBookingPaymentUseCase(
   bookingPaymentRepository,
   customerRepository,
-  eventBusInstance
+  eventBusInstance,
 );
 
 const refundBookingPaymentUseCase = new RefundBookingPaymentUseCase(
@@ -186,20 +188,22 @@ const refundBookingPaymentUseCase = new RefundBookingPaymentUseCase(
   cryptoUIDService,
 );
 
-const bookingCancelledByPassengerEventHandler = new BookingCancelledByPassengerEventHandler(
-  consolaLogger,
-  refundBookingPaymentUseCase,
-);
+const bookingCancelledByPassengerEventHandler =
+  new BookingCancelledByPassengerEventHandler(
+    consolaLogger,
+    refundBookingPaymentUseCase,
+  );
 
 const tripCancelledByDriverEventHandler = new TripCancelledByDriverEventHandler(
   consolaLogger,
   refundBookingPaymentUseCase,
 );
 
-const journeyPassengerDroppedOffEventHandler = new JourneyPassengerDroppedOffEventHandler(
-  consolaLogger,
-  createPayoutUseCase,
-);
+const journeyPassengerDroppedOffEventHandler =
+  new JourneyPassengerDroppedOffEventHandler(
+    consolaLogger,
+    createPayoutUseCase,
+  );
 
 await eventDispatcher.register(
   EventName.BOOKING_CANCELLED_BY_PASSENGER,

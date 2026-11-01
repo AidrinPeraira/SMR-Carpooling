@@ -183,7 +183,7 @@ const rabbitMqConsumer = new RabbitMQConsumer(
   AppConfig.RABBITMQ_URL,
   eventDispatcher,
   AppConfig.RABBITMQ_EXCHANGE_NAME,
-  AppConfig.RABBITMQ_QUEUE_NAME,
+  AppConfig.NOTIFICATION_SERVICE_RABBITMQ_QUEUE_NAME,
 );
 
 export const messageConsumer = rabbitMqConsumer;

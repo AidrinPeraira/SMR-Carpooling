@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4005,
+  PORT: Number(process.env.REALTIME_SERVICE_PORT) || 4005,
   NODE_ENV: String(process.env.NODE_ENV || "development"),
 
   MONGO_DB_URL: String(process.env.MONGO_DB_URL),
@@ -23,8 +23,11 @@ export const AppConfig = {
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
 
-  SERVICE_NAME: String(process.env.SERVICE_NAME) || "realtime-service",
-  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+  REALTIME_SERVICE_RABBITMQ_QUEUE_NAME:
+    process.env.REALTIME_SERVICE_RABBITMQ_QUEUE_NAME || "smr.realtime.queue",
+
+  SERVICE_NAME: String(process.env.REALTIME_SERVICE_NAME) || "realtime-service",
+  SERVICE_VERSION: String(process.env.REALTIME_SERVICE_VERSION) || "0.0.1",
 
   OTEL_EXPORTER_OTLP_ENDPOINT: String(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",

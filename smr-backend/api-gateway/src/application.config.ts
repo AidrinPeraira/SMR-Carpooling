@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4000,
+  PORT: Number(process.env.API_GATEWAY_PORT) || 4000,
   NODE_ENV: String(process.env.NODE_ENV) || "development",
 
   USER_SERVICE_URL:
@@ -12,6 +12,10 @@ export const AppConfig = {
     String(process.env.PAYMENT_SERVICE_URL) || "http://localhost:4004",
   REALTIME_SERVICE_URL:
     String(process.env.REALTIME_SERVICE_URL) || "http://localhost:4005",
+  MCP_SERVICE_URL:
+    String(process.env.MCP_SERVICE_URL) || "http://localhost:4007",
+  LLM_SERVICE_URL:
+    String(process.env.LLM_SERVICE_URL) || "http://localhost:4006",
 
   ACCESS_TOKEN_SECRET: String(
     process.env.ACCESS_TOKEN_SECRET ||
@@ -25,10 +29,13 @@ export const AppConfig = {
     process.env.API_GATEWAY_KEY ||
       "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
   ),
+  MCP_SERVICE_KEY: String(process.env.MCP_SERVICE_KEY) || "secret-token",
+
   REDIS_URL: String(process.env.REDIS_URL || "redis://localhost:6379"),
 
-  SERVICE_NAME: String(process.env.SERVICE_NAME) || "api-gateway-service",
-  SERVICE_VERSION: String(process.env.SERVICE_VERSION) || "0.0.1",
+  SERVICE_NAME:
+    String(process.env.API_GATEWAY_SERVICE_NAME) || "api-gateway-service",
+  SERVICE_VERSION: String(process.env.API_GATEWAY_SERVICE_VERSION) || "0.0.1",
 
   OTEL_EXPORTER_OTLP_ENDPOINT: String(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",

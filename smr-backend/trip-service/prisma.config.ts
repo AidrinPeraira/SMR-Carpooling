@@ -11,6 +11,6 @@ export default defineConfig({
     path: "./src/infrastructure/database/migrations",
   },
   datasource: {
-    url: process.env.DATABASE_URL,
+    url: process.env.POSTGRES_URL,
   },
 });
