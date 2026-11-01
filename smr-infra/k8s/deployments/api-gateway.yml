@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-gateway
+  namespace: smr-prod
+  labels:
+    app: api-gateway
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - api-gateway
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: api-gateway
+          image: aidrinperaira/smr-api-gateway:latest
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: api-gateway-env
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi

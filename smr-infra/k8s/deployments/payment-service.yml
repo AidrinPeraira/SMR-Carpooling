@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: payment-service
+  namespace: smr-prod
+  labels:
+    app: payment-service
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - payment-service
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: payment-service
+          image: aidrinperaira/smr-payment-service:latest
+          ports:
+            - containerPort: 4004
+          envFrom:
+            - secretRef:
+                name: payment-service-env
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi

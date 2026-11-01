@@ -1,0 +1,20 @@
+apiVersion: secrets.infisical.com/v1alpha1
+kind: InfisicalSecret
+
+metadata:
+  name: realtime-service-infisical
+  namespace: smr-prod
+
+spec:
+  hostAPI: https://app.infisical.com
+  authentication:
+    universalAuth:
+      secretsScope:
+        envSlug: prod
+        secretsPath: /realtime-service
+      credentialsRef:
+        secretName: infisical-machine-identity
+        secretNamespace: smr-prod
+  managedSecretReference:
+    secretName: realtime-service-env
+    secretNamespace: smr-prod
