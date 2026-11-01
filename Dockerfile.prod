@@ -28,6 +28,8 @@ COPY ./smr-shared/ ./smr-shared/
 RUN pnpm -F @sharemyride/shared run build
 RUN pnpm -F @smr/trip-service run prisma:generate
 RUN pnpm run build
+RUN find smr-backend/*/dist -name '*.js' \
+    -exec sed -i -E "s/from (['\"])(\\.\\.?\\/[^'\"]+)\\1/from \\1\\2.js\\1/g" {} +
 
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm -F @smr/user-service --prod deploy /prod/user-service --legacy --fetch-timeout 600000
@@ -135,4 +137,4 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/mcp-service/dist ./dist/
 
-CMD [ "node" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]

@@ -16,7 +16,7 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "docker:build": "docker build --target realtime-service-prod -t aidrinperaira/realtime-service:latest -f ../../Dockerfile.prod ../..",
+    "docker:build": "docker build --target smr-realtime-service -t aidrinperaira/realtime-service:latest -f ../../Dockerfile.prod ../..",
     "docker:push": "docker push aidrinperaira/realtime-service:latest",
     "docker:publish": "pnpm run docker:build && pnpm run docker:push",
     "update:shared": "pnpm add @sharemyride/shared@latest"
@@ -27,17 +27,6 @@
   "type": "module",
   "dependencies": {
     "@sharemyride/shared": "^0.4.0",
-    "@socket.io/redis-adapter": "^8.3.0",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.3",
-    "morgan": "^1.11.0",
-    "redis": "^6.0.0",
-    "socket.io": "^4.8.3"
-  },
-  "devDependencies": {
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.80.0",
     "@opentelemetry/exporter-logs-otlp-http": "^0.222.0",
@@ -53,15 +42,18 @@
     "@opentelemetry/sdk-trace-node": "^2.11.0",
     "@opentelemetry/semantic-conventions": "^1.43.0",
     "@opentelemetry/winston-transport": "^0.32.0",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^22.10.2",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.11.0",
+    "redis": "^6.0.0",
     "amqplib": "^2.0.1",
+    "winston": "^3.19.0",
     "mongoose": "^9.6.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2",
-    "winston": "^3.19.0"
-  }
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {}
 }
