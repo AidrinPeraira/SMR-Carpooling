@@ -15,9 +15,7 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "docker:build": "docker build --target smr-mcp-service -t aidrinperaira/mcp-service:latest -f ../../Dockerfile.prod ../..",
-    "docker:push": "docker push aidrinperaira/mcp-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push"
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-mcp-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-mcp-service:latest --push ../../"
   },
   "keywords": [],
   "author": "",

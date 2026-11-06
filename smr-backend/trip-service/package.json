@@ -21,11 +21,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate --schema=./src/infrastructure/database/prisma",
     "prisma:studio": "prisma studio",
-    "docker:build": "docker build --target smr-trip-service -t aidrinperaira/trip-service:latest -f ../../Dockerfile.prod ../..",
-    "docker:push": "docker push aidrinperaira/trip-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
     "update:shared": "pnpm add @sharemyride/shared@latest",
-    "seed:places": "tsx src/infrastructure/database/prisma/seed.ts"
+    "seed:places": "tsx src/infrastructure/database/prisma/seed.ts",
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-trip-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-trip-service:latest --push ../../"
   },
   "prisma": {
     "schema": "./src/infrastructure/database/prisma/"
