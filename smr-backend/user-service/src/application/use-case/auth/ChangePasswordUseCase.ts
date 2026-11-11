@@ -1,6 +1,6 @@
 import { PasswordChangeRequestDTO } from "#/application/dto/auth/PasswordChangeDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IChangePasswordUseCase } from "#/application/interfaces/use-case/auth/IChangePasswordUseCase";

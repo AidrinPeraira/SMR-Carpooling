@@ -1,20 +1,32 @@
+import { IGetAvatarUploadUrlUseCase } from "#/application/interfaces/use-case/profile/IGetAvatarUploadUrlUseCase";
 import { IGetUserUseCase } from "#/application/interfaces/use-case/profile/IGetUserUseCase";
+import { ISwitchUserRoleUseCase } from "#/application/interfaces/use-case/profile/ISwitchUserRoleUseCase";
+import { IUpdateAvatarUseCase } from "#/application/interfaces/use-case/profile/IUpdateAvatarUseCase";
 import { IUpdateUserUseCase } from "#/application/interfaces/use-case/profile/IUpdateUserUseCase";
+import { Trace } from "#/presentation/utils/traces-decorator";
 import { IProfileControllerV1 } from "#/presentation/v1/interfaces/IProfileControllerV1";
-import {
-  toGetUserResult,
-  toUpdateUserRequestDTO,
-} from "#/presentation/v1/mapper/ProfileMapper";
+import { AuthMapper } from "#/application/mapper/AuthMapper";
+import { ProfileMapper } from "#/application/mapper/ProfileMapper";
 import {
   ApplicationError,
   ErrorCode,
+  GetAvatarUploadUrlRequest,
+  GetAvatarUploadUrlResult,
+  GetAvatarUploadUrlSchema,
   GenericErrorMessage,
   GenericSuccessMessage,
   GetUserResult,
   HttpStatusCodes,
   ILogger,
+  LoginResult,
   makeSuccessResponse,
+  UpdateAvatarRequest,
+  UpdateAvatarResult,
+  UpdateAvatarSchema,
+  UpdateUserRequest,
+  UpdateUserSchema,
   UserSuccessMessage,
+  zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
 
@@ -23,15 +35,19 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
     private readonly _logger: ILogger,
     private readonly _getUserUseCase: IGetUserUseCase,
     private readonly _updateUserUseCase: IUpdateUserUseCase,
+    private readonly _getAvatarUploadUrlUseCase: IGetAvatarUploadUrlUseCase,
+    private readonly _updateAvatarUseCase: IUpdateAvatarUseCase,
+    private readonly _switchUserRoleUseCase: ISwitchUserRoleUseCase,
   ) {}
 
+  @Trace("profile-module")
   async getUser(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
     this._logger.info("Getting user data for ID: ", userId);
 
     const result = await this._getUserUseCase.execute(userId);
-    const mappedResult = toGetUserResult(result);
+    const mappedResult = ProfileMapper.toGetUserResult(result);
 
     res
       .status(HttpStatusCodes.Ok)
@@ -46,10 +62,12 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   /*
    * This method verifies if the user is updating own profile and then calls the updatet profile use case
    */
+  @Trace("profile-module")
   async updateUser(req: Request, res: Response): Promise<void> {
     const headerUserId = req.headers["x-user-id"] as string;
 
-    const data = toUpdateUserRequestDTO(req.body);
+    const body = zodParser<UpdateUserRequest>(UpdateUserSchema, req.body);
+    const data = ProfileMapper.toUpdateUserRequestDTO(body);
 
     //check if user id from auth cookies is the same as the one in body data
     if (headerUserId !== data.userId) {
@@ -72,7 +90,65 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
       .json(
         makeSuccessResponse(
           UserSuccessMessage.PROFILE_UPDATED,
-          toGetUserResult(result),
+          ProfileMapper.toGetUserResult(result),
+        ),
+      );
+  }
+
+  @Trace("profile-module")
+  async getAvatarUploadUrl(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+
+    const body = zodParser<GetAvatarUploadUrlRequest>(
+      GetAvatarUploadUrlSchema,
+      req.body,
+    );
+    const dto = ProfileMapper.toGetAvatarUploadUrlRequestDTO(body, userId);
+    const result = await this._getAvatarUploadUrlUseCase.execute(dto);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<GetAvatarUploadUrlResult>(
+          GenericSuccessMessage.OPERATION_SUCCESSFUL,
+          ProfileMapper.toGetAvatarUploadUrlResult(result),
+        ),
+      );
+  }
+
+  @Trace("profile-module")
+  async updateAvatar(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+
+    const body = zodParser<UpdateAvatarRequest>(UpdateAvatarSchema, req.body);
+    const dto = ProfileMapper.toUpdateAvatarRequestDTO(body, userId);
+    const result = await this._updateAvatarUseCase.execute(dto);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<UpdateAvatarResult>(
+          UserSuccessMessage.PROFILE_UPDATED,
+          ProfileMapper.toUpdateAvatarResult(result),
+        ),
+      );
+  }
+
+  @Trace("profile-module")
+  async switchUserRole(req: Request, res: Response): Promise<void> {
+    const userId = req.headers["x-user-id"] as string;
+
+    this._logger.info("Switching user role for ID: ", userId);
+
+    const result = await this._switchUserRoleUseCase.execute(userId);
+    const mappedResult = AuthMapper.toLoginResult(result);
+
+    res
+      .status(HttpStatusCodes.Ok)
+      .json(
+        makeSuccessResponse<LoginResult>(
+          UserSuccessMessage.PROFILE_UPDATED,
+          mappedResult,
         ),
       );
   }

@@ -3,6 +3,13 @@ import { cookies } from "next/headers";
 const ACCESS_TOKEN_NAME = "access_token";
 const REFRESH_TOKEN_NAME = "refresh_token";
 
+/**
+ * This is a reusable function to set refresh tokens in auth cookies
+ * It will work in any route.ts file and any server action
+ *
+ * @param accessToken : string for new access token
+ * @param refreshToken : string for new refresh token
+ */
 export async function setAuthCookies(
   accessToken: string,
   refreshToken: string,
@@ -35,6 +42,10 @@ export async function setAuthCookies(
   });
 }
 
+/**
+ * This is a reusable function to clear auth tokens
+ * this works in any route.ts file or server actions
+ */
 export async function clearAuthCookies() {
   const cookieStore = await cookies();
   cookieStore.delete(ACCESS_TOKEN_NAME);

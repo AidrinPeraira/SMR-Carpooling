@@ -6,7 +6,6 @@ import {
   GetUserResult,
 } from "@sharemyride/shared";
 import {
-  Avatar,
   Button,
   cn,
   Dialog,
@@ -22,6 +21,7 @@ import { logger } from "@/lib/logger";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserRequest } from "@/features/profile/api/requests/getUserRequest";
 import { updateUserAction } from "@/features/profile/api/actions/UpdateUserAction";
+import { ProfileImageComponent } from "@/features/profile/components/ProfileImageComponent";
 
 interface Props {
   className?: string;
@@ -180,17 +180,10 @@ export function ProfileUpdateForm({ className }: Props) {
   return (
     <div className={cn("w-full rounded", className)}>
       <div className="mb-5 text-center flex flex-col items-center">
-        {/* Profile Image Avatar */}
-        <div className="mb-4 flex flex-col items-center">
-          <Avatar
-            src={user.profile_image}
-            initials={`${user.first_name[0]}${user.last_name[0]}`}
-            size="lg"
-          />
-          <span className="text-xs text-primary font-semibold mt-2 cursor-pointer hover:underline">
-            Change Photo
-          </span>
-        </div>
+        <ProfileImageComponent
+          src={user.profile_image}
+          initials={`${user.first_name[0]}${user.last_name[0]}`}
+        />
 
         <h1 className="text-fg-primary text-2xl font-bold">Update Profile</h1>
         <p className="text-fg-secondary mt-1 text-sm">

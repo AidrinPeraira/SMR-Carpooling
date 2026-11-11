@@ -1,3 +1,4 @@
+import { AppConfig } from "#/application.config";
 import { IEventDispatcher } from "#/application/interfaces/messaging/IEventDispatcher";
 import { IMessageConsumer } from "#/application/interfaces/messaging/IMessageConsumer";
 import { DomainEvent, EventName, ILogger } from "@sharemyride/shared";
@@ -30,7 +31,7 @@ export class RabbitMQConsumer implements IMessageConsumer {
     url: string,
     eventDispatcher: IEventDispatcher,
     exchangeName: string = "sharemyride.events",
-    queueName: string = "smr.notfications.queue",
+    queueName: string = AppConfig.NOTIFICATION_SERVICE_RABBITMQ_QUEUE_NAME,
   ) {
     this._url = url;
     this._logger = logger;
@@ -97,6 +98,14 @@ export class RabbitMQConsumer implements IMessageConsumer {
         EventName.AUTH_USER_SIGNUP,
         EventName.AUTH_USER_CHANGE_PASSWORD_REQUEST,
         EventName.AUTH_USER_CHANGE_PASSWORD_CHANGED,
+        EventName.BOOKING_NEW_BOOKING,
+        EventName.ADMIN_APPROVE_APPLICTION,
+        EventName.ADMIN_REJECT_APPLICATION,
+        EventName.ADMIN_RETURN_APPLICTION,
+        EventName.BOOKING_PAYMENT_SUCCESS,
+        EventName.BOOKING_PAYMENT_FAILURE,
+        EventName.BOOKING_CANCELLED_BY_PASSENGER,
+        EventName.TRIP_CANCELLED_BY_DRIVER,
       ];
       for (const routingKey of evnetsToListenTo) {
         await this._channel.bindQueue(

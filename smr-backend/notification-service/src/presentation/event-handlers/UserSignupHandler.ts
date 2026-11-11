@@ -1,6 +1,7 @@
 import { SinupVerifcationMailRequestDTO } from "#/application/dto/email/SignupVerificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/ISendSignupVerificationMailUseCase";
+import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/auth/ISendSignupVerificationMailUseCase";
+import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, UserSignUpEvent } from "@sharemyride/shared";
 
 export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
@@ -13,7 +14,18 @@ export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
    * This method maps the event data/payload into DTO
    * Passes the dto and calls the use case
    */
+  @Trace("notification-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
+    if (!event.payload.token) {
+      this._logger.info(
+        "Skipping signup verification mail (no token provided): ",
+        {
+          emailId: event.payload.emailId,
+        },
+      );
+      return;
+    }
+
     const signupVerificationMailDTO: SinupVerifcationMailRequestDTO = {
       userName: event.payload.firstName + " " + event.payload.lastName,
       emailId: event.payload.emailId,

@@ -1,3 +1,3 @@
 export interface IUniqueIdGenerator {
-  generateRandomId(): string;
+  generateRandomId(prefix: string): string;
 }

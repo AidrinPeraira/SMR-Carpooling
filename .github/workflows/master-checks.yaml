@@ -1,0 +1,16 @@
+name: Master Merge Check
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  verify-source:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify source branch
+        if: ${{ github.head_ref != 'staging' }}
+        run: |
+          echo "PRs to master must come from staging"
+          exit 1

@@ -2,7 +2,7 @@ import { AppConfig } from "#/application.config";
 import { SignUpRequestDTO } from "#/application/dto/auth/SignUpRequestDTO";
 import { SignUpResultDTO } from "#/application/dto/auth/SignUpResultDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
@@ -64,7 +64,7 @@ export class SignUpUserUseCase implements ISignupUserUseCase {
 
     //create a new user
     let newUser: UserEntity;
-    const userId = this._uniqueIdGenerator.generateRandomId();
+    const userId = this._uniqueIdGenerator.generateRandomId("USR");
     const passwordHash = this._hashingService.createHash(data.password);
 
     const now = new Date();

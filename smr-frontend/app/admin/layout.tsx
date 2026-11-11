@@ -8,7 +8,10 @@ import {
   ClipboardList,
   Car,
   Compass,
+  BookmarkCheck,
   Settings,
+  BadgeIndianRupee,
+  Banknote,
 } from "lucide-react";
 import { logoutUserAction } from "@/features/auth/api/actions/LogoutUserAction";
 import { useToast } from "@sharemyride/ui";
@@ -67,6 +70,21 @@ export default function AdminLayout({ children }: Props) {
           name: "Trips",
           href: "/admin/trips",
           icon: <Compass className="w-4 h-4" />,
+        },
+        {
+          name: "Bookings",
+          href: "/admin/bookings",
+          icon: <BookmarkCheck className="w-4 h-4" />,
+        },
+        {
+          name: "Transactions",
+          href: "/admin/transactions",
+          icon: <BadgeIndianRupee className="w-4 h-4" />,
+        },
+        {
+          name: "Payouts",
+          href: "/admin/payouts",
+          icon: <Banknote className="w-4 h-4" />,
         },
       ],
     },

@@ -1,0 +1,159 @@
+info:
+  name: list-admin-all-trips
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: http://localhost:4000/api/v1/admin/trip/trips/all
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4Njk1Mjk0OSwiZXhwIjoxNzg2OTUzODQ5fQ.DDbcAA2JHmYAGK0cqj_Jg9rkyWUND6KzuVfOsO8QBQ4
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "10"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/admin/trip/trips/all
+      method: GET
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4Njk1Mjk0OSwiZXhwIjoxNzg2OTUzODQ5fQ.DDbcAA2JHmYAGK0cqj_Jg9rkyWUND6KzuVfOsO8QBQ4
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+      params:
+        - name: page
+          value: "1"
+          type: query
+        - name: limit
+          value: "10"
+          type: query
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: access-control-allow-origin
+          value: "*"
+        - name: content-security-policy
+          value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        - name: cross-origin-opener-policy
+          value: same-origin
+        - name: cross-origin-resource-policy
+          value: same-origin
+        - name: origin-agent-cluster
+          value: ?1
+        - name: referrer-policy
+          value: no-referrer
+        - name: strict-transport-security
+          value: max-age=31536000; includeSubDomains
+        - name: x-content-type-options
+          value: nosniff
+        - name: x-dns-prefetch-control
+          value: off
+        - name: x-download-options
+          value: noopen
+        - name: x-frame-options
+          value: SAMEORIGIN
+        - name: x-permitted-cross-domain-policies
+          value: none
+        - name: x-xss-protection
+          value: "0"
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "1601"
+        - name: etag
+          value: W/"641-SmRpnCVhogWp3k94+8lE1Ua6PQE"
+        - name: date
+          value: Mon, 17 Aug 2026 07:49:39 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Operation completed successfully.",
+            "payload": {
+              "data": [
+                {
+                  "trip_id": "e939221a-5aeb-49b2-8b1b-290a60764107",
+                  "driver_name": "Aidrin Peraira",
+                  "vehicle_name": "Hyundai Verna",
+                  "trip_origin": "Kadamakudy Lake View Point",
+                  "trip_destination": "Punalur",
+                  "available_seats": 3,
+                  "vacant_seats": 3,
+                  "start_time": "2026-08-22T05:05:00.000Z",
+                  "trip_status": "scheduled"
+                },
+                {
+                  "trip_id": "3fc13d36-eb40-4ae6-ac4f-c1bf654d9509",
+                  "driver_name": "Aidrin Peraira",
+                  "vehicle_name": "Toyota Innova Crysta",
+                  "trip_origin": "Oachira",
+                  "trip_destination": "Kottayam",
+                  "available_seats": 3,
+                  "vacant_seats": 3,
+                  "start_time": "2026-08-22T02:58:00.000Z",
+                  "trip_status": "scheduled"
+                },
+                {
+                  "trip_id": "7eece44b-f534-4391-bf18-b4042905e6d9",
+                  "driver_name": "Aidrin Peraira",
+                  "vehicle_name": "Honda Civic",
+                  "trip_origin": "Vytilla hub",
+                  "trip_destination": "Trivandrum Central Railway Station",
+                  "available_seats": 3,
+                  "vacant_seats": 3,
+                  "start_time": "2026-08-15T03:30:00.000Z",
+                  "trip_status": "scheduled"
+                },
+                {
+                  "trip_id": "dae79697-a36f-4e8d-a8ba-25aba06311a2",
+                  "driver_name": "Aidrin Peraira",
+                  "vehicle_name": "Honda Civic",
+                  "trip_origin": "Vazhuthacaud",
+                  "trip_destination": "Kundanoor Bridge",
+                  "available_seats": 3,
+                  "vacant_seats": 3,
+                  "start_time": "2026-08-15T04:30:00.000Z",
+                  "trip_status": "scheduled"
+                },
+                {
+                  "trip_id": "5436b6b6-ed60-42a9-a1dc-ae1f090c21e1",
+                  "driver_name": "Aidrin Peraira",
+                  "vehicle_name": "Honda Civic",
+                  "trip_origin": "Trivandrum Central Railway Station",
+                  "trip_destination": "Vytilla hub",
+                  "available_seats": 3,
+                  "vacant_seats": 3,
+                  "start_time": "2026-08-15T03:30:00.000Z",
+                  "trip_status": "scheduled"
+                }
+              ],
+              "paginationMeta": {
+                "currentPage": 1,
+                "limit": 10,
+                "totalItems": 5,
+                "totalPages": 1
+              }
+            }
+          }

@@ -7,7 +7,7 @@
 
 import { SignUpRequestDTO } from "#/application/dto/auth/SignUpRequestDTO";
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
-import { IEventBus } from "#/application/interfaces/services/IEventBus";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { IHashingService } from "#/application/interfaces/services/IHashingService";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
@@ -42,6 +42,7 @@ describe("SignUpUserUseCase", () => {
         updateByCustomId = vi.fn();
         deleteById = vi.fn();
         deleteByCustomId = vi.fn();
+        getUsersCount = vi.fn();
       },
     );
     const mockUserRepository = new UserRepository();
@@ -150,6 +151,7 @@ describe("SignUpUserUseCase", () => {
         updateByCustomId = vi.fn();
         deleteById = vi.fn();
         deleteByCustomId = vi.fn();
+        getUsersCount = vi.fn();
       },
     ))();
 
@@ -228,6 +230,7 @@ describe("SignUpUserUseCase", () => {
         updateByCustomId = vi.fn();
         deleteById = vi.fn();
         deleteByCustomId = vi.fn();
+        getUsersCount = vi.fn();
       },
     ))();
 

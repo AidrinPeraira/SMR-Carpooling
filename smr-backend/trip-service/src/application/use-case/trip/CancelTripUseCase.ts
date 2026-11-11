@@ -1,0 +1,128 @@
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
+import { IBookingRepository } from "#/application/interfaces/repository/IBookingRepository";
+import { ITripRepository } from "#/application/interfaces/repository/ITripRepository";
+import { IDriverRepository } from "#/application/interfaces/repository/IDriverRepository";
+import { ICancelTripUseCas } from "#/application/interfaces/use-case/trip/ICancelTripUseCase";
+import {
+  ApplicationError,
+  BookingStatus,
+  DriverCancelTripEvent,
+  ErrorCode,
+  ErrorDetails,
+  EventName,
+  HttpStatusCodes,
+  TripErrorMessage,
+  TripStatus,
+} from "@sharemyride/shared";
+
+/**
+ * This class implements the use case that handles canceling
+ * trips created by drivers. It cancels trip and associated
+ * bookings and publishes events for refunds and notifications.
+ */
+export class CancelTripUseCase implements ICancelTripUseCas {
+  constructor(
+    private readonly _tripRepository: ITripRepository,
+    private readonly _bookingRepository: IBookingRepository,
+    private readonly _driverRepository: IDriverRepository,
+    private readonly _eventBus: IEventBus,
+  ) {}
+
+  /**
+   * This method updates the trip and booking repository
+   * after verifying the driver credentials against trip
+   * repository and publishes the neccessary event
+   *
+   * @param tripId : ID of the trip as string
+   * @param driverId : ID of the driver (userId)
+   */
+  async execute(tripId: string, driverId: string): Promise<void> {
+    const tripDetails = await this._tripRepository.findTripDetails(tripId);
+
+    if (!tripDetails || !tripDetails.tripDetails) {
+      throw new ApplicationError(
+        TripErrorMessage.NOT_FOUND,
+        HttpStatusCodes.NotFound,
+        ErrorCode.DOMAIN_NOT_FOUND,
+        ErrorDetails.DOMAIN_NOT_FOUND,
+        {
+          location: "CancelTripUseCase",
+          description: `Trip not found with tripId: ${tripId}`,
+        },
+      );
+    }
+
+    if (tripDetails.tripDetails.driverId !== driverId) {
+      throw new ApplicationError(
+        TripErrorMessage.UNAUTHORIZED_CANCELLATION,
+        HttpStatusCodes.Forbidden,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "CancelTripUseCase",
+          description: `Trip does not belong to driver: ${driverId}`,
+        },
+      );
+    }
+
+    if (
+      tripDetails.tripDetails.tripStatus !== TripStatus.SCHEDULED &&
+      tripDetails.tripDetails.tripStatus !== TripStatus.FULLY_BOOKED
+    ) {
+      throw new ApplicationError(
+        TripErrorMessage.CANNOT_CANCEL,
+        HttpStatusCodes.BadRequest,
+        ErrorCode.INPUT_FORBIDDEN,
+        ErrorDetails.INPUT_FORBIDDEN,
+        {
+          location: "CancelTripUseCase",
+          description: `Trip status is '${tripDetails.tripDetails.tripStatus}', expected '${TripStatus.SCHEDULED}' or ${TripStatus.FULLY_BOOKED}`,
+        },
+      );
+    }
+
+    await this._tripRepository.update(tripId, {
+      tripStatus: TripStatus.CANCELLED,
+    });
+
+    const bookings = tripDetails.bookingDetails || [];
+    const cancelledBookings = [];
+
+    for (const booking of bookings) {
+      if (
+        booking.status !== BookingStatus.CANCELLED &&
+        booking.status !== BookingStatus.REJECTED &&
+        booking.status !== BookingStatus.WITHDRAWN
+      ) {
+        await this._bookingRepository.update(booking.bookingId, {
+          status: BookingStatus.CANCELLED,
+        });
+
+        cancelledBookings.push({
+          bookingId: booking.bookingId,
+          passengerId: booking.passengerId,
+          passengerName: booking.passengerName || "Passenger",
+          passengerEmail: booking.passengerEmail || "Unknown",
+        });
+      }
+    }
+
+    const driver = await this._driverRepository.findByDriverId(driverId);
+
+    const cancelEvent: DriverCancelTripEvent = {
+      eventName: EventName.TRIP_CANCELLED_BY_DRIVER,
+      timestamp: new Date(),
+      payload: {
+        tripId,
+        cancelledBookings,
+        driverId,
+        dirverName: driver
+          ? `${driver.firstName} ${driver.lastName}`.trim()
+          : "Driver",
+        driverEmail: driver ? driver.emailId : "Unknown",
+      },
+    };
+
+    await this._eventBus.publish(cancelEvent);
+  }
+}

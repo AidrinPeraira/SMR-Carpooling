@@ -1,0 +1,149 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Loader, useToast } from "@sharemyride/ui";
+import {
+  NewVehicleApplicationSchema,
+  NewVehicleApplicationSchemaType,
+} from "@sharemyride/shared";
+import { logger } from "@/lib/logger";
+import { VehicleFieldsSection } from "@/features/application/components/sections/VehicleFieldsSection";
+import { VehicleOverviewCard } from "@/features/application/components/sections/VehicleOverviewCard";
+
+import { submitNewVehicleApplicationAction } from "@/features/application/api/actions/submitNewVehicleApplicationAction";
+
+interface Props {
+  initialValues?: Partial<NewVehicleApplicationSchemaType>;
+  onSubmitAction?: (data: NewVehicleApplicationSchemaType) => Promise<unknown>;
+}
+
+export function NewVehicleApplicationForm({
+  initialValues,
+  onSubmitAction,
+}: Props) {
+  const [step, setStep] = useState<"fill" | "review">("fill");
+  const [isPending, startTransition] = useTransition();
+  const toast = useToast();
+
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    getValues,
+    control,
+    formState: { errors },
+  } = useForm<NewVehicleApplicationSchemaType>({
+    resolver: zodResolver(NewVehicleApplicationSchema) as never,
+    values: initialValues as NewVehicleApplicationSchemaType,
+  });
+
+  async function handleProceedToReview() {
+    const isValid = await trigger();
+    if (isValid) {
+      setStep("review");
+    } else {
+      toast("Please fix form errors before reviewing.", { variant: "error" });
+    }
+  }
+
+  function onSubmit(data: NewVehicleApplicationSchemaType) {
+    startTransition(async () => {
+      try {
+        logger.info("Submitting New Vehicle Application data: ", data);
+
+        if (onSubmitAction) {
+          await onSubmitAction(data);
+          window.location.href = "/profile/applications";
+          return;
+        }
+
+        const result = await submitNewVehicleApplicationAction(data);
+        if (result.success) {
+          toast(result.message || "New Vehicle Application Submitted!", {
+            variant: "success",
+            description: result.description || "Your vehicle application has been submitted successfully.",
+          });
+          window.location.href = "/profile/applications";
+        } else {
+          toast(result.errorMessage || "Submission error", {
+            variant: "error",
+            description: result.description || "Something went wrong while submitting.",
+          });
+        }
+      } catch (error) {
+        logger.error("Error submitting vehicle application form: ", error);
+        toast("Submission error", {
+          variant: "error",
+          description: "Something went wrong while submitting.",
+        });
+      }
+    });
+  }
+
+  const formData = getValues();
+
+  return (
+    <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+      {step === "fill" ? (
+        <>
+          <VehicleFieldsSection
+            register={register}
+            control={control}
+            errors={errors}
+          />
+
+          <Button
+            type="button"
+            onClick={handleProceedToReview}
+            className="w-full"
+          >
+            Review Vehicle Details
+          </Button>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-bold text-content-primary">
+              Review Vehicle Details
+            </h2>
+            <p className="text-xs text-content-secondary">
+              Verify vehicle specifications before final submission.
+            </p>
+
+            <VehicleOverviewCard
+              data={formData}
+              onEdit={() => setStep("fill")}
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => setStep("fill")}
+              className="w-1/2"
+            >
+              Back to Edit
+            </Button>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-1/2 flex items-center justify-center gap-2"
+            >
+              {isPending ? (
+                <>
+                  <Loader className="w-4 h-4" />
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                "Confirm & Submit"
+              )}
+            </Button>
+          </div>
+        </>
+      )}
+    </form>
+  );
+}

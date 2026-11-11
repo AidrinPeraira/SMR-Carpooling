@@ -20,20 +20,20 @@ export enum ErrorCode {
 
 export enum ErrorDetails {
   // --- System/Infrastructure Errors ---
-  SYSTEM_INTERNAL_ERROR = "Internal Server Error: An unexpected technical failure occurred.",
-  SYSTEM_DB_ERROR = "Database Failure: Unable to perform the requested data operation.",
-  SYSTEM_BROKER_ERROR = "Message Broker Failure: Communication with the event bus failed.",
-  SYSTEM_UNAVAILABLE = "Service Unavailable: The system or a dependent service is currently down.",
+  SYSTEM_INTERNAL_ERROR = "An unexpected technical failure occurred.",
+  SYSTEM_DB_ERROR = "Unable to perform the requested database operation.",
+  SYSTEM_BROKER_ERROR = "Communication with the event bus failed.",
+  SYSTEM_UNAVAILABLE = "The system or service is currently down.",
 
   // --- Domain/Business Errors ---
-  DOMAIN_NOT_FOUND = "Domain Error: The requested business resource was not found.",
-  DOMAIN_ALREADY_EXISTS = "Domain Conflict: A resource with these details already exists.",
-  DOMAIN_ACCESS_DENIED = "Domain Permission Denied: You do not have the required business permissions.",
-  DOMAIN_CONFLICT = "Domain Conflict: The operation contradicts the current business state.",
+  DOMAIN_NOT_FOUND = "The requested resource was not found.",
+  DOMAIN_ALREADY_EXISTS = "A resource with these details already exists.",
+  DOMAIN_ACCESS_DENIED = " You do not have the required permissions.",
+  DOMAIN_CONFLICT = "The operation conflicts with the current state.",
 
   // --- Input/Request Errors ---
-  INPUT_VALIDATION_ERROR = "Invalid Input Data: The request payload failed validation rules.",
-  INPUT_UNAUTHORIZED = "Authentication Required: You must be logged in to perform this action.",
-  INPUT_FORBIDDEN = "Access Denied: Your account does not have access to this endpoint.",
-  INPUT_TOKEN_EXPIRED = "Session Expired: Your authentication token is no longer valid.",
+  INPUT_VALIDATION_ERROR = "The data provided is invalid.",
+  INPUT_UNAUTHORIZED = " You are not authorized to perform this action.",
+  INPUT_FORBIDDEN = "This action is not allowed.",
+  INPUT_TOKEN_EXPIRED = "Your current session is no longer valid.",
 }

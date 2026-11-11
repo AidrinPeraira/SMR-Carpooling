@@ -16,15 +16,19 @@ import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import { AppConfig } from "#/application.config";
 import morgan from "morgan";
 import { authMiddleware } from "#/middleware/auth.middleware";
-// import { keyMiddleware } from "#/middleware/key.middleware";
+import { blacklistMiddleware } from "#/middleware/blacklist.middleware";
+import { keyMiddleware } from "#/middleware/key.middleware";
+import { metricsMiddleware } from "#/middleware/http-metrics.middleware";
 
 export function createApp(logger: ILogger) {
   const app = express();
 
   app.use(cors());
   app.use(helmet());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50md", extended: true }));
+
+  app.use(metricsMiddleware);
 
   app.use(
     morgan("dev", {
@@ -39,8 +43,9 @@ export function createApp(logger: ILogger) {
   });
 
   //middlewares
-  // app.use(keyMiddleware);
+  app.use(keyMiddleware);
   app.use(authMiddleware);
+  app.use(blacklistMiddleware);
 
   //Http Proxy Implementaion
   //we will create and use more instances like this to forward requests to the other services
@@ -50,13 +55,17 @@ export function createApp(logger: ILogger) {
     pathFilter: [
       "/api/*/auth/**",
       "/api/*/profile/**",
+      "/api/*/applications/**",
       "/api/*/admin/users/**",
+      "/api/*/admin/applications/**",
+      "/api/*/admin/vehicles/**",
     ],
     pathRewrite: {
       "^/api": "",
     },
     on: {
       proxyReq: (proxyReq, req) => {
+        // proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
         fixRequestBody(proxyReq, req);
       },
       error: (error: unknown, _req, res) => {
@@ -70,7 +79,120 @@ export function createApp(logger: ILogger) {
     },
   });
 
+  const tripServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.TRIP_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: [
+      "/api/*/admin/trip/**",
+      "/api/*/driver/**",
+      "/api/*/vehicles/**",
+      "/api/*/trips/**",
+      "/api/*/journey/**",
+      "/api/*/bookings/**",
+      "/api/*/webhook/trips/**",
+    ],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        // proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("Trip service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("Trip Service is unavailable"));
+        }
+      },
+    },
+  });
+
+  const paymentServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.PAYMENT_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: [
+      "/api/*/payments/**",
+      "/api/*/payouts/**",
+      "/api/*/admin/transactions/**",
+      "/api/*/admin/dashboard/**",
+      "/api/*/wallet/**",
+      "/api/*/webhook/payments/**",
+    ],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("Payment service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("Payment service is unavailable"));
+        }
+      },
+    },
+  });
+
+  const realtimeServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.REALTIME_SERVICE_URL,
+    changeOrigin: true,
+    ws: true,
+    pathFilter: ["/socket.io/**", "/api/*/chat/**"],
+    pathRewrite: {
+      "^/api": "",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        proxyReq.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
+        fixRequestBody(proxyReq, req);
+      },
+      proxyReqWs: (proxyReqWs) => {
+        proxyReqWs.setHeader("x-gateway-key", AppConfig.API_GATEWAY_KEY);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("Realtime service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("Realtime service is unavailable"));
+        }
+      },
+    },
+  });
+
+  const mcpServiceProxy = createProxyMiddleware<Request, Response>({
+    target: AppConfig.MCP_SERVICE_URL,
+    changeOrigin: true,
+    pathFilter: ["/mcp/**"],
+    headers: {
+      Host: "localhost",
+    },
+    on: {
+      proxyReq: (proxyReq, req) => {
+        fixRequestBody(proxyReq, req);
+      },
+      error: (error: unknown, _req, res) => {
+        logger.error("MCP service proxy error: ", error);
+        if ("status" in res) {
+          res
+            .status(HttpStatusCodes.BadGateway)
+            .json(makeFailedResponse("MCP service is unavailable"));
+        }
+      },
+    },
+  });
+
   app.use(userServiceProxy);
+  app.use(tripServiceProxy);
+  app.use(paymentServiceProxy);
+  app.use(realtimeServiceProxy);
+  app.use(mcpServiceProxy);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
@@ -88,7 +210,6 @@ export function createApp(logger: ILogger) {
         success: false,
         message: err.message,
         errorCode: err.errorCode,
-        details: err.details,
       });
     }
 

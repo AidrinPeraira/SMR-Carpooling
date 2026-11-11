@@ -6,28 +6,33 @@ import { IVerifySignupEmailUseCase } from "#/application/interfaces/use-case/aut
 import { IGeneratePasswordChangeTokenUseCase } from "#/application/interfaces/use-case/auth/IGeneratePasswordChangeToken";
 import { IChangePasswordUseCase } from "#/application/interfaces/use-case/auth/IChangePasswordUseCase";
 import { IAuthControllerV1 } from "#/presentation/v1/interfaces/IAuthControllerV1";
+import { AuthMapper } from "#/application/mapper/AuthMapper";
 import {
-  toLoginDTO,
-  toLoginResult,
-  toSignUpDTO,
-  toSignUpResult,
-  toVerifyEmailDTO,
-  toGoogleLoginDTO,
-  toRefreshTokenDTO,
-  toRefreshTokenResult,
-  toForgotPasswordDTO,
-  toChangePasswordDTO,
-} from "#/presentation/v1/mapper/AuthMapper";
-import {
+  ChangePasswordRequest,
+  ChangePasswordSchema,
+  ForgotPasswordRequest,
+  ForgotPasswordSchema,
+  GoogleLoginRequest,
+  GoogleLoginSchema,
   HttpStatusCodes,
   ILogger,
+  LoginRequest,
   LoginResult,
+  LoginUserSchema,
   makeSuccessResponse,
+  RefreshTokenRequest,
   RefreshTokenResult,
+  RefreshTokenSchema,
+  SignUpRequest,
   SignUpResult,
+  SignUpUserSchema,
   UserSuccessMessage,
+  VerifyEmailRequest,
+  VerifyEmailSchema,
+  zodParser,
 } from "@sharemyride/shared";
 import { Request, Response } from "express";
+import { Trace } from "#/presentation/utils/traces-decorator";
 
 export class AuthControllerV1 implements IAuthControllerV1 {
   constructor(
@@ -41,9 +46,10 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     private readonly _changePasswordUseCase: IChangePasswordUseCase,
   ) {}
 
+  @Trace("auth-module")
   async signup(req: Request, res: Response): Promise<void> {
-    console.debug("This is the body: ", req.body);
-    const userData = toSignUpDTO(req.body);
+    const body = zodParser<SignUpRequest>(SignUpUserSchema, req.body);
+    const userData = AuthMapper.toSignUpDTO(body);
 
     this._logger.info("Signing up new user: ", {
       firstName: userData.firstName,
@@ -60,13 +66,15 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       .json(
         makeSuccessResponse<SignUpResult>(
           UserSuccessMessage.REGISTERED,
-          toSignUpResult(newUser),
+          AuthMapper.toSignUpResult(newUser),
         ),
       );
   }
 
+  @Trace("auth-module")
   async verifySignupEmail(req: Request, res: Response): Promise<void> {
-    const data = toVerifyEmailDTO(req.body);
+    const body = zodParser<VerifyEmailRequest>(VerifyEmailSchema, req.body);
+    const data = AuthMapper.toVerifyEmailDTO(body);
 
     this._logger.info(
       "Verifying signup email with token: ",
@@ -85,13 +93,15 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       .json(
         makeSuccessResponse<LoginResult>(
           UserSuccessMessage.LOGGED_IN,
-          toLoginResult(result),
+          AuthMapper.toLoginResult(result),
         ),
       );
   }
 
+  @Trace("auth-module")
   async login(req: Request, res: Response): Promise<void> {
-    const loginData = toLoginDTO(req.body);
+    const body = zodParser<LoginRequest>(LoginUserSchema, req.body);
+    const loginData = AuthMapper.toLoginDTO(body);
 
     this._logger.info("Logging in user: ", loginData.emailId);
 
@@ -104,13 +114,15 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       .json(
         makeSuccessResponse<LoginResult>(
           UserSuccessMessage.LOGGED_IN,
-          toLoginResult(result),
+          AuthMapper.toLoginResult(result),
         ),
       );
   }
 
+  @Trace("auth-module")
   async googleAuth(req: Request, res: Response): Promise<void> {
-    const token = toGoogleLoginDTO(req.body);
+    const body = zodParser<GoogleLoginRequest>(GoogleLoginSchema, req.body);
+    const token = AuthMapper.toGoogleLoginDTO(body);
 
     this._logger.info("Google login attempt.");
 
@@ -127,13 +139,15 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       .json(
         makeSuccessResponse<LoginResult>(
           UserSuccessMessage.LOGGED_IN,
-          toLoginResult(result),
+          AuthMapper.toLoginResult(result),
         ),
       );
   }
 
+  @Trace("auth-module")
   async refreshTokens(req: Request, res: Response): Promise<void> {
-    const refreshTokenData = toRefreshTokenDTO(req.body);
+    const body = zodParser<RefreshTokenRequest>(RefreshTokenSchema, req.body);
+    const refreshTokenData = AuthMapper.toRefreshTokenDTO(body);
 
     this._logger.info("Token refresh request: ");
 
@@ -146,16 +160,21 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       .json(
         makeSuccessResponse<RefreshTokenResult>(
           UserSuccessMessage.TOKEN_REFRESHED,
-          toRefreshTokenResult(result),
+          AuthMapper.toRefreshTokenResult(result),
         ),
       );
   }
 
+  @Trace("auth-module")
   async generatePasswordChangeToken(
     req: Request,
     res: Response,
   ): Promise<void> {
-    const dto = toForgotPasswordDTO(req.body);
+    const body = zodParser<ForgotPasswordRequest>(
+      ForgotPasswordSchema,
+      req.body,
+    );
+    const dto = AuthMapper.toForgotPasswordDTO(body);
     this._logger.info(
       "Requesting password change token for user: ",
       dto.emailId,
@@ -170,8 +189,13 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       .json(makeSuccessResponse(UserSuccessMessage.PASSWORD_RESET_LINK_SENT));
   }
 
+  @Trace("auth-module")
   async changePassword(req: Request, res: Response): Promise<void> {
-    const dto = toChangePasswordDTO(req.body);
+    const body = zodParser<ChangePasswordRequest>(
+      ChangePasswordSchema,
+      req.body,
+    );
+    const dto = AuthMapper.toChangePasswordDTO(body);
     this._logger.info("Changing password for user: ", dto.emailId);
     await this._changePasswordUseCase.execute(dto);
     res

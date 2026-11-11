@@ -1,0 +1,54 @@
+info:
+  name: get-share-token
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:4005/v1/journey/share-token
+  headers:
+    - name: x-user-id
+      value: "{{USER_ID}}"
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  body:
+    type: json
+    data: |2-
+        {
+          "journey_id": "journey_abc123"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4005/v1/journey/share-token
+      method: POST
+      body:
+        type: json
+        data: |2-
+            {
+              "journey_id": "journey_abc123"
+            }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Share token retrieved",
+            "payload": {
+              "share_token": "tok_abc123xyz"
+            }
+          }

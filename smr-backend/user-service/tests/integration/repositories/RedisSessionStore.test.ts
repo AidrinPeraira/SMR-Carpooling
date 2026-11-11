@@ -1,5 +1,5 @@
 import { RedisSessionStore } from "#/infrastructure/store/RedisSessionStore";
-import { AuthSession, AccountStatus } from "@sharemyride/shared";
+import { AuthSessionNames } from "@sharemyride/shared";
 import { createClient } from "redis";
 import { beforeAll, afterAll, beforeEach, describe, it, expect } from "vitest";
 
@@ -26,37 +26,16 @@ describe("RedisSessionStore Integration", () => {
     await redisClient.flushAll();
   });
 
-  const mockSession: AuthSession = {
-    userId: "user-123",
-    status: AccountStatus.BLOCKED,
-  };
+  it("should successfully add a user to the blacklist set and remove them", async () => {
+    const userId = "user-123";
 
-  it("should successfully save and retrieve a session", async () => {
-    const key = "auth:session:user-123";
+    await sessionStore.addToSessionBlacklist(userId);
+    let isMember = await redisClient.sIsMember(AuthSessionNames.AUTH_BLACKLIST, userId);
+    expect(Boolean(isMember)).toBe(true);
 
-    await sessionStore.setSession(key, mockSession);
-    const result = await sessionStore.getSession(key);
-
-    expect(result).toEqual(mockSession);
-  });
-
-  it("should return null if session does not exist", async () => {
-    const result = await sessionStore.getSession("non-existent");
-    expect(result).toBeNull();
-  });
-
-  it("should successfully update a session", async () => {
-    const key = "auth:session:user-123";
-    await sessionStore.setSession(key, mockSession);
-
-    const updatedSession: AuthSession = {
-      ...mockSession,
-      status: AccountStatus.ACTIVE,
-    };
-
-    await sessionStore.updateSession(key, updatedSession);
-    const result = await sessionStore.getSession(key);
-
-    expect(result?.status).toBe(AccountStatus.ACTIVE);
+    await sessionStore.removeFromSessionBlacklist(userId);
+    isMember = await redisClient.sIsMember(AuthSessionNames.AUTH_BLACKLIST, userId);
+    expect(Boolean(isMember)).toBe(false);
   });
 });
+

@@ -1,0 +1,27 @@
+name: Staging Merge Check
+
+on:
+  pull_request:
+    branches: ["staging"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify source branch
+        if: ${{ github.head_ref != 'develop' }}
+        run: |
+          echo "PRs to staging must come from develop"
+          exit 1
+
+      - uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+          cache: "pnpm"
+
+      - name: Check Docker Prod Build
+        run: pnpm run docker:prod:build

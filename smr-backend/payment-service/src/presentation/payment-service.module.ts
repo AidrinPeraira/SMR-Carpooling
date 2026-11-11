@@ -1,0 +1,280 @@
+import express from "express";
+import { AppConfig } from "#/application.config";
+import { CreateBookingPaymentOrderUseCase } from "#/application/use-cases/payment/CreateBookingPaymentOrderUseCase";
+import { FailedBookingPaymentUseCase } from "#/application/use-cases/payment/FailedBookingPaymentUseCase";
+import { RefundBookingPaymentUseCase } from "#/application/use-cases/payment/RefundBookingPaymentUseCase";
+import { VerifyBookingPaymentUseCase } from "#/application/use-cases/payment/VerifyBookingPaymentUseCase";
+import { PayBookingWithWalletUseCase } from "#/application/use-cases/payment/PayBookingWithWalletUseCase";
+import { BlockCustomerUseCase } from "#/application/use-cases/customer/BlockCustomerUseCase";
+import { NewCustomerUseCase } from "#/application/use-cases/customer/NewCustomerUseCase";
+import { UnblockCustomerUseCase } from "#/application/use-cases/customer/UnblockCustomerUseCase";
+import { CreateWalletUseCase } from "#/application/use-cases/wallet/CreateWalletUseCase";
+import { GetWalletTransactionsUseCase } from "#/application/use-cases/wallet/GetWalletTransactionsUseCase";
+import { GetCustomerEarningsUseCase } from "#/application/use-cases/customer/GetCustomerEarningsUseCase";
+import { AdminListTransactionsUseCase } from "#/application/use-cases/admin/AdminListTransactions";
+import { GetTransactionSummaryUseCase } from "#/application/use-cases/admin/GetTransactionSummaryUseCase";
+import { GetRevenueTrendUseCase } from "#/application/use-cases/admin/GetRevenueTrendUseCase";
+import { CreatePayoutUseCase } from "#/application/use-cases/payout/CreatePayoutUseCase";
+import { ApprovePayoutUseCase } from "#/application/use-cases/payout/ApprovePayoutUseCase";
+import { GetDriverPayoutsUseCase } from "#/application/use-cases/payout/GetDriverPayoutsUseCase";
+import { AdminGetPayoutDetailsUseCase } from "#/application/use-cases/payout/AdminGetPayoutDetailsUseCase";
+import { AdminListPayoutsUseCase } from "#/application/use-cases/payout/AdminListPayoutsUseCase";
+import { MongoBookingPaymentRepository } from "#/infrastructure/repository/MongoBookingPaymentRepository";
+import { MongoCustomerRepository } from "#/infrastructure/repository/MongoCustomerRepository";
+import { MongoTransactionRepository } from "#/infrastructure/repository/MongoTransactionRepository";
+import { MongoPayoutRepository } from "#/infrastructure/repository/MongoPayoutRepository";
+import { MongoWalletRepository } from "#/infrastructure/repository/MongoWalletRepository";
+import { CryptoUIDService } from "#/infrastructure/services/CryptoUIDService";
+import { ScheduledJobService } from "#/infrastructure/services/ScheduledJobService";
+import { EventBus } from "#/infrastructure/services/EventBus";
+import { JWTTokenService } from "#/infrastructure/services/JwtTokenService";
+import { RazorPayPaymentProvider } from "#/infrastructure/services/RazorPayPaymentProvider";
+import { PaymentControllerV1 } from "#/presentation/v1/controllers/PaymentControllerV1";
+import { PayoutControllerV1 } from "#/presentation/v1/controllers/PayoutControllerV1";
+import { AdminControllerV1 } from "#/presentation/v1/controllers/AdminControllerV1";
+import { NewUserEventHandler } from "#/presentation/v1/event-handlers/NewUserEventHandler";
+import { UserBlockedEventHandler } from "#/presentation/v1/event-handlers/UserBlockedEventHandler";
+import { UserUnblockedEventHandler } from "#/presentation/v1/event-handlers/UserUnblockedEventHandler";
+import { BookingCancelledByPassengerEventHandler } from "#/presentation/v1/event-handlers/BookingCancelledByPassengerEventHandler";
+import { TripCancelledByDriverEventHandler } from "#/presentation/v1/event-handlers/TripCancelledByDriverEventHandler";
+import { JourneyPassengerDroppedOffEventHandler } from "#/presentation/v1/event-handlers/JourneyPassengerDroppedOffEventHandler";
+import { EventDispatcher } from "#/presentation/v1/messaging/EventDispatcher";
+import { WebhookControllerV1 } from "#/presentation/v1/controllers/WebhookControllerV1";
+import { WalletControllerV1 } from "#/presentation/v1/controllers/WalletControllerV1";
+import { createPaymentRouterV1 } from "#/presentation/v1/routes/PaymentRouterV1";
+import { createWalletRouterV1 } from "#/presentation/v1/routes/WalletRouterV1";
+import { createWebhookRouterV1 } from "#/presentation/v1/routes/WebhookRouterV1";
+import { createAdminRouterV1 } from "#/presentation/v1/routes/AdminRouterV1";
+import { createPayoutRouterV1 } from "#/presentation/v1/routes/PayoutRouterV1";
+import { ConsolaLogger, EventName } from "@sharemyride/shared";
+
+// Logger
+const consolaLogger = new ConsolaLogger();
+
+// Infrastructure Repositories & Services
+const customerRepository = new MongoCustomerRepository();
+const walletRepository = new MongoWalletRepository();
+const bookingPaymentRepository = new MongoBookingPaymentRepository();
+const transactionRepository = new MongoTransactionRepository();
+
+const payoutRepository = new MongoPayoutRepository();
+
+const cryptoUIDService = new CryptoUIDService();
+const jwtTokenService = new JWTTokenService();
+const razorPayPaymentProvider = new RazorPayPaymentProvider();
+const scheduledJobService = new ScheduledJobService();
+
+// Event Dispatcher & Message Consumer Setup
+const eventDispatcher = new EventDispatcher(consolaLogger);
+
+// Customer & Wallet Use Cases
+const newCustomerUseCase = new NewCustomerUseCase(customerRepository);
+const blockCustomerUseCase = new BlockCustomerUseCase(customerRepository);
+const unblockCustomerUseCase = new UnblockCustomerUseCase(customerRepository);
+const createWalletUseCase = new CreateWalletUseCase(
+  walletRepository,
+  cryptoUIDService,
+);
+const getWalletTransactionsUseCase = new GetWalletTransactionsUseCase(
+  walletRepository,
+);
+
+const adminListTransactionsUseCase = new AdminListTransactionsUseCase(
+  transactionRepository,
+);
+const getTransactionSummaryUseCase = new GetTransactionSummaryUseCase(
+  transactionRepository,
+);
+const getRevenueTrendUseCase = new GetRevenueTrendUseCase(
+  transactionRepository,
+);
+const getCustomerEarningsUseCase = new GetCustomerEarningsUseCase(
+  transactionRepository,
+);
+
+// Payout Use Cases
+const createPayoutUseCase = new CreatePayoutUseCase(
+  payoutRepository,
+  transactionRepository,
+  cryptoUIDService,
+);
+const approvePayoutUseCase = new ApprovePayoutUseCase(
+  payoutRepository,
+  walletRepository,
+  transactionRepository,
+  cryptoUIDService,
+);
+const getDriverPayoutsUseCase = new GetDriverPayoutsUseCase(payoutRepository);
+const adminGetPayoutDetailsUseCase = new AdminGetPayoutDetailsUseCase(
+  payoutRepository,
+);
+const adminListPayoutsUseCase = new AdminListPayoutsUseCase(payoutRepository);
+
+const newUserEventHandler = new NewUserEventHandler(
+  consolaLogger,
+  newCustomerUseCase,
+  createWalletUseCase,
+);
+const userBlockedEventHandler = new UserBlockedEventHandler(
+  consolaLogger,
+  blockCustomerUseCase,
+);
+const userUnblockedEventHandler = new UserUnblockedEventHandler(
+  consolaLogger,
+  unblockCustomerUseCase,
+);
+
+await eventDispatcher.register(EventName.AUTH_USER_SIGNUP, newUserEventHandler);
+await eventDispatcher.register(
+  EventName.ADMIN_USER_BLOCKED,
+  userBlockedEventHandler,
+);
+await eventDispatcher.register(
+  EventName.ADMIN_USER_UNBLOCKED,
+  userUnblockedEventHandler,
+);
+
+// We need to wait for RefundBookingPaymentUseCase to be initialized before we can register the new handlers.
+// So we'll register the new handlers after eventBusInstance and refundBookingPaymentUseCase are created.
+
+const eventBusInstance = new EventBus(
+  consolaLogger,
+  AppConfig.RABBITMQ_URL,
+  AppConfig.RABBITMQ_EXCHANGE_NAME,
+  eventDispatcher,
+  AppConfig.PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME,
+);
+
+// Payment Use Cases
+const createBookingPaymentOrderUseCase = new CreateBookingPaymentOrderUseCase(
+  bookingPaymentRepository,
+  jwtTokenService,
+  razorPayPaymentProvider,
+  scheduledJobService,
+  `${AppConfig.API_GATEWAY_URL}/api/v1/payments/webhooks/clear-booking-payment`,
+  customerRepository,
+  eventBusInstance,
+);
+
+const verifyBookingPaymentUseCase = new VerifyBookingPaymentUseCase(
+  bookingPaymentRepository,
+  transactionRepository,
+  customerRepository,
+  eventBusInstance,
+  razorPayPaymentProvider,
+  cryptoUIDService,
+);
+
+const payBookingWithWalletUseCase = new PayBookingWithWalletUseCase(
+  jwtTokenService,
+  bookingPaymentRepository,
+  walletRepository,
+  transactionRepository,
+  eventBusInstance,
+  cryptoUIDService,
+  customerRepository,
+);
+
+const failedBookingPaymentUseCase = new FailedBookingPaymentUseCase(
+  bookingPaymentRepository,
+  customerRepository,
+  eventBusInstance,
+);
+
+const refundBookingPaymentUseCase = new RefundBookingPaymentUseCase(
+  bookingPaymentRepository,
+  walletRepository,
+  transactionRepository,
+  cryptoUIDService,
+);
+
+const bookingCancelledByPassengerEventHandler =
+  new BookingCancelledByPassengerEventHandler(
+    consolaLogger,
+    refundBookingPaymentUseCase,
+  );
+
+const tripCancelledByDriverEventHandler = new TripCancelledByDriverEventHandler(
+  consolaLogger,
+  refundBookingPaymentUseCase,
+);
+
+const journeyPassengerDroppedOffEventHandler =
+  new JourneyPassengerDroppedOffEventHandler(
+    consolaLogger,
+    createPayoutUseCase,
+  );
+
+await eventDispatcher.register(
+  EventName.BOOKING_CANCELLED_BY_PASSENGER,
+  bookingCancelledByPassengerEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.TRIP_CANCELLED_BY_DRIVER,
+  tripCancelledByDriverEventHandler,
+);
+
+await eventDispatcher.register(
+  EventName.JOURNEY_PASSENGER_DROPPED_OFF,
+  journeyPassengerDroppedOffEventHandler,
+);
+
+// Payment Controller & Router
+const paymentControllerV1 = new PaymentControllerV1(
+  consolaLogger,
+  createBookingPaymentOrderUseCase,
+  verifyBookingPaymentUseCase,
+  payBookingWithWalletUseCase,
+  getCustomerEarningsUseCase,
+);
+
+const webhookControllerV1 = new WebhookControllerV1(
+  consolaLogger,
+  failedBookingPaymentUseCase,
+);
+const walletControllerV1 = new WalletControllerV1(
+  consolaLogger,
+  getWalletTransactionsUseCase,
+);
+
+const adminControllerV1 = new AdminControllerV1(
+  consolaLogger,
+  adminListTransactionsUseCase,
+  getTransactionSummaryUseCase,
+  getRevenueTrendUseCase,
+);
+
+const payoutControllerV1 = new PayoutControllerV1(
+  consolaLogger,
+  getDriverPayoutsUseCase,
+  adminListPayoutsUseCase,
+  adminGetPayoutDetailsUseCase,
+  approvePayoutUseCase,
+);
+
+const paymentRouterV1 = createPaymentRouterV1(paymentControllerV1);
+const webhookRouterV1 = createWebhookRouterV1(webhookControllerV1);
+const walletRouterV1 = createWalletRouterV1(walletControllerV1);
+const adminRouterV1 = createAdminRouterV1(adminControllerV1);
+const payoutRouterV1 = createPayoutRouterV1(payoutControllerV1);
+
+// Routers setup
+const v1Router = express.Router();
+v1Router.use("/payments", paymentRouterV1);
+v1Router.use("/webhooks", webhookRouterV1);
+v1Router.use("/wallet", walletRouterV1);
+v1Router.use("/admin", adminRouterV1);
+v1Router.use("/payouts", payoutRouterV1);
+
+export const paymentServiceRouters = {
+  v1: v1Router,
+};
+
+export const eventBus = eventBusInstance;
+export const customerRepo = customerRepository;
+export const walletRepo = walletRepository;
+export const bookingPaymentRepo = bookingPaymentRepository;
+export const transactionRepo = transactionRepository;
+export const uidService = cryptoUIDService;
+export const walletUseCase = createWalletUseCase;

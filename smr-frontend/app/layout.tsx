@@ -5,6 +5,9 @@ import "./globals.css";
 import { QueryToastListener } from "@/components/QueryToastListener";
 import QueryProvider from "@/components/Provider/QueryProvider";
 import { ReactNode } from "react";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { MapProvider } from "@/features/map/context/MapProvider";
+import { SocketIOProvider } from "@/features/realtime/context/SocketIOProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +27,8 @@ export const metadata: Metadata = {
   icons: "/SMRIcon.png",
 };
 
+//set up map boxkkkkkkkkk
+
 export default function RootLayout({
   children,
   modal,
@@ -36,12 +41,21 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full w-full bg-surface-primary">
+      <body className="dark min-h-full w-full bg-surface-primary" suppressHydrationWarning>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.remove('dark')}else{document.body.classList.add('dark')}}catch(e){}})()`,
+          }}
+        />
         <QueryProvider>
           <ToastProvider>
-            <QueryToastListener />
-            {children}
-            {modal}
+            <MapProvider>
+              <SocketIOProvider>
+                <QueryToastListener />
+                {children}
+                {modal}
+              </SocketIOProvider>
+            </MapProvider>
           </ToastProvider>
         </QueryProvider>
       </body>

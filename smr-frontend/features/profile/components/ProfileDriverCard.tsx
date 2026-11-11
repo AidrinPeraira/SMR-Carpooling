@@ -1,12 +1,23 @@
+"use client";
+
 import { Button, Card, CardBody } from "@sharemyride/ui";
 import { GetUserResult } from "@sharemyride/shared";
-import { Check, Link } from "lucide-react";
+import { Check } from "lucide-react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { getDriverDetailsRequest } from "@/features/profile/api/requests/getDriverDetailsRequest";
 
 interface Props {
   user: GetUserResult | null;
 }
 
 export function ProfileDriverCard({ user }: Props) {
+  const { data: driver, isLoading } = useQuery({
+    queryKey: ["driverDetails"],
+    queryFn: getDriverDetailsRequest,
+    enabled: Boolean(user?.is_driver),
+  });
+
   if (!user || !user.is_driver) {
     return (
       <Card className="p-6">
@@ -21,13 +32,59 @@ export function ProfileDriverCard({ user }: Props) {
             Interested in earning? Join our community of verified drivers to
             start offering rides.
           </p>
-          <Link href="/application/onboard">
+          <Link href="/application/onboarding">
             <Button variant="primary">Get Started</Button>
           </Link>
         </CardBody>
       </Card>
     );
   }
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 animate-pulse">
+        <CardBody className="mb-0">
+          <div className="h-6 w-48 bg-surface-muted rounded mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="h-12 bg-surface-muted rounded" />
+            <div className="h-12 bg-surface-muted rounded" />
+            <div className="h-12 bg-surface-muted rounded" />
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
+
+  if (!driver) {
+    return (
+      <Card className="p-6">
+        <CardBody className="mb-0">
+          <h3 className="text-lg font-bold text-content-primary mb-2">
+            Driver Information
+          </h3>
+          <p className="text-sm text-content-secondary">
+            No driver details found.
+          </p>
+        </CardBody>
+      </Card>
+    );
+  }
+
+  const activeSince = driver.created_at
+    ? new Date(driver.created_at).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "N/A";
+
+  const lastUpdated = driver.updated_at
+    ? new Date(driver.updated_at).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "N/A";
 
   return (
     <Card className="p-6">
@@ -36,9 +93,9 @@ export function ProfileDriverCard({ user }: Props) {
           <h3 className="text-lg font-bold text-content-primary">
             Driver Information
           </h3>
-          <span className="bg-primary-container text-on-primary-container px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-fit">
+          <span className="bg-primary-container text-on-primary-container px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-fit uppercase">
             <Check className="w-3 h-3 text-primary" />
-            VERIFIED DRIVER
+            {driver.driver_status}
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -47,23 +104,23 @@ export function ProfileDriverCard({ user }: Props) {
               Active Since
             </label>
             <p className="text-sm font-semibold text-content-primary">
-              March 2023
+              {activeSince}
             </p>
           </div>
           <div>
             <label className="block text-xs text-content-tertiary mb-1 uppercase tracking-wider font-semibold">
-              DL Number
+              Driving License Number
             </label>
             <p className="text-sm font-semibold text-content-primary">
-              •••• •••• 5678
+              {driver.license_number}
             </p>
           </div>
           <div>
             <label className="block text-xs text-content-tertiary mb-1 uppercase tracking-wider font-semibold">
-              Valid Till
+              Last Status Update
             </label>
             <p className="text-sm font-semibold text-content-primary">
-              Dec 2028
+              {lastUpdated}
             </p>
           </div>
         </div>

@@ -4,24 +4,34 @@ import { IGoogleAuthUseCase } from "#/application/interfaces/use-case/auth/IGoog
 import { IUserRepository } from "#/application/interfaces/repository/IUserRepository";
 import { ITokenService } from "#/application/interfaces/services/ITokenService";
 import { IUniqueIdGenerator } from "#/application/interfaces/services/IUniqueIdGenerator";
+import { IEventBus } from "#/application/interfaces/messaging/IEventBus";
 import { AppConfig } from "#/application.config";
 import {
   AccountStatus,
   ApplicationError,
   AuthTokenPayload,
   ErrorCode,
+  EventName,
   HttpStatusCodes,
   TokenType,
   UserErrorMessage,
   UserRole,
+  UserSignUpEvent,
+  UserSignupEventPayload,
 } from "@sharemyride/shared";
 
+/**
+ * This use case handles authenticating  a user using google auth
+ * It logs the user in i fthe user exists or creates a new user
+ * if the user doesn't exist
+ */
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
   constructor(
     private readonly googleAuthService: IGoogleAuthService,
     private readonly userRepository: IUserRepository,
     private readonly uniqueIdGenerator: IUniqueIdGenerator,
     private readonly tokenService: ITokenService,
+    private readonly eventBus: IEventBus,
   ) {}
 
   async execute(authToken: string): Promise<LoginUserResultDTO> {
@@ -42,8 +52,9 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
 
     let user = await this.userRepository.findByEmail(result.emailId);
 
+    //if the user doesn't exist create a new one
     if (!user) {
-      const userId = this.uniqueIdGenerator.generateRandomId();
+      const userId = this.uniqueIdGenerator.generateRandomId("USR");
       const now = new Date();
 
       user = await this.userRepository.save({
@@ -53,7 +64,6 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         emailId: result.emailId,
         phoneNumber: result.phoneNumber || "00000000000",
         passwordHash: result.passwordHash || "google-oauth",
-        profileImage: result.profileImage,
         userRole: UserRole.PASSENGER,
         emailVerified: true,
         isDriver: false,
@@ -61,6 +71,22 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         createdAt: now,
         updatedAt: now,
       });
+
+      const eventPayload: UserSignupEventPayload = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailId: user.emailId,
+        userId: user.userId,
+        token: "",
+      };
+
+      const event: UserSignUpEvent = {
+        eventName: EventName.AUTH_USER_SIGNUP,
+        payload: eventPayload,
+        timestamp: now,
+      };
+
+      await this.eventBus.publish(event);
     }
 
     if (user.accountStatus === AccountStatus.BLOCKED) {

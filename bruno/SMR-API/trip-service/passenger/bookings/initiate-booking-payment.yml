@@ -1,0 +1,47 @@
+info:
+  name: initiate-booking-payment
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:4000/api/v1/bookings/dabc6807-7aeb-4a03-9bcc-13639a4563d1/initiate-payment
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY0MDQ4MywiZXhwIjoxNzg2NjQxMzgzfQ.J95MkwnFI4V4WAjMkynQ95xltvUdgj7NJzA-9u1tM7g
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/bookings/dabc6807-7aeb-4a03-9bcc-13639a4563d1/initiate-payment
+      method: POST
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NjY0MDQ4MywiZXhwIjoxNzg2NjQxMzgzfQ.J95MkwnFI4V4WAjMkynQ95xltvUdgj7NJzA-9u1tM7g
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Booking payment initiated successfully",
+            "payload": {
+              "payment_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXltZW50RGV0YWlscyI6eyJhbW1vdW50IjoxNTAsInBhc3NlbmdlcklkIjoiNDM3OGMyZDE2MDRiOWEwZmEzMzBiZDU2MTQ4NmEwMmQiLCJib29raW5nSWQiOiJkYWJjNjgwNy03YWViLTRhMDMtOWJjYy0xMzYzOWE0NTYzZDEiLCJwYXltZW50S2V5IjoicGF5X3h5ejEyM2FiYzQ1NiIsImV4cGlyZXNBdCI6IjIwMjYtMDgtMThUMjM6MTU6MDAuMDAwWiJ9LCJ0b2tlblR5cGUiOiJwYXltZW50X3Rva2VuIiwiaWF0IjoxNzg2NjQwNDgzLCJleHAiOjE3ODY2NDEzODN9.mock_signature"
+            }
+          }

@@ -1,0 +1,159 @@
+import {
+  AdminGetAllTripsQuery,
+  AdminGetAllTripsResponseDTO,
+  AdminGetTripDetailsResponseDTO,
+  GetTripsCountResposneDTO,
+  GetTripTrendResponseDTO,
+} from "#/application/dto/admin/AdminTripsDTO";
+import { DriverGetAllTripsQueryDTO } from "#/application/dto/trip/DriverTripsDetailsDTO";
+import {
+  ListTripsRequestDTO,
+  ListTripsResultDTO,
+} from "#/application/dto/trip/PassengerListTripsDTO";
+import { BookingEntity } from "#/domain/entities/BookingEntity";
+import { TripEntity } from "#/domain/entities/TripEntity";
+import { VehicleEntity } from "#/domain/entities/VehicleEntity";
+import { PaginatedPayload, TrendRange, TripStop, VehicleTypes } from "@sharemyride/shared";
+
+export interface JourneyDetailsPayload {
+  trip: TripEntity;
+  availableStops: TripStop[];
+  vehicleType: VehicleTypes;
+}
+
+export interface BookingEntityWithPassenger extends BookingEntity {
+  passengerName?: string;
+  passengerEmail?: string;
+}
+
+export interface TripResultPayload {
+  tripDetails: TripEntity;
+  vehicleDetails: VehicleEntity;
+  bookingDetails: BookingEntityWithPassenger[];
+}
+
+/**
+ * This repository handles creating trip records and the matching
+ * trip places table for indexing using the geoIndexingService
+ */
+export interface ITripRepository {
+  /**
+   * Creates a new trip record and trip places records for all
+   * places touched by the trip
+   *
+   * @param Trip data
+   */
+  save(trip: TripEntity): Promise<void>;
+
+  /**
+   * This method gets all the trip details with necessary joins
+   *
+   * @param tripId : id of trip as string
+   */
+  findTripDetails(tripId: string): Promise<TripResultPayload | null>;
+
+  /**
+   * Finds all trips created by a specific driver with pagination and status filtering
+   *
+   * @param driverId Driver ID
+   * @param query Optional filtering and pagination params
+   */
+  findTripsByDriverId(
+    driverId: string,
+    query?: DriverGetAllTripsQueryDTO,
+  ): Promise<PaginatedPayload<TripResultPayload[]>>;
+
+  /**
+   * Match data with trips that match using the indexed tables
+   *
+   * @param Passnger Requirements Data
+   * @return Pagianted result of matching trips
+   */
+  findMatchingTrips(
+    dto: ListTripsRequestDTO,
+  ): Promise<PaginatedPayload<ListTripsResultDTO[]>>;
+
+  /**
+   * Finds trip details with joined places coordinates from Places table
+   *
+   * @param tripId Trip ID
+   * @return Journey details payload or null if not found
+   */
+  findJourneyDetails(tripId: string): Promise<JourneyDetailsPayload | null>;
+
+  /**
+   * Finds a single trip entity by tripId
+   *
+   * @param tripId Trip ID
+   */
+  findByTripId(tripId: string): Promise<TripEntity | null>;
+
+  /**
+   * Updates fields of a trip by tripId
+   *
+   * @param tripId Trip ID
+   * @param data Fields to update
+   */
+  update(
+    tripId: string,
+    data: Partial<Omit<TripEntity, "tripId" | "createdAt" | "updatedAt">>,
+  ): Promise<TripEntity>;
+
+  /**
+   * Find all trips that match given query
+   */
+  findAllTrips(
+    query: AdminGetAllTripsQuery,
+  ): Promise<PaginatedPayload<AdminGetAllTripsResponseDTO[]>>;
+
+  /**
+   * Finds full trip details formatted for admin dashboard
+   *
+   * @param tripId Trip ID
+   */
+  findAdminTripDetails(
+    tripId: string,
+  ): Promise<AdminGetTripDetailsResponseDTO | null>;
+
+  /**
+   * A transaction to check and decrement seats for
+   * reservation
+   */
+  atmoicReserveSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null>;
+
+  /**
+   * A trnasaction to check and increment seats
+   * to rollback a reservation
+   */
+  atmoicReleaseSeat(
+    tripId: string,
+    seatCount: number,
+  ): Promise<TripEntity | null>;
+
+  /**
+   * Finds the driver's next upcoming trip for today with confirmed bookings
+   */
+  findDriverTodayTrip(driverId: string): Promise<TripResultPayload | null>;
+
+  /**
+   * Aggregates trip stats for a driver: total trips, trips this month, total passengers
+   */
+  getDriverTripStats(driverId: string): Promise<{
+    totalTrips: number;
+    tripsThisMonth: number;
+    totalPassengers: number;
+  }>;
+
+  /**
+   * this method deletes the rversed indexed items
+   * for the trips in the past
+   */
+  cleanIndices(): Promise<void>;
+
+  getTripsCount(): Promise<GetTripsCountResposneDTO>;
+
+  getTripTrend(range: TrendRange): Promise<GetTripTrendResponseDTO>;
+}

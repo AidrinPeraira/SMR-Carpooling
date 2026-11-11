@@ -17,6 +17,7 @@ export async function ProfilePageView() {
     }
   } catch (error: unknown) {
     logger.error("Error fetching user data in profile card: ", error);
+    throw error;
   }
 
   return (

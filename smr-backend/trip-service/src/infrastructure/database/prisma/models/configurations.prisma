@@ -1,0 +1,23 @@
+enum VehicleTypes {
+  sedan
+  suv
+  hatchback
+}
+
+model VehicleList {
+  id           String       @id @default(uuid())
+  vehicleType  VehicleTypes
+  vehicleMake  String
+  vehicleModel String
+  isActive     Boolean
+
+  @@unique([vehicleType, vehicleMake, vehicleModel])
+}
+
+model PricingRules {
+  id          String       @id @default(uuid())
+  vehicleType VehicleTypes @unique
+  pricePerKm  Float
+  basePrice   Float
+  isActive    Boolean
+}

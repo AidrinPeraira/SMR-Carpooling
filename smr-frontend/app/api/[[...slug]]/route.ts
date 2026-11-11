@@ -65,7 +65,7 @@ async function handleProxy(request: NextRequest, ctx: RouteContext) {
   } catch (error) {
     logger.error("API proxy error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal proxy error" },
+      { success: false, message: "Internal server error" },
       { status: 502 },
     );
   }
