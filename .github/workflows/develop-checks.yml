@@ -1,10 +1,10 @@
-name: Continuous Integration
+name: Develop Checks
 
 on:
   push:
-    branches: [develop, master]
+    branches: [develop]
   pull_request:
-    branches: [develop, master]
+    branches: [develop]
 
 jobs:
   lint-and-type-check:
@@ -72,7 +72,7 @@ jobs:
       - name: Run Tests
         run: pnpm run test
 
-  docker-build-check:
+  frontend-build-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -94,5 +94,36 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build Docker Images (No Push)
-        run: pnpm run docker:build
+      - name: Build Dependencies
+        run: pnpm --filter @sharemyride/shared --filter @sharemyride/ui run build
+
+      - name: Run Build
+        run: pnpm --filter @smr/frontend run build
+
+  docker-dev-build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.8
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.15.0
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Dependencies
+        run: pnpm --filter @sharemyride/shared --filter @sharemyride/ui run build
+
+      - name: Run Build
+        run: pnpm run docker:dev:build
+
+      - name: Clear Build
+        run: pnpm run docker:dev:down

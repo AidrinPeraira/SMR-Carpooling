@@ -1,0 +1,27 @@
+name: Auto Merge to Staging
+
+on:
+  workflow_run:
+    workflows: ["Develop Checks"]
+    types: [completed]
+    branches: [develop]
+
+jobs:
+  auto-merge:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge develop into staging
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout staging
+          git merge origin/develop --no-edit
+          git push origin staging
