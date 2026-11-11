@@ -1,7 +1,0 @@
-name: Master Deploy
-
-on:
-  push:
-    branches: [master]
-
-jobs:
