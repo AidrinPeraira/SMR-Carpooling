@@ -30,9 +30,6 @@ jobs:
       - name: Docker Prod Build
         run: pnpm run docker:prod:build
 
-      - name: Clear Build
-        run: pnpm run docker:prod:down
-
   auto-merge-master:
     needs: docker-prod-build-check
     runs-on: ubuntu-latest

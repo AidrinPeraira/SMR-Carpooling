@@ -122,8 +122,5 @@ jobs:
       - name: Build Dependencies
         run: pnpm --filter @sharemyride/shared --filter @sharemyride/ui run build
 
-      - name: Run Build
+      - name: Docker Dev Build
         run: pnpm run docker:dev:build
-
-      - name: Clear Build
-        run: pnpm run docker:dev:down

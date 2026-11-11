@@ -10,9 +10,11 @@
     "type-check": "pnpm -r run type-check",
     "format": "prettier --write .",
     "test": "pnpm -r test",
-    "docker:dev:build": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose -p smr-dev -f docker-compose.dev.yml up --build",
+    "docker:dev:build": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose -p smr-dev -f docker-compose.dev.yml build",
+    "docker:dev:up": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose -p smr-dev -f docker-compose.dev.yml up --build",
     "docker:dev:down": "docker compose -p smr-dev -f docker-compose.dev.yml down",
-    "docker:prod:build": "docker compose -p smr-prod -f docker-compose.prod.yml --env-file .env up --build",
+    "docker:prod:build": "docker compose -p smr-prod -f docker-compose.prod.yml build",
+    "docker:prod:up": "docker compose -p smr-prod -f docker-compose.prod.yml --env-file .env up --build",
     "docker:prod:push": "pnpm -r run docker:prod:push"
   },
   "keywords": [],
