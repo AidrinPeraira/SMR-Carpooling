@@ -1,0 +1,21 @@
+info:
+  name: join-chat
+  type: websocket
+  seq: 2
+
+websocket:
+  url: ws://localhost:4005/chat
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+  message:
+    name: join-chat
+    type: json
+    data: |-
+      {
+        "trip_id": "trip_abc123"
+      }
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0

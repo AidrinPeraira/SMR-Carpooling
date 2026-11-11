@@ -1,6 +1,42 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4000,
+  PORT: Number(process.env.PAYMENT_SERVICE_PORT) || 4004,
   NODE_ENV: String(process.env.NODE_ENV) || "development",
+
+  API_GATEWAY_KEY: String(
+    process.env.API_GATEWAY_KEY ||
+      "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
+  API_GATEWAY_URL: String(
+    process.env.API_GATEWAY_URL || "http://localhost:4000",
+  ),
+
+  MONGO_DB_URL: String(process.env.MONGO_DB_URL),
+
+  RABBITMQ_URL: String(process.env.RABBITMQ_URL || "amqp://localhost:5672"),
+  RABBITMQ_EXCHANGE_NAME: String(
+    process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
+  ),
+  PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME:
+    process.env.PAYMENT_SERVICE_RABBITMQ_QUEUE_NAME || "smr.payments.queue",
+
+  RAZORPAY_API_KEY: String(process.env.RAZORPAY_API_KEY || "api_key"),
+  RAZORPAY_API_SECRET: String(process.env.RAZORPAY_API_SECRET || "api_secret"),
+  PAYMENT_SECRET: String(process.env.PAYMENT_SECRET || "secret_key"),
+
+  QSTASH_URL: String(
+    process.env.QSTASH_URL || "https://qstash.upstash.io/v2/messages",
+  ),
+  QSTASH_TOKEN: String(process.env.QSTASH_TOKEN || "test_token"),
+
+  SERVICE_NAME: String(process.env.PAYMENT_SERVICE_NAME) || "payment-service",
+  SERVICE_VERSION: String(process.env.PAYMENT_SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

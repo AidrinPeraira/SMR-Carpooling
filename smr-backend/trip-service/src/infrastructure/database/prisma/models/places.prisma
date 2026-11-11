@@ -1,0 +1,11 @@
+model Places {
+  placeIndex   String @id @unique
+  placeName    String
+  placeLat     Float
+  placeLng     Float
+  placeAddress String
+
+  tripPlaces      TripPlaces[]
+  pickupBookings  Bookings[]   @relation("PickupBookings")
+  dropOffBookings Bookings[]   @relation("DropOffBookings")
+}

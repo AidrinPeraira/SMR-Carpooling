@@ -22,3 +22,10 @@ Dockerfile*
 **/tests
 **/vitest.config.ts
 coverage
+
+# Prisma
+**/generated
+
+
+000_specimen_images
+migrations

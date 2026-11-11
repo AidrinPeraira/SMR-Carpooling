@@ -1,0 +1,49 @@
+info:
+  name: cancel-trip
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: http://localhost:4000/api/v1/trips/driver/:tripId/cancel
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjI1ZTVkOWE5OTkyZmQ5ODJmYTdlMzcyZmE3MGYwNTMxIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJEcml2ZXIiLCJsYXN0TmFtZSI6Ik9uZSIsImVtYWlsSWQiOiJkcml2ZXIub25lQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY0ODg5NDYsImV4cCI6MTc4NjQ4OTg0Nn0.8wA-8a9H9Z2T4q6u2Q_7D4lO2y2O4j9k2L9l4H9j4L9
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  params:
+    - name: tripId
+      value: f23a4192-8051-4091-a129-f12a32c25679
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example-success
+    request:
+      url: http://localhost:4000/api/v1/trips/driver/f23a4192-8051-4091-a129-f12a32c25679/cancel
+      method: PATCH
+      headers:
+        - name: Authorization
+          value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjI1ZTVkOWE5OTkyZmQ5ODJmYTdlMzcyZmE3MGYwNTMxIiwidXNlclJvbGUiOiJkcml2ZXIiLCJmaXJzdE5hbWUiOiJEcml2ZXIiLCJsYXN0TmFtZSI6Ik9uZSIsImVtYWlsSWQiOiJkcml2ZXIub25lQGdtYWlsLmNvbSJ9LCJ0b2tlblR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE3ODY0ODg5NDYsImV4cCI6MTc4NjQ4OTg0Nn0.8wA-8a9H9Z2T4q6u2Q_7D4lO2y2O4j9k2L9l4H9j4L9
+        - name: x-frontend-key
+          value: "{{FRONTEND_KEY}}"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Trip cancelled successfully",
+            "payload": null
+          }

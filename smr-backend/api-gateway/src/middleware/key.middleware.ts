@@ -8,20 +8,30 @@ import { AppConfig } from "#/application.config";
 export function keyMiddleware(req: Request, res: Response, next: NextFunction) {
   //health check probably comes from some outside service
   //so exclude that path
-  if (req.path === "/health") {
+  if (
+    req.path === "/health" ||
+    req.path.startsWith("/api/v1/webhook") ||
+    req.path.startsWith("/socket.io")
+  ) {
+    req.headers["x-gateway-key"] = AppConfig.API_GATEWAY_KEY;
     return next();
   }
 
   //check for valid frontend
   const frontendKey = req.headers["x-frontend-key"];
+  const mcpServiceKey = req.headers["x-mcp-key"];
+
   if (!frontendKey || frontendKey !== AppConfig.FRONTEND_KEY) {
-    return res
-      .status(HttpStatusCodes.Forbidden)
-      .json(
-        makeFailedResponse(
-          "Forbidden: Request must originate from a verified client",
-        ),
-      );
+    if (!mcpServiceKey || mcpServiceKey !== AppConfig.MCP_SERVICE_KEY) {
+      res
+        .status(HttpStatusCodes.Forbidden)
+        .json(
+          makeFailedResponse(
+            "Forbidden: Request must originate from a verified client",
+          ),
+        );
+      return;
+    }
   }
 
   //attatch gateway key

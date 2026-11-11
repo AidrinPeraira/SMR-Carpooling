@@ -1,14 +1,46 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4000,
+  PORT: Number(process.env.API_GATEWAY_PORT) || 4000,
   NODE_ENV: String(process.env.NODE_ENV) || "development",
+
   USER_SERVICE_URL:
     String(process.env.USER_SERVICE_URL) || "https://localhost:4001",
-  ACCESS_TOKEN_SECRET:
-    String(process.env.ACCESS_TOKEN_SECRET || "nic4B4Z3XbOvV8RxRdXkrb8KDWIXnGZFRzy0p4Qr8ds"),
-  FRONTEND_KEY:
-    String(process.env.FRONTEND_KEY || "smr_frontend_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe"),
-  API_GATEWAY_KEY:
-    String(process.env.API_GATEWAY_KEY || "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe"),
+  TRIP_SERVICE_URL:
+    String(process.env.TRIP_SERVICE_URL) || "https://localhost:4003",
+  PAYMENT_SERVICE_URL:
+    String(process.env.PAYMENT_SERVICE_URL) || "http://localhost:4004",
+  REALTIME_SERVICE_URL:
+    String(process.env.REALTIME_SERVICE_URL) || "http://localhost:4005",
+  MCP_SERVICE_URL:
+    String(process.env.MCP_SERVICE_URL) || "http://localhost:4007",
+  LLM_SERVICE_URL:
+    String(process.env.LLM_SERVICE_URL) || "http://localhost:4006",
+
+  ACCESS_TOKEN_SECRET: String(
+    process.env.ACCESS_TOKEN_SECRET ||
+      "nic4B4Z3XbOvV8RxRdXkrb8KDWIXnGZFRzy0p4Qr8ds",
+  ),
+
+  FRONTEND_KEY: String(
+    process.env.FRONTEND_KEY || "smr_frontend_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
+  API_GATEWAY_KEY: String(
+    process.env.API_GATEWAY_KEY ||
+      "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
+  MCP_SERVICE_KEY: String(process.env.MCP_SERVICE_KEY) || "secret-token",
+
+  REDIS_URL: String(process.env.REDIS_URL || "redis://localhost:6379"),
+
+  SERVICE_NAME:
+    String(process.env.API_GATEWAY_SERVICE_NAME) || "api-gateway-service",
+  SERVICE_VERSION: String(process.env.API_GATEWAY_SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

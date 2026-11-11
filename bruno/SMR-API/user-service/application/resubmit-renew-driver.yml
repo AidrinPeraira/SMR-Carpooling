@@ -1,0 +1,30 @@
+info:
+  name: resubmit-renew-driver
+  type: http
+  seq: 7
+
+http:
+  method: PATCH
+  url: http://localhost:4000/api/v1/applications/resubmit/renew/driver/:applicationId
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6IjQzNzhjMmQxNjA0YjlhMGZhMzMwYmQ1NjE0ODZhMDJkIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJBaWRyaW4iLCJsYXN0TmFtZSI6IlBlcmFpcmEiLCJlbWFpbElkIjoiYWlkcmluLnBlcmFpcmFAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NTczMDE3NiwiZXhwIjoxNzg1NzMxMDc2fQ.5EMz9Tdx_6yy_z1flF2qzbfLDn2LJYn_foQ0Kub71nY
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  params:
+    - name: applicationId
+      value: APP123456
+      type: path
+  body:
+    type: json
+    data: |2-
+        {
+          "license_file": "temp/resubmitted_license.pdf"
+        }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

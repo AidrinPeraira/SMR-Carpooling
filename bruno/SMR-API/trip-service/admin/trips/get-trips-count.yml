@@ -1,0 +1,40 @@
+info:
+  name: get-trips-count
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://localhost:4000/api/v1/admin/trip/trips/dashboard/count
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  auth: inherit
+
+docs: |
+  ## Admin — Get Trips Count
+
+  Returns aggregated trip counts by status for the admin dashboard.
+
+  ### Response Shape (success)
+
+  ```json
+  {
+    "success": true,
+    "message": "Operation completed successfully.",
+    "payload": {
+      "total_trips": 200,
+      "completed_trips": 150,
+      "upcoming_trips": 30,
+      "cancelled_trips": 20
+    }
+  }
+  ```
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

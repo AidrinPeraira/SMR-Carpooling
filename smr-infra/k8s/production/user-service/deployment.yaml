@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # unique name for the deployment
+  name: smr-user-service-deployment
+
+  # additional details we can use to select this deployemnt
+  labels:
+    app: smr
+    serviceName: user-service
+spec:
+  # number of replica instances to ensure availability. (leave it for now)
+  # replicas: 3
+
+  # this field is used by k8s to identify and select the pods
+  # defined by this deployment config file
+  selector:
+    matchLabels:
+      app: smr
+      serviceName: user-service
+
+  # here we define the Pods
+  template:
+    metadata:
+      labels:
+        app: smr
+        serviceName: user-service
+    spec:
+      containers:
+        - name: user-service-pod
+          image: aidrinperaira/smr-user-service
+          imagePullPolicy: Always
+          ports:
+            # the port the app listens to
+            - containerPort: 4001
+          # Add env variables for containers
+          envFrom:
+            - secretRef:
+                name: managed-secret
+
+          #liveness probe to see if container is alive
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: 4001
+            initialDelaySeconds: 10
+
+          #to see if container has started
+          readinessProbe:
+            httpGet:
+              path: "/health"
+              port: 4001
+            initialDelaySeconds: 10
+
+            #we can configure container resource limits if needed

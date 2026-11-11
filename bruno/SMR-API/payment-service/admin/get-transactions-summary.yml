@@ -1,0 +1,40 @@
+info:
+  name: get-transactions-summary
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:4000/v1/admin/dashboard/summary
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  auth: inherit
+
+docs: |
+  ## Admin — Get Transactions Summary
+
+  Returns aggregated financial summary for the admin dashboard.
+
+  ### Response Shape (success)
+
+  ```json
+  {
+    "success": true,
+    "message": "Operation completed successfully.",
+    "payload": {
+      "total_revenue": 50000,
+      "booking_revenue": 45000,
+      "payouts_issued": 30000,
+      "refunds_issued": 5000
+    }
+  }
+  ```
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

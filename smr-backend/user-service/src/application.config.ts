@@ -1,8 +1,9 @@
 import "dotenv/config";
 
 export const AppConfig = {
-  PORT: Number(process.env.PORT) || 4000,
+  PORT: Number(process.env.USER_SERVICE_PORT) || 4000,
   NODE_ENV: String(process.env.NODE_ENV || "development"),
+
   CUSTOM_ID_LENGTH: Number(process.env.CUSTOM_ID_LENGTH) || 6,
   TOKEN_LIFE_MINUTES: Number(process.env.TOKEN_LIFE_MINUTES) || 10,
 
@@ -28,7 +29,35 @@ export const AppConfig = {
   RABBITMQ_EXCHANGE_NAME: String(
     process.env.RABBITMQ_EXCHANGE_NAME || "sharemyride.events",
   ),
+  USER_SERVICE_RABBITMQ_QUEUE_NAME:
+    process.env.USER_SERVICE_RABBITMQ_QUEUE_NAME || "smr.users.queue",
 
   GOOGLE_CLIENT_SECRET: String(process.env.GOOGLE_CLIENT_SECRET),
   GOOGLE_CLIENT_ID: String(process.env.GOOGLE_CLIENT_ID),
+
+  API_GATEWAY_KEY: String(
+    process.env.API_GATEWAY_KEY ||
+      "smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe",
+  ),
+
+  UPLOAD_URL_TTL_SECONDS: Number(process.env.UPLOAD_URL_TTL_SECONDS) || 300,
+  MAX_AVATAR_SIZE_BYTES:
+    Number(process.env.MAX_AVATAR_SIZE_BYTES) * 1024 * 1024 || 5 * 1024 * 1024,
+
+  S3_API_URL: String(process.env.S3_API_URL) || "abc",
+
+  S3_BUCKET_NAME: String(process.env.S3_BUCKET_NAME) || "sharemyride-bucket",
+  S3_ACCESS_ID: String(process.env.S3_ACCESS_ID) || "123",
+  S3_SECRET_KEY: String(process.env.S3_SECRET_KEY) || "asdf",
+  S3_PUBLIC_DOMAIN: String(process.env.S3_PUBLIC_DOMAIN) || "",
+
+  SERVICE_NAME: String(process.env.USER_SERVICE_NAME) || "user-service",
+  SERVICE_VERSION: String(process.env.USER_SERVICE_VERSION) || "0.0.1",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

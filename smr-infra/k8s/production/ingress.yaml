@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smr-ingress
+spec:
+  ingressClassName: nginx
+  # This is where we set up the dns domain name for
+  # the backend services.
+  # host: api.smr.aidrinperaira.com
+  # host: ws.smr.aidrinperaira.com
+  #
+  # Right now it is a single rule. split it into 2 rules when the host is added
+  rules:
+    - http:
+        paths:
+          - path: /socket.io
+            pathType: Prefix
+            backend:
+              service:
+                name: smr-realtime-service-service
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smr-api-gateway-service
+                port:
+                  number: 80

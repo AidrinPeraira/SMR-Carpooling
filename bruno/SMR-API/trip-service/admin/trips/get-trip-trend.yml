@@ -1,0 +1,53 @@
+info:
+  name: get-trip-trend
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://localhost:4000/api/v1/admin/trip/trips/dashboard/trend
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  params:
+    - name: range
+      value: last_month
+      type: query
+  auth: inherit
+
+docs: |
+  ## Admin — Get Trip Trend
+
+  Returns trip creation trend data grouped by the selected time range.
+
+  ### Query Parameters
+
+  | Parameter | Type   | Required | Description                                            |
+  |-----------|--------|----------|--------------------------------------------------------|
+  | `range`   | string | No       | `last_week`, `last_month` (default), or `last_year`    |
+
+  ### Response Shape (success)
+
+  ```json
+  {
+    "success": true,
+    "message": "Operation completed successfully.",
+    "payload": {
+      "trend_range": "last_month",
+      "data": [
+        { "label": "W1", "value": 12 },
+        { "label": "W2", "value": 18 },
+        { "label": "W3", "value": 15 },
+        { "label": "W4", "value": 22 }
+      ]
+    }
+  }
+  ```
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

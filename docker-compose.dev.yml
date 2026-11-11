@@ -24,9 +24,6 @@ services:
     tty: true
     ports:
       - "4001:4001"
-    depends_on:
-      - redis
-      - rabbitmq
     env_file:
       - ./smr-backend/user-service/.env
     environment:
@@ -120,6 +117,7 @@ services:
     tty: true
     ports:
       - "4003:4003"
+      - "8080:8080"
     env_file:
       - ./smr-backend/trip-service/.env
     environment:
@@ -151,6 +149,7 @@ services:
     tty: true
     ports:
       - "4004:4004"
+      - "8081:8080"
     env_file:
       - ./smr-backend/payment-service/.env
     environment:
@@ -174,48 +173,64 @@ services:
           path: ./smr-shared/dist
           target: /app/smr-shared/dist
 
-  # --- Infrastructure Services ---
-
-  redis:
-    image: redis:7.0-alpine
+  realtime-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: realtime-service-dev
+    tty: true
     ports:
-      - "6379:6379"
-    volumes:
-      - ./smr-infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ./smr-infra/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./smr-infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-
-  loki:
-    image: grafana/loki:latest
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./smr-infra/loki/loki-config.yaml:/etc/loki/local-config.yaml
-    command: -config.file=/etc/loki/local-config.yaml
-
-  promtail:
-    image: grafana/promtail:latest
-    volumes:
-      - ./smr-infra/promtail/promtail-config.yaml:/etc/promtail/config.yml
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/log:/var/log:ro
-    command: -config.file=/etc/promtail/config.yml
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    volumes:
-      - ./smr-infra/grafana/provisioning:/etc/grafana/provisioning
+      - "4005:4005"
+    env_file:
+      - ./smr-backend/realtime-service/.env
     environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_LOG_LEVEL=warn
+      - NODE_ENV=development
+      - CI=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/smr-backend/realtime-service/node_modules
+      - /app/smr-shared/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./smr-backend/realtime-service/src
+          target: /app/smr-backend/realtime-service/src
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: ./smr-backend/realtime-service/package.json
+        - action: sync
+          path: ./smr-shared/dist
+          target: /app/smr-shared/dist
+
+  mcp-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: mcp-service-dev
+    tty: true
+    ports:
+      - "4007:4007"
+    env_file:
+      - ./smr-backend/mcp-service/.env
+    environment:
+      - NODE_ENV=development
+      - CI=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/smr-backend/mcp-service/node_modules
+      - /app/smr-shared/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./smr-backend/mcp-service/src
+          target: /app/smr-backend/mcp-service/src
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: ./smr-backend/mcp-service/package.json
+        - action: sync
+          path: ./smr-shared/dist
+          target: /app/smr-shared/dist

@@ -1,4 +1,4 @@
-import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/ISendSignupVerificationMailUseCase";
+import { ISendSignupVerificationMailUseCase } from "#/application/interfaces/use-case/auth/ISendSignupVerificationMailUseCase";
 import { vi } from "vitest";
 
 export const MockSendSignupVerificationMailUseCase = vi.fn(

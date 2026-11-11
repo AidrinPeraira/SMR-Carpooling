@@ -1,0 +1,40 @@
+info:
+  name: get-application-count
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://localhost:4000/api/v1/admin/applications/dashboard/count
+  headers:
+    - name: Authorization
+      value: Bearer {{ACCESS_TOKEN}}
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
+  auth: inherit
+
+docs: |
+  ## Admin — Get Application Count
+
+  Returns aggregated application counts by type for the admin dashboard.
+
+  ### Response Shape (success)
+
+  ```json
+  {
+    "success": true,
+    "message": "Operation completed successfully.",
+    "payload": {
+      "total_applications": 45,
+      "vehicle_applications": 20,
+      "onboarding_applications": 15,
+      "renewal_applications": 10
+    }
+  }
+  ```
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

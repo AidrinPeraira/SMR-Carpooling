@@ -87,7 +87,7 @@ export abstract class MongoBaseRepository<
     return {
       data: data.map((d) => this.toDomainEntityMapper(d)),
       paginationMeta: {
-        totatlItems: count,
+        totalItems: count,
         currentPage: query.page,
         limit: query.limit,
         totalPages: count / query.limit,

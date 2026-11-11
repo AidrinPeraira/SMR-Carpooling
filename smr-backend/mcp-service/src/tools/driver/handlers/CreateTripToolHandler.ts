@@ -1,0 +1,48 @@
+import { GatewayClient } from "#/services/GatewayService";
+import { logger } from "#/services/LoggerService";
+import type { ToolCallback } from "@modelcontextprotocol/server";
+import {
+  UserRole,
+  UserErrorMessage,
+  type ApiResponse,
+} from "@sharemyride/shared";
+import { MCPCreateTripSchema } from "#/tools/driver/definitions/CreateTripToolDefinition";
+
+export const handleCreateTripToolCall: ToolCallback<
+  typeof MCPCreateTripSchema
+> = async (input, ctx) => {
+  const authToken = ctx.http?.req?.headers.get("authorization");
+  const userRole = ctx.http?.req?.headers.get("x-user-role");
+
+  if (userRole !== UserRole.DRIVER) {
+    return {
+      content: [{ type: "text", text: UserErrorMessage.NOT_A_DRIVER }],
+      isError: true,
+    };
+  }
+
+  try {
+    const response = await GatewayClient.post<ApiResponse>(
+      "/api/v1/trips",
+      input,
+      { headers: { Authorization: authToken } },
+    );
+
+    if (!response.data.success) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data) }],
+        isError: true,
+      };
+    }
+
+    return {
+      content: [{ type: "text", text: JSON.stringify(response.data) }],
+    };
+  } catch (error) {
+    logger.error("create-trip tool failed", error instanceof Error ? error.message : error);
+    return {
+      content: [{ type: "text", text: "Something went wrong. Please try again later." }],
+      isError: true,
+    };
+  }
+};

@@ -1,10 +1,19 @@
 import "dotenv/config";
 import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
-import { ConsolaLogger } from "@sharemyride/shared";
+import { connectRedis } from "#/config/redis.config";
+import { WinstonLoggerService } from "#/services/LoggerService";
 
 async function startServer(): Promise<void> {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
+
+  try {
+    await connectRedis();
+    logger.info("Connected to Redis in api-gateway");
+  } catch (error) {
+    logger.error("Failed to connect to Redis in api-gateway", { error });
+  }
+
   const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
 
@@ -14,6 +23,6 @@ async function startServer(): Promise<void> {
 }
 
 startServer().catch((error: unknown) => {
-  const logger = new ConsolaLogger();
+  const logger = new WinstonLoggerService();
   logger.error("Failed to start the api-gateway server", { error });
 });

@@ -1,0 +1,36 @@
+info:
+  name: admin-get-journey-details
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://localhost:4000/v1/admin/trip/trips/journey/:journeyId
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: x-gateway-key
+      value: smr_gateway_u4v9fPrcueOb7dvkezvUadzTCZWs1wKe
+  params:
+    - name: journeyId
+      value: ""
+      type: path
+  auth: inherit
+
+docs: |
+  ## Admin — Get Journey Details
+
+  Returns the full journey details including all passengers, their pickup/drop-off
+  locations, statuses, and intermediate stops. The journeyId always matches the tripId.
+
+  ### Path Parameters
+
+  | Parameter   | Type   | Required | Description                                  |
+  |-------------|--------|----------|----------------------------------------------|
+  | `journeyId` | string | Yes      | The journey ID (same as the trip ID)         |
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

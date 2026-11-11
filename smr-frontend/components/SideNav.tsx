@@ -11,8 +11,9 @@ import {
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { LogOut, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/lib/useTheme";
 
 export interface SideNavItem {
   name: string;
@@ -37,6 +38,7 @@ export function SideNav({ groups, items, onLogout, header, children }: SideNavPr
   const [isCollapsed, setIsCollapsed] = useState(true);
   const pathname = usePathname();
   const [animateIn, setAnimateIn] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const timeout = setTimeout(() => setAnimateIn(true), 50);
@@ -108,7 +110,20 @@ export function SideNav({ groups, items, onLogout, header, children }: SideNavPr
           ))}
         </SidebarBody>
 
-        <SidebarFooter isCollapsed={isCollapsed}>
+        <SidebarFooter isCollapsed={isCollapsed} className={isCollapsed ? "flex-col items-center" : ""}>
+          <SidebarItem
+            isCollapsed={isCollapsed}
+            icon={
+              theme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )
+            }
+            onClick={toggleTheme}
+          >
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </SidebarItem>
           <SidebarItem
             isCollapsed={isCollapsed}
             icon={<LogOut className="w-4 h-4 text-fg-danger" />}

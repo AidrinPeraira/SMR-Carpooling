@@ -6,7 +6,13 @@ import express, {
 } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { ApplicationError, HttpStatusCodes, type ILogger } from "@sharemyride/shared";
+import {
+  ApplicationError,
+  HttpStatusCodes,
+  type ILogger,
+} from "@sharemyride/shared";
+import { keyMiddleware } from "#/presentation/middleware/key.middleware";
+import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -16,9 +22,13 @@ export function createApp(logger: ILogger) {
   app.use(cors());
   app.use(helmet());
 
+  app.use(metricsMiddleware);
+
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });
   });
+
+  app.use(keyMiddleware);
 
   //global error handler
   app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
@@ -36,7 +46,6 @@ export function createApp(logger: ILogger) {
         success: false,
         message: err.message,
         errorCode: err.errorCode,
-        details: err.details,
       });
     }
 

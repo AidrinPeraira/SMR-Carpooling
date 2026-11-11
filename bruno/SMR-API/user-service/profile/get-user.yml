@@ -9,6 +9,8 @@ http:
   headers:
     - name: Authorization
       value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImNmZTVkMGY0YTYzNzczODc2ODE5ODI3ZjViYmE2MWIzIiwidXNlclJvbGUiOiJwYXNzZW5nZXIiLCJmaXJzdE5hbWUiOiJVc2VyIiwibGFzdE5hbWUiOiJUd28iLCJlbWFpbElkIjoidGltb3g3NTExNUBraW53cy5jb20ifSwidG9rZW5UeXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzgzMjU1NzQxLCJleHAiOjE3ODMyNTY2NDF9.ac85y2B7xAmSUj51A7Ld-h7ba01Q8vkyLfzjrAhVmI0
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
   auth: inherit
 
 settings:

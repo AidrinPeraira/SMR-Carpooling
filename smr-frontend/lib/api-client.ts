@@ -20,8 +20,23 @@ export async function apiClientFetch<PayloadType = unknown>(
     });
 
     if (!response.ok) {
-      //handle failed request
-      throw new Error("Failed to make client side rquest: ", {
+      let errorMessage = "Failed to make client side request";
+      try {
+        const failedResponse = await response.json();
+        errorMessage =
+          failedResponse.message ||
+          failedResponse.error?.message ||
+          (typeof failedResponse.error === "string"
+            ? failedResponse.error
+            : "") ||
+          response.statusText ||
+          errorMessage;
+      } catch {
+        errorMessage = response.statusText || errorMessage;
+      }
+
+      // handle failed request
+      throw new Error(errorMessage, {
         cause: {
           url: url,
           method: options?.method,

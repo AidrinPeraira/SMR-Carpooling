@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: smr-api-gateway-service
+spec:
+  #labels that are used to identify the deployment
+  selector:
+    app: smr
+    serviceName: api-gateway
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4000

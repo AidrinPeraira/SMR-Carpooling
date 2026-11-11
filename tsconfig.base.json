@@ -11,6 +11,7 @@
     "resolveJsonModule": true, //allow importing json to ts file
     "strict": true, //striict type checking
     "moduleDetection": "force", //added module import surity
+    "experimentalDecorators": true,
 
     "allowJs": true, //allow importing .js files and not just .ts files
     "isolatedModules": true, //for fast compiling. setting for ensuring each file can compile in its own.

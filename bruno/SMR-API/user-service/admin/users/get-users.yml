@@ -8,11 +8,9 @@ http:
   url: http://localhost:4000/api/v1/admin/users?limit=1&page=3
   headers:
     - name: Authorization
-<<<<<<< Updated upstream
       value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDMwMTMzNywiZXhwIjoxNzg0MzAyMjM3fQ.v7cdIcSLf2gHBFu0-l0VScOPDPbFWV0XVZxHyafYLgA
-=======
-      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6ImUxYzk3OGY1ZGFhMWMzNTUyZmExMjRiMzg3M2FiMjdhIiwidXNlclJvbGUiOiJhZG1pbiIsImZpcnN0TmFtZSI6IkFpZHJpbiBQZXJhaXJhIiwibGFzdE5hbWUiOiJCQ1I3MCIsImVtYWlsSWQiOiI0bHBoNC50M3N0M3JAZ21haWwuY29tIn0sInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTc4NDEwMjMzOCwiZXhwIjoxNzg0MTAzMjM4fQ.Kdgn_D-uv2T8fq7BMAro1nHT0yvNoN7yufsMNdV9Zcs
->>>>>>> Stashed changes
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
   params:
     - name: searchField
       value: first_name

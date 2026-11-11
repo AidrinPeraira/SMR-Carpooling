@@ -13,6 +13,7 @@ const UserRepository = vi.fn(
     updateByCustomId = vi.fn();
     deleteById = vi.fn();
     deleteByCustomId = vi.fn();
+    getUsersCount = vi.fn();
   },
 );
 export const mockUserRepository = new UserRepository();

@@ -6,12 +6,15 @@ info:
 http:
   method: POST
   url: http://localhost:4000/api/v1/auth/login
+  headers:
+    - name: x-frontend-key
+      value: "{{FRONTEND_KEY}}"
   body:
     type: json
     data: |2-
         {
           
-          "email_id": "4lph4.t3st3r@gmail.com",
+          "email_id": "aidrin.peraira@gmail.com",
           "password": "123qweASD@"
 
         }

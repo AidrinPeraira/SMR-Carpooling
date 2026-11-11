@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: smr-user-service-service
+  namespace: smr-prod
+spec:
+  #labels that are used to identify the deployment
+  selector:
+    app: smr
+    serviceName: user-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4001
