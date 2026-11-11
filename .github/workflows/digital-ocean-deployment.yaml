@@ -1,0 +1,51 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_SECRET }}
+
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login
+
+      - name: Build and push images
+        run: pnpm run docker:prod:push
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_SECRET }}
+
+      - name: Save kubeconfig
+        run: doctl kubernetes cluster kubeconfig save sharemyride
+
+      - name: Apply configs
+        run: kubectl apply -R -f smr-infra/k8s/production/
+
+      - name: Rollout deployments
+        run: |
+          kubectl rollout restart deployment/api-gateway
+          kubectl rollout restart deployment/user-service
+          kubectl rollout restart deployment/trip-service
+          kubectl rollout restart deployment/realtime-service
+          kubectl rollout restart deployment/payment-service
+          kubectl rollout restart deployment/notification-service
+          kubectl rollout restart deployment/mcp-service
