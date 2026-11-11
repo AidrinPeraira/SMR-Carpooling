@@ -15,10 +15,8 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "docker:build": "docker build --target payment-service-prod -t aidrinperaira/payment-service:latest -f ../../Dockerfile.prod ../..",
-    "docker:push": "docker push aidrinperaira/payment-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
-    "update:shared": "pnpm add @sharemyride/shared@latest"
+    "update:shared": "pnpm add @sharemyride/shared@latest",
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-payment-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-payment-service:latest --push ../../"
   },
   "keywords": [],
   "author": "",

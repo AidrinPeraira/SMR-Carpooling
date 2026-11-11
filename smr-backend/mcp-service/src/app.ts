@@ -1,4 +1,4 @@
-import { createPassengerMcpServer, createDriverMcpServer } from "#/tools";
+import { createPassengerMcpServer, createDriverMcpServer } from "#/tools/index";
 import { createMcpExpressApp } from "@modelcontextprotocol/express";
 import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
@@ -13,7 +13,7 @@ export async function createApp() {
   const passengerHandler = createMcpHandler(() => createPassengerMcpServer());
   const driverHandler = createMcpHandler(() => createDriverMcpServer());
 
-  const app = createMcpExpressApp();
+  const app = createMcpExpressApp({ host: "0.0.0.0" });
 
   app.use(
     morgan("dev", {

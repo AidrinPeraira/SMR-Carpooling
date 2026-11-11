@@ -18,10 +18,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "docker:build": "docker build --target user-service-prod -t aidrinperaira/user-service:latest -f ../../Dockerfile.prod ../..",
-    "docker:push": "docker push aidrinperaira/user-service:latest",
-    "docker:publish": "pnpm run docker:build && pnpm run docker:push",
-    "update:shared": "pnpm add @sharemyride/shared@latest"
+    "update:shared": "pnpm add @sharemyride/shared@latest",
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-user-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-user-service:latest --push ../../"
   },
   "keywords": [],
   "author": "",

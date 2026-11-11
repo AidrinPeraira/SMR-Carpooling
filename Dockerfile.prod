@@ -1,134 +1,140 @@
 # syntax=docker/dockerfile:1
 FROM node:24-slim AS base
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+RUN corepack enable 
 
-FROM base AS api-gateway-builder
+# Build the dist folder for each service
+FROM base AS builder
+
 WORKDIR /app
-COPY tsconfig.base.json ./
-WORKDIR /app/smr-backend/api-gateway
-COPY ./smr-backend/api-gateway/package.json ./smr-backend/api-gateway/tsconfig.json ./
 
-RUN --mount=type=cache,target=/root/.npm npm install
-RUN --mount=type=cache,target=/root/.npm npm install --save-dev typescript @types/node @types/express @types/cors @types/jsonwebtoken @types/morgan
+COPY ./package.json ./tsconfig.base.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
 
-COPY ./smr-backend/api-gateway/src ./src
-RUN npm run build -- --noEmit false
+COPY ./smr-backend/user-service/package.json ./smr-backend/user-service/
+COPY ./smr-backend/trip-service/package.json ./smr-backend/trip-service/
+COPY ./smr-backend/realtime-service/package.json ./smr-backend/realtime-service/
+COPY ./smr-backend/payment-service/package.json ./smr-backend/payment-service/
+COPY ./smr-backend/notification-service/package.json ./smr-backend/notification-service/
+COPY ./smr-backend/mcp-service/package.json ./smr-backend/mcp-service/
+COPY ./smr-backend/api-gateway/package.json ./smr-backend/api-gateway/
 
-FROM base AS api-gateway-prod
+COPY ./smr-shared/package.json ./smr-shared/ 
+
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install --fetch-timeout 600000 --frozen-lockfile
+
+COPY ./smr-backend/ ./smr-backend/
+COPY ./smr-shared/ ./smr-shared/ 
+
+RUN pnpm -F @sharemyride/shared run build
+RUN pnpm -F @smr/trip-service run prisma:generate
+RUN pnpm run build
+RUN find smr-backend/*/dist -name '*.js' \
+    -exec sed -i -E "s/from (['\"])(\\.\\.?\\/[^'\"]+)\\1/from \\1\\2.js\\1/g" {} +
+
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/user-service --prod deploy /prod/user-service --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/trip-service --prod deploy /prod/trip-service --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/realtime-service --prod deploy /prod/realtime-service --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/payment-service --prod deploy /prod/payment-service --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/notification-service --prod deploy /prod/notification-service --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/mcp-service --prod deploy /prod/mcp-service --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @smr/api-gateway --prod deploy /prod/api-gateway --legacy --fetch-timeout 600000
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm -F @sharemyride/shared --prod deploy /prod/shared --legacy --fetch-timeout 600000
+
+# build the production image
+FROM base AS smr-api-gateway
 USER node
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --chown=node:node ./smr-backend/api-gateway/package.json ./package.json
-RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --omit=dev
-COPY --chown=node:node --from=api-gateway-builder /app/smr-backend/api-gateway/dist/ ./dist
-EXPOSE 4000
-CMD ["node", "--conditions", "production", "dist/src/index.js"]
 
+COPY --chown=node:node --from=builder /app/smr-backend/api-gateway/package.json ./
+COPY --chown=node:node --from=builder /prod/api-gateway/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/api-gateway/dist ./dist/
 
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
 
-# --- 2. User Service ---
-FROM base AS user-service-builder
-WORKDIR /app
-COPY tsconfig.base.json ./
-WORKDIR /app/smr-backend/user-service
-COPY ./smr-backend/user-service/package.json ./smr-backend/user-service/tsconfig.json ./
-RUN --mount=type=cache,target=/root/.npm npm install
-RUN --mount=type=cache,target=/root/.npm npm install --save-dev typescript @types/node @types/express @types/cors @types/jsonwebtoken @types/morgan @types/amqplib
-COPY ./smr-backend/user-service/src ./src
-RUN npm run build -- --noEmit false
-
-FROM base AS user-service-prod
+# user-service
+FROM base AS smr-user-service
 USER node
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --chown=node:node ./smr-backend/user-service/package.json ./package.json
-RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --omit=dev
-COPY --chown=node:node --from=user-service-builder /app/smr-backend/user-service/dist/ ./dist
-EXPOSE 4001
-CMD ["node", "--conditions", "production", "dist/src/index.js"]
 
-# --- 3. Notification Service ---
-FROM base AS notification-service-builder
-WORKDIR /app
-COPY tsconfig.base.json ./
-WORKDIR /app/smr-backend/notification-service
-COPY ./smr-backend/notification-service/package.json ./smr-backend/notification-service/tsconfig.json ./
-RUN --mount=type=cache,target=/root/.npm npm install
-RUN --mount=type=cache,target=/root/.npm npm install --save-dev typescript @types/node @types/express @types/cors @types/jsonwebtoken @types/morgan @types/amqplib
-COPY ./smr-backend/notification-service/src ./src
-RUN npm run build -- --noEmit false
+COPY --chown=node:node --from=builder /app/smr-backend/user-service/package.json ./
+COPY --chown=node:node --from=builder /prod/user-service/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/user-service/dist ./dist/
 
-FROM base AS notification-service-prod
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+
+# trip-service
+FROM base AS smr-trip-service
 USER node
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --chown=node:node ./smr-backend/notification-service/package.json ./package.json
-RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --omit=dev
-COPY --chown=node:node --from=notification-service-builder /app/smr-backend/notification-service/dist/ ./dist
-EXPOSE 4002
-CMD ["node", "--conditions", "production", "dist/src/index.js"]
 
-# --- 4. Trip Service ---
-FROM base AS trip-service-builder
-WORKDIR /app
-COPY tsconfig.base.json ./
-WORKDIR /app/smr-backend/trip-service
-COPY ./smr-backend/trip-service/package.json ./smr-backend/trip-service/tsconfig.json ./smr-backend/trip-service/prisma.config.ts ./
-RUN --mount=type=cache,target=/root/.npm npm install
-RUN --mount=type=cache,target=/root/.npm npm install --save-dev prisma typescript @types/node @types/express @types/cors @types/jsonwebtoken @types/morgan @types/amqplib
-COPY ./smr-backend/trip-service/src ./src
-RUN npm run prisma:generate
-RUN npm run build -- --noEmit false
-RUN mkdir -p ./dist/src/infrastructure/database/generated && cp -r ./src/infrastructure/database/generated/* ./dist/src/infrastructure/database/generated/
+COPY --chown=node:node --from=builder /app/smr-backend/trip-service/package.json ./
+COPY --chown=node:node --from=builder /prod/trip-service/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/trip-service/dist ./dist/
 
-FROM base AS trip-service-prod
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+
+# realtime-service
+FROM base AS smr-realtime-service
 USER node
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --chown=node:node ./smr-backend/trip-service/package.json ./package.json
-RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --omit=dev
-COPY --chown=node:node --from=trip-service-builder /app/smr-backend/trip-service/dist/ ./dist
-EXPOSE 4003
-CMD ["node", "--conditions", "production", "dist/src/index.js"]
 
-# --- 5. Payment Service ---
-FROM base AS payment-service-builder
-WORKDIR /app
-COPY tsconfig.base.json ./
-WORKDIR /app/smr-backend/payment-service
-COPY ./smr-backend/payment-service/package.json ./smr-backend/payment-service/tsconfig.json ./
-RUN --mount=type=cache,target=/root/.npm npm install
-RUN --mount=type=cache,target=/root/.npm npm install --save-dev typescript @types/node @types/express @types/cors @types/jsonwebtoken @types/morgan @types/amqplib
-COPY ./smr-backend/payment-service/src ./src
-RUN npm run build -- --noEmit false
+COPY --chown=node:node --from=builder /app/smr-backend/realtime-service/package.json ./
+COPY --chown=node:node --from=builder /prod/realtime-service/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/realtime-service/dist ./dist/
 
-FROM base AS payment-service-prod
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+
+# payment-service
+FROM base AS smr-payment-service
 USER node
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --chown=node:node ./smr-backend/payment-service/package.json ./package.json
-RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --omit=dev
-COPY --chown=node:node --from=payment-service-builder /app/smr-backend/payment-service/dist/ ./dist
-EXPOSE 4004
-CMD ["node", "--conditions", "production", "dist/src/index.js"]
 
-# --- 6. Realtime Service ---
-FROM base AS realtime-service-builder
-WORKDIR /app
-COPY tsconfig.base.json ./
-WORKDIR /app/smr-backend/realtime-service
-COPY ./smr-backend/realtime-service/package.json ./smr-backend/realtime-service/tsconfig.json ./
-RUN --mount=type=cache,target=/root/.npm npm install
-RUN --mount=type=cache,target=/root/.npm npm install --save-dev typescript @types/node @types/express @types/cors @types/morgan
-COPY ./smr-backend/realtime-service/src ./src
-RUN npm run build -- --noEmit false
+COPY --chown=node:node --from=builder /app/smr-backend/payment-service/package.json ./
+COPY --chown=node:node --from=builder /prod/payment-service/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/payment-service/dist ./dist/
 
-FROM base AS realtime-service-prod
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+
+# notification-service
+FROM base AS smr-notification-service
 USER node
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --chown=node:node ./smr-backend/realtime-service/package.json ./package.json
-RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 npm install --omit=dev
-COPY --chown=node:node --from=realtime-service-builder /app/smr-backend/realtime-service/dist/ ./dist
-EXPOSE 4005
-CMD ["node", "--conditions", "production", "dist/src/index.js"]
+
+COPY --chown=node:node --from=builder /app/smr-backend/notification-service/package.json ./
+COPY --chown=node:node --from=builder /prod/notification-service/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/notification-service/dist ./dist/
+
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+
+# mcp-service
+FROM base AS smr-mcp-service
+USER node
+WORKDIR /app
+
+COPY --chown=node:node --from=builder /app/smr-backend/mcp-service/package.json ./
+COPY --chown=node:node --from=builder /prod/mcp-service/node_modules ./node_modules/
+COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/shared/
+COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
+COPY --chown=node:node --from=builder /app/smr-backend/mcp-service/dist ./dist/
+
+CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]

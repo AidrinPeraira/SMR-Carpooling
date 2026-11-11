@@ -1,25 +1,9 @@
 services:
-  user-service:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-      target: user-service-prod
-    restart: unless-stopped
-    ports:
-      - "4001:4001"
-    depends_on:
-      - redis
-      - rabbitmq
-    env_file:
-      - ./smr-backend/user-service/.env
-    environment:
-      - NODE_ENV=production
-
   api-gateway:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      target: api-gateway-prod
+      target: smr-api-gateway
     restart: unless-stopped
     ports:
       - "4000:4000"
@@ -28,11 +12,24 @@ services:
     environment:
       - NODE_ENV=production
 
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: smr-user-service
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./smr-backend/user-service/.env
+    environment:
+      - NODE_ENV=production
+
   notification-service:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      target: notification-service-prod
+      target: smr-notification-service
     restart: unless-stopped
     ports:
       - "4002:4002"
@@ -45,7 +42,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      target: trip-service-prod
+      target: smr-trip-service
     restart: unless-stopped
     ports:
       - "4003:4003"
@@ -58,7 +55,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      target: payment-service-prod
+      target: smr-payment-service
     restart: unless-stopped
     ports:
       - "4004:4004"
@@ -71,35 +68,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-      target: realtime-service-prod
+      target: smr-realtime-service
     restart: unless-stopped
     ports:
       - "4005:4005"
-    depends_on:
-      - redis
-      - rabbitmq
     env_file:
       - ./smr-backend/realtime-service/.env
     environment:
       - NODE_ENV=production
 
-  # --- Infrastructure Services ---
-
-  redis:
-    image: redis:7.0-alpine
+  mcp-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: smr-mcp-service
     restart: unless-stopped
     ports:
-      - "6379:6379"
-    volumes:
-      - ./smr-infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    restart: unless-stopped
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ./smr-infra/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./smr-infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - "4007:4007"
+    env_file:
+      - ./smr-backend/mcp-service/.env
+    environment:
+      - NODE_ENV=production

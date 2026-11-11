@@ -30,7 +30,7 @@ FROM root-workspace AS shared-backend-build
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 
 # the docker options are for: 1. cache the build, 2. you can find the files in the pnpm store folder, 3. uid and gid sets user id to prevent read and write issues in contianer
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @sharemyride/shared...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @sharemyride/shared... --fetch-timeout 600000
 COPY --chown=node:node ./smr-shared/ ./smr-shared/
 RUN pnpm --filter @sharemyride/shared build
 
@@ -41,7 +41,7 @@ RUN pnpm --filter @sharemyride/shared build
 FROM root-workspace AS api-gateway-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/api-gateway/package.json ./smr-backend/api-gateway/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/api-gateway...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/api-gateway... --fetch-timeout 600000
 
 FROM api-gateway-installer AS api-gateway-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
@@ -55,7 +55,7 @@ CMD ["pnpm", "--filter", "@smr/api-gateway", "run", "dev"]
 FROM root-workspace AS user-service-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/user-service/package.json ./smr-backend/user-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/user-service...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/user-service... --fetch-timeout 600000
 
 FROM user-service-installer AS user-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
@@ -69,7 +69,7 @@ CMD ["pnpm", "--filter", "@smr/user-service", "run", "dev"]
 FROM root-workspace AS notification-service-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/notification-service/package.json ./smr-backend/notification-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/notification-service...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/notification-service... --fetch-timeout 600000
 
 FROM notification-service-installer AS notification-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
@@ -83,7 +83,7 @@ CMD ["pnpm", "--filter", "@smr/notification-service", "run", "dev"]
 FROM root-workspace AS payment-service-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/payment-service/package.json ./smr-backend/payment-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/payment-service...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/payment-service... --fetch-timeout 600000
 
 FROM payment-service-installer AS payment-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
@@ -97,7 +97,7 @@ CMD ["pnpm", "--filter", "@smr/payment-service", "run", "dev"]
 FROM root-workspace AS trip-service-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/trip-service/package.json ./smr-backend/trip-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/trip-service...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/trip-service... --fetch-timeout 600000
 
 FROM trip-service-installer AS trip-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
@@ -112,7 +112,7 @@ CMD ["pnpm", "--filter", "@smr/trip-service", "run", "dev"]
 FROM root-workspace AS realtime-service-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/realtime-service/package.json ./smr-backend/realtime-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/realtime-service...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/realtime-service... --fetch-timeout 600000
 
 FROM realtime-service-installer AS realtime-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
@@ -126,7 +126,7 @@ CMD ["pnpm", "--filter", "@smr/realtime-service", "run", "dev"]
 FROM root-workspace AS mcp-service-installer
 COPY --chown=node:node ./smr-shared/package.json ./smr-shared/
 COPY --chown=node:node ./smr-backend/mcp-service/package.json ./smr-backend/mcp-service/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/mcp-service...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000,gid=1000 pnpm install --filter @smr/mcp-service... --fetch-timeout 600000
 
 FROM mcp-service-installer AS mcp-service-dev
 COPY --chown=node:node --from=shared-backend-build /app/smr-shared/dist ./smr-shared/dist
