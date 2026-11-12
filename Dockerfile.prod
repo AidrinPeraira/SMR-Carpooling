@@ -59,7 +59,7 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/api-gateway/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
 
 # user-service
 FROM base AS smr-user-service
@@ -72,7 +72,7 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/user-service/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
 
 # trip-service
 FROM base AS smr-trip-service
@@ -85,7 +85,7 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/trip-service/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
 
 # realtime-service
 FROM base AS smr-realtime-service
@@ -98,7 +98,7 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/realtime-service/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
 
 # payment-service
 FROM base AS smr-payment-service
@@ -111,7 +111,7 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/payment-service/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
 
 # notification-service
 FROM base AS smr-notification-service
@@ -124,7 +124,7 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/notification-service/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
 
 # mcp-service
 FROM base AS smr-mcp-service
