@@ -5,7 +5,8 @@ on:
     branches: ["staging"]
 
 jobs:
-  build:
+  verify-source:
+    name: Verify Source Branch
     runs-on: ubuntu-latest
 
     steps:
@@ -15,13 +16,21 @@ jobs:
           echo "PRs to staging must come from develop"
           exit 1
 
+  docker-prod-build:
+    name: Docker Prod Build
+    needs: verify-source
+    runs-on: ubuntu-latest
+
+    steps:
       - uses: actions/checkout@v6
 
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
           node-version: "24.x"
-          cache: "pnpm"
+
+      - name: Install pnpm
+        run: npm i -g pnpm@11.0.8
 
       - name: Check Docker Prod Build
         run: pnpm run docker:prod:build

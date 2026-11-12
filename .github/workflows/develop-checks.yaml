@@ -5,26 +5,20 @@ on:
     branches: ["develop"]
 
 jobs:
-  build:
+  lint-check:
+    name: Lint Error Check
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
 
-      # - name: Use Node.js
-      #   uses: actions/setup-node@v7
-      #   with:
-      #     node-version: "24.x"
-      #
-      # - name: Install pnpm
-      #   run: npm i -g pnpm@11.0.8
-
-      # we can setup the above with built in pnpm and cache (faster CI)
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
           node-version: "24.x"
-          cache: "pnpm"
+
+      - name: Install pnpm
+        run: npm i -g pnpm@11.0.8
 
       - name: Install packages
         run: pnpm install
@@ -35,11 +29,87 @@ jobs:
       - name: Check lint errors
         run: pnpm lint
 
+  type-check:
+    name: Type Error Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+
+      - name: Install pnpm
+        run: npm i -g pnpm@11.0.8
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Build Shared Packages
+        run: pnpm -F @sharemyride/shared -F @sharemyride/ui run build
+
       - name: Check type errors
         run: pnpm run type-check
 
+  test-suite-check:
+    name: Test Suite Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+
+      - name: Install pnpm
+        run: npm i -g pnpm@11.0.8
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Build Shared Packages
+        run: pnpm -F @sharemyride/shared -F @sharemyride/ui run build
+
       - name: Run Tests
         run: pnpm test
+
+  frontend-build-check:
+    name: Frontend Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+
+      - name: Install pnpm
+        run: npm i -g pnpm@11.0.8
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Build Shared Packages
+        run: pnpm -F @sharemyride/shared -F @sharemyride/ui run build
+
+      - name: Run Tests
+        run: pnpm -F @smr/frontend run build
+
+  docker-dev-build-check:
+    name: Docker Dev Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable pnpm
+        run: npm i -g pnpm@11.0.8
 
       - name: Check Docker Dev Build
         run: pnpm run docker:dev:build
