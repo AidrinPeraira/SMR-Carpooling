@@ -16,4 +16,11 @@ export const AppConfig = {
     String(process.env.API_GATEWAY_URL) || "http://localhost:4000",
 
   MAPBOX_TOKEN: String(process.env.MAPBOX_TOKEN) || "secret-token",
+
+  OTEL_EXPORTER_OTLP_ENDPOINT: String(
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "",
+  ),
+  OTEL_EXPORTER_OTLP_HEADERS: String(
+    process.env.OTEL_EXPORTER_OTLP_HEADERS || "",
+  ),
 };

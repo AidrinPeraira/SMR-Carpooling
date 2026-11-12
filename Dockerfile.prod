@@ -137,4 +137,4 @@ COPY --chown=node:node --from=builder /prod/shared ./node_modules/@sharemyride/s
 COPY --chown=node:node --from=builder /app/smr-shared/dist ./node_modules/@sharemyride/shared/dist/
 COPY --chown=node:node --from=builder /app/smr-backend/mcp-service/dist ./dist/
 
-CMD [ "node" , "--conditions" , "production" , "dist/src/index.js" ]
+CMD [ "node" , "--conditions" , "production" , "--import" , "./dist/src/instrumentation.js" , "dist/src/index.js" ]
