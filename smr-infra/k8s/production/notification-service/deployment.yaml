@@ -43,7 +43,8 @@ spec:
             httpGet:
               path: "/health"
               port: 4002
-            initialDelaySeconds: 10
+            initialDelaySeconds: 120
+            periodSeconds: 600
 
           #to see if container has started
           readinessProbe:
