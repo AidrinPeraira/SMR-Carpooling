@@ -26,6 +26,9 @@ jobs:
       - name: Build Shared Packages
         run: pnpm -F @sharemyride/shared -F @sharemyride/ui run build
 
+      - name: Generate Prisma Files
+        run: pnpm -F @smr/trip-service run prisma:generate
+
       - name: Check lint errors
         run: pnpm lint
 
@@ -49,6 +52,9 @@ jobs:
 
       - name: Build Shared Packages
         run: pnpm -F @sharemyride/shared -F @sharemyride/ui run build
+
+      - name: Generate Prisma Files
+        run: pnpm -F @smr/trip-service run prisma:generate
 
       - name: Check type errors
         run: pnpm run type-check
