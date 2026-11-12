@@ -1,5 +1,5 @@
 import { getRedisClient } from "#/infrastructure/store/connect-redis";
-import { gatewayKeyMiddleware } from "#/presentation/middleware/gateway-key.middleware";
+import { engineGatewayKeyMiddleware } from "#/presentation/middleware/gateway-key.middleware";
 import { ISocketHandler } from "#/presentation/v1/sockets/interfaces/ISocketHandler";
 import { socketAuthMiddleware } from "#/presentation/v1/sockets/middlewares/socket-auth.middleware";
 import { ILogger } from "@sharemyride/shared";
@@ -24,8 +24,7 @@ export async function createSocketServer(httpServer: HttpServer) {
     adapter: createAdapter(pubClient, subClient),
   });
 
-  //directly using the express middleware
-  io.engine.use(gatewayKeyMiddleware);
+  io.engine.use(engineGatewayKeyMiddleware);
 
   return io;
 }
