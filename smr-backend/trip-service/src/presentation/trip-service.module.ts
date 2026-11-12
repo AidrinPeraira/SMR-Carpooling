@@ -171,7 +171,7 @@ const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
   cryptoUIDService,
   scheduledJobService,
   jwtTokenService,
-  `${AppConfig.API_GATEWAY_URL}/api/v1/webhook/trips/booking-cleanup`,
+  `${AppConfig.QSTASH_WEBHOOK_URL}/api/v1/webhook/trips/booking-cleanup`,
 );
 
 const bookingPaymentSuccessEventHandler = new BookingPaymentSuccessEventHandler(

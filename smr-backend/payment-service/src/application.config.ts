@@ -29,6 +29,9 @@ export const AppConfig = {
     process.env.QSTASH_URL || "https://qstash.upstash.io/v2/messages",
   ),
   QSTASH_TOKEN: String(process.env.QSTASH_TOKEN || "test_token"),
+  QSTASH_WEBHOOK_URL: String(
+    process.env.QSTASH_WEBHOOK_URL || "http://localhost:4000",
+  ),
 
   SERVICE_NAME: String(process.env.PAYMENT_SERVICE_NAME) || "payment-service",
   SERVICE_VERSION: String(process.env.PAYMENT_SERVICE_VERSION) || "0.0.1",
