@@ -54,10 +54,10 @@ jobs:
 
       - name: Rollout deployments
         run: |
-          kubectl rollout restart deployment/api-gateway
-          kubectl rollout restart deployment/user-service
-          kubectl rollout restart deployment/trip-service
-          kubectl rollout restart deployment/realtime-service
-          kubectl rollout restart deployment/payment-service
-          kubectl rollout restart deployment/notification-service
-          kubectl rollout restart deployment/mcp-service
+          kubectl rollout restart deployment/smr-api-gateway-deployment
+          kubectl rollout restart deployment/smr-user-service-deployment
+          kubectl rollout restart deployment/smr-trip-service-deployment
+          kubectl rollout restart deployment/smr-realtime-service-deployment
+          kubectl rollout restart deployment/smr-payment-service-deployment
+          kubectl rollout restart deployment/smr-notification-service-deployment
+          kubectl rollout restart deployment/smr-mcp-service-deployment
