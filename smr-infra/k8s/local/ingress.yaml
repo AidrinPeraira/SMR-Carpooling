@@ -14,13 +14,6 @@ spec:
   rules:
     - http:
         paths:
-          - path: /socket.io
-            pathType: Prefix
-            backend:
-              service:
-                name: smr-realtime-service-service
-                port:
-                  number: 80
           - path: /
             pathType: Prefix
             backend:

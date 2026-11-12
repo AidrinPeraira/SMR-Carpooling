@@ -1,6 +1,6 @@
 import { BookingCancellationMailDTO } from "#/application/dto/email/BookingCancellationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendBookingCancellationEmailUseCase } from "#/application/interfaces/use-case/booking/ISendBookingCancellationEmailUseCase";
+import { ISendBookingCancellationEmailUseCase } from "#/application/interfaces/use-case/ISendBookingCancellationEmail";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, PassengerCancelBookingEvent } from "@sharemyride/shared";
 
