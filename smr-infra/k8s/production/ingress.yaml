@@ -5,6 +5,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
   # This is where we set up the dns domain name for
@@ -13,8 +15,13 @@ spec:
   #
   # All traffic routes through the API gateway.
   # The gateway proxies /socket.io to the realtime service with ws: true.
+  tls:
+    - hosts:
+        - api.smr.aidrinperaira.com
+      secretName: smr-api-tls
   rules:
-    - http:
+    - host: api.smr.aidrinperaira.com
+      http:
         paths:
           - path: /
             pathType: Prefix
