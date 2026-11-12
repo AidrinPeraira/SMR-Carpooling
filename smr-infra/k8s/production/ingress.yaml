@@ -2,24 +2,20 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: smr-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
   # This is where we set up the dns domain name for
   # the backend services.
   # host: api.smr.aidrinperaira.com
-  # host: ws.smr.aidrinperaira.com
   #
-  # Right now it is a single rule. split it into 2 rules when the host is added
+  # All traffic routes through the API gateway.
+  # The gateway proxies /socket.io to the realtime service with ws: true.
   rules:
     - http:
         paths:
-          - path: /socket.io
-            pathType: Prefix
-            backend:
-              service:
-                name: smr-realtime-service-service
-                port:
-                  number: 80
           - path: /
             pathType: Prefix
             backend:
