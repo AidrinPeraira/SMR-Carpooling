@@ -23,7 +23,7 @@
     "prisma:studio": "prisma studio",
     "update:shared": "pnpm add @sharemyride/shared@latest",
     "seed:places": "tsx src/infrastructure/database/prisma/seed.ts",
-    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-trip-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-trip-service:latest --push ../../"
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-trip-service --platform=linux/amd64 -t aidrinperaira/smr-trip-service:latest --push ../../"
   },
   "prisma": {
     "schema": "./src/infrastructure/database/prisma/"
