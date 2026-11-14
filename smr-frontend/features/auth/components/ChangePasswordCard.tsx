@@ -53,7 +53,7 @@ export function ChangePasswordCard({ className }: Props) {
     startTransition(async () => {
       try {
         const result = await changePasswordAction(data);
-        logger.info("Handle login result: ", result);
+        logger.debug("Handle login result: ", result);
         if (result.success) {
           toast(result.message || "Password change success!", {
             variant: "success",

@@ -19,7 +19,7 @@ export class WebhookControllerV1 implements IWebhookControllerV1 {
     const { bookingPaymentID } = req.body;
     const resolvedBookingPaymentId = bookingPaymentID as string;
 
-    this._logger.info("Handling webhook: clear booking payment", {
+    this._logger.debug("Handling webhook: clear booking payment", {
       bookingPaymentId: resolvedBookingPaymentId,
     });
 

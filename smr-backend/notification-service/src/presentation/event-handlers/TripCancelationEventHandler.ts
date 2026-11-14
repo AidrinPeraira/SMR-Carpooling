@@ -23,7 +23,7 @@ export class TripCancellationEventHandler implements IEventHandler<DriverCancelT
       })),
     };
 
-    this._logger.info("Handling trip cancellation event for trip:", {
+    this._logger.debug("Handling trip cancellation event for trip:", {
       tripId: dto.tripId,
       driverEmail: dto.driverEmail,
       cancelledBookingsCount: dto.cancelledBookings.length,

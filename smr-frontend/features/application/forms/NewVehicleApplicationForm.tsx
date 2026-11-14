@@ -51,7 +51,7 @@ export function NewVehicleApplicationForm({
   function onSubmit(data: NewVehicleApplicationSchemaType) {
     startTransition(async () => {
       try {
-        logger.info("Submitting New Vehicle Application data: ", data);
+        logger.debug("Submitting New Vehicle Application data: ", data);
 
         if (onSubmitAction) {
           await onSubmitAction(data);

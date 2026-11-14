@@ -19,7 +19,7 @@ export class ApplicationReturnedHandler implements IEventHandler<ApplicationRetu
       comment: event.payload.comment,
     };
 
-    this._logger.info("Sending application returned email notification: ", {
+    this._logger.debug("Sending application returned email notification: ", {
       emailId: event.payload.emailId,
       applicationId: event.payload.applicationId,
     });

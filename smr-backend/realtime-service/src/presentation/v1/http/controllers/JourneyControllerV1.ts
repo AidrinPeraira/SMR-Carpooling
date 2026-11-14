@@ -27,7 +27,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Getting share token.", { userId });
+      this._logger.debug("Getting share token.", { userId });
 
       const validatedBody = zodParser<GetShareTokenRequest>(
         GetShareTokenSchema,

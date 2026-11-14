@@ -46,7 +46,7 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
         ? (req.query.sortValue as SortOrder)
         : undefined;
 
-      this._logger.info("Admin fetching all bookings list", {
+      this._logger.debug("Admin fetching all bookings list", {
         page,
         limit,
         search,
@@ -86,7 +86,7 @@ export class AdminBookingControllerV1 implements IAdminBookingControllerV1 {
     try {
       const bookingId = req.params.bookingId as string;
 
-      this._logger.info("Admin fetching booking details for bookingId:", {
+      this._logger.debug("Admin fetching booking details for bookingId:", {
         bookingId,
       });
 

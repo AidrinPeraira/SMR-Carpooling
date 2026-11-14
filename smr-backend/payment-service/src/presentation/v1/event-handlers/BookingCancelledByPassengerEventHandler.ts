@@ -11,7 +11,7 @@ export class BookingCancelledByPassengerEventHandler implements IEventHandler<Pa
 
   @Trace("payment-service-event-handler")
   async handle(event: PassengerCancelBookingEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling booking cancelled by passenger event to process refunds: ",
       event.payload.bookingId,
     );

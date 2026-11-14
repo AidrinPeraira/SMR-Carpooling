@@ -17,7 +17,7 @@ export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
   @Trace("notification-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
     if (!event.payload.token) {
-      this._logger.info(
+      this._logger.debug(
         "Skipping signup verification mail (no token provided): ",
         {
           emailId: event.payload.emailId,
@@ -33,7 +33,7 @@ export class UserSignupHandler implements IEventHandler<UserSignUpEvent> {
       verificationToken: event.payload.token,
     };
 
-    this._logger.info("Sending signup verification mail: ", {
+    this._logger.debug("Sending signup verification mail: ", {
       emailId: event.payload.emailId,
     });
     await this._sendSignupVerificationMailUseCase.execute(

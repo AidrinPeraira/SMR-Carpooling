@@ -48,7 +48,7 @@ export function DriverRenewalForm({ initialValues, onSubmitAction }: Props) {
   function onSubmit(data: RenewDriverApplicationSchemaType) {
     startTransition(async () => {
       try {
-        logger.info("Submitting Driver Renewal Application data: ", data);
+        logger.debug("Submitting Driver Renewal Application data: ", data);
 
         if (onSubmitAction) {
           await onSubmitAction(data);

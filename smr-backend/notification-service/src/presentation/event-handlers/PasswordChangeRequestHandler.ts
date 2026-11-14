@@ -19,7 +19,7 @@ export class PasswordChangeRequestHandler implements IEventHandler<PasswordChang
       token: event.payload.token,
     };
 
-    this._logger.info("Handling event password change request", {
+    this._logger.debug("Handling event password change request", {
       emailId: dto.emailId,
     });
     await this._sendPasswordChangeMailUseCase.execute(dto);

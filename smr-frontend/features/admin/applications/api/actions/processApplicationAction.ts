@@ -14,7 +14,7 @@ export interface ProcessApplicationInput {
 export async function processApplicationAction(
   data: ProcessApplicationInput,
 ): Promise<ActionResponse<void>> {
-  logger.info("Processing application action...", {
+  logger.debug("Processing application action...", {
     application_id: data.application_id,
     application_status: data.application_status,
   });

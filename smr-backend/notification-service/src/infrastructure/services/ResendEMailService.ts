@@ -11,7 +11,7 @@ export class ResendEmailService implements IMailService {
   }
 
   async send(notification: NotificationEntity): Promise<void> {
-    this._logger.info("Sending email notification: ", notification.subject);
+    this._logger.debug("Sending email notification: ", notification.subject);
 
     const { data, error } = await this._resendMailer.emails.send({
       from: AppConfig.RESEND_EMAIL_FROM,
@@ -23,7 +23,7 @@ export class ResendEmailService implements IMailService {
     if (error) {
       this._logger.error("Error sending notification email: ", error);
     } else {
-      this._logger.info("Notication mail send successfully: ", data);
+      this._logger.debug("Notication mail send successfully: ", data);
     }
   }
 }

@@ -19,7 +19,7 @@ export class ApplicationApprovedHandler implements IEventHandler<ApplicationAppr
       comment: event.payload.comment,
     };
 
-    this._logger.info("Sending application approved email notification: ", {
+    this._logger.debug("Sending application approved email notification: ", {
       emailId: event.payload.emailId,
       applicationId: event.payload.applicationId,
     });

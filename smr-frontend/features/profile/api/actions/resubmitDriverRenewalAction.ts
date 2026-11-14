@@ -9,7 +9,7 @@ export async function resubmitDriverRenewalAction(
   applicationId: string,
   data: ResubmitRenewDriverApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Resubmitting driver renewal application action...", {
+  logger.debug("Resubmitting driver renewal application action...", {
     applicationId,
   });
 

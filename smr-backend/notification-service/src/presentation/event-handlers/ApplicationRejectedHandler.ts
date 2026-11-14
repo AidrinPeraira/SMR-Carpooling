@@ -19,7 +19,7 @@ export class ApplicationRejectedHandler implements IEventHandler<ApplicationReje
       comment: event.payload.comment,
     };
 
-    this._logger.info("Sending application rejected email notification: ", {
+    this._logger.debug("Sending application rejected email notification: ", {
       emailId: event.payload.emailId,
       applicationId: event.payload.applicationId,
     });

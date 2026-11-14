@@ -20,7 +20,7 @@ export class BookingPaymentFailedHandler implements IEventHandler<BookingPayment
       bookingId: event.payload.bookingId,
     };
 
-    this._logger.info(
+    this._logger.debug(
       "Handling booking payment failed notification for booking:",
       {
         bookingId: dto.bookingId,

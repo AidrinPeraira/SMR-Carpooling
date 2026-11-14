@@ -11,7 +11,7 @@ export class BookingPaymentFailedEventHandler implements IEventHandler<BookingPa
 
   @Trace("trip-service-event-handler")
   async handle(event: BookingPaymentFailureEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling booking payment failure event: ",
       event.payload.bookingId,
     );

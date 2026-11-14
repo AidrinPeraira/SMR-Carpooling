@@ -23,7 +23,7 @@ export class BookingCancellationHandler implements IEventHandler<PassengerCancel
       amount: event.payload.amount,
     };
 
-    this._logger.info("Handling booking cancellation event for booking:", {
+    this._logger.debug("Handling booking cancellation event for booking:", {
       bookingId: dto.bookingId,
       passengerEmail: dto.passengerEmail,
       driverEmail: dto.driverEmail,

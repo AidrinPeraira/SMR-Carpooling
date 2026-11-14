@@ -11,7 +11,7 @@ export class JourneyPassengerDroppedOffEventHandler implements IEventHandler<Jou
 
   @Trace("payment-service-event-handler")
   async handle(event: JourneyPassengerDroppedOffEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling passenger dropped off event to create payout for booking: ",
       event.payload.booking_id,
     );

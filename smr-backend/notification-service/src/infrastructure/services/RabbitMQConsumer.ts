@@ -48,10 +48,10 @@ export class RabbitMQConsumer implements IMessageConsumer {
   async connect(): Promise<void> {
     try {
       //create a connection
-      this._logger.info("Connecting to RabbitMQ");
+      this._logger.debug("Connecting to RabbitMQ");
       this._connection = await amqp.connect(this._url);
       this._channel = await this._connection.createChannel();
-      this._logger.info("Rabbit MQ connected");
+      this._logger.debug("Rabbit MQ connected");
 
       //log any errors in connection
       this._connection.on("error", (error) => {
@@ -60,13 +60,13 @@ export class RabbitMQConsumer implements IMessageConsumer {
 
       //retry on connection termination (while working)
       this._connection.on("close", () => {
-        this._logger.info("RabbitMQ connection closed. Retrying.");
+        this._logger.debug("RabbitMQ connection closed. Retrying.");
         setTimeout(async () => {
           await this.connect();
         }, 5000);
       });
 
-      this._logger.info("Asserting RabbitMQ exchanges and binding queues.");
+      this._logger.debug("Asserting RabbitMQ exchanges and binding queues.");
       //create main exchange
       await this._channel.assertExchange(this._exchangeName, "topic", {
         durable: true,
@@ -113,19 +113,19 @@ export class RabbitMQConsumer implements IMessageConsumer {
           this._exchangeName,
           routingKey,
         );
-        this._logger.info(
+        this._logger.debug(
           "Bounnd consumer queue for routing key: ",
           routingKey,
         );
       }
 
-      this._logger.info("RabbitMQ initialised successfuly");
+      this._logger.debug("RabbitMQ initialised successfuly");
 
       await this.consume();
     } catch (error: unknown) {
       this._logger.error("Error in initialising RabbitMQ connection: ", error);
       setTimeout(async () => {
-        this._logger.info("Retrying RabbitMQ connection");
+        this._logger.warn("Retrying RabbitMQ connection");
         await this.connect();
       }, 5000);
     }
@@ -140,14 +140,14 @@ export class RabbitMQConsumer implements IMessageConsumer {
     }
 
     if (this._isConsuming) {
-      this._logger.info("Consumer already running. Skipping duplicate attempt");
+      this._logger.debug("Consumer already running. Skipping duplicate attempt");
       return;
     }
 
     try {
       await this._channel.prefetch(1); //setinggs to consume 1 event at a time
 
-      this._logger.info("Subscribing consumer to queue: ", this._queueName);
+      this._logger.debug("Subscribing consumer to queue: ", this._queueName);
       this._isConsuming = true;
 
       await this._channel.consume(this._queueName, async (message) => {
@@ -173,7 +173,7 @@ export class RabbitMQConsumer implements IMessageConsumer {
           const content = message.content.toString();
           const event = JSON.parse(content) as DomainEvent<unknown>;
 
-          this._logger.info("Event received: ", event.eventName);
+          this._logger.debug("Event received: ", event.eventName);
 
           await this._eventDispatcher.dispatch(event);
 

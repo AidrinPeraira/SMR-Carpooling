@@ -27,7 +27,7 @@ export class ChatControllerV1 implements IChatControllerV1 {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Getting chat messages.", { userId });
+      this._logger.debug("Getting chat messages.", { userId });
 
       const validatedBody = zodParser<SyncChatMessagesRequest>(
         SyncChatMessagesSchema,

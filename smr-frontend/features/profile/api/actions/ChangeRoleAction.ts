@@ -7,7 +7,7 @@ import { ActionResponse } from "@/types/ResponseType";
 import { ApiResponse, LoginResult } from "@sharemyride/shared";
 
 export async function changeRoleAction(): Promise<ActionResponse<LoginResult>> {
-  logger.info("Requesting user role switch");
+  logger.debug("Requesting user role switch");
 
   try {
     const response = await apiServerFetch("/api/v1/profile/role", {

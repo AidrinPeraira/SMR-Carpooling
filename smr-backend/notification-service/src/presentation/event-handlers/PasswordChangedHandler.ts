@@ -18,7 +18,7 @@ export class PasswordChangedHandler implements IEventHandler<PasswordChangedEven
       userId: event.payload.userId,
     };
 
-    this._logger.info("Sending password change notification mail:  ", {
+    this._logger.debug("Sending password change notification mail:  ", {
       emailId: dto.emailId,
     });
     await this._sendPasswordChangedMailUseCase.execute(dto);

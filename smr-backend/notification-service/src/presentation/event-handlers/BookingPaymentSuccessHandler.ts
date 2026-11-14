@@ -20,7 +20,7 @@ export class BookingPaymentSuccessHandler implements IEventHandler<BookingPaymen
       bookingId: event.payload.bookingId,
     };
 
-    this._logger.info(
+    this._logger.debug(
       "Handling booking payment success notification for booking:",
       {
         bookingId: dto.bookingId,

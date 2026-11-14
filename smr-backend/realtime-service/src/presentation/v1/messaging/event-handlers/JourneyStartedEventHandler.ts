@@ -14,7 +14,7 @@ export class JourneyStartedEventHandler
   @Trace("realtime-service-event-handler")
   async handle(event: JourneyStartedEvent): Promise<void> {
     try {
-      this._logger.info("Handling journey started event", {
+      this._logger.debug("Handling journey started event", {
         journeyId: event.payload.journey_id,
       });
 
@@ -24,7 +24,7 @@ export class JourneyStartedEventHandler
         membersIDs: event.payload.passenger_ids,
       });
 
-      this._logger.info("Successfully created journey from journey started event");
+      this._logger.debug("Successfully created journey from journey started event");
     } catch (error: unknown) {
       this._logger.error("Failed to handle journey started event", {
         error: error instanceof Error ? error.message : String(error),
