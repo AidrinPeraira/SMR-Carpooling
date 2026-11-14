@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { HttpStatusCodes, type ILogger } from "@sharemyride/shared";
 import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
 import { gatewayKeyMiddleware } from "#/presentation/middleware/gateway-key.middleware";
+import { AppConfig } from "#/application.config";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -18,11 +19,13 @@ export function createApp(logger: ILogger) {
   app.use(gatewayKeyMiddleware);
   app.use(metricsMiddleware);
 
+  const morganFormat = AppConfig.NODE_ENV === "production" ? "combined" : "dev";
   app.use(
-    morgan("dev", {
+    morgan(morganFormat, {
       stream: {
         write: (message) => logger.http(message.trim()),
       },
+      skip: (req) => req.url === "/health",
     }),
   );
 

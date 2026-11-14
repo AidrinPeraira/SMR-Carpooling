@@ -30,11 +30,13 @@ export function createApp(logger: ILogger) {
 
   app.use(metricsMiddleware);
 
+  const morganFormat = AppConfig.NODE_ENV === "production" ? "combined" : "dev";
   app.use(
-    morgan("dev", {
+    morgan(morganFormat, {
       stream: {
         write: (message) => logger.http(message.trim()),
       },
+      skip: (req) => req.url === "/health",
     }),
   );
 
