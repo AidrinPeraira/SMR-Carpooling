@@ -105,7 +105,7 @@ export class EventBus implements IEventBus {
       await this.consume();
     } catch (error: unknown) {
       //retrying on failure to connect
-      this._logger.info("RabbitMQ connection failed!", error);
+      this._logger.error("RabbitMQ connection failed!", error);
       this._logger.info("Retrying connection to RabbitMQ");
       setTimeout(async () => {
         await this.connect();

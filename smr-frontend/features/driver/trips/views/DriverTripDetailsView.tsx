@@ -120,7 +120,7 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
           await map.fitBounds(stopPoints);
         }
       } catch (err) {
-        console.warn("Map setup failed inside setupMapRoutes:", err);
+        console.debug("Map setup failed inside setupMapRoutes:", err);
       }
     };
 

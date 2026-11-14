@@ -8,7 +8,7 @@ export const redisClient = createClient({
 
 export async function connectRedis(logger: ILogger): Promise<void> {
   redisClient.on("error", (err: unknown) => {
-    logger.info("Redis client error: ", err);
+    logger.error("Redis client error: ", err);
   });
 
   try {

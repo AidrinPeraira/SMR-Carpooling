@@ -60,11 +60,6 @@ export function CreateTripForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  useEffect(() => {
-    console.log("Dest: ", tripDestination);
-    console.log("Origin: ", tripOrigin);
-  }, [tripOrigin, tripDestination]);
-
   //get vehicle details from user profile
   const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
     queryKey: ["driverVehicles"],

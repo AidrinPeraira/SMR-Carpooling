@@ -1,4 +1,5 @@
 import { IPlacesCacheStore } from "#/application/interfaces/store/IPlacesCacheStore";
+import { ILogger } from "@sharemyride/shared";
 import { RedisClientType } from "redis";
 
 /**
@@ -8,7 +9,10 @@ import { RedisClientType } from "redis";
 export class PlacesCacheStore implements IPlacesCacheStore {
   private readonly _cacheKey = "places:indices";
 
-  constructor(private readonly _redisClient: RedisClientType) {}
+  constructor(
+    private readonly _redisClient: RedisClientType,
+    private readonly _logger: ILogger,
+  ) {}
 
   async addPlaceIndices(indices: string[]): Promise<void> {
     if (indices.length === 0) return;
@@ -24,7 +28,7 @@ export class PlacesCacheStore implements IPlacesCacheStore {
     try {
       return await this._redisClient.smIsMember(this._cacheKey, indices);
     } catch (error: unknown) {
-      console.log("Redis place cache matching error: ", error);
+      this._logger.error("Redis place cache matching error: ", error);
       return indices.map(() => 0);
     }
   }

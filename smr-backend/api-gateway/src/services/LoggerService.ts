@@ -37,3 +37,5 @@ export class WinstonLoggerService implements ILogger {
     this.logger.http(message, { data });
   }
 }
+
+export const logger = new WinstonLoggerService();

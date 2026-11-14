@@ -174,7 +174,6 @@ export function CurrentTargetCard({
       toast("Arrival confirmed", { variant: "success" });
     },
     onError: (err: unknown) => {
-      console.log(err);
       toast(err instanceof Error ? err.message : "Failed to confirm arrival", {
         variant: "error",
       });

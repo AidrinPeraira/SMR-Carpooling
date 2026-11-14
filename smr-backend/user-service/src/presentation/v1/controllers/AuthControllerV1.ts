@@ -196,7 +196,7 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       req.body,
     );
     const dto = AuthMapper.toChangePasswordDTO(body);
-    this._logger.info("Changing password for user: ", dto.emailId);
+    this._logger.info("Changing password for user");
     await this._changePasswordUseCase.execute(dto);
     res
       .status(HttpStatusCodes.Ok)

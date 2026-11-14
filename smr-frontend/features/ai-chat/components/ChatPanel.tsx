@@ -17,10 +17,6 @@ export default function ChatPanel({ chat, onClose, onClear }: ChatPanelProps) {
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
   }, [chat.messages]);
 
-  useEffect(() => {
-    console.log(chat.messages);
-  }, [chat.messages]);
-
   function handleUserInputSubmit(e: SyntheticEvent) {
     e.preventDefault();
 

@@ -25,7 +25,7 @@ export function MapContainer({
             await mapService.startLocationTracking();
           }
         } catch (err) {
-          console.warn("Map setup or location tracking warning:", err);
+          console.debug("Map setup or location tracking warning:", err);
         }
       }
     }

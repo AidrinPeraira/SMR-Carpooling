@@ -28,7 +28,7 @@ export class EventDispatcher implements IEventDispatcher {
     }
     this._handlersList.set(eventName, handler);
 
-    this._logger.info("Succesfully registered event handler for ", eventName);
+    this._logger.debug("Succesfully registered event handler for ", eventName);
   }
 
   /**
@@ -45,7 +45,7 @@ export class EventDispatcher implements IEventDispatcher {
     }
 
     try {
-      this._logger.info("Calling event hanler for ", event.eventName);
+      this._logger.debug("Calling event hanler for ", event.eventName);
       await handler.handle(event);
     } catch (error: unknown) {
       this._logger.error("Failed to dipatch event: ", error);

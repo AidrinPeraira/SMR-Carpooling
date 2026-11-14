@@ -21,7 +21,7 @@ export class ResendEmailService implements IMailService {
     });
 
     if (error) {
-      this._logger.info("Error sending notification email: ", error);
+      this._logger.error("Error sending notification email: ", error);
     } else {
       this._logger.info("Notication mail send successfully: ", data);
     }
