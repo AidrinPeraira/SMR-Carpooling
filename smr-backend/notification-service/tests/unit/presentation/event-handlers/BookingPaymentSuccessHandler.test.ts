@@ -42,7 +42,7 @@ describe("BookingPaymentSuccessHandler", () => {
   it("should map event payload to DTO and invoke payment success mail use case", async () => {
     await handler.handle(mockEvent);
 
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.debug).toHaveBeenCalledWith(
       expect.stringContaining("Handling booking payment success notification"),
       expect.objectContaining({
         bookingId: "b-123",

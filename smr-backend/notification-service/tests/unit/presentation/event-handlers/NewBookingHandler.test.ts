@@ -49,7 +49,7 @@ describe("NewBookingHandler", () => {
   it("should map event payload to DTO and invoke use case", async () => {
     await handler.handle(mockEvent);
 
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.debug).toHaveBeenCalledWith(
       expect.stringContaining("Handling new booking event"),
       expect.objectContaining({
         bookingId: "b-123",
