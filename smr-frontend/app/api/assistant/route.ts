@@ -121,18 +121,59 @@ export async function POST(req: Request) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
+  logger.info("[assistant] auth OK", { userRole });
+
+  logger.info("[assistant] env check", {
+    hasGeminiKey: !!process.env.GEMINI_API_KEY,
+    hasMapboxUrl: !!process.env.MAPBOX_MCP_URL,
+    hasMapboxToken: !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+    hasBackendUrl: !!process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
+    hasFrontendKey: !!process.env.FRONTEND_KEY,
+    backendUrl: process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
+    mapboxUrl: process.env.MAPBOX_MCP_URL,
+  });
+
   try {
     const { messages }: { messages: UIMessage[] } = await req.json();
 
-    const [smrMcpClient, mapBoxMcpClient] = await Promise.all([
-      getSmrClient(accessToken, userRole),
-      getMapboxClient(),
-    ]);
+    logger.info("[assistant] creating MCP clients...");
+
+    let smrMcpClient: MCPClient;
+    let mapBoxMcpClient: MCPClient;
+
+    try {
+      smrMcpClient = await getSmrClient(accessToken, userRole);
+      logger.info("[assistant] SMR MCP client connected");
+    } catch (error) {
+      logger.error("[assistant] SMR MCP client FAILED", {
+        message: (error as Error).message,
+        stack: (error as Error).stack,
+      });
+      throw error;
+    }
+
+    try {
+      mapBoxMcpClient = await getMapboxClient();
+      logger.info("[assistant] Mapbox MCP client connected");
+    } catch (error) {
+      logger.error("[assistant] Mapbox MCP client FAILED", {
+        message: (error as Error).message,
+        stack: (error as Error).stack,
+      });
+      throw error;
+    }
+
+    logger.info("[assistant] fetching tools...");
 
     const [smrTools, mapboxTools] = await Promise.all([
       smrMcpClient.tools(),
       mapBoxMcpClient.tools(),
     ]);
+
+    logger.info("[assistant] tools loaded", {
+      smrToolCount: Object.keys(smrTools).length,
+      mapboxToolCount: Object.keys(mapboxTools).length,
+    });
 
     const result = streamText({
       model: google("gemini-3.5-flash-lite"),
@@ -158,7 +199,10 @@ export async function POST(req: Request) {
       stream: toUIMessageStream({ stream: result.stream }),
     });
   } catch (error) {
-    logger.error("[assistant]", (error as Error).message);
+    logger.error("[assistant] FINAL ERROR", {
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+    });
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 },
