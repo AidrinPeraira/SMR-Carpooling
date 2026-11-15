@@ -17,6 +17,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Merge PR
-        run: gh pr merge ${{github.event.workflow_run.pull_requests[0].number}}
+        run: gh pr merge ${{github.event.workflow_run.pull_requests[0].number}} --merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
