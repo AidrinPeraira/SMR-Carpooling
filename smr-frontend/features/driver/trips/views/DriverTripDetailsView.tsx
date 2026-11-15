@@ -263,6 +263,9 @@ export function DriverTripDetailsView({ tripId }: DriverTripDetailsViewProps) {
       toast("Trip cancelled successfully.", { variant: "success" });
       refetch();
       queryClient.invalidateQueries({ queryKey: ["driverTrips"] });
+      queryClient.invalidateQueries({ queryKey: ["driverTripStats"] });
+      queryClient.invalidateQueries({ queryKey: ["driverTodayTrip"] });
+      queryClient.invalidateQueries({ queryKey: ["driverRecentBookings"] });
     } catch (err: unknown) {
       toast(err instanceof Error ? err.message : "Failed to cancel trip", {
         variant: "error",

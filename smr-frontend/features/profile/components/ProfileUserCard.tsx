@@ -38,6 +38,7 @@ export function ProfileUserCard({ user }: Props) {
           description: "Your active role has been updated.",
         });
         await queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+        queryClient.invalidateQueries({ queryKey: ["currentUser"] });
         router.refresh();
       } else {
         toast("Role switch failed", {

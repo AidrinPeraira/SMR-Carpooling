@@ -13,8 +13,8 @@ export function TripInfoCard({ tripId }: TripInfoCardProps) {
   const { isPending, data, error } = useQuery({
     queryKey: ["adminTripDetails", tripId],
     queryFn: async () => getAdminTripDetailsRequest(tripId),
-    staleTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
-    gcTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
+    staleTime: process.env.NODE_ENV === "production" ? 10 * 60 * 1000 : 0,
+    gcTime: process.env.NODE_ENV === "production" ? 10 * 60 * 1000 : 0,
     enabled: !!tripId,
   });
 
