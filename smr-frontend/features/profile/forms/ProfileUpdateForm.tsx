@@ -148,7 +148,6 @@ export function ProfileUpdateForm({ className }: Props) {
   async function handleForgotPassword() {
     if (!user) return;
     const email = user.email_id;
-    console.log("Sending password reset mail request for email:", email);
     try {
       const response = await fetch("/api/v1/auth/forgot-password", {
         method: "POST",

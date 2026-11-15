@@ -36,7 +36,7 @@ export class WebhookControllerV1 implements IWebhookControllerV1 {
       const resolvedTripId = (tripId || trip_id) as string;
       const resolvedPaymentKey = (paymentKey || payment_key) as string;
 
-      this._logger.info("Handling webhook: cleanup booking payment", {
+      this._logger.debug("Handling webhook: cleanup booking payment", {
         bookingId: resolvedBookingId,
         tripId: resolvedTripId,
       });
@@ -66,7 +66,7 @@ export class WebhookControllerV1 implements IWebhookControllerV1 {
     next: NextFunction,
   ): Promise<void> {
     try {
-      this._logger.info("Handling webhook: cleanup trips indexing");
+      this._logger.debug("Handling webhook: cleanup trips indexing");
 
       await this._cleanUpTripsIndexingUseCase.execute();
 

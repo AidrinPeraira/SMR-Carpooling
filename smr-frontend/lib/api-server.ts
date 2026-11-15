@@ -73,7 +73,7 @@ export async function apiServerFetch(
     } catch (error: unknown) {
       //clear cookies might fail in server componetns
       //redirect instead and let middleware / proxy.ts handle clearign cookies
-      console.warn(
+      logger.warn(
         "api-server: Failed to clear cookies. Redirecting to force clear from middleware.",
         error,
       );
@@ -82,7 +82,7 @@ export async function apiServerFetch(
   }
 
   if (response.status === 401 && refreshToken) {
-    logger.info("Access token expired (401), attempting to refresh token...");
+    logger.debug("Access token expired (401), attempting to refresh token...");
     try {
       const tokens = await getNewTokens(refreshToken);
 
@@ -91,7 +91,7 @@ export async function apiServerFetch(
       } catch (cookieError) {
         //this might hit if the request came from a server comoponent
         //just ignore it. another valid request will refresh the cookie again.
-        console.warn(
+        logger.warn(
           "api-server: Failed to set new tokens in cookies.",
           cookieError,
         );
@@ -116,7 +116,7 @@ export async function apiServerFetch(
       try {
         await clearAuthCookies();
       } catch (cookieError) {
-        console.warn("apiServerFetch: Failed to clear cookies", cookieError);
+        logger.warn("apiServerFetch: Failed to clear cookies", cookieError);
         //in case the clear cookies fail we send a redirect request
         redirect("/?error=user_forbidden");
       }

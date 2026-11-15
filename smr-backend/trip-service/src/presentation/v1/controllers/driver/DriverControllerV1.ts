@@ -26,7 +26,7 @@ export class DriverControllerV1 implements IDriverControllerV1 {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Fetching driver details for user:", { userId });
+      this._logger.debug("Fetching driver details for user:", { userId });
 
       const driverDTO = await this._getDriverDetailsUseCase.execute(userId);
       const mapped = DriverMapper.toDriverDetailsResponse(driverDTO);
@@ -50,7 +50,7 @@ export class DriverControllerV1 implements IDriverControllerV1 {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Fetching driver trip stats:", { userId });
+      this._logger.debug("Fetching driver trip stats:", { userId });
 
       const statsDTO = await this._getDriverTripStatsUseCase.execute(userId);
       const mapped = DriverMapper.toDriverTripStatsResponse(statsDTO);

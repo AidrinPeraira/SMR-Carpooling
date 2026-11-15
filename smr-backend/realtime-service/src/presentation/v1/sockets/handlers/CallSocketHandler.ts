@@ -40,7 +40,7 @@ export class CallSocketHandler implements ICallSocketHandler {
   ) {}
 
   async register(socket: Socket): Promise<void> {
-    this._logger.info("Registering call socket handlers", { socketId: socket.id });
+    this._logger.debug("Registering call socket handlers", { socketId: socket.id });
 
     socket.on(SocketEvents.CALL_INITIATED, (payload: unknown) =>
       this.onInitiateCall(socket, payload),
@@ -71,7 +71,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onInitiateCall(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("CallSocketHandler.onInitiateCall", { socketId: socket.id });
+    this._logger.debug("CallSocketHandler.onInitiateCall", { socketId: socket.id });
     try {
       const validated = zodParser<InitiateCallDTO>(
         InitiateCallSchema,
@@ -92,7 +92,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onAcceptCall(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("CallSocketHandler.onAcceptCall", { socketId: socket.id });
+    this._logger.debug("CallSocketHandler.onAcceptCall", { socketId: socket.id });
     try {
       const validated = zodParser<AcceptCallDTO>(AcceptCallSchema, payload);
 
@@ -110,7 +110,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onRejectCall(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("CallSocketHandler.onRejectCall", { socketId: socket.id });
+    this._logger.debug("CallSocketHandler.onRejectCall", { socketId: socket.id });
     try {
       const validated = zodParser<RejectCallDTO>(RejectCallSchema, payload);
 
@@ -128,7 +128,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onCallTimeout(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("CallSocketHandler.onCallTimeout", { socketId: socket.id });
+    this._logger.debug("CallSocketHandler.onCallTimeout", { socketId: socket.id });
     try {
       const validated = zodParser<HandleCallTimeoutDTO>(
         HandleCallTimeoutSchema,
@@ -149,7 +149,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onEndCall(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("CallSocketHandler.onEndCall", { socketId: socket.id });
+    this._logger.debug("CallSocketHandler.onEndCall", { socketId: socket.id });
     try {
       const validated = zodParser<EndCallDTO>(EndCallSchema, payload);
 
@@ -167,7 +167,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onRelaySignal(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("CallSocketHandler.onRelaySignal", { socketId: socket.id });
+    this._logger.debug("CallSocketHandler.onRelaySignal", { socketId: socket.id });
     try {
       const validated = zodParser<RelayCallSignalDTO>(
         RelayCallSignalSchema,
@@ -188,7 +188,7 @@ export class CallSocketHandler implements ICallSocketHandler {
 
   @Trace("call-socket-handler")
   async onDisconnect(socket: Socket): Promise<void> {
-    this._logger.info("Call socket disconnected", { socketId: socket.id });
+    this._logger.debug("Call socket disconnected", { socketId: socket.id });
   }
 
   private emitError(socket: Socket, error: unknown): void {

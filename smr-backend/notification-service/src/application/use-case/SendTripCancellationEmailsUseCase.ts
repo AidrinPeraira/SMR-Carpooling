@@ -1,10 +1,13 @@
 import { TripCancellationMailDTO } from "#/application/dto/email/TripCancellationMailDTO";
-import { ITripEmailTemplateFactory } from "#/application/interfaces/templates/ITripEmailTemplateFactory";
-import { EmailTemplate } from "#/application/utils/EmailTemplate";
+import { IMailService } from "#/application/interfaces/services/IMailService";
+import { ISendTripCancellationEmailUseCase } from "#/application/interfaces/use-case/ISendTripCancellationEmail";
 import { NotificationEntity } from "#/domain/entities/NotificationEntity";
+import { EmailTemplate } from "#/application/utils/EmailTemplate";
 
-export class TripEmailTemplateFactory implements ITripEmailTemplateFactory {
-  createTripCancellationNotifications(data: TripCancellationMailDTO): NotificationEntity[] {
+export class SendTripCancellationEmailsUseCase implements ISendTripCancellationEmailUseCase {
+  constructor(private readonly _mailService: IMailService) {}
+
+  async execute(data: TripCancellationMailDTO): Promise<void> {
     const driverNotification: NotificationEntity = {
       recipient: data.driverEmail,
       subject: `Trip Cancelled Successfully - ShareMyRide`,
@@ -33,6 +36,11 @@ export class TripEmailTemplateFactory implements ITripEmailTemplateFactory {
         ),
       }));
 
-    return [driverNotification, ...passengerNotifications];
+    await Promise.all([
+      this._mailService.send(driverNotification),
+      ...passengerNotifications.map((notification) =>
+        this._mailService.send(notification),
+      ),
+    ]);
   }
 }

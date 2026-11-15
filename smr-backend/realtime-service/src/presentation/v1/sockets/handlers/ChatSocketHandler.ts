@@ -28,7 +28,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
   ) {}
 
   async register(socket: Socket): Promise<void> {
-    this._logger.info("Registering chat socket handlers", { socketId: socket.id });
+    this._logger.debug("Registering chat socket handlers", { socketId: socket.id });
 
     socket.on(SocketEvents.JOIN_CHAT, (payload: unknown) =>
       this.onJoinChat(socket, payload),
@@ -47,7 +47,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onJoinChat(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("ChatSocketHandler.onJoinChat", { socketId: socket.id });
+    this._logger.debug("ChatSocketHandler.onJoinChat", { socketId: socket.id });
     try {
       const validated = zodParser<JoinTripChatDTO>(
         JoinTripChatSchema,
@@ -68,7 +68,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onLeaveChat(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("ChatSocketHandler.onLeaveChat", { socketId: socket.id });
+    this._logger.debug("ChatSocketHandler.onLeaveChat", { socketId: socket.id });
     try {
       const validated = zodParser<LeaveTripChatDTO>(
         LeaveTripChatSchema,
@@ -86,7 +86,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onSendMessage(socket: Socket, payload: unknown): Promise<void> {
-    this._logger.info("ChatSocketHandler.onSendMessage", { socketId: socket.id });
+    this._logger.debug("ChatSocketHandler.onSendMessage", { socketId: socket.id });
     try {
       const validated = zodParser<SendChatMessageDTO>(
         SendChatMessageSchema,
@@ -108,7 +108,7 @@ export class ChatSocketHandler implements IChatSocketHandler {
 
   @Trace("chat-socket-handler")
   async onDisconnect(socket: Socket): Promise<void> {
-    this._logger.info("Socket disconnected", { socketId: socket.id });
+    this._logger.debug("Socket disconnected", { socketId: socket.id });
   }
 
   private emitError(socket: Socket, error: unknown): void {

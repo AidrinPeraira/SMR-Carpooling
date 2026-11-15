@@ -4,7 +4,7 @@ import { clearAuthCookies } from "@/lib/auth-cookies";
 import { logger } from "@/lib/logger";
 
 export async function logoutUserAction(): Promise<{ success: boolean; message: string }> {
-  logger.info("Logging out user...");
+  logger.debug("Logging out user...");
   try {
     await clearAuthCookies();
     return {

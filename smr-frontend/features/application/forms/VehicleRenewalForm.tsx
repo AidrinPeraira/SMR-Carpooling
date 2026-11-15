@@ -48,7 +48,7 @@ export function VehicleRenewalForm({ initialValues, onSubmitAction }: Props) {
   function onSubmit(data: RenewVehicleApplicationSchemaType) {
     startTransition(async () => {
       try {
-        logger.info("Submitting Vehicle Renewal Application data: ", data);
+        logger.debug("Submitting Vehicle Renewal Application data: ", data);
 
         if (onSubmitAction) {
           await onSubmitAction(data);

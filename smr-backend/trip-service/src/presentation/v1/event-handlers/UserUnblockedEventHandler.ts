@@ -15,13 +15,13 @@ export class UserUnblockedEventHandler implements IEventHandler<UserUnblockedEve
   async handle(event: UserUnblockedEvent): Promise<void> {
     const { userId, isDriver } = event.payload;
 
-    this._logger.info(
+    this._logger.debug(
       `Processing ADMIN_USER_UNBLOCKED event for passenger ${userId}`,
     );
     await this._unblockPassengerUseCase.execute({ passengerId: userId });
 
     if (isDriver) {
-      this._logger.info(
+      this._logger.debug(
         `Processing ADMIN_USER_UNBLOCKED event for driver ${userId}`,
       );
       await this._changeDriverStatusUseCase.execute({

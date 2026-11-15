@@ -40,8 +40,6 @@ export class GoogleAuthService implements IGoogleAuthService {
       );
     }
 
-    console.log(googleUser);
-
     const rawPassword = randomBytes(32).toString("hex");
     const hashingService = new CryptoHashingService();
     const passwordHash = hashingService.createHash(rawPassword);

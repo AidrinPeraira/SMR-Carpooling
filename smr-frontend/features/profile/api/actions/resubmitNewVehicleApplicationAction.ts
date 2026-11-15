@@ -9,7 +9,7 @@ export async function resubmitNewVehicleApplicationAction(
   applicationId: string,
   data: ResubmitNewVehicleApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Resubmitting vehicle application action...", {
+  logger.debug("Resubmitting vehicle application action...", {
     applicationId,
   });
 

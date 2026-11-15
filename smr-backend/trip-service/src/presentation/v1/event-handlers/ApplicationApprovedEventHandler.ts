@@ -30,7 +30,7 @@ export class ApplicationApprovedHandler implements IEventHandler<ApplicationAppr
     const { userId, applicationId, applicationType, driverData, vehicleData } =
       event.payload;
 
-    this._logger.info("Handling application approved event: ", {
+    this._logger.debug("Handling application approved event: ", {
       applicationType,
       applicationId,
       userId,

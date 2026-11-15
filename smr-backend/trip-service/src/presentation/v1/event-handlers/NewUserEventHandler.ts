@@ -11,7 +11,7 @@ export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
 
   @Trace("trip-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
-    this._logger.info("Handling new user event: ", event.payload.userId);
+    this._logger.debug("Handling new user event: ", event.payload.userId);
 
     await this.createNewPassengerUseCase.execute({
       userId: event.payload.userId,

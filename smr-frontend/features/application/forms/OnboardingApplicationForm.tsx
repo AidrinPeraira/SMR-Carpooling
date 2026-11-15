@@ -53,7 +53,7 @@ export function OnboardingApplicationForm({
   function onSubmit(data: OnboardingApplicationSchemaType) {
     startTransition(async () => {
       try {
-        logger.info("Submitting Onboarding Application data: ", data);
+        logger.debug("Submitting Onboarding Application data: ", data);
 
         if (onSubmitAction) {
           await onSubmitAction(data);

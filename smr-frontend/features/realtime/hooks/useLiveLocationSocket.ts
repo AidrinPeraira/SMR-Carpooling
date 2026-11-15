@@ -20,8 +20,8 @@ export function useLiveLocationSocket() {
   );
 
   useEffect(() => {
-    const onConnect = () => logger.info("Journey socket connected");
-    const onDisconnect = () => logger.info("Journey socket disconnected");
+    const onConnect = () => logger.debug("Journey socket connected");
+    const onDisconnect = () => logger.debug("Journey socket disconnected");
     const onError = (error: Error) =>
       logger.error("Journey socket error: ", error.message ?? error);
 

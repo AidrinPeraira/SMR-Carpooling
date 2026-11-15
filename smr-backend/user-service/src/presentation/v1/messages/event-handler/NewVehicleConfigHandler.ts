@@ -13,7 +13,7 @@ export class NewVehicleConfigHandler implements IEventHandler<NewVehicleEvent> {
   ) {}
 
   async handle(event: NewVehicleEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling NewVehicleEvent in user-service: ",
       event.payload.id,
     );

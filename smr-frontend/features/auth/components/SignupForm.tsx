@@ -30,7 +30,7 @@ export function SignupForm({ className }: Props) {
     startTransition(async () => {
       try {
         const result = await signupUserAction(data);
-        logger.info("Handllel signup result: ", result);
+        logger.debug("Handle signup result: ", result);
         if (result.success) {
           toast(result.message || "User signup success!", {
             variant: "success",

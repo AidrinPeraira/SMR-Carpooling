@@ -1,5 +1,6 @@
 import { AuthSessionNames } from "@sharemyride/shared";
 import { getRedisClient } from "#/config/redis.config";
+import { logger } from "#/services/LoggerService";
 
 export class BlacklistService {
   /**
@@ -17,7 +18,7 @@ export class BlacklistService {
       );
       return Boolean(isMember);
     } catch (error) {
-      console.error("Error checking session blacklist:", error);
+      logger.error("Error checking session blacklist:", error);
       return false;
     }
   }

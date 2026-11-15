@@ -13,7 +13,7 @@ export class NewUserEventHandler implements IEventHandler<UserSignUpEvent> {
 
   @Trace("payment-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling new user event for payment service: ",
       event.payload.userId,
     );

@@ -1,6 +1,6 @@
 import { NewBookingMailDTO } from "#/application/dto/email/NewBookingMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/booking/ISendNewBookingEmailUseCase";
+import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/ISendNewBookingEmailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, NewBookingEvent } from "@sharemyride/shared";
 
@@ -26,7 +26,7 @@ export class NewBookingHandler implements IEventHandler<NewBookingEvent> {
       tripDate: event.payload.tripDate,
     };
 
-    this._logger.info("Handling new booking event for booking:", {
+    this._logger.debug("Handling new booking event for booking:", {
       bookingId: dto.bookingId,
       passengerEmail: dto.passengerEmail,
       driverEmail: dto.driverEmail,

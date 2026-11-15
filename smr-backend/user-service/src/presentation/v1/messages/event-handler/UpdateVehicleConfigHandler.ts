@@ -15,7 +15,7 @@ export class UpdateVehicleConfigHandler
   ) {}
 
   async handle(event: UpdateVehicleEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling UpdateVehicleEvent in user-service: ",
       event.payload.id,
     );

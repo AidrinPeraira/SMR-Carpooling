@@ -42,11 +42,11 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     );
     const dto = PaymentMapper.toCreateBookingPaymentOrderDTO(body);
 
-    this._logger.info("Creating booking payment order");
+    this._logger.debug("Creating booking payment order");
 
     const result = await this._createBookingPaymentOrderUseCase.execute(dto);
 
-    this._logger.info("Booking payment order created successfully", {
+    this._logger.debug("Booking payment order created successfully", {
       orderNumber: result.orderNumber,
     });
 
@@ -68,14 +68,14 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     );
     const dto = PaymentMapper.toVerifyBookingPaymentOrderDTO(body);
 
-    this._logger.info("Verifying booking payment", {
+    this._logger.debug("Verifying booking payment", {
       orderNumber: dto.orderNumber,
       paymentId: dto.paymentId,
     });
 
     await this._verifyBookingPaymentUseCase.execute(dto);
 
-    this._logger.info("Booking payment verified successfully", {
+    this._logger.debug("Booking payment verified successfully", {
       orderNumber: dto.orderNumber,
     });
 
@@ -92,11 +92,11 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
     );
     const dto = PaymentMapper.toPayBookingWithWalletDTO(body);
 
-    this._logger.info("Processing wallet payment for booking");
+    this._logger.debug("Processing wallet payment for booking");
 
     await this._payBookingWithWalletUseCase.execute(dto);
 
-    this._logger.info("Booking wallet payment completed successfully");
+    this._logger.debug("Booking wallet payment completed successfully");
 
     res
       .status(HttpStatusCodes.Ok)
@@ -120,7 +120,7 @@ export class PaymentControllerV1 implements IPaymentControllerV1 {
         );
       }
 
-      this._logger.info("Fetching customer earnings", { userId });
+      this._logger.debug("Fetching customer earnings", { userId });
 
       const result = await this._getCustomerEarningsUseCase.execute(userId);
 

@@ -19,7 +19,7 @@ export class DriverCancelTripEventHandler implements IEventHandler<DriverCancelT
   @Trace("realtime-service-event-handler")
   async handle(event: DriverCancelTripEvent): Promise<void> {
     try {
-      this._logger.info(
+      this._logger.debug(
         "Handling driver cancel trip event in communication service",
         {
           tripId: event.payload.tripId,
@@ -48,7 +48,7 @@ export class DriverCancelTripEventHandler implements IEventHandler<DriverCancelT
       // Close the chat
       await this._closeChatUseCase.execute(event.payload.tripId);
 
-      this._logger.info(
+      this._logger.debug(
         "Successfully removed active trips for driver and passengers from cancel trip event",
       );
     } catch (error: unknown) {

@@ -54,7 +54,7 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
         ? (req.query.sortValue as SortOrder)
         : undefined;
 
-      this._logger.info("Admin fetching all trips list", {
+      this._logger.debug("Admin fetching all trips list", {
         page,
         limit,
         search,
@@ -94,7 +94,7 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
     try {
       const tripId = req.params.tripId as string;
 
-      this._logger.info("Admin fetching trip details for tripId:", { tripId });
+      this._logger.debug("Admin fetching trip details for tripId:", { tripId });
 
       const details = await this._adminGetTripDetailsUseCase.execute(tripId);
       const response = AdminTripMapper.toAdminTripDetailsResponse(details);
@@ -121,7 +121,7 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
     try {
       const journeyId = req.params.journeyId as string;
 
-      this._logger.info("Admin fetching journey details for journeyId:", {
+      this._logger.debug("Admin fetching journey details for journeyId:", {
         journeyId,
       });
 
@@ -149,7 +149,7 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
     next: NextFunction,
   ): Promise<void> {
     try {
-      this._logger.info("Admin fetching trips count");
+      this._logger.debug("Admin fetching trips count");
 
       const result = await this._getTripsCountUseCase.execute();
       const response = AdminTripMapper.toGetTripsCountResult(result);
@@ -176,7 +176,7 @@ export class AdminTripControllerV1 implements IAdminTripControllerV1 {
     try {
       const range = (req.query.range as TrendRange) ?? TrendRange.LAST_MONTH;
 
-      this._logger.info("Admin fetching trip trend", { range });
+      this._logger.debug("Admin fetching trip trend", { range });
 
       const result = await this._getTripTrendUseCase.execute(range);
       const response = AdminTripMapper.toGetTripTrendResult(result);

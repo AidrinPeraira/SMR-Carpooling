@@ -1,6 +1,6 @@
 import { ApplicationReturnedMailDTO } from "#/application/dto/email/ApplicationNotificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendApplicationReturnedMailUseCase } from "#/application/interfaces/use-case/application/ISendApplicationReturnedMailUseCase";
+import { ISendApplicationReturnedMailUseCase } from "#/application/interfaces/use-case/ISendApplicationReturnedMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ApplicationReturnEvent, ILogger } from "@sharemyride/shared";
 
@@ -19,7 +19,7 @@ export class ApplicationReturnedHandler implements IEventHandler<ApplicationRetu
       comment: event.payload.comment,
     };
 
-    this._logger.info("Sending application returned email notification: ", {
+    this._logger.debug("Sending application returned email notification: ", {
       emailId: event.payload.emailId,
       applicationId: event.payload.applicationId,
     });

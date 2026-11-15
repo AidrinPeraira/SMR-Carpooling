@@ -43,7 +43,7 @@ describe("NewUserEventHandler", () => {
     await handler.handle(signupEvent);
 
     // Assert
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.debug).toHaveBeenCalledWith(
       "Handling new user event: ",
       "user-789",
     );

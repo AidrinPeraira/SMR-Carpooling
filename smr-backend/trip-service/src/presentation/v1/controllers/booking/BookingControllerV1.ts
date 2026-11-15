@@ -59,7 +59,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
         req.body,
       );
 
-      this._logger.info("Creating new booking for passenger:", { passengerId });
+      this._logger.debug("Creating new booking for passenger:", { passengerId });
 
       const dto = BookingMapper.toNewBookingRequestDTO(
         passengerId,
@@ -91,7 +91,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
         req.query,
       );
 
-      this._logger.info("Fetching driver bookings:", { driverId });
+      this._logger.debug("Fetching driver bookings:", { driverId });
 
       const dto = BookingMapper.toDriverGetAllBookingsQueryDTO(validatedQuery);
       const result = await this._driverListAllBookingsUseCase.execute(
@@ -120,7 +120,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Fetching booking details for driver:", {
+      this._logger.debug("Fetching booking details for driver:", {
         driverId,
         bookingId,
       });
@@ -151,7 +151,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Accepting booking request:", { driverId, bookingId });
+      this._logger.debug("Accepting booking request:", { driverId, bookingId });
 
       await this._driverAcceptBookingUseCase.execute(
         bookingId as string,
@@ -178,7 +178,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Rejecting booking request:", { driverId, bookingId });
+      this._logger.debug("Rejecting booking request:", { driverId, bookingId });
 
       await this._driverRejectBookingUseCase.execute(
         bookingId as string,
@@ -209,7 +209,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
         req.query,
       );
 
-      this._logger.info("Fetching passenger bookings:", { passengerId });
+      this._logger.debug("Fetching passenger bookings:", { passengerId });
 
       const dto =
         BookingMapper.toPassengerGetAllBookingsQueryDTO(validatedQuery);
@@ -242,7 +242,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const passengerId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Fetching passenger booking details:", {
+      this._logger.debug("Fetching passenger booking details:", {
         passengerId,
         bookingId,
       });
@@ -276,7 +276,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const passengerId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Withdrawing booking request:", {
+      this._logger.debug("Withdrawing booking request:", {
         passengerId,
         bookingId,
       });
@@ -306,7 +306,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const passengerId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Initiating payment for booking:", {
+      this._logger.debug("Initiating payment for booking:", {
         passengerId,
         bookingId,
       });
@@ -338,7 +338,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
       const passengerId = req.headers["x-user-id"] as string;
       const { bookingId } = req.params;
 
-      this._logger.info("Canceling confirmed booking:", {
+      this._logger.debug("Canceling confirmed booking:", {
         passengerId,
         bookingId,
       });
@@ -365,7 +365,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     try {
       const passengerId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Fetching passenger booking stats:", { passengerId });
+      this._logger.debug("Fetching passenger booking stats:", { passengerId });
 
       const result =
         await this._getPassengerBookingStatsUseCase.execute(passengerId);
@@ -393,7 +393,7 @@ export class BookingControllerV1 implements IBookingControllerV1 {
     try {
       const passengerId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Fetching passenger today trip:", { passengerId });
+      this._logger.debug("Fetching passenger today trip:", { passengerId });
 
       const result =
         await this._getPassengerTodayTripUseCase.execute(passengerId);

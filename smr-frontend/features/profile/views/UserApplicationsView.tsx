@@ -99,7 +99,9 @@ export function UserApplicationsView() {
         headerName: "Action",
         customRender: (_v, row) => (
           <Button
-            onClick={() => router.push(`/applications/${row.application_id}`)}
+            onClick={() =>
+              router.push(`/profile/applications/${row.application_id}`)
+            }
             variant="ghost"
             className="text-xs"
           >

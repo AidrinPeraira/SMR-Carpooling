@@ -116,6 +116,9 @@ export function OnlinePaymentButton({
     setResultDialog((prev) => ({ ...prev, isOpen: false }));
     queryClient.invalidateQueries({ queryKey: ["passengerBookings"] });
     queryClient.invalidateQueries({ queryKey: ["passengerBookingDetails", bookingId] });
+    queryClient.invalidateQueries({ queryKey: ["passengerBookingStats"] });
+    queryClient.invalidateQueries({ queryKey: ["passengerWalletBalance"] });
+    queryClient.invalidateQueries({ queryKey: ["passengerRecentBookings"] });
     if (resultDialog.success) {
       router.refresh();
     }

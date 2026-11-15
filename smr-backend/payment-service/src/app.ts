@@ -11,10 +11,12 @@ import {
   makeFailedResponse,
   type ILogger,
 } from "@sharemyride/shared";
+import morgan from "morgan";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
 import { paymentServiceRouters } from "#/presentation/payment-service.module";
 import { mapError } from "#/presentation/utils/error-mapper";
 import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
+import { AppConfig } from "#/application.config";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -25,6 +27,16 @@ export function createApp(logger: ILogger) {
   app.use(helmet());
 
   app.use(metricsMiddleware);
+
+  const morganFormat = AppConfig.NODE_ENV === "production" ? "combined" : "dev";
+  app.use(
+    morgan(morganFormat, {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+      skip: (req) => req.url === "/health",
+    }),
+  );
 
   app.get("/health", (_req, res) => {
     res.status(HttpStatusCodes.Ok).json({ status: "OK" });

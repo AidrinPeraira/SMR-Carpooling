@@ -7,6 +7,7 @@ import { PlacesRepository } from "#/infrastructure/repository/PlacesRepository";
 import { H3GeoIndexingService } from "#/infrastructure/services/H3GeoIndexingService";
 import { PlacesCacheStore } from "#/infrastructure/store/PlacesCacheStore";
 import { redisClient } from "#/infrastructure/store/connect-redis";
+import { ConsolaLogger } from "@sharemyride/shared";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,7 +42,7 @@ async function seedPlaces(): Promise<void> {
   console.log(`Found ${features.length} POI features.`);
 
   await redisClient.connect();
-  const placesCacheStore = new PlacesCacheStore(redisClient);
+  const placesCacheStore = new PlacesCacheStore(redisClient, new ConsolaLogger());
   const geoIndexingService = new H3GeoIndexingService(7);
   const placesRepository = new PlacesRepository(
     geoIndexingService,

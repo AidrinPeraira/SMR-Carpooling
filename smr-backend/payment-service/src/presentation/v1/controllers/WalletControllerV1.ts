@@ -42,7 +42,7 @@ export class WalletControllerV1 implements IWalletControllerV1 {
         );
       }
 
-      this._logger.info("Fetching wallet transactions", { userId });
+      this._logger.debug("Fetching wallet transactions", { userId });
 
       const dto: GetWalletTransactionsQueryDTO = {
         limit: query.limit,

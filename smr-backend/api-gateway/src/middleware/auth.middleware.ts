@@ -2,6 +2,7 @@ import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { HttpStatusCodes, makeFailedResponse } from "@sharemyride/shared";
 import { AppConfig } from "#/application.config";
+import { logger } from "#/services/LoggerService";
 
 const PUBLIC_PATHS = [
   "/health",
@@ -57,7 +58,7 @@ export function authMiddleware(
 
     next();
   } catch (error: unknown) {
-    console.log("Auth middleware error: ", error);
+    logger.error("Auth middleware error: ", error);
     return res
       .status(HttpStatusCodes.Unauthorized)
       .json(makeFailedResponse("Invalid or expired authorization token"));

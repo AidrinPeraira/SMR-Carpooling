@@ -14,7 +14,7 @@ export class PassengerNoShowEventHandler
   @Trace("realtime-service-event-handler")
   async handle(event: JourneyPassengerNoShowEvent): Promise<void> {
     try {
-      this._logger.info("Handling passenger no-show event", {
+      this._logger.debug("Handling passenger no-show event", {
         journeyId: event.payload.journey_id,
         passengerId: event.payload.passenger_id,
       });
@@ -24,7 +24,7 @@ export class PassengerNoShowEventHandler
         passengerId: event.payload.passenger_id,
       });
 
-      this._logger.info("Successfully removed no-show passenger from journey room");
+      this._logger.debug("Successfully removed no-show passenger from journey room");
     } catch (error: unknown) {
       this._logger.error("Failed to handle passenger no-show event", {
         error: error instanceof Error ? error.message : String(error),

@@ -41,8 +41,8 @@ export function ProfileDetailsCard() {
   const { isPending, data, error } = useQuery({
     queryKey: ["userDetails", userId],
     queryFn: async () => getUserProfileDetails(userId),
-    staleTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
-    gcTime: process.env.NODE_ENV === "production" ? 60 * 10 : 0,
+    staleTime: process.env.NODE_ENV === "production" ? 10 * 60 * 1000 : 0,
+    gcTime: process.env.NODE_ENV === "production" ? 10 * 60 * 1000 : 0,
   });
 
   //handle blocking user
@@ -51,6 +51,7 @@ export function ProfileDetailsCard() {
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["userDetails", userId] });
+        queryClient.invalidateQueries({ queryKey: ["allUsers"] });
         toast("User blocked successfully", { variant: "success" });
       } else {
         toast(res.message || "Failed to block user", { variant: "error" });
@@ -67,6 +68,7 @@ export function ProfileDetailsCard() {
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["userDetails", userId] });
+        queryClient.invalidateQueries({ queryKey: ["allUsers"] });
         toast("User unblocked successfully", { variant: "success" });
       } else {
         toast(res.message || "Failed to unblock user", { variant: "error" });

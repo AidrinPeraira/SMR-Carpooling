@@ -47,12 +47,20 @@ export function BookingDetailsActionCard({
   const handleWithdraw = async () => {
     await onWithdraw();
     queryClient.invalidateQueries({ queryKey: ["passengerBookings"] });
+    queryClient.invalidateQueries({ queryKey: ["passengerBookingDetails", bookingId] });
+    queryClient.invalidateQueries({ queryKey: ["passengerBookingStats"] });
+    queryClient.invalidateQueries({ queryKey: ["passengerRecentBookings"] });
+    queryClient.invalidateQueries({ queryKey: ["passengerWalletBalance"] });
   };
 
   const handleCancel = async () => {
     if (onCancel) {
       await onCancel();
       queryClient.invalidateQueries({ queryKey: ["passengerBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["passengerBookingDetails", bookingId] });
+      queryClient.invalidateQueries({ queryKey: ["passengerBookingStats"] });
+      queryClient.invalidateQueries({ queryKey: ["passengerRecentBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["passengerWalletBalance"] });
     }
   };
 
