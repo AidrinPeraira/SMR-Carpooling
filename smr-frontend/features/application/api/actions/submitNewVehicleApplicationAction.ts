@@ -8,7 +8,7 @@ import { ApiResponse, NewVehicleApplicationRequest } from "@sharemyride/shared";
 export async function submitNewVehicleApplicationAction(
   data: NewVehicleApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Submitting new vehicle application action...", {
+  logger.debug("Submitting new vehicle application action...", {
     vehicle_make: data.vehicle_make,
     vehicle_model: data.vehicle_model,
     registration_number: data.registration_number,

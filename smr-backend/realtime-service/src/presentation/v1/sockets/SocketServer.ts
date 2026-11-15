@@ -41,7 +41,7 @@ export async function registerSocketHandlers(
     io.of(handler.nameSpace).use(socketAuthMiddleware);
 
     io.of(handler.nameSpace).on("connection", async (socket) => {
-      logger.info("Socket connection established: ", {
+      logger.debug("Socket connection established: ", {
         socketId: socket.id,
       });
 

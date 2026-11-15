@@ -48,7 +48,7 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
         );
       }
 
-      this._logger.info("Fetching driver payouts", { userId });
+      this._logger.debug("Fetching driver payouts", { userId });
 
       const result = await this._getDriverPayoutsUseCase.execute(userId, {
         limit: query.limit,
@@ -78,7 +78,7 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
   async adminListPayouts(req: Request, res: Response): Promise<void> {
     const query = zodParser<QuerySchemaType>(QuerySchema, req.query);
 
-    this._logger.info("Admin: fetching all payouts", {
+    this._logger.debug("Admin: fetching all payouts", {
       page: query.page,
       limit: query.limit,
       filterField: query.filterField,
@@ -109,7 +109,7 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
   async adminGetPayoutDetails(req: Request, res: Response): Promise<void> {
     const payoutId = req.params.payoutId as string;
 
-    this._logger.info("Admin: fetching payout details", { payoutId });
+    this._logger.debug("Admin: fetching payout details", { payoutId });
 
     const result = await this._adminGetPayoutDetailsUseCase.execute(payoutId);
 
@@ -127,7 +127,7 @@ export class PayoutControllerV1 implements IPayoutControllerV1 {
   async adminApprovePayout(req: Request, res: Response): Promise<void> {
     const payoutId = req.params.payoutId as string;
 
-    this._logger.info("Admin: approving payout", { payoutId });
+    this._logger.debug("Admin: approving payout", { payoutId });
 
     await this._approvePayoutUseCase.execute(payoutId);
 

@@ -129,7 +129,7 @@ export class MapboxCore {
           resolve([longitude, latitude]);
         },
         (error) => {
-          console.warn(
+          console.debug(
             "Geolocation positioning failed or timed out, using fallback location:",
             error,
           );
@@ -176,7 +176,7 @@ export class MapboxCore {
           this._map.removeControl(this._geolocationControl);
         }
       } catch (error) {
-        console.warn("GeolocateControl removal skipped:", error);
+        console.debug("GeolocateControl removal skipped:", error);
       }
     }
     this._geolocationControl = null;

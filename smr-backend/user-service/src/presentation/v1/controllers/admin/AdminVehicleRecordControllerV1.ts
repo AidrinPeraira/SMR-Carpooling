@@ -29,7 +29,7 @@ export class AdminVehicleRecordControllerV1
     const query =
       AdminVehicleRecordsMapper.toGetAllVehicleRecordsRequestQuery(queryParams);
 
-    this._logger.info("Fetching all vehicle records. Admin: ", {
+    this._logger.debug("Fetching all vehicle records. Admin: ", {
       adminUserId: req.headers["x-user-id"],
     });
 
@@ -49,7 +49,7 @@ export class AdminVehicleRecordControllerV1
   async getVehicleRecordDetails(req: Request, res: Response): Promise<void> {
     const recordId = req.params.recordId as string;
 
-    this._logger.info("Fetching vehicle record details. Admin: ", {
+    this._logger.debug("Fetching vehicle record details. Admin: ", {
       adminUserId: req.headers["x-user-id"],
       recordId,
     });

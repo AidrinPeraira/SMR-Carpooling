@@ -24,7 +24,7 @@ export class VehicleControllerV1 implements IVehicleControllerV1 {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Fetching driver vehicles for user:", { userId });
+      this._logger.debug("Fetching driver vehicles for user:", { userId });
 
       const vehiclesDTO = await this._getDriverVehiclesUseCase.execute(userId);
       const mapped = VehicleMapper.toDriverVehiclesResponse(vehiclesDTO);

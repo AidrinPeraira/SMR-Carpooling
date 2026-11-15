@@ -12,6 +12,7 @@ import morgan from "morgan";
 import { mapError } from "#/presentation/utils/error-mapper";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
 import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
+import { AppConfig } from "#/application.config";
 
 /**
  * Express Application Factory.
@@ -29,11 +30,13 @@ export function createApp(logger: ILogger) {
   app.use(helmet());
   app.use(metricsMiddleware);
 
+  const morganFormat = AppConfig.NODE_ENV === "production" ? "combined" : "dev";
   app.use(
-    morgan("dev", {
+    morgan(morganFormat, {
       stream: {
         write: (message) => logger.http(message.trim()),
       },
+      skip: (req) => req.url === "/health",
     }),
   );
 

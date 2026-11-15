@@ -26,6 +26,9 @@ export const AppConfig = {
     process.env.QSTASH_URL || "https://qstash-eu-central-1.upstash.io",
   ),
   QSTASH_TOKEN: String(process.env.QSTASH_TOKEN || "secret.jwt.token"),
+  QSTASH_WEBHOOK_URL: String(
+    process.env.QSTASH_WEBHOOK_URL || "http://localhost:4000",
+  ),
   QSTASH_CURRENT_SIGNING_KEY:
     String(process.env.QSTASH_CURRENT_SIGNING_KEY) || "secret_key",
   QSTASH_NEXT_SIGNING_KEY: String(

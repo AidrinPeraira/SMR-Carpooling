@@ -8,7 +8,7 @@ import { ApiResponse, RenewVehicleApplicationRequest } from "@sharemyride/shared
 export async function submitVehicleRenewalAction(
   data: RenewVehicleApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Submitting vehicle renewal action...", {
+  logger.debug("Submitting vehicle renewal action...", {
     registration_number: data.registration_number,
     insurance_number: data.insurance_number,
   });

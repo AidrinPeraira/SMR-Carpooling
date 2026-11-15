@@ -16,7 +16,7 @@ export class EventDispatcher implements IEventDispatcher {
       this._logger.warn("Rewriting existing event handler: ", eventName);
     }
     this._handlersList.set(eventName, handler);
-    this._logger.info("Successfully registered event handler for ", eventName);
+    this._logger.debug("Successfully registered event handler for ", eventName);
   }
 
   async dispatch(event: DomainEvent<unknown>): Promise<void> {
@@ -27,7 +27,7 @@ export class EventDispatcher implements IEventDispatcher {
     }
 
     try {
-      this._logger.info("Calling event handler for ", event.eventName);
+      this._logger.debug("Calling event handler for ", event.eventName);
       await handler.handle(event);
     } catch (error: unknown) {
       this._logger.error("Failed to dispatch event: ", error);

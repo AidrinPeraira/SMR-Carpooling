@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BookingPaymentSuccessHandler } from "#/presentation/event-handlers/BookingPaymentSuccessHandler";
-import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/booking/ISendBookingPaymentSuccessMailUseCase";
+import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/ISendBookingPaymentSuccessMailUseCase";
 import { ILogger, BookingPaymentSuccessEvent, EventName } from "@sharemyride/shared";
 
 describe("BookingPaymentSuccessHandler", () => {
@@ -42,7 +42,7 @@ describe("BookingPaymentSuccessHandler", () => {
   it("should map event payload to DTO and invoke payment success mail use case", async () => {
     await handler.handle(mockEvent);
 
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.debug).toHaveBeenCalledWith(
       expect.stringContaining("Handling booking payment success notification"),
       expect.objectContaining({
         bookingId: "b-123",

@@ -19,7 +19,7 @@ export class NewBookingEventHandler implements IEventHandler<NewBookingEvent> {
   @Trace("realtime-service-event-handler")
   async handle(event: NewBookingEvent): Promise<void> {
     try {
-      this._logger.info("Handling new booking event in communication service", {
+      this._logger.debug("Handling new booking event in communication service", {
         bookingId: event.payload.bookingId,
       });
 
@@ -35,7 +35,7 @@ export class NewBookingEventHandler implements IEventHandler<NewBookingEvent> {
         event.payload.passengerId,
       );
 
-      this._logger.info(
+      this._logger.debug(
         "Successfully added active trips from new booking event",
       );
     } catch (error: unknown) {

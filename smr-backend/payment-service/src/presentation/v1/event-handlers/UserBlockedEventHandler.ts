@@ -12,7 +12,7 @@ export class UserBlockedEventHandler implements IEventHandler<UserBlockedEvent> 
   @Trace("payment-service-event-handler")
   async handle(event: UserBlockedEvent): Promise<void> {
     const { userId } = event.payload;
-    this._logger.info(
+    this._logger.debug(
       `Processing ADMIN_USER_BLOCKED event for customer ${userId}`,
     );
 

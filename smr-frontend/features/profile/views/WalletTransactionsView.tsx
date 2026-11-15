@@ -81,8 +81,8 @@ export function WalletTransactionsView() {
       return await getWalletTransactionsRequest(queryParams);
     },
     placeholderData: keepPreviousData,
-    staleTime: process.env.NODE_ENV == "production" ? 60 * 10 : 0,
-    gcTime: process.env.NODE_ENV == "production" ? 60 * 10 : 0,
+    staleTime: process.env.NODE_ENV == "production" ? 10 * 60 * 1000 : 0,
+    gcTime: process.env.NODE_ENV == "production" ? 10 * 60 * 1000 : 0,
   });
 
   useEffect(() => {

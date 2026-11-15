@@ -1,14 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { SendNewBookingEmailUseCase } from "#/application/use-case/booking/SendNewBookingEmailUseCase";
+import { SendNewBookingEmailUseCase } from "#/application/use-case/SendNewBookingEmailUseCase";
 import { IMailService } from "#/application/interfaces/services/IMailService";
-import { IBookingEmailTemplateFactory } from "#/application/interfaces/templates/IBookingEmailTemplateFactory";
 import { NewBookingMailDTO } from "#/application/dto/email/NewBookingMailDTO";
-import { BookingEmailTemplateFactory } from "#/infrastructure/templates/BookingEmailTemplateFactory";
 
 describe("SendNewBookingEmailUseCase", () => {
   let useCase: SendNewBookingEmailUseCase;
   let mockMailService: IMailService;
-  let templateFactory: IBookingEmailTemplateFactory;
 
   const sampleDTO: NewBookingMailDTO = {
     bookingId: "b-123",
@@ -39,9 +36,8 @@ describe("SendNewBookingEmailUseCase", () => {
     mockMailService = {
       send: vi.fn().mockResolvedValue(undefined),
     };
-    templateFactory = new BookingEmailTemplateFactory();
 
-    useCase = new SendNewBookingEmailUseCase(mockMailService, templateFactory);
+    useCase = new SendNewBookingEmailUseCase(mockMailService);
   });
 
   it("should send email notifications to both driver and passenger", async () => {

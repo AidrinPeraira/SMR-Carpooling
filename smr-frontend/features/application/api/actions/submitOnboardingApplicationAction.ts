@@ -8,7 +8,7 @@ import { ApiResponse, OnboardingApplicationRequest } from "@sharemyride/shared";
 export async function submitOnboardingApplicationAction(
   data: OnboardingApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Submitting onboarding application action...", {
+  logger.debug("Submitting onboarding application action...", {
     license_number: data.license_number,
     registration_number: data.registration_number,
   });

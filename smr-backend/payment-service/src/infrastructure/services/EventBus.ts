@@ -54,10 +54,10 @@ export class EventBus implements IEventBus {
   async connect(): Promise<void> {
     try {
       //create connection, channel and exchange
-      this._logger.info("Connecting to RabbitMQ");
+      this._logger.debug("Connecting to RabbitMQ");
       this._connection = await amqp.connect(this._url);
       this._channel = await this._connection.createChannel();
-      this._logger.info("Rabbit MQ connected.");
+      this._logger.debug("Rabbit MQ connected.");
 
       //log any errors in connection
       this._connection.on("error", (error) => {
@@ -66,7 +66,7 @@ export class EventBus implements IEventBus {
 
       //retry on connection termination (while working)
       this._connection.on("close", () => {
-        this._logger.info("RabbitMQ connection closed. Retrying.");
+        this._logger.debug("RabbitMQ connection closed. Retrying.");
         setTimeout(async () => {
           await this.connect();
         }, 5000);
@@ -90,7 +90,7 @@ export class EventBus implements IEventBus {
       //bind failed messages to the dead letter queue
       await this._channel.bindQueue(this._dlqName, this._dlxName, "#"); // "#" is used to catch all events irrespective of the routing key.
 
-      this._logger.info("Rabbit MQ exchange and dead letter asserted.");
+      this._logger.debug("Rabbit MQ exchange and dead letter asserted.");
 
       await this.subscribe([
         EventName.ADMIN_USER_BLOCKED,
@@ -101,12 +101,12 @@ export class EventBus implements IEventBus {
         EventName.JOURNEY_PASSENGER_DROPPED_OFF,
       ]);
 
-      this._logger.info("RabbitMQ initialised successfully");
+      this._logger.debug("RabbitMQ initialised successfully");
       await this.consume();
     } catch (error: unknown) {
       //retrying on failure to connect
-      this._logger.info("RabbitMQ connection failed!", error);
-      this._logger.info("Retrying connection to RabbitMQ");
+      this._logger.error("RabbitMQ connection failed!", error);
+      this._logger.warn("Retrying connection to RabbitMQ");
       setTimeout(async () => {
         await this.connect();
       }, 5000);
@@ -142,7 +142,7 @@ export class EventBus implements IEventBus {
           this._exchangeName,
           routingKey,
         );
-        this._logger.info("Bound consumer queue for routing key: ", routingKey);
+        this._logger.debug("Bound consumer queue for routing key: ", routingKey);
       }
     } catch (error: unknown) {
       this._logger.error("Error subscribing queue to events: ", error);
@@ -182,7 +182,7 @@ export class EventBus implements IEventBus {
       );
 
       if (wasPublished) {
-        this._logger.info("Event published: ", {
+        this._logger.debug("Event published: ", {
           eventName: event.eventName,
         });
       } else {
@@ -210,14 +210,14 @@ export class EventBus implements IEventBus {
     }
 
     if (this._isConsuming) {
-      this._logger.info("Consumer already running. Skipping duplicate attempt");
+      this._logger.debug("Consumer already running. Skipping duplicate attempt");
       return;
     }
 
     try {
       await this._channel.prefetch(1); //settings to consume 1 event at a time
 
-      this._logger.info("Subscribing consumer to queue: ", this._queueName);
+      this._logger.debug("Subscribing consumer to queue: ", this._queueName);
       this._isConsuming = true;
 
       await this._channel.consume(this._queueName, async (message) => {
@@ -243,7 +243,7 @@ export class EventBus implements IEventBus {
           const content = message.content.toString();
           const event = JSON.parse(content) as DomainEvent<unknown>;
 
-          this._logger.info("Event received: ", event.eventName);
+          this._logger.debug("Event received: ", event.eventName);
 
           await this._eventDispatcher.dispatch(event);
 

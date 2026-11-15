@@ -1,6 +1,6 @@
 import { ApplicationApprovedMailDTO } from "#/application/dto/email/ApplicationNotificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendApplicationApprovedMailUseCase } from "#/application/interfaces/use-case/application/ISendApplicationApprovedMailUseCase";
+import { ISendApplicationApprovedMailUseCase } from "#/application/interfaces/use-case/ISendApplicationApprovedMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ApplicationApprovedEvent, ILogger } from "@sharemyride/shared";
 
@@ -19,7 +19,7 @@ export class ApplicationApprovedHandler implements IEventHandler<ApplicationAppr
       comment: event.payload.comment,
     };
 
-    this._logger.info("Sending application approved email notification: ", {
+    this._logger.debug("Sending application approved email notification: ", {
       emailId: event.payload.emailId,
       applicationId: event.payload.applicationId,
     });

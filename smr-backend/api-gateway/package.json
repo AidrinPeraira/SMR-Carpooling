@@ -16,7 +16,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "update:shared": "pnpm add @sharemyride/shared@latest",
-    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-api-gateway --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-api-gateway:latest --push ../../"
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-api-gateway --platform=linux/amd64 -t aidrinperaira/smr-api-gateway:latest --push ../../"
   },
   "keywords": [],
   "author": "",

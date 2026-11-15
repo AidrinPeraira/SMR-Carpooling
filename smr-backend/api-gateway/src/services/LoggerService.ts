@@ -1,15 +1,17 @@
 import { ILogger } from "@sharemyride/shared";
 import winston from "winston";
+import { AppConfig } from "#/application.config";
 
 export class WinstonLoggerService implements ILogger {
   private readonly logger: winston.Logger;
 
   constructor() {
+    const level = AppConfig.NODE_ENV === "production" ? "info" : "debug";
     this.logger = winston.createLogger({
-      level: "debug",
+      level,
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json(), // structured JSON — plays
+        winston.format.json(),
       ),
       transports: [new winston.transports.Console()],
     });
@@ -35,3 +37,5 @@ export class WinstonLoggerService implements ILogger {
     this.logger.http(message, { data });
   }
 }
+
+export const logger = new WinstonLoggerService();

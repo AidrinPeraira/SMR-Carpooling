@@ -21,7 +21,7 @@ export class NewTripEventHandler implements IEventHandler<NewTripEvent> {
   @Trace("realtime-service-event-handler")
   async handle(event: NewTripEvent): Promise<void> {
     try {
-      this._logger.info("Handling new trip event in communication service", {
+      this._logger.debug("Handling new trip event in communication service", {
         tripId: event.payload.tripId,
       });
 
@@ -38,7 +38,7 @@ export class NewTripEventHandler implements IEventHandler<NewTripEvent> {
         event.payload.driverId,
       );
 
-      this._logger.info(
+      this._logger.debug(
         "Successfully added active trip for driver and initialized chat from new trip event",
       );
     } catch (error: unknown) {

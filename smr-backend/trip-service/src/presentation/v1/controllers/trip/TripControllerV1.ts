@@ -51,7 +51,7 @@ export class TripControllerV1 implements ITripControllerV1 {
         req.body,
       );
 
-      this._logger.info("Creating trip for driver:", { driverId });
+      this._logger.debug("Creating trip for driver:", { driverId });
 
       const dto = TripMapper.toCreateTripRequestDTO(driverId, validatedBody);
       await this._createTripUseCase.execute(dto);
@@ -80,7 +80,7 @@ export class TripControllerV1 implements ITripControllerV1 {
         req.body,
       );
 
-      this._logger.info("Searching matching trips for passenger:", {
+      this._logger.debug("Searching matching trips for passenger:", {
         passengerUserId,
       });
 
@@ -115,7 +115,7 @@ export class TripControllerV1 implements ITripControllerV1 {
         req.body,
       );
 
-      this._logger.info("Getting journey details for trip:", {
+      this._logger.debug("Getting journey details for trip:", {
         passengerUserId,
         tripId: validatedBody.trip_id,
       });
@@ -152,7 +152,7 @@ export class TripControllerV1 implements ITripControllerV1 {
         req.query,
       );
 
-      this._logger.info("Fetching driver trips:", {
+      this._logger.debug("Fetching driver trips:", {
         driverId,
         query: validatedQuery,
       });
@@ -182,7 +182,7 @@ export class TripControllerV1 implements ITripControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const { tripId } = req.params;
 
-      this._logger.info("Fetching driver trip details:", { driverId, tripId });
+      this._logger.debug("Fetching driver trip details:", { driverId, tripId });
 
       const result = await this._driverGetTripDetailsUseCase.execute(
         tripId as string,
@@ -213,7 +213,7 @@ export class TripControllerV1 implements ITripControllerV1 {
     try {
       const driverId = req.headers["x-user-id"] as string;
 
-      this._logger.info("Fetching driver today trip:", { driverId });
+      this._logger.debug("Fetching driver today trip:", { driverId });
 
       const result = await this._getDriverTodayTripUseCase.execute(driverId);
       const mapped = result
@@ -243,7 +243,7 @@ export class TripControllerV1 implements ITripControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const { tripId } = req.params;
 
-      this._logger.info("Canceling trip:", { driverId, tripId });
+      this._logger.debug("Canceling trip:", { driverId, tripId });
 
       await this._cancelTripUseCase.execute(tripId as string, driverId);
 

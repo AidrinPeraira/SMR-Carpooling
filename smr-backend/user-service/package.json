@@ -19,7 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "update:shared": "pnpm add @sharemyride/shared@latest",
-    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-user-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-user-service:latest --push ../../"
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-user-service --platform=linux/amd64 -t aidrinperaira/smr-user-service:latest --push ../../"
   },
   "keywords": [],
   "author": "",

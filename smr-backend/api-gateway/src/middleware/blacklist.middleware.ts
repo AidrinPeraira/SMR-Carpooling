@@ -1,6 +1,7 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { HttpStatusCodes, makeFailedResponse } from "@sharemyride/shared";
 import { blacklistService } from "#/services/blacklist.service";
+import { logger } from "#/services/LoggerService";
 
 const PUBLIC_PATHS = [
   "/health",
@@ -48,7 +49,7 @@ export async function blacklistMiddleware(
         .json(makeFailedResponse("Account has been blocked"));
     }
   } catch (error) {
-    console.error("Blacklist middleware error:", error);
+    logger.error("Blacklist middleware error:", error);
     return res
       .status(HttpStatusCodes.Unauthorized)
       .json(makeFailedResponse("Authentication header not verified!"));

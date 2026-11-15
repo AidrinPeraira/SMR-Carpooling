@@ -15,7 +15,7 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-mcp-service --platform=linux/arm64,linux/amd64 -t aidrinperaira/smr-mcp-service:latest --push ../../"
+    "docker:prod:push": "docker buildx build -f ../../Dockerfile.prod --target=smr-mcp-service --platform=linux/amd64 -t aidrinperaira/smr-mcp-service:latest --push ../../"
   },
   "keywords": [],
   "author": "",

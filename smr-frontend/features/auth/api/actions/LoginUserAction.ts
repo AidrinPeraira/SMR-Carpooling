@@ -9,7 +9,7 @@ import { setAuthCookies } from "@/lib/auth-cookies";
 export async function loginUserAction(
   data: LoginRequest,
 ): Promise<ActionResponse<LoginResult>> {
-  logger.info("Logging in user: ", {
+  logger.debug("Logging in user: ", {
     email_id: data.email_id,
   });
 

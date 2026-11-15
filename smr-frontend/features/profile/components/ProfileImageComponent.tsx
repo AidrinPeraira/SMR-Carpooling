@@ -53,6 +53,7 @@ export function ProfileImageComponent({ src, initials }: Props) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       toast("Avatar updated!", {
         variant: "success",
         description: "Your profile picture has been updated successfully.",

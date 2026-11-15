@@ -3,6 +3,7 @@ import { createApp } from "#/app";
 import { AppConfig } from "#/application.config";
 import { connectRedis } from "#/config/redis.config";
 import { WinstonLoggerService } from "#/services/LoggerService";
+import { createServer } from "node:http";
 
 async function startServer(): Promise<void> {
   const logger = new WinstonLoggerService();
@@ -17,7 +18,9 @@ async function startServer(): Promise<void> {
   const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const httpServer = createServer(app);
+
+  httpServer.listen(PORT, "0.0.0.0", () => {
     logger.info(`The api-gateway is running at port: ${PORT}.`, { port: PORT });
   });
 }

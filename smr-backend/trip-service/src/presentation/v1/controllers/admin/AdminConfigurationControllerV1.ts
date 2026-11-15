@@ -41,7 +41,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
    */
   @Trace("configuration-module")
   async getConfigurations(req: Request, res: Response): Promise<void> {
-    this._logger.info("Fetching admin configurations", {
+    this._logger.debug("Fetching admin configurations", {
       adminUserId: req.headers["x-user-id"],
     });
 
@@ -93,7 +93,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       req.body,
     );
 
-    this._logger.info("Creating new pricing rule", {
+    this._logger.debug("Creating new pricing rule", {
       adminUserId: req.headers["x-user-id"],
       vehicleType: validatedBody.vehicle_type,
     });
@@ -135,7 +135,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       req.body,
     );
 
-    this._logger.info("Updating pricing rule", {
+    this._logger.debug("Updating pricing rule", {
       adminUserId: req.headers["x-user-id"],
       pricingId: id,
     });
@@ -166,7 +166,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       req.body,
     );
 
-    this._logger.info("Creating new vehicle configuration", {
+    this._logger.debug("Creating new vehicle configuration", {
       adminUserId: req.headers["x-user-id"],
       vehicleMake: validatedBody.vehicle_make,
       vehicleModel: validatedBody.vehicle_model,
@@ -209,7 +209,7 @@ export class AdminConfigurationControllerV1 implements IAdminConfigurationContro
       req.body,
     );
 
-    this._logger.info("Updating vehicle configuration", {
+    this._logger.debug("Updating vehicle configuration", {
       adminUserId: req.headers["x-user-id"],
       vehicleId: id,
     });

@@ -11,6 +11,7 @@ export function keyMiddleware(req: Request, res: Response, next: NextFunction) {
   if (
     req.path === "/health" ||
     req.path.startsWith("/api/v1/webhook") ||
+    req.path.startsWith("/api/v1/payments/webhooks") ||
     req.path.startsWith("/socket.io")
   ) {
     req.headers["x-gateway-key"] = AppConfig.API_GATEWAY_KEY;

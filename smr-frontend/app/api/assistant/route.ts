@@ -13,6 +13,7 @@ import { cookies } from "next/headers";
 import { clearAuthCookies, setAuthCookies } from "@/lib/auth-cookies";
 import { getNewTokens } from "@/lib/api-server";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { RIDE_ASSISTANT_INSTRUCTIONS } from "@/lib/ai-instructions";
 
 // Allow streaming responses up to 30 seconds
@@ -157,7 +158,7 @@ export async function POST(req: Request) {
       stream: toUIMessageStream({ stream: result.stream }),
     });
   } catch (error) {
-    console.error("[assistant]", (error as Error).message);
+    logger.error("[assistant]", (error as Error).message);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 },
