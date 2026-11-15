@@ -13,7 +13,7 @@ import {
 export async function signupUserAction(
   data: SignUpUserSchemaType,
 ): Promise<ActionResponse<LoginResult>> {
-  logger.info("Signing up user: ", {
+  logger.debug("Signing up user: ", {
     email_id: data.email_id,
     first_name: data.first_name,
     last_name: data.last_name,

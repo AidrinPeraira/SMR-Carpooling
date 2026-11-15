@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NewBookingHandler } from "#/presentation/event-handlers/NewBookingHandler";
-import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/booking/ISendNewBookingEmailUseCase";
+import { ISendNewBookingEmailUseCase } from "#/application/interfaces/use-case/ISendNewBookingEmailUseCase";
 import { ILogger, NewBookingEvent, EventName } from "@sharemyride/shared";
 
 describe("NewBookingHandler", () => {
@@ -49,7 +49,7 @@ describe("NewBookingHandler", () => {
   it("should map event payload to DTO and invoke use case", async () => {
     await handler.handle(mockEvent);
 
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.debug).toHaveBeenCalledWith(
       expect.stringContaining("Handling new booking event"),
       expect.objectContaining({
         bookingId: "b-123",

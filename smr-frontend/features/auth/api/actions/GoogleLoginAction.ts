@@ -9,7 +9,7 @@ import { setAuthCookies } from "@/lib/auth-cookies";
 export async function googleLoginAction(
   auth_token: string,
 ): Promise<ActionResponse<LoginResult>> {
-  logger.info("Logging in user via Google");
+  logger.debug("Logging in user via Google");
 
   try {
     const response = await apiServerFetch("/api/v1/auth/google", {

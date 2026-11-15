@@ -16,6 +16,7 @@ import { tripServiceRouters } from "#/presentation/trip-service.module";
 import { mapError } from "#/presentation/utils/error-mapper";
 import { keyMiddleware } from "#/presentation/middleware/key.middleware";
 import { metricsMiddleware } from "#/presentation/middleware/http-metrics.middleware";
+import { AppConfig } from "#/application.config";
 
 export function createApp(logger: ILogger) {
   const app = express();
@@ -24,11 +25,13 @@ export function createApp(logger: ILogger) {
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
   app.use(cors());
   app.use(helmet());
+  const morganFormat = AppConfig.NODE_ENV === "production" ? "combined" : "dev";
   app.use(
-    morgan("dev", {
+    morgan(morganFormat, {
       stream: {
         write: (message) => logger.http(message.trim()),
       },
+      skip: (req) => req.url === "/health",
     }),
   );
   app.use(metricsMiddleware);

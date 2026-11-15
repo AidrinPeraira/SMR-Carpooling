@@ -24,7 +24,7 @@ export class AdminDriverControllerV1 implements IAdminDriverControllerV1 {
     try {
       const driverId = req.params.driverId as string;
 
-      this._logger.info("Admin fetching driver details for user:", {
+      this._logger.debug("Admin fetching driver details for user:", {
         driverId,
       });
 

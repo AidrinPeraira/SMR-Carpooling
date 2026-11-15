@@ -35,7 +35,7 @@ async function getNewTokens(token: string): Promise<TokenRefreshResult> {
       refresh_token,
     };
   } catch (error: unknown) {
-    console.log("Error getting new tokens: ", error);
+    console.error("Error getting new tokens: ", error);
     throw error;
   }
 }
@@ -75,7 +75,6 @@ function setCookiesInResponse(
 
 export default async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  console.log("Next middleware running on path: ", path);
 
   /**
    * when server componets get a forbidden request or fails token refresh

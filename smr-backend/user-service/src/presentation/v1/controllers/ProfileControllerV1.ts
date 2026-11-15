@@ -44,7 +44,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   async getUser(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
-    this._logger.info("Getting user data for ID: ", userId);
+    this._logger.debug("Getting user data for ID: ", userId);
 
     const result = await this._getUserUseCase.execute(userId);
     const mappedResult = ProfileMapper.toGetUserResult(result);
@@ -138,7 +138,7 @@ export class ProfileControllerV1 implements IProfileControllerV1 {
   async switchUserRole(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
 
-    this._logger.info("Switching user role for ID: ", userId);
+    this._logger.debug("Switching user role for ID: ", userId);
 
     const result = await this._switchUserRoleUseCase.execute(userId);
     const mappedResult = AuthMapper.toLoginResult(result);

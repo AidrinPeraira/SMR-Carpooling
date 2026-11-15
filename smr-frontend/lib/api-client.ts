@@ -49,7 +49,7 @@ export async function apiClientFetch<PayloadType = unknown>(
 
     return result;
   } catch (error: unknown) {
-    logger.info("Error making client side fetch: ", { url: url, error: error });
+    logger.error("Error making client side fetch: ", { url: url, error: error });
     throw error;
   }
 }

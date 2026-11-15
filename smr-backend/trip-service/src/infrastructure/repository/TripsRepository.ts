@@ -481,8 +481,6 @@ export class TripsRepository implements ITripRepository {
       select: { tripId: true, seqNumber: true },
     });
 
-    console.log("Origin Places: ", originPlaces);
-
     // return if no origin matches
     if (originPlaces.length === 0) {
       return {

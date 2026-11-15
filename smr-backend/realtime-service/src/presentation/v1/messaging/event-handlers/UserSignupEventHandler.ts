@@ -18,7 +18,7 @@ export class UserSignupEventHandler implements IEventHandler<UserSignUpEvent> {
   @Trace("communication-service-event-handler")
   async handle(event: UserSignUpEvent): Promise<void> {
     try {
-      this._logger.info("Handling user signup event in communication service", {
+      this._logger.debug("Handling user signup event in communication service", {
         userId: event.payload.userId,
       });
 
@@ -28,7 +28,7 @@ export class UserSignupEventHandler implements IEventHandler<UserSignUpEvent> {
         userId: event.payload.userId,
       });
 
-      this._logger.info("Successfully created member from signup event");
+      this._logger.debug("Successfully created member from signup event");
     } catch (error: unknown) {
       this._logger.error("Failed to handle user signup event", {
         error: error instanceof Error ? error.message : String(error),

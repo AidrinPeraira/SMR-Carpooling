@@ -1,6 +1,6 @@
 import { ApplicationRejectedMailDTO } from "#/application/dto/email/ApplicationNotificationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendApplicationRejectedMailUseCase } from "#/application/interfaces/use-case/application/ISendApplicationRejectedMailUseCase";
+import { ISendApplicationRejectedMailUseCase } from "#/application/interfaces/use-case/ISendApplicationRejectedMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ApplicationRejectEvent, ILogger } from "@sharemyride/shared";
 
@@ -19,7 +19,7 @@ export class ApplicationRejectedHandler implements IEventHandler<ApplicationReje
       comment: event.payload.comment,
     };
 
-    this._logger.info("Sending application rejected email notification: ", {
+    this._logger.debug("Sending application rejected email notification: ", {
       emailId: event.payload.emailId,
       applicationId: event.payload.applicationId,
     });

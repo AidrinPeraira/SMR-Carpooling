@@ -102,15 +102,16 @@ export default function AdminPayoutsView() {
       );
     },
     placeholderData: keepPreviousData,
-    staleTime: process.env.NODE_ENV == "production" ? 60 * 10 : 0,
-    gcTime: process.env.NODE_ENV == "production" ? 60 * 10 : 0,
+    staleTime: process.env.NODE_ENV == "production" ? 10 * 60 * 1000 : 0,
+    gcTime: process.env.NODE_ENV == "production" ? 10 * 60 * 1000 : 0,
   });
 
   const approveMutation = useMutation({
     mutationFn: approvePayoutRequest,
-    onSuccess: (res) => {
+    onSuccess: (res, payoutId) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["allPayouts"] });
+        queryClient.invalidateQueries({ queryKey: ["payoutDetails", payoutId] });
         toast("Payout completed and credited to wallet", {
           variant: "success",
         });

@@ -11,13 +11,13 @@ export class TripCancelledByDriverEventHandler implements IEventHandler<DriverCa
 
   @Trace("payment-service-event-handler")
   async handle(event: DriverCancelTripEvent): Promise<void> {
-    this._logger.info(
+    this._logger.debug(
       "Handling trip cancelled by driver event to process refunds for trip: ",
       event.payload.tripId,
     );
 
     for (const booking of event.payload.cancelledBookings) {
-      this._logger.info(`Processing refund for booking: ${booking.bookingId}`);
+      this._logger.debug(`Processing refund for booking: ${booking.bookingId}`);
       // The use case internally checks if a successful payment exists before refunding
       await this._refundBookingPaymentUseCase.execute(booking.bookingId);
     }

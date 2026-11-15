@@ -8,7 +8,7 @@ import { ApiResponse, GetUserResult, UpdateUserRequest } from "@sharemyride/shar
 export async function updateUserAction(
   data: UpdateUserRequest,
 ): Promise<ActionResponse<GetUserResult>> {
-  logger.info("Updating the user: ", {
+  logger.debug("Updating the user: ", {
     email_id: data.user_id,
   });
 

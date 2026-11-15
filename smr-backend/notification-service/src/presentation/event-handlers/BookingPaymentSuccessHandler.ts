@@ -1,6 +1,6 @@
 import { BookingPaymentMailDTO } from "#/application/dto/email/BookingPaymentMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/booking/ISendBookingPaymentSuccessMailUseCase";
+import { ISendBookingPaymentSuccessMailUseCase } from "#/application/interfaces/use-case/ISendBookingPaymentSuccessMailUseCase";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { BookingPaymentSuccessEvent, ILogger } from "@sharemyride/shared";
 
@@ -20,7 +20,7 @@ export class BookingPaymentSuccessHandler implements IEventHandler<BookingPaymen
       bookingId: event.payload.bookingId,
     };
 
-    this._logger.info(
+    this._logger.debug(
       "Handling booking payment success notification for booking:",
       {
         bookingId: dto.bookingId,

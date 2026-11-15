@@ -1,5 +1,6 @@
 import { createClient, type RedisClientType } from "redis";
 import { AppConfig } from "#/application.config";
+import { logger } from "#/services/LoggerService";
 
 let redisClient: RedisClientType | null = null;
 
@@ -7,7 +8,7 @@ export function getRedisClient(): RedisClientType {
   if (!redisClient) {
     redisClient = createClient({ url: AppConfig.REDIS_URL });
     redisClient.on("error", (err) => {
-      console.error("Redis client error:", err.message);
+      logger.error("Redis client error:", err.message);
     });
   }
   return redisClient;

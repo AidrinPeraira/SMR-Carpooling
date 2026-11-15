@@ -9,7 +9,7 @@ export async function resubmitOnboardingApplicationAction(
   applicationId: string,
   data: ResubmitOnboardingApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Resubmitting onboarding application action...", {
+  logger.debug("Resubmitting onboarding application action...", {
     applicationId,
   });
 

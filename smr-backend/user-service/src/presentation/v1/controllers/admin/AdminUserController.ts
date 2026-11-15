@@ -45,7 +45,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
     const queryParams = zodParser<QueryRequest>(QuerySchema, req.query);
     const query = AdminUsersMapper.toGetAllUsersRequestQuery(queryParams);
 
-    this._logger.info("Fetching all users. Admin: ", {
+    this._logger.debug("Fetching all users. Admin: ", {
       adminUserId: req.headers["x-user-id"],
     });
 
@@ -76,7 +76,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
       req.params,
     );
 
-    this._logger.info("Fetching full user profile for userId: ", {
+    this._logger.debug("Fetching full user profile for userId: ", {
       adminUserId: req.headers["x-user-id"],
       userId: userId,
     });
@@ -161,7 +161,7 @@ export class AdminUserControllerV1 implements IAdminUserControllerV1 {
 
   @Trace("admin-user-module")
   async getUsersCount(req: Request, res: Response): Promise<void> {
-    this._logger.info("Admin fetching users count", {
+    this._logger.debug("Admin fetching users count", {
       adminUserId: req.headers["x-user-id"],
     });
 

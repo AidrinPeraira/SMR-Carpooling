@@ -20,8 +20,8 @@ export function useCallSocket() {
   );
 
   useEffect(() => {
-    const onConnect = () => logger.info("Call socket connected");
-    const onDisconnect = () => logger.info("Call socket disconnected");
+    const onConnect = () => logger.debug("Call socket connected");
+    const onDisconnect = () => logger.debug("Call socket disconnected");
     const onError = (error: Error) =>
       logger.error("Call socket error: ", error.message ?? error);
 

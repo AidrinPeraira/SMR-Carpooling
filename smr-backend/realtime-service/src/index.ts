@@ -13,7 +13,7 @@ async function startServer(): Promise<void> {
   await connectMongoDB(logger);
   await connectRedis(logger);
 
-  const app = createApp();
+  const app = createApp(logger);
   const PORT = Number(AppConfig.PORT);
 
   const httpServer = createServer(app);

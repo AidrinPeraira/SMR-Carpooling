@@ -51,15 +51,13 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     const body = zodParser<SignUpRequest>(SignUpUserSchema, req.body);
     const userData = AuthMapper.toSignUpDTO(body);
 
-    this._logger.info("Signing up new user: ", {
+    this._logger.debug("Signing up new user: ", {
       firstName: userData.firstName,
       lastName: userData.lastName,
       emailId: userData.emailId,
     });
 
     const newUser = await this._signUpUserUseCase.execute(userData);
-
-    this._logger.info("Signed up new user: ", newUser);
 
     res
       .status(HttpStatusCodes.Created)
@@ -76,14 +74,14 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     const body = zodParser<VerifyEmailRequest>(VerifyEmailSchema, req.body);
     const data = AuthMapper.toVerifyEmailDTO(body);
 
-    this._logger.info(
+    this._logger.debug(
       "Verifying signup email with token: ",
       data.verificationToken,
     );
 
     const result = await this._verifySignupEmailUseCase.execute(data);
 
-    this._logger.info(
+    this._logger.debug(
       "Email verified successfully for user: ",
       result.user.userId,
     );
@@ -103,11 +101,11 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     const body = zodParser<LoginRequest>(LoginUserSchema, req.body);
     const loginData = AuthMapper.toLoginDTO(body);
 
-    this._logger.info("Logging in user: ", loginData.emailId);
+    this._logger.debug("Logging in user");
 
     const result = await this._loginUserUseCase.execute(loginData);
 
-    this._logger.info("User logged in successfully: ", result.user.userId);
+    this._logger.debug("User logged in successfully: ", result.user.userId);
 
     res
       .status(HttpStatusCodes.Ok)
@@ -124,11 +122,11 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     const body = zodParser<GoogleLoginRequest>(GoogleLoginSchema, req.body);
     const token = AuthMapper.toGoogleLoginDTO(body);
 
-    this._logger.info("Google login attempt.");
+    this._logger.debug("Google login attempt.");
 
     const result = await this._googleAuthUseCase.execute(token);
 
-    this._logger.info("Google auth atempt success: ", {
+    this._logger.debug("Google auth atempt success: ", {
       firstName: result.user.firstName,
       lastName: result.user.lastName,
       emailId: result.user.emailId,
@@ -149,11 +147,11 @@ export class AuthControllerV1 implements IAuthControllerV1 {
     const body = zodParser<RefreshTokenRequest>(RefreshTokenSchema, req.body);
     const refreshTokenData = AuthMapper.toRefreshTokenDTO(body);
 
-    this._logger.info("Token refresh request: ");
+    this._logger.debug("Token refresh request: ");
 
     const result = await this._refreshTokensUseCase.execute(refreshTokenData);
 
-    this._logger.info("Tokens refreshed successfully.");
+    this._logger.debug("Tokens refreshed successfully.");
 
     res
       .status(HttpStatusCodes.Ok)
@@ -175,7 +173,7 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       req.body,
     );
     const dto = AuthMapper.toForgotPasswordDTO(body);
-    this._logger.info(
+    this._logger.debug(
       "Requesting password change token for user: ",
       dto.emailId,
     );
@@ -196,7 +194,7 @@ export class AuthControllerV1 implements IAuthControllerV1 {
       req.body,
     );
     const dto = AuthMapper.toChangePasswordDTO(body);
-    this._logger.info("Changing password for user: ", dto.emailId);
+    this._logger.debug("Changing password for user");
     await this._changePasswordUseCase.execute(dto);
     res
       .status(HttpStatusCodes.Ok)

@@ -63,7 +63,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
   @Trace("applications-module")
   async getFileUploadUrl(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info("Getting file upload URL for userId: ", userId);
+    this._logger.debug("Getting file upload URL for userId: ", userId);
 
     const body = zodParser<GetFileUploadUrlRequest>(
       GetFileUploadUrlSchema,
@@ -85,7 +85,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
   @Trace("applications-module")
   async onboardingApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info("Submitting onboarding application for userId: ", userId);
+    this._logger.debug("Submitting onboarding application for userId: ", userId);
 
     const body = zodParser<OnboardingApplicationRequest>(
       OnboardingApplicationSchema,
@@ -107,7 +107,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
   @Trace("applications-module")
   async newVehicleApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info(
+    this._logger.debug(
       "Submitting new vehicle application for userId: ",
       userId,
     );
@@ -132,7 +132,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
   @Trace("applications-module")
   async renewDriverApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info(
+    this._logger.debug(
       "Submitting renew driver application for userId: ",
       userId,
     );
@@ -157,7 +157,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
   @Trace("applications-module")
   async renewVehicleApplication(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
-    this._logger.info(
+    this._logger.debug(
       "Submitting renew vehicle application for userId: ",
       userId,
     );
@@ -189,7 +189,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       req.params,
     );
 
-    this._logger.info("Resubmitting onboarding application: ", applicationId);
+    this._logger.debug("Resubmitting onboarding application: ", applicationId);
 
     const body = zodParser<ResubmitOnboardingApplicationRequest>(
       ResubmitOnboardingApplicationSchema,
@@ -218,7 +218,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       req.params,
     );
 
-    this._logger.info("Resubmitting new vehicle application: ", applicationId);
+    this._logger.debug("Resubmitting new vehicle application: ", applicationId);
 
     const body = zodParser<ResubmitNewVehicleApplicationRequest>(
       ResubmitNewVehicleApplicationSchema,
@@ -247,7 +247,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       req.params,
     );
 
-    this._logger.info("Resubmitting renew driver application: ", applicationId);
+    this._logger.debug("Resubmitting renew driver application: ", applicationId);
 
     const body = zodParser<ResubmitRenewDriverApplicationRequest>(
       ResubmitRenewDriverApplicationSchema,
@@ -276,7 +276,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       req.params,
     );
 
-    this._logger.info(
+    this._logger.debug(
       "Resubmitting renew vehicle application: ",
       applicationId,
     );
@@ -302,7 +302,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
   async getApplications(req: Request, res: Response): Promise<void> {
     const userId = req.headers["x-user-id"] as string;
     const search = req.query.search as string;
-    this._logger.info("Getting applications for userId: ", userId);
+    this._logger.debug("Getting applications for userId: ", userId);
 
     const list = await this._getApplicationsUseCase.execute(userId, search);
     const result = list.map((item) =>
@@ -323,7 +323,7 @@ export class ApplicationControllerV1 implements IApplicationControllerV1 {
       req.params,
     );
 
-    this._logger.info(
+    this._logger.debug(
       "Getting application details for applicationId: ",
       applicationId,
     );

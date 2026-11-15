@@ -35,7 +35,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
   @Trace("admin-application-module")
   async getAllApplications(req: Request, res: Response): Promise<void> {
     const adminId = req.headers["x-user-id"] as string;
-    this._logger.info("Admin fetching all applications: ", { adminId });
+    this._logger.debug("Admin fetching all applications: ", { adminId });
 
     const queryParams = zodParser<QueryRequest>(QuerySchema, req.query);
     const query =
@@ -59,7 +59,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       req.params,
     );
     const adminId = req.headers["x-user-id"] as string;
-    this._logger.info("Admin fetching application details: ", {
+    this._logger.debug("Admin fetching application details: ", {
       adminId,
       applicationId,
     });
@@ -85,7 +85,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
       ProcessApplicationSchema,
       req.body,
     );
-    this._logger.info("Admin processing application: ", {
+    this._logger.debug("Admin processing application: ", {
       adminId,
       applicationId: body.application_id,
       status: body.application_status,
@@ -106,7 +106,7 @@ export class AdminApplicationControllerV1 implements IAdminApplicationController
 
   @Trace("admin-application-module")
   async getApplicationCount(req: Request, res: Response): Promise<void> {
-    this._logger.info("Admin fetching application count", {
+    this._logger.debug("Admin fetching application count", {
       adminUserId: req.headers["x-user-id"],
     });
 

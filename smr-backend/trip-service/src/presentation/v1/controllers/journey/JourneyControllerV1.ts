@@ -57,7 +57,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const { tripId } = req.params;
 
-      this._logger.info("Starting journey for trip:", { driverId, tripId });
+      this._logger.debug("Starting journey for trip:", { driverId, tripId });
 
       await this._startTripJourneyUseCase.execute(tripId as string, driverId);
 
@@ -81,7 +81,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const journeyId = req.params.journeyId as string;
 
-      this._logger.info("Fetching driver journey details:", { driverId, journeyId });
+      this._logger.debug("Fetching driver journey details:", { driverId, journeyId });
 
       const result = await this._getDriverJourneyDetailsUseCase.execute(
         journeyId,
@@ -111,7 +111,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
       const passengerId = req.headers["x-user-id"] as string;
       const journeyId = req.params.journeyId as string;
 
-      this._logger.info("Fetching passenger journey details:", { passengerId, journeyId });
+      this._logger.debug("Fetching passenger journey details:", { passengerId, journeyId });
 
       const result = await this._getPassengerJourneyDetailsUseCase.execute(
         journeyId,
@@ -145,7 +145,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
         req.body,
       );
 
-      this._logger.info("Driver arrived at stop:", { driverId, journeyId: validatedBody.journey_id });
+      this._logger.debug("Driver arrived at stop:", { driverId, journeyId: validatedBody.journey_id });
 
       const dto = JourneyMapper.toDriverArrivedDTO(validatedBody);
       await this._driverArrivedUseCase.execute(dto, driverId);
@@ -172,7 +172,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
         req.body,
       );
 
-      this._logger.info("Driver verifying pickup OTP:", { driverId, journeyId: validatedBody.journey_id });
+      this._logger.debug("Driver verifying pickup OTP:", { driverId, journeyId: validatedBody.journey_id });
 
       const dto = JourneyMapper.toDriverVerifyPickupDTO(validatedBody);
       await this._driverVerifyPickupUseCase.execute(dto, driverId);
@@ -199,7 +199,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
         req.body,
       );
 
-      this._logger.info("Passenger confirming pickup:", { passengerId, journeyId: validatedBody.journey_id });
+      this._logger.debug("Passenger confirming pickup:", { passengerId, journeyId: validatedBody.journey_id });
 
       const dto = JourneyMapper.toPassengerConfirmPickupDTO(validatedBody);
       await this._passengerConfirmPickupUseCase.execute(dto, passengerId);
@@ -226,7 +226,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
         req.body,
       );
 
-      this._logger.info("Driver dropping off passenger:", { driverId, journeyId: validatedBody.journey_id });
+      this._logger.debug("Driver dropping off passenger:", { driverId, journeyId: validatedBody.journey_id });
 
       const dto = JourneyMapper.toDriverDropOffDTO(validatedBody);
       await this._driverDropOffPassengerUseCase.execute(dto, driverId);
@@ -253,7 +253,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
         req.body,
       );
 
-      this._logger.info("Passenger confirming drop off:", { passengerId, journeyId: validatedBody.journey_id });
+      this._logger.debug("Passenger confirming drop off:", { passengerId, journeyId: validatedBody.journey_id });
 
       const dto = JourneyMapper.toPassengerConfirmDropOffDTO(validatedBody, passengerId);
       await this._passengerConfirmDropOffUseCase.execute(dto, passengerId);
@@ -280,7 +280,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
         req.body,
       );
 
-      this._logger.info("Marking passenger no-show:", { driverId, journeyId: validatedBody.journey_id });
+      this._logger.debug("Marking passenger no-show:", { driverId, journeyId: validatedBody.journey_id });
 
       const dto = JourneyMapper.toPassengerNoShowDTO(validatedBody);
       await this._passengerNoShowUseCase.execute(dto);
@@ -303,7 +303,7 @@ export class JourneyControllerV1 implements IJourneyControllerV1 {
       const driverId = req.headers["x-user-id"] as string;
       const journeyId = req.params.journeyId as string;
 
-      this._logger.info("Driver completing journey:", { driverId, journeyId });
+      this._logger.debug("Driver completing journey:", { driverId, journeyId });
 
       await this._driverCompleteJourneyUseCase.execute(journeyId, driverId);
 

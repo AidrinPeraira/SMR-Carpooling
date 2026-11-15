@@ -151,7 +151,7 @@ const createBookingPaymentOrderUseCase = new CreateBookingPaymentOrderUseCase(
   jwtTokenService,
   razorPayPaymentProvider,
   scheduledJobService,
-  `${AppConfig.API_GATEWAY_URL}/api/v1/payments/webhooks/clear-booking-payment`,
+  `${AppConfig.QSTASH_WEBHOOK_URL}/api/v1/payments/webhooks/clear-booking-payment`,
   customerRepository,
   eventBusInstance,
 );

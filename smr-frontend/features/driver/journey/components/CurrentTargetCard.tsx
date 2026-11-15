@@ -174,7 +174,6 @@ export function CurrentTargetCard({
       toast("Arrival confirmed", { variant: "success" });
     },
     onError: (err: unknown) => {
-      console.log(err);
       toast(err instanceof Error ? err.message : "Failed to confirm arrival", {
         variant: "error",
       });
@@ -234,6 +233,12 @@ export function CurrentTargetCard({
       queryClient.invalidateQueries({
         queryKey: ["driverJourneyDetails", journeyId],
       });
+      queryClient.invalidateQueries({ queryKey: ["driverTrips"] });
+      queryClient.invalidateQueries({ queryKey: ["driverTripStats"] });
+      queryClient.invalidateQueries({ queryKey: ["driverTodayTrip"] });
+      queryClient.invalidateQueries({ queryKey: ["driverEarnings"] });
+      queryClient.invalidateQueries({ queryKey: ["driverRecentBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["driverBookings"] });
       toast("Journey completed!", { variant: "success" });
     },
     onError: (err: unknown) => {

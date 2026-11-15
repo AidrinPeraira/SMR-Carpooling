@@ -53,7 +53,7 @@ export class AdminControllerV1 implements IAdminControllerV1 {
       req.query,
     );
 
-    this._logger.info("Admin: fetching all platform transactions", {
+    this._logger.debug("Admin: fetching all platform transactions", {
       page: query.page,
       limit: query.limit,
       search: query.search,
@@ -76,7 +76,7 @@ export class AdminControllerV1 implements IAdminControllerV1 {
 
     const result = await this._adminListTransactionsUseCase.execute(dto);
 
-    this._logger.info("Admin: platform transactions fetched successfully", {
+    this._logger.debug("Admin: platform transactions fetched successfully", {
       totalItems: result.paginationMeta.totalItems,
     });
 
@@ -92,7 +92,7 @@ export class AdminControllerV1 implements IAdminControllerV1 {
 
   @Trace("admin-module")
   async getTransactionsSummary(req: Request, res: Response): Promise<void> {
-    this._logger.info("Admin: fetching transactions summary");
+    this._logger.debug("Admin: fetching transactions summary");
 
     const result = await this._getTransactionSummaryUseCase.execute();
 
@@ -110,7 +110,7 @@ export class AdminControllerV1 implements IAdminControllerV1 {
   async getRevenueTrend(req: Request, res: Response): Promise<void> {
     const range = (req.query.range as TrendRange) ?? TrendRange.LAST_MONTH;
 
-    this._logger.info("Admin: fetching revenue trend", { range });
+    this._logger.debug("Admin: fetching revenue trend", { range });
 
     const result = await this._getRevenueTrendUseCase.execute(range);
 

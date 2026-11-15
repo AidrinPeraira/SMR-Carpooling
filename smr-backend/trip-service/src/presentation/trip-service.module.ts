@@ -79,7 +79,7 @@ const vehicleListRepository = new VehicleListRepository();
 const driverRepository = new DriverRepository();
 const vehicleRepository = new VehicleRepository();
 const configurationStore = new ConfigurationStore(redisClient);
-const placesCacheStore = new PlacesCacheStore(redisClient);
+const placesCacheStore = new PlacesCacheStore(redisClient, consolaLogger);
 const passengerRepository = new PassengerRepository();
 const geoIndexingService = new H3GeoIndexingService(7);
 const bookingsRepository = new BookingsRepository(geoIndexingService);
@@ -171,7 +171,7 @@ const initiateBookingPaymentUseCase = new InitiateBookingPaymentUseCase(
   cryptoUIDService,
   scheduledJobService,
   jwtTokenService,
-  `${AppConfig.API_GATEWAY_URL}/api/v1/webhook/trips/booking-cleanup`,
+  `${AppConfig.QSTASH_WEBHOOK_URL}/api/v1/webhook/trips/booking-cleanup`,
 );
 
 const bookingPaymentSuccessEventHandler = new BookingPaymentSuccessEventHandler(

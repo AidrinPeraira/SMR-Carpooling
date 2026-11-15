@@ -33,7 +33,7 @@ export class SocketIOEmitter implements ISocketEmitter {
       return;
     }
     await socket.leave(roomId);
-    this._logger.info("leaveRoom: socket removed from room", {
+    this._logger.debug("leaveRoom: socket removed from room", {
       roomId,
       socketId,
       namespace: this._nameSpace,

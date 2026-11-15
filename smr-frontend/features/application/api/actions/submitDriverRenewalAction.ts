@@ -8,7 +8,7 @@ import { ApiResponse, RenewDriverApplicationRequest } from "@sharemyride/shared"
 export async function submitDriverRenewalAction(
   data: RenewDriverApplicationRequest,
 ): Promise<ActionResponse<void>> {
-  logger.info("Submitting driver renewal action...", {
+  logger.debug("Submitting driver renewal action...", {
     license_number: data.license_number,
   });
 

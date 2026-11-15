@@ -228,6 +228,9 @@ export function DriverBookingDetailsView({
       });
       refetch();
       queryClient.invalidateQueries({ queryKey: ["driverBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["driverBookingDetails", bookingId] });
+      queryClient.invalidateQueries({ queryKey: ["driverRecentBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["driverTripStats"] });
     } catch (err: unknown) {
       toast("Accept Failed", {
         variant: "error",
@@ -250,6 +253,9 @@ export function DriverBookingDetailsView({
       });
       refetch();
       queryClient.invalidateQueries({ queryKey: ["driverBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["driverBookingDetails", bookingId] });
+      queryClient.invalidateQueries({ queryKey: ["driverRecentBookings"] });
+      queryClient.invalidateQueries({ queryKey: ["driverTripStats"] });
     } catch (err: unknown) {
       toast("Reject Failed", {
         variant: "error",

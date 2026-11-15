@@ -37,7 +37,7 @@ export function GoogleLogin({ className }: Props) {
     startTransition(async () => {
       try {
         const result = await googleLoginAction(token);
-        logger.info("Handle Google login result: ", result);
+        logger.debug("Handle Google login result: ", result);
         if (result.success) {
           if (result.payload?.user) {
             queryClient.setQueryData(["currentUser"], result.payload.user);

@@ -1,6 +1,6 @@
 import { BookingCancellationMailDTO } from "#/application/dto/email/BookingCancellationMailDTO";
 import { IEventHandler } from "#/application/interfaces/messaging/IEventHandler";
-import { ISendBookingCancellationEmailUseCase } from "#/application/interfaces/use-case/booking/ISendBookingCancellationEmailUseCase";
+import { ISendBookingCancellationEmailUseCase } from "#/application/interfaces/use-case/ISendBookingCancellationEmail";
 import { Trace } from "#/presentation/decorators/traces-decorator";
 import { ILogger, PassengerCancelBookingEvent } from "@sharemyride/shared";
 
@@ -23,7 +23,7 @@ export class BookingCancellationHandler implements IEventHandler<PassengerCancel
       amount: event.payload.amount,
     };
 
-    this._logger.info("Handling booking cancellation event for booking:", {
+    this._logger.debug("Handling booking cancellation event for booking:", {
       bookingId: dto.bookingId,
       passengerEmail: dto.passengerEmail,
       driverEmail: dto.driverEmail,

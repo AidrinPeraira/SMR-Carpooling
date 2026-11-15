@@ -8,6 +8,7 @@ import morgan from "morgan";
 import { makeFailedResponse } from "@sharemyride/shared";
 import { logger } from "#/services/LoggerService";
 import { mapError } from "#/utils/error-mapper";
+import { AppConfig } from "#/application.config";
 
 export async function createApp() {
   const passengerHandler = createMcpHandler(() => createPassengerMcpServer());
@@ -15,11 +16,13 @@ export async function createApp() {
 
   const app = createMcpExpressApp({ host: "0.0.0.0" });
 
+  const morganFormat = AppConfig.NODE_ENV === "production" ? "combined" : "dev";
   app.use(
-    morgan("dev", {
+    morgan(morganFormat, {
       stream: {
         write: (message) => logger.http(message.trim()),
       },
+      skip: (req) => req.url === "/mcp/health",
     }),
   );
 
